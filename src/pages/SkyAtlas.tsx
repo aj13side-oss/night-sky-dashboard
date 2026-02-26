@@ -1,0 +1,121 @@
+import { useState, useEffect } from "react";
+import AppNav from "@/components/AppNav";
+import AtlasFilters from "@/components/atlas/AtlasFilters";
+import ObjectCard from "@/components/atlas/ObjectCard";
+import ObjectDetailModal from "@/components/atlas/ObjectDetailModal";
+import {
+  useCelestialObjects,
+  useDistinctFilters,
+  CelestialFilters,
+  CelestialObject,
+  PAGE_SIZE,
+} from "@/hooks/useCelestialObjects";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";
+
+const defaultFilters: CelestialFilters = {
+  search: "",
+  objTypes: [],
+  constellation: "",
+  maxMagnitude: 20,
+  sortBy: "photo_score",
+};
+
+const SkyAtlas = () => {
+  const [filters, setFilters] = useState<CelestialFilters>(defaultFilters);
+  const [page, setPage] = useState(0);
+  const [selected, setSelected] = useState<CelestialObject | null>(null);
+  const [userPos, setUserPos] = useState({ lat: 48.8566, lng: 2.3522 });
+
+  const { types, constellations } = useDistinctFilters();
+  const { data, isLoading } = useCelestialObjects(filters, page);
+
+  useEffect(() => {
+    navigator.geolocation?.getCurrentPosition(
+      (pos) => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => {}
+    );
+  }, []);
+
+  useEffect(() => setPage(0), [filters]);
+
+  const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
+
+  return (
+    <div className="min-h-screen bg-background star-field">
+      <AppNav />
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground flex items-center gap-3">
+            <Telescope className="w-8 h-8 text-primary" />
+            Sky Atlas
+          </h1>
+          <p className="text-muted-foreground mt-1 flex items-center gap-2">
+            <MapPin className="w-3.5 h-3.5" />
+            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — Explore {data?.count?.toLocaleString() ?? "..."} celestial objects
+          </p>
+        </motion.div>
+
+        <AtlasFilters
+          filters={filters}
+          onChange={setFilters}
+          types={types}
+          constellations={constellations}
+          totalCount={data?.count ?? 0}
+        />
+
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="glass-card rounded-2xl p-4 h-40 animate-pulse" />
+            ))}
+          </div>
+        ) : data?.data.length === 0 ? (
+          <div className="text-center py-16 text-muted-foreground">
+            <Telescope className="w-10 h-10 mx-auto mb-3 opacity-40" />
+            <p>No objects match your filters</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {data?.data.map((obj, i) => (
+              <ObjectCard
+                key={obj.id}
+                obj={obj}
+                index={i}
+                lat={userPos.lat}
+                lng={userPos.lng}
+                onClick={() => setSelected(obj)}
+              />
+            ))}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 pt-4">
+            <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)} className="gap-1">
+              <ChevronLeft className="w-4 h-4" /> Prev
+            </Button>
+            <span className="text-sm text-muted-foreground font-mono">
+              {page + 1} / {totalPages}
+            </span>
+            <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)} className="gap-1">
+              Next <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+      </main>
+
+      <ObjectDetailModal
+        obj={selected}
+        open={!!selected}
+        onClose={() => setSelected(null)}
+        lat={userPos.lat}
+        lng={userPos.lng}
+      />
+    </div>
+  );
+};
+
+export default SkyAtlas;

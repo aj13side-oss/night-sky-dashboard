@@ -1,6 +1,7 @@
 import AppNav from "@/components/AppNav";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
+import { getSkyImageUrl } from "@/lib/sky-images";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
@@ -39,7 +40,7 @@ const CAMERAS = [
   { name: "Sony A7III", sensorW: 35.6, sensorH: 23.8, pixelSize: 5.93, resW: 6000, resH: 4000 },
 ];
 
-const DEFAULT_TARGET = { name: "M31 — Andromeda", sizeArcmin: 178, exposureFast: 30, exposureDeep: 120 };
+const DEFAULT_TARGET: TargetObject = { name: "M31 — Andromeda", sizeArcmin: 178, exposureFast: 30, exposureDeep: 120, ra: 10.6847, dec: 41.2687 };
 
 const FovCalculator = () => {
   const [telescopeIdx, setTelescopeIdx] = useState("1");
@@ -187,26 +188,43 @@ const FovCalculator = () => {
 
             <div className="glass-card rounded-2xl p-6 space-y-4">
               <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">FOV Preview</h3>
-              <div className="relative bg-muted/30 rounded-xl border border-border overflow-hidden" style={{ paddingBottom: `${(fov.h / Math.max(fov.w, 0.01)) * 100}%`, minHeight: 200 }}>
-                <div className="absolute inset-0 border-2 border-primary/40 rounded-lg" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6">
-                  <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/30" />
-                  <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/30" />
-                </div>
+              <div
+                className="relative rounded-xl border border-border overflow-hidden"
+                style={{ paddingBottom: `${(fov.h / Math.max(fov.w, 0.01)) * 100}%`, minHeight: 200 }}
+              >
+                {/* Sky survey background image */}
+                {obj?.ra != null && obj?.dec != null && fov.w > 0 ? (
+                  <img
+                    src={`https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=CDS/P/DSS2/color&width=600&height=${Math.round(600 * (fov.h / fov.w))}&fov=${fov.w}&projection=TAN&coordsys=icrs&ra=${obj.ra}&dec=${obj.dec}&format=jpg`}
+                    alt={obj.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-muted/30" />
+                )}
+
+                {/* Sensor frame border */}
+                <div className="absolute inset-0 border-2 border-primary/50 rounded-lg" />
+                {/* Crosshair */}
+                <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/40" />
+                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/40" />
+
+                {/* Object size circle */}
                 {obj && objFractionW > 0 && (
                   <div
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/60 bg-accent/5"
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"
                     style={{
                       width: `${Math.min(objFractionW * 100, 200)}%`,
                       paddingBottom: `${Math.min(objFractionH * 100, 200)}%`,
                     }}
                   />
                 )}
-                <div className="absolute bottom-2 left-2 text-[10px] font-mono text-muted-foreground">
+                <div className="absolute bottom-2 left-2 text-[10px] font-mono text-white/80 drop-shadow-md bg-black/40 px-1.5 py-0.5 rounded">
                   {fov.w.toFixed(2)}° × {fov.h.toFixed(2)}°
                 </div>
                 {obj && (
-                  <div className="absolute top-2 right-2 text-[10px] font-mono text-accent">
+                  <div className="absolute top-2 right-2 text-[10px] font-mono text-white/90 drop-shadow-md bg-black/40 px-1.5 py-0.5 rounded">
                     {obj.name}: {obj.sizeArcmin}'
                   </div>
                 )}

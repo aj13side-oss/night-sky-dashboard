@@ -1,1 +1,10 @@
 project_id = "ytitrmdlmjpyhwkbpjvf"
+
+[functions.recommend-targets]
+verify_jwt = false
+
+[functions.weather]
+verify_jwt = false
+
+[functions.astronomy]
+verify_jwt = false

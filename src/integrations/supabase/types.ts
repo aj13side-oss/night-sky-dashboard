@@ -23,6 +23,7 @@ export type Database = {
           dec: number | null
           exposure_guide_deep: number | null
           exposure_guide_fast: number | null
+          forced_image_url: string | null
           id: string
           ideal_resolution: string | null
           image_search_query: string | null
@@ -43,6 +44,7 @@ export type Database = {
           dec?: number | null
           exposure_guide_deep?: number | null
           exposure_guide_fast?: number | null
+          forced_image_url?: string | null
           id?: string
           ideal_resolution?: string | null
           image_search_query?: string | null
@@ -63,6 +65,7 @@ export type Database = {
           dec?: number | null
           exposure_guide_deep?: number | null
           exposure_guide_fast?: number | null
+          forced_image_url?: string | null
           id?: string
           ideal_resolution?: string | null
           image_search_query?: string | null
@@ -186,6 +189,7 @@ export type Database = {
           dec: number | null
           exposure_guide_deep: number | null
           exposure_guide_fast: number | null
+          forced_image_url: string | null
           id: string
           ideal_resolution: string | null
           image_search_query: string | null

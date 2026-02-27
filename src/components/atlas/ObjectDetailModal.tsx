@@ -13,7 +13,7 @@ import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalL
 import { useState } from "react";
 import AltitudeChart from "./AltitudeChart";
 import ExposureGuideModal from "./ExposureGuideModal";
-import FovOverlay from "./FovOverlay";
+
 import NightPlanner from "./NightPlanner";
 import SetupAssistant from "./SetupAssistant";
 
@@ -278,19 +278,16 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
             </div>
           )}
 
-          {/* FOV Simulator */}
+          {/* Link to FOV Calculator */}
           {obj.size_max != null && obj.size_max > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Sensor Framing
-              </h4>
-              <FovOverlay
-                objectSizeArcmin={obj.size_max}
-                focalLength={focalLength}
-                sensorWidth={sensorWidth}
-                sensorHeight={sensorHeight}
-              />
-            </div>
+            <a
+              href="/fov-calculator"
+              className="flex items-center gap-2 p-3 rounded-xl bg-secondary/30 text-sm text-muted-foreground hover:text-primary hover:bg-secondary/50 transition-colors"
+            >
+              <Ruler className="w-4 h-4" />
+              <span>Simulate framing in FOV Calculator</span>
+              <ExternalLink className="w-3 h-3 ml-auto" />
+            </a>
           )}
         </DialogContent>
       </Dialog>

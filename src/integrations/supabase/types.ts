@@ -25,6 +25,7 @@ export type Database = {
           exposure_guide_fast: number | null
           id: string
           ideal_resolution: string | null
+          image_search_query: string | null
           magnitude: number | null
           moon_tolerance: number | null
           obj_type: string | null
@@ -44,6 +45,7 @@ export type Database = {
           exposure_guide_fast?: number | null
           id?: string
           ideal_resolution?: string | null
+          image_search_query?: string | null
           magnitude?: number | null
           moon_tolerance?: number | null
           obj_type?: string | null
@@ -63,6 +65,7 @@ export type Database = {
           exposure_guide_fast?: number | null
           id?: string
           ideal_resolution?: string | null
+          image_search_query?: string | null
           magnitude?: number | null
           moon_tolerance?: number | null
           obj_type?: string | null
@@ -185,6 +188,7 @@ export type Database = {
           exposure_guide_fast: number | null
           id: string
           ideal_resolution: string | null
+          image_search_query: string | null
           magnitude: number | null
           moon_tolerance: number | null
           obj_type: string | null

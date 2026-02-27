@@ -37,7 +37,8 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
     obj?.common_name,
     obj?.ra,
     obj?.dec,
-    obj?.size_max
+    obj?.size_max,
+    obj?.image_search_query
   );
 
   if (!obj) return null;
@@ -101,7 +102,7 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
                       rel="noopener noreferrer"
                       className="flex items-center gap-1 text-[10px] text-white/70 hover:text-white shrink-0 transition-colors"
                     >
-                      <Globe className="w-3 h-3" /> Wikipedia
+                      <Globe className="w-3 h-3" /> {wikiImage.source === "wikipedia" ? "Wikipedia" : wikiImage.source === "skyview" ? "NASA SkyView" : "Source"}
                     </a>
                   )}
                 </div>

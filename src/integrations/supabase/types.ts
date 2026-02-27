@@ -24,10 +24,13 @@ export type Database = {
           exposure_guide_deep: number | null
           exposure_guide_fast: number | null
           id: string
+          ideal_resolution: string | null
           magnitude: number | null
+          moon_tolerance: number | null
           obj_type: string | null
           photo_score: number | null
           ra: number | null
+          recommended_filter: string | null
           size_max: number | null
           surf_brightness: number | null
         }
@@ -40,10 +43,13 @@ export type Database = {
           exposure_guide_deep?: number | null
           exposure_guide_fast?: number | null
           id?: string
+          ideal_resolution?: string | null
           magnitude?: number | null
+          moon_tolerance?: number | null
           obj_type?: string | null
           photo_score?: number | null
           ra?: number | null
+          recommended_filter?: string | null
           size_max?: number | null
           surf_brightness?: number | null
         }
@@ -56,10 +62,13 @@ export type Database = {
           exposure_guide_deep?: number | null
           exposure_guide_fast?: number | null
           id?: string
+          ideal_resolution?: string | null
           magnitude?: number | null
+          moon_tolerance?: number | null
           obj_type?: string | null
           photo_score?: number | null
           ra?: number | null
+          recommended_filter?: string | null
           size_max?: number | null
           surf_brightness?: number | null
         }

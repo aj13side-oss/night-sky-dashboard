@@ -14,6 +14,7 @@ import AltitudeChart from "./AltitudeChart";
 import ExposureGuideModal from "./ExposureGuideModal";
 import FovOverlay from "./FovOverlay";
 import NightPlanner from "./NightPlanner";
+import SetupAssistant from "./SetupAssistant";
 
 interface Props {
   obj: CelestialObject | null;
@@ -144,6 +145,9 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
 
           {/* Night Planner */}
           <NightPlanner targetRa={obj.ra} targetDec={obj.dec} />
+
+          {/* Setup Assistant */}
+          <SetupAssistant obj={obj} userFocalLength={focalLength} />
 
           {/* Current Visibility */}
           {vis && alt != null && (

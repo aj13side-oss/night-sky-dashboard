@@ -128,7 +128,7 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
           </div>
 
           {/* Capture Guide */}
-          {(obj.exposure_guide_fast != null || obj.exposure_guide_deep != null) && (
+          {((obj.exposure_guide_fast ?? 0) > 0 || (obj.exposure_guide_deep ?? 0) > 0) && (
             <div className="p-4 rounded-xl bg-secondary/30 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -143,7 +143,7 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                {obj.exposure_guide_fast != null && (
+                {(obj.exposure_guide_fast ?? 0) > 0 && (
                   <div className="p-3 rounded-lg bg-accent/10 border border-accent/20">
                     <div className="flex items-center gap-1.5 text-xs text-accent font-medium mb-1">
                       <Clock className="w-3 h-3" /> Fast Capture
@@ -154,7 +154,7 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
                     <p className="text-[10px] text-muted-foreground mt-0.5">Quick Look</p>
                   </div>
                 )}
-                {obj.exposure_guide_deep != null && (
+                {(obj.exposure_guide_deep ?? 0) > 0 && (
                   <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
                     <div className="flex items-center gap-1.5 text-xs text-primary font-medium mb-1">
                       <Clock className="w-3 h-3" /> Deep Imaging

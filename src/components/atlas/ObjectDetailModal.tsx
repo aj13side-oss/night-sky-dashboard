@@ -187,9 +187,20 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
                       />
                       {wikiImage && (
                         <div className="border-t border-border/30">
+                          {wikiImage.filePageUrl && (
+                            <a
+                              href={wikiImage.filePageUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 px-2 py-1 text-[9px] text-primary hover:underline"
+                            >
+                              <Globe className="w-2.5 h-2.5 shrink-0" />
+                              Wikimedia Commons
+                            </a>
+                          )}
                           <button
                             onClick={() => setShowCredits(!showCredits)}
-                            className="w-full px-2 py-1 flex items-center justify-between text-[9px] text-muted-foreground hover:text-foreground transition-colors"
+                            className="w-full px-2 py-0.5 flex items-center justify-between text-[9px] text-muted-foreground hover:text-foreground transition-colors"
                           >
                             <span className="flex items-center gap-1 truncate">
                               <Info className="w-2.5 h-2.5 shrink-0" />
@@ -212,11 +223,6 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
                                     <a href={wikiImage.licenseUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{wikiImage.license}</a>
                                   ) : wikiImage.license}
                                 </div>
-                              )}
-                              {wikiImage.filePageUrl && (
-                                <a href={wikiImage.filePageUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
-                                  <Globe className="w-2.5 h-2.5" /> Source
-                                </a>
                               )}
                             </div>
                           )}

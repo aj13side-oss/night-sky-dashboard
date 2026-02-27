@@ -1,7 +1,7 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
-import { getEsaSkyEmbedUrl } from "@/lib/sky-images";
+import { calculateFov } from "@/lib/sky-images";
 import {
   Dialog,
   DialogContent,
@@ -65,8 +65,14 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
   const stellariumUrl = useMemo(() => {
     if (!obj || obj.ra == null || obj.dec == null) return null;
     const id = obj.catalog_id.replace(/\s+/g, "");
-    const fov = obj.size_max ? (obj.size_max / 60).toFixed(2) : "1";
-    return `https://stellarium-web.org/skysource/${id}?fov=${fov}&ra=${obj.ra}&dec=${obj.dec}`;
+    return `https://stellarium-web.org/skysource/${id}?ra=${obj.ra}&dec=${obj.dec}`;
+  }, [obj]);
+
+  // ESASky URL (new sky.esa.int)
+  const esaSkyUrl = useMemo(() => {
+    if (!obj || obj.ra == null || obj.dec == null) return null;
+    const fov = calculateFov(obj.size_max);
+    return `https://sky.esa.int/?target=${obj.ra}%20${obj.dec}&hips=DSS2%20color&fov=${fov}&reticle=true`;
   }, [obj]);
 
 
@@ -145,7 +151,7 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
                         🔭 Map
                       </TabsTrigger>
                     )}
-                    {obj.ra != null && obj.dec != null && (
+                    {esaSkyUrl && (
                       <TabsTrigger value="esasky" className="px-2 py-0.5 text-[10px] data-[state=active]:text-primary">
                         🛰️ ESASky
                       </TabsTrigger>
@@ -224,11 +230,11 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
                 )}
 
                 {/* ESASky */}
-                {obj.ra != null && obj.dec != null && (
+                {esaSkyUrl && (
                   <TabsContent value="esasky" className="mt-1.5">
                     <div className="w-full h-48 rounded-lg overflow-hidden border border-border/30">
                       <iframe
-                        src={getEsaSkyEmbedUrl(obj.catalog_id, obj.size_max)}
+                        src={esaSkyUrl}
                         className="w-full h-full border-0"
                         title={`ESASky view of ${obj.catalog_id}`}
                         allowFullScreen

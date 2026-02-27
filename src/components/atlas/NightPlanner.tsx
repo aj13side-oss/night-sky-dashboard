@@ -40,10 +40,11 @@ function getMoonRaDec(date: Date): { ra: number; dec: number } {
 
 function angularDistance(ra1: number, dec1: number, ra2: number, dec2: number): number {
   const toRad = (d: number) => (d * Math.PI) / 180;
-  const dRa = toRad(ra2 - ra1);
   const dec1Rad = toRad(dec1);
   const dec2Rad = toRad(dec2);
-  const a = Math.sin(dRa / 2) ** 2 + Math.cos(dec1Rad) * Math.cos(dec2Rad) * Math.sin(dRa / 2) ** 2;
+  const dRa = toRad(ra2 - ra1);
+  const dDec = dec2Rad - dec1Rad;
+  const a = Math.sin(dDec / 2) ** 2 + Math.cos(dec1Rad) * Math.cos(dec2Rad) * Math.sin(dRa / 2) ** 2;
   return 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * (180 / Math.PI);
 }
 

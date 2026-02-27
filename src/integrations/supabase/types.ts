@@ -173,6 +173,34 @@ export type Database = {
       }
     }
     Functions: {
+      fuzzy_search_celestial: {
+        Args: { search_term: string; similarity_threshold?: number }
+        Returns: {
+          best_months: string | null
+          catalog_id: string
+          common_name: string | null
+          constellation: string | null
+          dec: number | null
+          exposure_guide_deep: number | null
+          exposure_guide_fast: number | null
+          id: string
+          ideal_resolution: string | null
+          magnitude: number | null
+          moon_tolerance: number | null
+          obj_type: string | null
+          photo_score: number | null
+          ra: number | null
+          recommended_filter: string | null
+          size_max: number | null
+          surf_brightness: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "celestial_objects"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }

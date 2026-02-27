@@ -54,13 +54,16 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
   // Update default tab when image loading completes
   useEffect(() => {
     if (!imgLoading) {
-      if (wikiImage?.url) {
+      // Low photo_score objects default to Aladin for better context
+      if ((obj?.photo_score ?? 0) <= 3 && obj?.ra != null) {
+        setActiveTab("aladin");
+      } else if (wikiImage?.url) {
         setActiveTab("photo");
       } else if (obj?.ra != null) {
         setActiveTab("aladin");
       }
     }
-  }, [imgLoading, wikiImage?.url, obj?.ra]);
+  }, [imgLoading, wikiImage?.url, obj?.ra, obj?.photo_score]);
 
   // Stellarium URL
   const stellariumUrl = useMemo(() => {

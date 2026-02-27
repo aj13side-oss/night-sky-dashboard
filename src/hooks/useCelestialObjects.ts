@@ -23,6 +23,7 @@ export interface CelestialFilters {
   excludeTypes: string[];
   constellation: string;
   maxMagnitude: number;
+  minPhotoScore: number;
   sortBy: "photo_score" | "magnitude" | "size_max" | "catalog_id" | "tonight_best";
   sizeCategory?: "small" | "medium" | "large" | "";
   limitResults?: number;
@@ -54,6 +55,10 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
 
   if (filters.maxMagnitude < 20) {
     query = query.lte("magnitude", filters.maxMagnitude);
+  }
+
+  if (filters.minPhotoScore > 0) {
+    query = query.gte("photo_score", filters.minPhotoScore);
   }
 
   // Size category filter

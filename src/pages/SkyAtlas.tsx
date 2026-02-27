@@ -23,6 +23,7 @@ const defaultFilters: CelestialFilters = {
   excludeTypes: DEFAULT_EXCLUDE_TYPES,
   constellation: "",
   maxMagnitude: 20,
+  minPhotoScore: 0,
   sortBy: "photo_score",
   sizeCategory: "",
 };

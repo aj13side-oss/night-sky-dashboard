@@ -2,7 +2,7 @@ import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
 import { getSkyImageUrl } from "@/lib/sky-images";
 import { motion } from "framer-motion";
-import { Ruler, Eye } from "lucide-react";
+import { Ruler, Eye, Crown, Award } from "lucide-react";
 import { useState } from "react";
 
 interface Props {
@@ -36,15 +36,20 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
+  const isLegendary = obj.photo_score != null && obj.photo_score >= 100;
+  const isPrime = obj.photo_score != null && obj.photo_score >= 85 && obj.photo_score < 100;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.02, duration: 0.3 }}
       onClick={onClick}
-      className="glass-card rounded-2xl overflow-hidden cursor-pointer hover:border-primary/30 transition-all group"
+      className={`glass-card rounded-2xl overflow-hidden cursor-pointer transition-all group ${
+        isLegendary ? "ring-1 ring-yellow-500/40 hover:ring-yellow-500/60" : isPrime ? "ring-1 ring-slate-300/20 hover:ring-slate-300/40" : "hover:border-primary/30"
+      }`}
     >
-      {/* Sky thumbnail */}
+      {/* Tier badge on thumbnail */}
       {thumbUrl && !imgError && (
         <div className="relative w-full h-28 bg-muted/30 overflow-hidden">
           <img
@@ -58,6 +63,16 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
           {!imgLoaded && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+            </div>
+          )}
+          {isLegendary && (
+            <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/90 text-yellow-950 text-[10px] font-bold uppercase tracking-wider shadow-lg">
+              <Crown className="w-3 h-3" /> Legendary
+            </div>
+          )}
+          {isPrime && (
+            <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-300/90 text-slate-900 text-[10px] font-bold uppercase tracking-wider shadow-lg">
+              <Award className="w-3 h-3" /> Prime
             </div>
           )}
         </div>

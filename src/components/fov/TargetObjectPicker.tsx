@@ -5,15 +5,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 
-const SOLAR_SYSTEM = [
-  { name: "Jupiter", sizeArcmin: 0.7 },
-  { name: "Saturn", sizeArcmin: 0.3 },
-  { name: "Moon", sizeArcmin: 31 },
+const SOLAR_SYSTEM: TargetObject[] = [
+  { name: "Jupiter", sizeArcmin: 0.7, exposureFast: null, exposureDeep: null },
+  { name: "Saturn", sizeArcmin: 0.3, exposureFast: null, exposureDeep: null },
+  { name: "Moon", sizeArcmin: 31, exposureFast: null, exposureDeep: null },
 ];
 
-interface TargetObject {
+export interface TargetObject {
   name: string;
   sizeArcmin: number;
+  exposureFast: number | null;
+  exposureDeep: number | null;
 }
 
 interface Props {
@@ -32,6 +34,8 @@ async function searchCatalog(term: string) {
     .map((o: any) => ({
       name: o.common_name ? `${o.catalog_id} — ${o.common_name}` : o.catalog_id,
       sizeArcmin: o.size_max as number,
+      exposureFast: o.exposure_guide_fast ?? null,
+      exposureDeep: o.exposure_guide_deep ?? null,
     }));
 }
 

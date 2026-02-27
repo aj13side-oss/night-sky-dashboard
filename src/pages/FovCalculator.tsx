@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
 import ToolSuggestions from "@/components/ToolSuggestions";
-import TargetObjectPicker from "@/components/fov/TargetObjectPicker";
+import TargetObjectPicker, { type TargetObject } from "@/components/fov/TargetObjectPicker";
+import ExposureCalculator from "@/components/fov/ExposureCalculator";
 import {
   Select,
   SelectContent,
@@ -38,7 +39,7 @@ const CAMERAS = [
   { name: "Sony A7III", sensorW: 35.6, sensorH: 23.8, pixelSize: 5.93, resW: 6000, resH: 4000 },
 ];
 
-const DEFAULT_TARGET = { name: "M31 — Andromeda", sizeArcmin: 178 };
+const DEFAULT_TARGET = { name: "M31 — Andromeda", sizeArcmin: 178, exposureFast: 30, exposureDeep: 120 };
 
 const FovCalculator = () => {
   const [telescopeIdx, setTelescopeIdx] = useState("1");
@@ -48,7 +49,7 @@ const FovCalculator = () => {
   const [sensorH, setSensorH] = useState(CAMERAS[1].sensorH);
   const [pixelSize, setPixelSize] = useState(CAMERAS[1].pixelSize);
   const [barlow, setBarlow] = useState(1);
-  const [selectedObject, setSelectedObject] = useState<{ name: string; sizeArcmin: number }>(DEFAULT_TARGET);
+  const [selectedObject, setSelectedObject] = useState<TargetObject>(DEFAULT_TARGET);
 
   const effectiveFL = focalLength * barlow;
 
@@ -214,12 +215,20 @@ const FovCalculator = () => {
           </motion.div>
         </div>
 
-        {/* Imaging Impact & Dark Sky link */}
-        {/* Imaging Impact */}
+        {/* Exposure Calculator */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+        >
+          <ExposureCalculator target={selectedObject} />
+        </motion.div>
+
+        {/* Imaging Impact */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
         >
           <ImagingImpactCard />
         </motion.div>

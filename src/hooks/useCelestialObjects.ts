@@ -16,6 +16,9 @@ export interface CelestialObject {
   exposure_guide_fast: number | null;
   exposure_guide_deep: number | null;
   best_months: string | null;
+  recommended_filter: string | null;
+  moon_tolerance: number | null;
+  ideal_resolution: string | null;
 }
 
 export interface CelestialFilters {

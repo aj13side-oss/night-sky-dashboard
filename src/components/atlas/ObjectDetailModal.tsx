@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, ImageIcon, Globe } from "lucide-react";
+import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, ImageIcon, Globe, Info, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import AltitudeChart from "./AltitudeChart";
 import ExposureGuideModal from "./ExposureGuideModal";
@@ -31,6 +31,7 @@ interface Props {
 const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0 }: Props) => {
   const [showExposureInfo, setShowExposureInfo] = useState(false);
   const [viewMode, setViewMode] = useState<"photo" | "esasky">("photo");
+  const [showCredits, setShowCredits] = useState(false);
 
   const { data: wikiImage, isLoading: imgLoading } = useObjectImage(
     obj?.catalog_id,
@@ -128,12 +129,46 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
                       No image available
                     </div>
                   )}
-                  {wikiImage && !imgLoading && wikiImage.attribution && (
-                    <div className="px-3 py-1.5 bg-muted/80 flex items-center gap-1.5">
-                      <ImageIcon className="w-3 h-3 text-muted-foreground shrink-0" />
-                      <span className="text-[10px] text-muted-foreground truncate">
-                        {wikiImage.attribution}
-                      </span>
+                  {wikiImage && !imgLoading && (
+                    <div className="border-t border-border/30">
+                      <button
+                        onClick={() => setShowCredits(!showCredits)}
+                        className="w-full px-3 py-1.5 flex items-center justify-between text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <Info className="w-3 h-3" />
+                          {wikiImage.artist ?? "Credits"}
+                        </span>
+                        {showCredits ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                      </button>
+                      {showCredits && (
+                        <div className="px-3 pb-2 space-y-1 text-[10px] text-muted-foreground">
+                          {wikiImage.artist && (
+                            <div><span className="text-foreground/70 font-medium">Author:</span> {wikiImage.artist}</div>
+                          )}
+                          {wikiImage.date && (
+                            <div><span className="text-foreground/70 font-medium">Date:</span> {wikiImage.date}</div>
+                          )}
+                          {wikiImage.license && (
+                            <div>
+                              <span className="text-foreground/70 font-medium">License:</span>{" "}
+                              {wikiImage.licenseUrl ? (
+                                <a href={wikiImage.licenseUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{wikiImage.license}</a>
+                              ) : wikiImage.license}
+                            </div>
+                          )}
+                          {wikiImage.filePageUrl && (
+                            <a
+                              href={wikiImage.filePageUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-primary hover:underline mt-0.5"
+                            >
+                              <Globe className="w-3 h-3" /> Source Originale
+                            </a>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </>

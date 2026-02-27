@@ -40,7 +40,7 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
     obj?.image_search_query
   );
 
-  const hasWikiImage = !imgLoading && wikiImage?.url;
+  const hasWikiImage = !imgLoading && wikiImage?.url && wikiImage.source === "wikipedia";
 
   // FOV for Aladin: size_max * 1.5 / 60, clamped between 0.05° and 5°
   const aladinFov = useMemo(() => {

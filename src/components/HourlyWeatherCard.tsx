@@ -75,14 +75,17 @@ function filterNightHours<T extends { time: string }>(hours: T[], dateStr: strin
   nextDay.setDate(nextDay.getDate() + 1);
   const nextDateStr = nextDay.toISOString().split("T")[0];
   return hours.filter((h) => {
-    const hourNum = parseInt(h.time.split("T")[1]?.split(":")[0] ?? "0");
-    const day = h.time.split("T")[0];
+    // Normalize time separator (MeteoBlue uses space, others use T)
+    const normalized = h.time.replace(" ", "T");
+    const hourNum = parseInt(normalized.split("T")[1]?.split(":")[0] ?? "0");
+    const day = normalized.split("T")[0];
     return (day === targetDate && hourNum >= 18) || (day === nextDateStr && hourNum <= 6);
   });
 }
 
 const formatHour = (time: string) => {
-  const parts = time.split("T")[1];
+  const normalized = time.replace(" ", "T");
+  const parts = normalized.split("T")[1];
   return parts ? parts.substring(0, 5) : time;
 };
 
@@ -145,6 +148,10 @@ function precipHeatmap(mm: number): string {
   return "background-color: hsl(0, 55%, 32%); color: hsl(0, 0%, 100%);";
 }
 
+function clamp(val: number, min = 0, max = 100): number {
+  return Math.max(min, Math.min(max, val));
+}
+
 function computeGlobalScore(
   om: OpenMeteoHour[],
   st: SevenTimerHour[],
@@ -154,10 +161,10 @@ function computeGlobalScore(
   const scores: number[] = [];
 
   const cloudValues: number[] = [];
-  om.forEach((h) => cloudValues.push(h.clouds));
-  mn.forEach((h) => { if (h.clouds != null) cloudValues.push(h.clouds); });
-  ms.forEach((h) => { if (h.clouds != null) cloudValues.push(h.clouds); });
-  st.forEach((h) => cloudValues.push(h.clouds));
+  om.forEach((h) => cloudValues.push(clamp(h.clouds)));
+  mn.forEach((h) => { if (h.clouds != null) cloudValues.push(clamp(h.clouds)); });
+  ms.forEach((h) => { if (h.clouds != null) cloudValues.push(clamp(h.clouds)); });
+  st.forEach((h) => cloudValues.push(clamp(h.clouds)));
 
   if (cloudValues.length > 0) {
     const avgClouds = cloudValues.reduce((a, b) => a + b, 0) / cloudValues.length;
@@ -180,7 +187,7 @@ function computeGlobalScore(
   mn.forEach((h) => { if (h.wind != null) windValues.push(h.wind); });
   if (windValues.length > 0) {
     const avgWind = windValues.reduce((a, b) => a + b, 0) / windValues.length;
-    scores.push(Math.max(0, 100 - (avgWind / 30) * 100));
+    scores.push(clamp(100 - (avgWind / 30) * 100));
   }
 
   const humValues: number[] = [];
@@ -188,11 +195,11 @@ function computeGlobalScore(
   mn.forEach((h) => { if (h.humidity != null) humValues.push(h.humidity); });
   if (humValues.length > 0) {
     const avgHum = humValues.reduce((a, b) => a + b, 0) / humValues.length;
-    scores.push(Math.max(0, 100 - avgHum));
+    scores.push(clamp(100 - avgHum));
   }
 
   if (scores.length === 0) return null;
-  return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+  return Math.round(clamp(scores.reduce((a, b) => a + b, 0) / scores.length));
 }
 
 function scoreColor(score: number): string {
@@ -235,7 +242,7 @@ const ObservationScore = ({ score }: { score: number }) => {
         <div className="text-sm font-semibold text-foreground">Observation Quality</div>
         <div className="text-xs font-medium mt-0.5" style={{ color }}>{label}</div>
         <div className="text-[10px] text-muted-foreground mt-1">
-          Combined score from clouds, seeing, transparency, wind & humidity across all 4 sources
+          Combined score from clouds, seeing, transparency, wind & humidity across all 5 sources
         </div>
       </div>
     </div>

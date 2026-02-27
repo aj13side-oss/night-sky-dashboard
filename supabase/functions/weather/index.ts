@@ -20,7 +20,7 @@ function transparencyLabel(val: number): string {
 }
 
 function cloudPct(val: number): number {
-  return Math.round(((val - 1) / 8) * 100);
+  return Math.max(0, Math.min(100, Math.round(((val - 1) / 8) * 100)));
 }
 
 serve(async (req) => {
@@ -135,13 +135,14 @@ serve(async (req) => {
 
       for (const dp of sevenTimer.dataseries) {
         const forecastTime = new Date(initDate.getTime() + dp.timepoint * 3600000);
+        const temp = dp.temp2m ?? null;
         sevenTimerHours.push({
           time: forecastTime.toISOString().substring(0, 16),
           clouds: cloudPct(dp.cloudcover),
           seeing: seeingLabel(dp.seeing),
           transparency: transparencyLabel(dp.transparency),
           wind: dp.wind10m?.speed ?? null,
-          temp: dp.temp2m ?? null,
+          temp: (temp !== null && temp > -100 && temp < 100) ? temp : null,
           humidity: dp.rh2m ?? null,
         });
       }
@@ -184,7 +185,7 @@ serve(async (req) => {
       const mb = meteoBlue.data_1h;
       for (let i = 0; i < (mb.time || []).length; i++) {
         meteoBlueHours.push({
-          time: mb.time[i] ? mb.time[i].substring(0, 16) : "",
+          time: mb.time[i] ? mb.time[i].substring(0, 16).replace(" ", "T") : "",
           temp: mb.temperature?.[i] ?? null,
           clouds: mb.totalcloudcover?.[i] ?? null,
           cloudsLow: mb.lowclouds?.[i] ?? null,

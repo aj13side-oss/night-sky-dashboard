@@ -1,6 +1,6 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
-import { getSkyImageUrl } from "@/lib/sky-images";
+import { useObjectImage } from "@/hooks/useObjectImage";
 import { computeDynamicScore, getSeasonEmoji, getSeasonLabel } from "@/lib/dynamic-score";
 import { motion } from "framer-motion";
 import { Ruler, Eye, Crown, Award, Sun, Mountain } from "lucide-react";
@@ -33,7 +33,17 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
       ? calculateAltitude(obj.ra, obj.dec, lat, lng)
       : null;
   const vis = alt != null ? getVisibilityLabel(alt) : null;
-  const thumbUrl = getSkyImageUrl(obj.ra, obj.dec, obj.size_max, 200, 200);
+
+  const { data: wikiImage, isLoading: wikiLoading } = useObjectImage(
+    obj.catalog_id,
+    obj.common_name,
+    obj.ra,
+    obj.dec,
+    obj.size_max,
+    obj.image_search_query
+  );
+
+  const thumbUrl = wikiImage?.url || null;
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
@@ -60,17 +70,19 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
       }`}
     >
       {/* Thumbnail with badges */}
-      {thumbUrl && !imgError && (
+      {(!imgError && (wikiLoading || thumbUrl)) && (
         <div className="relative w-full h-28 bg-muted/30 overflow-hidden">
-          <img
-            src={thumbUrl}
-            alt={`${obj.catalog_id} sky view`}
-            loading="lazy"
-            onLoad={() => setImgLoaded(true)}
-            onError={() => setImgError(true)}
-            className={`w-full h-full object-cover transition-opacity duration-500 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
-          />
-          {!imgLoaded && (
+          {thumbUrl && (
+            <img
+              src={thumbUrl}
+              alt={`${obj.catalog_id}`}
+              loading="lazy"
+              onLoad={() => setImgLoaded(true)}
+              onError={() => setImgError(true)}
+              className={`w-full h-full object-cover transition-opacity duration-500 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+            />
+          )}
+          {(!imgLoaded || wikiLoading) && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
             </div>

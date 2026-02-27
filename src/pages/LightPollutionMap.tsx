@@ -62,13 +62,16 @@ const LightPollutionMap = () => {
       maxZoom: 19,
     }).addTo(map);
 
-    // Light pollution overlay - VIIRS 2023 from lightpollutionmap.info
+    // Light pollution overlay - D. Lorenz Light Pollution Atlas 2024
+    // Uses 1024px tiles with underscore naming convention
     const overlay = L.tileLayer(
-      "https://tiles.lightpollutionmap.info/tiles/viirs_2023/{z}/{x}/{y}.png",
+      "https://djlorenz.github.io/astronomy/image_tiles/tiles2024/tile_{z}_{x}_{y}.png",
       {
-        opacity: 0.6,
-        maxZoom: 12,
-        attribution: 'Light pollution &copy; <a href="https://www.lightpollutionmap.info">lightpollutionmap.info</a>',
+        opacity: 0.5,
+        maxZoom: 8,
+        tileSize: 1024,
+        zoomOffset: -2,
+        attribution: 'Light pollution: <a href="https://djlorenz.github.io/astronomy/lp/">D. Lorenz Atlas 2024</a>',
       }
     );
     overlay.addTo(map);
@@ -149,7 +152,7 @@ const LightPollutionMap = () => {
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <h2 className="text-3xl font-bold text-foreground">Carte de Pollution Lumineuse</h2>
               <p className="text-muted-foreground mt-1">
-                Trouvez les meilleurs sites d'observation — données VIIRS 2023
+                Trouvez les meilleurs sites d'observation — Light Pollution Atlas 2024
               </p>
             </motion.div>
 

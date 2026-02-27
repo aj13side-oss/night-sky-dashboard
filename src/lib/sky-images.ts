@@ -11,8 +11,8 @@ export function getSkyImageUrl(
 ): string | null {
   if (ra == null || dec == null) return null;
 
-  // FOV in degrees: (size_max / 60) * 1.5 margin, clamped [0.1°, 5.0°]
-  const fovDeg = sizeArcmin ? Math.max(Math.min((sizeArcmin / 60) * 1.5, 5.0), 0.1) : 0.25;
+  // FOV: (size_max / 60) * 1.5 margin, clamped [0.05°, 5.0°], default 1.0° if missing
+  const fovDeg = sizeArcmin && sizeArcmin > 0 ? Math.max(0.05, Math.min((sizeArcmin / 60) * 1.5, 5.0)) : 1.0;
 
   const params = new URLSearchParams({
     hips: "CDS/P/DSS2/color",

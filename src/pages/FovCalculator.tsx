@@ -1,6 +1,6 @@
 import AppNav from "@/components/AppNav";
 import { motion } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -61,6 +61,15 @@ const FovCalculator = () => {
   const [selectedObject, setSelectedObject] = useState("0");
 
   const effectiveFL = focalLength * barlow;
+
+  // Save equipment to localStorage for use in Sky Atlas
+  useEffect(() => {
+    localStorage.setItem("astrodash_equipment", JSON.stringify({
+      focalLength: effectiveFL,
+      sensorWidth: sensorW,
+      sensorHeight: sensorH,
+    }));
+  }, [effectiveFL, sensorW, sensorH]);
 
   const fov = useMemo(() => {
     if (effectiveFL <= 0) return { w: 0, h: 0, wArcmin: 0, hArcmin: 0, resolution: 0 };

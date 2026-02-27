@@ -81,3 +81,24 @@
       radial-gradient(1px 1px at 65% 55%, hsl(200 80% 55% / 0.3) 0%, transparent 100%);
   }
 }
+
+/* Night Vision Mode - Global Red Overlay */
+html.night-vision {
+  filter: saturate(0) brightness(0.8);
+}
+
+html.night-vision::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: hsl(0 100% 30% / 0.15);
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: multiply;
+}
+
+html.night-vision * {
+  --primary: 0 70% 50%;
+  --accent: 0 60% 45%;
+  --ring: 0 70% 50%;
+}

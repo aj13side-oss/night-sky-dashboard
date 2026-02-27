@@ -20,6 +20,7 @@ const defaultFilters: CelestialFilters = {
   constellation: "",
   maxMagnitude: 20,
   sortBy: "photo_score",
+  sizeCategory: "",
 };
 
 const SkyAtlas = () => {
@@ -27,6 +28,13 @@ const SkyAtlas = () => {
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<CelestialObject | null>(null);
   const [userPos, setUserPos] = useState({ lat: 48.8566, lng: 2.3522 });
+
+  // Equipment settings from localStorage (synced with FOV page)
+  const [equipment, setEquipment] = useState({
+    focalLength: 0,
+    sensorWidth: 0,
+    sensorHeight: 0,
+  });
 
   const { types, constellations } = useDistinctFilters();
   const { data, isLoading } = useCelestialObjects(filters, page);
@@ -36,6 +44,12 @@ const SkyAtlas = () => {
       (pos) => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       () => {}
     );
+
+    // Load equipment from localStorage
+    try {
+      const saved = localStorage.getItem("astrodash_equipment");
+      if (saved) setEquipment(JSON.parse(saved));
+    } catch {}
   }, []);
 
   useEffect(() => setPage(0), [filters]);
@@ -113,6 +127,9 @@ const SkyAtlas = () => {
         onClose={() => setSelected(null)}
         lat={userPos.lat}
         lng={userPos.lng}
+        focalLength={equipment.focalLength}
+        sensorWidth={equipment.sensorWidth}
+        sensorHeight={equipment.sensorHeight}
       />
     </div>
   );

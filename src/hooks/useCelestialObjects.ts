@@ -13,6 +13,8 @@ export interface CelestialObject {
   surf_brightness: number | null;
   size_max: number | null;
   photo_score: number | null;
+  exposure_guide_fast: number | null;
+  exposure_guide_deep: number | null;
 }
 
 export interface CelestialFilters {
@@ -20,7 +22,8 @@ export interface CelestialFilters {
   objTypes: string[];
   constellation: string;
   maxMagnitude: number;
-  sortBy: "photo_score" | "magnitude" | "size_max" | "catalog_id";
+  sortBy: "photo_score" | "magnitude" | "size_max" | "catalog_id" | "tonight_best";
+  sizeCategory?: "small" | "medium" | "large" | "";
 }
 
 const PAGE_SIZE = 30;
@@ -47,8 +50,18 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
     query = query.lte("magnitude", filters.maxMagnitude);
   }
 
+  // Size category filter
+  if (filters.sizeCategory === "small") {
+    query = query.lt("size_max", 5);
+  } else if (filters.sizeCategory === "medium") {
+    query = query.gte("size_max", 5).lte("size_max", 30);
+  } else if (filters.sizeCategory === "large") {
+    query = query.gt("size_max", 30);
+  }
+
   switch (filters.sortBy) {
     case "photo_score":
+    case "tonight_best":
       query = query.order("photo_score", { ascending: false, nullsFirst: false });
       break;
     case "magnitude":

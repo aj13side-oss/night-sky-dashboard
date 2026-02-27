@@ -20,6 +20,7 @@ export interface CelestialObject {
 export interface CelestialFilters {
   search: string;
   objTypes: string[];
+  excludeTypes: string[];
   constellation: string;
   maxMagnitude: number;
   sortBy: "photo_score" | "magnitude" | "size_max" | "catalog_id" | "tonight_best";
@@ -40,6 +41,10 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
 
   if (filters.objTypes.length > 0) {
     query = query.in("obj_type", filters.objTypes);
+  } else if (filters.excludeTypes.length > 0) {
+    for (const t of filters.excludeTypes) {
+      query = query.neq("obj_type", t);
+    }
   }
 
   if (filters.constellation) {

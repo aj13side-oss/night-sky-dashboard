@@ -15,9 +15,12 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";
 import ToolSuggestions from "@/components/ToolSuggestions";
 
+const DEFAULT_EXCLUDE_TYPES = ["Star", "Double Star"];
+
 const defaultFilters: CelestialFilters = {
   search: "",
   objTypes: [],
+  excludeTypes: DEFAULT_EXCLUDE_TYPES,
   constellation: "",
   maxMagnitude: 20,
   sortBy: "photo_score",
@@ -75,7 +78,10 @@ const SkyAtlas = () => {
 
         <AtlasFilters
           filters={filters}
-          onChange={setFilters}
+          onChange={(f) => setFilters({
+            ...f,
+            excludeTypes: f.search.trim() ? [] : DEFAULT_EXCLUDE_TYPES,
+          })}
           types={types}
           constellations={constellations}
           totalCount={data?.count ?? 0}

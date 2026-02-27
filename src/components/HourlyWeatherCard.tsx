@@ -46,13 +46,27 @@ interface MeteoSourceHour {
   precipitation: number | null;
 }
 
+interface MeteoBlueHour {
+  time: string;
+  temp: number | null;
+  clouds: number | null;
+  cloudsLow: number | null;
+  cloudsMid: number | null;
+  cloudsHigh: number | null;
+  humidity: number | null;
+  wind: number | null;
+  precipitation: number | null;
+  visibility: number | null;
+}
+
 interface WeatherResponse {
   openMeteo: OpenMeteoHour[];
   sevenTimer: SevenTimerHour[];
   metNorway: MetNorwayHour[];
   meteoSource: MeteoSourceHour[];
+  meteoBlue: MeteoBlueHour[];
   timezone: string;
-  errors: { openMeteo: string | null; sevenTimer: string | null; metNorway: string | null; meteoSource: string | null };
+  errors: { openMeteo: string | null; sevenTimer: string | null; metNorway: string | null; meteoSource: string | null; meteoBlue: string | null };
 }
 
 function filterNightHours<T extends { time: string }>(hours: T[], dateStr: string): T[] {
@@ -256,6 +270,7 @@ const HourlyWeatherCard = () => {
   const sevenTimerNight = data ? filterNightHours(data.sevenTimer, dateStr) : [];
   const metNorwayNight = data ? filterNightHours(data.metNorway || [], dateStr) : [];
   const meteoSourceNight = data ? filterNightHours(data.meteoSource || [], dateStr) : [];
+  const meteoBlueNight = data ? filterNightHours(data.meteoBlue || [], dateStr) : [];
 
   const globalScore = computeGlobalScore(openMeteoNight, sevenTimerNight, metNorwayNight, meteoSourceNight);
 
@@ -291,7 +306,7 @@ const HourlyWeatherCard = () => {
       ) : error ? (
         <div className="text-sm text-destructive text-center py-8">Failed to load weather data.</div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-3 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-3 items-start">
           <HeatmapTable
             title="Open-Meteo"
             color="hsl(210, 100%, 60%)"
@@ -383,6 +398,36 @@ const HourlyWeatherCard = () => {
               seeing: { value: h.seeing, style: seeingHeatmap(h.seeing) },
               transparency: { value: h.transparency, style: seeingHeatmap(h.transparency) },
               temp: { value: h.temp != null ? `${h.temp}°` : "—", style: h.temp != null ? tempHeatmap(h.temp) : "" },
+            }))}
+          />
+
+          <HeatmapTable
+            title="MeteoBlue"
+            color="hsl(200, 80%, 55%)"
+            error={data?.errors.meteoBlue}
+            columns={[
+              { key: "hour", label: "⏰", width: "w-12" },
+              { key: "clouds", label: "☁️" },
+              { key: "cloudsLow", label: "Low" },
+              { key: "cloudsMid", label: "Mid" },
+              { key: "cloudsHigh", label: "High" },
+              { key: "temp", label: "°C" },
+              { key: "humidity", label: "💧" },
+              { key: "wind", label: "💨" },
+              { key: "visibility", label: "👁️" },
+              { key: "precip", label: "🌧️" },
+            ]}
+            rows={meteoBlueNight.map((h) => ({
+              hour: { value: formatHour(h.time), style: "" },
+              clouds: { value: h.clouds != null ? `${Math.round(h.clouds)}` : "—", style: h.clouds != null ? cloudHeatmap(h.clouds) : "" },
+              cloudsLow: { value: h.cloudsLow != null ? `${Math.round(h.cloudsLow)}` : "—", style: h.cloudsLow != null ? cloudHeatmap(h.cloudsLow) : "" },
+              cloudsMid: { value: h.cloudsMid != null ? `${Math.round(h.cloudsMid)}` : "—", style: h.cloudsMid != null ? cloudHeatmap(h.cloudsMid) : "" },
+              cloudsHigh: { value: h.cloudsHigh != null ? `${Math.round(h.cloudsHigh)}` : "—", style: h.cloudsHigh != null ? cloudHeatmap(h.cloudsHigh) : "" },
+              temp: { value: h.temp != null ? `${Math.round(h.temp)}°` : "—", style: h.temp != null ? tempHeatmap(h.temp) : "" },
+              humidity: { value: h.humidity != null ? `${Math.round(h.humidity)}%` : "—", style: h.humidity != null ? humidityHeatmap(h.humidity) : "" },
+              wind: { value: h.wind != null ? `${Math.round(h.wind)}` : "—", style: h.wind != null ? windHeatmap(h.wind) : "" },
+              visibility: { value: h.visibility != null ? `${h.visibility}` : "—", style: h.visibility != null ? visibilityHeatmap(h.visibility) : "" },
+              precip: { value: h.precipitation != null ? `${h.precipitation}` : "—", style: h.precipitation != null ? precipHeatmap(h.precipitation) : "" },
             }))}
           />
         </div>

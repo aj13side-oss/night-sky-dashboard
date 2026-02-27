@@ -25,6 +25,7 @@ export interface CelestialFilters {
   maxMagnitude: number;
   sortBy: "photo_score" | "magnitude" | "size_max" | "catalog_id" | "tonight_best";
   sizeCategory?: "small" | "medium" | "large" | "";
+  limitResults?: number;
 }
 
 const PAGE_SIZE = 30;
@@ -80,12 +81,19 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
       break;
   }
 
-  const from = page * PAGE_SIZE;
-  query = query.range(from, from + PAGE_SIZE - 1);
+  // If limitResults is set, cap total and range
+  const effectivePageSize = filters.limitResults && filters.limitResults < PAGE_SIZE ? filters.limitResults : PAGE_SIZE;
+  const from = page * effectivePageSize;
+  const maxEnd = filters.limitResults ? Math.min(from + effectivePageSize - 1, filters.limitResults - 1) : from + effectivePageSize - 1;
+  if (filters.limitResults && from >= filters.limitResults) {
+    return { data: [] as CelestialObject[], count: 0 };
+  }
+  query = query.range(from, maxEnd);
 
   const { data, error, count } = await query;
   if (error) throw error;
-  return { data: data as CelestialObject[], count: count ?? 0 };
+  const totalCount = filters.limitResults ? Math.min(count ?? 0, filters.limitResults) : (count ?? 0);
+  return { data: data as CelestialObject[], count: totalCount };
 }
 
 async function fetchDistinctTypes() {

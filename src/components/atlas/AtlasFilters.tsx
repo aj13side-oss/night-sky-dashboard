@@ -3,7 +3,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
-import { Search, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, X, Trophy } from "lucide-react";
 
 interface Props {
   filters: CelestialFilters;
@@ -14,21 +15,54 @@ interface Props {
 }
 
 const AtlasFilters = ({ filters, onChange, types, constellations, totalCount }: Props) => {
+  const isTop50 = filters.limitResults === 50;
+
   const toggleType = (t: string) => {
     const next = filters.objTypes.includes(t)
       ? filters.objTypes.filter((x) => x !== t)
       : [...filters.objTypes, t];
-    onChange({ ...filters, objTypes: next });
+    onChange({ ...filters, objTypes: next, limitResults: undefined });
+  };
+
+  const toggleTop50 = () => {
+    if (isTop50) {
+      onChange({ ...filters, limitResults: undefined });
+    } else {
+      onChange({
+        ...filters,
+        sortBy: "photo_score",
+        limitResults: 50,
+        objTypes: [],
+        search: "",
+        constellation: "",
+        maxMagnitude: 20,
+        sizeCategory: "",
+      });
+    }
   };
 
   return (
     <div className="glass-card rounded-2xl p-4 space-y-4">
+      {/* Preset Buttons */}
+      <div className="flex flex-wrap gap-2">
+        <Button
+          variant={isTop50 ? "default" : "outline"}
+          size="sm"
+          onClick={toggleTop50}
+          className={`gap-1.5 text-xs ${isTop50 ? "bg-primary text-primary-foreground" : ""}`}
+        >
+          <Trophy className="w-3.5 h-3.5" />
+          Top 50 Essentials
+          {isTop50 && <X className="w-3 h-3 ml-1" />}
+        </Button>
+      </div>
+
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
           placeholder="Search NGC, IC, Messier, name..."
           value={filters.search}
-          onChange={(e) => onChange({ ...filters, search: e.target.value })}
+          onChange={(e) => onChange({ ...filters, search: e.target.value, limitResults: undefined })}
           className="pl-10 bg-secondary/50 border-border/30"
         />
       </div>

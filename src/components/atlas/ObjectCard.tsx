@@ -2,7 +2,7 @@ import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
 import { getSkyImageUrl } from "@/lib/sky-images";
 import { motion } from "framer-motion";
-import { Star, Ruler, Eye } from "lucide-react";
+import { Ruler, Eye } from "lucide-react";
 import { useState } from "react";
 
 interface Props {
@@ -64,6 +64,29 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
       )}
 
       <div className="p-4">
+      {/* Pro-Target Score */}
+      {obj.photo_score != null && (
+        <div className="mb-3 space-y-1">
+          <div className="flex items-center justify-between text-[10px]">
+            <span className="text-muted-foreground font-medium uppercase tracking-wider">Pro-Target Score</span>
+            <span className="font-mono font-bold text-primary">{obj.photo_score}/100</span>
+          </div>
+          <div className="h-1.5 rounded-full bg-secondary/50 overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-700"
+              style={{
+                width: `${Math.min(obj.photo_score, 100)}%`,
+                background: obj.photo_score >= 80
+                  ? "linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)))"
+                  : obj.photo_score >= 50
+                  ? "hsl(var(--primary) / 0.7)"
+                  : "hsl(var(--muted-foreground) / 0.5)",
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="min-w-0">
           <p className="text-sm font-semibold text-foreground truncate">
@@ -73,12 +96,6 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
             <p className="text-xs text-primary truncate mt-0.5">{obj.common_name}</p>
           )}
         </div>
-        {obj.photo_score != null && (
-          <div className="shrink-0 flex items-center gap-1 text-xs font-mono bg-primary/15 text-primary rounded-full px-2 py-0.5">
-            <Star className="w-3 h-3" />
-            {obj.photo_score}
-          </div>
-        )}
       </div>
 
       <div className="grid grid-cols-2 gap-y-1.5 text-xs text-muted-foreground">

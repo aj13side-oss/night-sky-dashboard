@@ -6,9 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 
 const SOLAR_SYSTEM: TargetObject[] = [
-  { name: "Jupiter", sizeArcmin: 0.7, exposureFast: null, exposureDeep: null },
-  { name: "Saturn", sizeArcmin: 0.3, exposureFast: null, exposureDeep: null },
-  { name: "Moon", sizeArcmin: 31, exposureFast: null, exposureDeep: null },
+  { name: "Jupiter", sizeArcmin: 0.7, exposureFast: null, exposureDeep: null, ra: null, dec: null },
+  { name: "Saturn", sizeArcmin: 0.3, exposureFast: null, exposureDeep: null, ra: null, dec: null },
+  { name: "Moon", sizeArcmin: 31, exposureFast: null, exposureDeep: null, ra: null, dec: null },
 ];
 
 export interface TargetObject {
@@ -16,6 +16,8 @@ export interface TargetObject {
   sizeArcmin: number;
   exposureFast: number | null;
   exposureDeep: number | null;
+  ra: number | null;
+  dec: number | null;
 }
 
 interface Props {
@@ -36,6 +38,8 @@ async function searchCatalog(term: string) {
       sizeArcmin: o.size_max as number,
       exposureFast: o.exposure_guide_fast ?? null,
       exposureDeep: o.exposure_guide_deep ?? null,
+      ra: o.ra ?? null,
+      dec: o.dec ?? null,
     }));
 }
 

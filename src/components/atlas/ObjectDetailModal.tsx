@@ -1,6 +1,6 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
-import { getEsaSkyEmbedUrl } from "@/lib/sky-images";
+import { getSkyImageUrl, getEsaSkyEmbedUrl } from "@/lib/sky-images";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock } from "lucide-react";
+import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import AltitudeChart from "./AltitudeChart";
 import ExposureGuideModal from "./ExposureGuideModal";
@@ -58,16 +58,24 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
             </DialogTitle>
           </DialogHeader>
 
-          {/* ESASky Interactive Viewer */}
-          <div className="w-full h-72 rounded-xl overflow-hidden bg-muted/50 border border-border/30">
-            <iframe
-              src={getEsaSkyEmbedUrl(obj.catalog_id, obj.size_max)}
-              title={`${obj.catalog_id} ESASky viewer`}
-              className="w-full h-full border-0"
-              allow="fullscreen"
-              loading="lazy"
-            />
-          </div>
+          {/* Sky Survey Image */}
+          {obj.ra != null && obj.dec != null && (
+            <div className="relative w-full h-64 rounded-xl overflow-hidden bg-muted/50 border border-border/30 group">
+              <img
+                src={getSkyImageUrl(obj.ra, obj.dec, obj.size_max, 600, 300) ?? ""}
+                alt={`${obj.catalog_id} sky survey`}
+                className="w-full h-full object-cover"
+              />
+              <a
+                href={getEsaSkyEmbedUrl(obj.catalog_id, obj.size_max)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute bottom-2 right-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-background/80 backdrop-blur-sm text-xs font-medium text-foreground hover:bg-primary/20 hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
+              >
+                <ExternalLink className="w-3 h-3" /> Ouvrir dans ESASky
+              </a>
+            </div>
+          )}
 
           {/* Info Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

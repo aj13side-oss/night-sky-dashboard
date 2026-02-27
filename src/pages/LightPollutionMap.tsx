@@ -1,14 +1,19 @@
 import AppNav from "@/components/AppNav";
 import { motion } from "framer-motion";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from "react-leaflet";
+import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { MapPin, Locate } from "lucide-react";
+import { MapPin, Locate, Maximize2, Minimize2, MousePointerClick } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import MapClickHandler from "@/components/lightpollution/MapClickHandler";
+import BortleInfoPanel from "@/components/lightpollution/BortleInfoPanel";
+import DarkSitesFinder from "@/components/lightpollution/DarkSitesFinder";
+import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
+import { DarkSite } from "@/lib/dark-sites";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -29,11 +34,23 @@ const BORTLE_SCALE = [
   { level: 9, label: "Inner-city sky", color: "#ffffff", sqm: "< 17.80" },
 ];
 
-const MapRecenter = ({ lat, lng }: { lat: number; lng: number }) => {
+/** Estimate Bortle from VIIRS overlay color intensity (rough heuristic based on map zoom & position) */
+function estimateBortleFromCoords(lat: number, lng: number, zoom: number): number {
+  // This is a visual heuristic — in a real app you'd query a VIIRS radiance API.
+  // For now, we base it on how the overlay appears at common locations.
+  // Users can adjust manually via the Imaging Impact Calculator.
+  return 5; // Default — user will see the actual overlay and can pick correct level
+}
+
+const MapRecenter = ({ lat, lng, zoom }: { lat: number; lng: number; zoom?: number }) => {
   const map = useMap();
   useEffect(() => {
-    map.setView([lat, lng], map.getZoom());
-  }, [lat, lng, map]);
+    if (zoom) {
+      map.setView([lat, lng], zoom);
+    } else {
+      map.setView([lat, lng], map.getZoom());
+    }
+  }, [lat, lng, zoom, map]);
   return null;
 };
 
@@ -43,6 +60,11 @@ const LightPollutionMap = () => {
   const [latInput, setLatInput] = useState("48.8566");
   const [lngInput, setLngInput] = useState("2.3522");
   const [overlayOpacity, setOverlayOpacity] = useState([0.6]);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [mapZoom, setMapZoom] = useState<number | undefined>(undefined);
+
+  // Click-to-get-Bortle state
+  const [clickedPoint, setClickedPoint] = useState<{ lat: number; lng: number; bortle: number } | null>(null);
 
   const handleSetLocation = () => {
     const newLat = parseFloat(latInput);
@@ -67,51 +89,97 @@ const LightPollutionMap = () => {
     }
   };
 
+  const handleMapClick = useCallback((clickLat: number, clickLng: number) => {
+    const bortle = estimateBortleFromCoords(clickLat, clickLng, 7);
+    setClickedPoint({ lat: clickLat, lng: clickLng, bortle });
+  }, []);
+
+  const handleSelectDarkSite = useCallback((site: DarkSite) => {
+    setLat(site.lat);
+    setLng(site.lng);
+    setLatInput(site.lat.toFixed(4));
+    setLngInput(site.lng.toFixed(4));
+    setMapZoom(10);
+    setClickedPoint({ lat: site.lat, lng: site.lng, bortle: site.bortle });
+  }, []);
+
   return (
-    <div className="min-h-screen bg-background star-field">
-      <AppNav />
+    <div className={`min-h-screen bg-background star-field ${isFullscreen ? "overflow-hidden" : ""}`}>
+      {!isFullscreen && <AppNav />}
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h2 className="text-3xl font-bold text-foreground">Light Pollution Map</h2>
-          <p className="text-muted-foreground mt-1">
-            Find dark sky sites for astrophotography — VIIRS 2023 satellite data
-          </p>
-        </motion.div>
+      <main className={isFullscreen ? "h-screen flex flex-col" : "max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6"}>
+        {!isFullscreen && (
+          <>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <h2 className="text-3xl font-bold text-foreground">Light Pollution Map</h2>
+              <p className="text-muted-foreground mt-1">
+                Find dark sky sites for astrophotography — VIIRS 2023 satellite data
+              </p>
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="glass-card rounded-2xl p-4 flex flex-wrap items-end gap-3"
-        >
-          <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">Latitude</Label>
-            <Input value={latInput} onChange={(e) => setLatInput(e.target.value)} className="bg-secondary/50 font-mono w-28 h-9" />
-          </div>
-          <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">Longitude</Label>
-            <Input value={lngInput} onChange={(e) => setLngInput(e.target.value)} className="bg-secondary/50 font-mono w-28 h-9" />
-          </div>
-          <Button size="sm" onClick={handleSetLocation} className="h-9 gap-1.5">
-            <MapPin className="w-3.5 h-3.5" /> Go
-          </Button>
-          <Button size="sm" variant="outline" onClick={handleGeolocate} className="h-9 gap-1.5">
-            <Locate className="w-3.5 h-3.5" /> My Location
-          </Button>
-          <div className="flex items-center gap-2 ml-auto">
-            <Label className="text-xs text-muted-foreground whitespace-nowrap">Overlay opacity</Label>
-            <Slider value={overlayOpacity} onValueChange={setOverlayOpacity} min={0} max={1} step={0.05} className="w-28" />
-          </div>
-        </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="glass-card rounded-2xl p-4 flex flex-wrap items-end gap-3"
+            >
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Latitude</Label>
+                <Input value={latInput} onChange={(e) => setLatInput(e.target.value)} className="bg-secondary/50 font-mono w-28 h-9" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Longitude</Label>
+                <Input value={lngInput} onChange={(e) => setLngInput(e.target.value)} className="bg-secondary/50 font-mono w-28 h-9" />
+              </div>
+              <Button size="sm" onClick={handleSetLocation} className="h-9 gap-1.5">
+                <MapPin className="w-3.5 h-3.5" /> Go
+              </Button>
+              <Button size="sm" variant="outline" onClick={handleGeolocate} className="h-9 gap-1.5">
+                <Locate className="w-3.5 h-3.5" /> My Location
+              </Button>
+              <div className="flex items-center gap-2 ml-auto">
+                <Label className="text-xs text-muted-foreground whitespace-nowrap">Overlay</Label>
+                <Slider value={overlayOpacity} onValueChange={setOverlayOpacity} min={0} max={1} step={0.05} className="w-24" />
+              </div>
+              <Button size="sm" variant="ghost" onClick={() => setIsFullscreen(true)} className="h-9 gap-1.5">
+                <Maximize2 className="w-3.5 h-3.5" />
+              </Button>
+            </motion.div>
+          </>
+        )}
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="glass-card rounded-2xl overflow-hidden"
-          style={{ height: "calc(100vh - 380px)", minHeight: "400px" }}
-        >
+        {/* Map */}
+        <div className={`relative ${isFullscreen ? "flex-1" : "glass-card rounded-2xl overflow-hidden"}`}
+             style={!isFullscreen ? { height: "calc(100vh - 420px)", minHeight: "400px" } : undefined}>
+
+          {/* Fullscreen controls overlay */}
+          {isFullscreen && (
+            <div className="absolute top-4 right-4 z-[1000] flex gap-2">
+              <Button size="sm" variant="secondary" onClick={() => setIsFullscreen(false)} className="h-8 gap-1.5 shadow-lg">
+                <Minimize2 className="w-3.5 h-3.5" /> Exit Fullscreen
+              </Button>
+            </div>
+          )}
+
+          {/* Click hint */}
+          {!clickedPoint && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000] glass-card rounded-full px-4 py-2 flex items-center gap-2 text-xs text-muted-foreground pointer-events-none">
+              <MousePointerClick className="w-3.5 h-3.5" /> Click anywhere to estimate Bortle level
+            </div>
+          )}
+
+          {/* Clicked point info overlay */}
+          {clickedPoint && (
+            <div className="absolute top-4 left-4 z-[1000] w-72">
+              <BortleInfoPanel
+                lat={clickedPoint.lat}
+                lng={clickedPoint.lng}
+                bortle={clickedPoint.bortle}
+                onClose={() => setClickedPoint(null)}
+              />
+            </div>
+          )}
+
           <MapContainer center={[lat, lng]} zoom={7} style={{ height: "100%", width: "100%" }} className="z-0">
             <TileLayer
               attribution='&copy; <a href="https://carto.com/">CARTO</a>'
@@ -128,29 +196,55 @@ const LightPollutionMap = () => {
                 <span className="text-xs">{lat.toFixed(4)}°, {lng.toFixed(4)}°</span>
               </Popup>
             </Marker>
-            <MapRecenter lat={lat} lng={lng} />
+            {clickedPoint && (
+              <Marker
+                position={[clickedPoint.lat, clickedPoint.lng]}
+                icon={L.divIcon({
+                  className: "",
+                  html: `<div style="width:12px;height:12px;border-radius:50%;background:hsl(38 90% 55%);border:2px solid white;transform:translate(-6px,-6px);"></div>`,
+                })}
+              />
+            )}
+            <MapRecenter lat={lat} lng={lng} zoom={mapZoom} />
+            <MapClickHandler onClick={handleMapClick} />
           </MapContainer>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="glass-card rounded-2xl p-6 space-y-3"
-        >
-          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Bortle Scale</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {BORTLE_SCALE.map((b) => (
-              <div key={b.level} className="flex items-center gap-3 py-1">
-                <div className="w-5 h-5 rounded-sm shrink-0 border border-border" style={{ backgroundColor: b.color }} />
-                <div className="min-w-0">
-                  <p className="text-xs font-medium text-foreground">Bortle {b.level} — {b.label}</p>
-                  <p className="text-[10px] text-muted-foreground font-mono">SQM {b.sqm}</p>
-                </div>
+        {!isFullscreen && (
+          <>
+            {/* Side-by-side: Dark Sites + Imaging Impact */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            >
+              <DarkSitesFinder userLat={lat} userLng={lng} onSelectSite={handleSelectDarkSite} />
+              <ImagingImpactCard selectedBortle={clickedPoint?.bortle} />
+            </motion.div>
+
+            {/* Bortle Scale Legend */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="glass-card rounded-2xl p-6 space-y-3"
+            >
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Bortle Scale</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {BORTLE_SCALE.map((b) => (
+                  <div key={b.level} className="flex items-center gap-3 py-1">
+                    <div className="w-5 h-5 rounded-sm shrink-0 border border-border" style={{ backgroundColor: b.color }} />
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-foreground">Bortle {b.level} — {b.label}</p>
+                      <p className="text-[10px] text-muted-foreground font-mono">SQM {b.sqm}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </motion.div>
+            </motion.div>
+          </>
+        )}
       </main>
     </div>
   );

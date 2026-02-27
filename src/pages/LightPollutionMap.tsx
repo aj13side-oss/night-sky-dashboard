@@ -1,15 +1,14 @@
 import AppNav from "@/components/AppNav";
 import { motion } from "framer-motion";
-import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from "react-leaflet";
-import { useEffect, useState, useCallback } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { MapPin, Locate, Maximize2, Minimize2, MousePointerClick } from "lucide-react";
+import { MapPin, Locate, Maximize2, Minimize2 } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import MapClickHandler from "@/components/lightpollution/MapClickHandler";
 import BortleInfoPanel from "@/components/lightpollution/BortleInfoPanel";
 import DarkSitesFinder from "@/components/lightpollution/DarkSitesFinder";
 import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
@@ -34,16 +33,19 @@ const BORTLE_SCALE = [
   { level: 9, label: "Inner-city sky", color: "#ffffff", sqm: "< 17.80" },
 ];
 
-/** Estimate Bortle from VIIRS overlay color intensity (rough heuristic based on map zoom & position) */
-function estimateBortleFromCoords(lat: number, lng: number, zoom: number): number {
-  // This is a visual heuristic — in a real app you'd query a VIIRS radiance API.
-  // For now, we base it on how the overlay appears at common locations.
-  // Users can adjust manually via the Imaging Impact Calculator.
-  return 5; // Default — user will see the actual overlay and can pick correct level
-}
-
-const MapRecenter = ({ lat, lng, zoom }: { lat: number; lng: number; zoom?: number }) => {
+const MapController = ({ lat, lng, zoom, onMapClick }: { lat: number; lng: number; zoom?: number; onMapClick: (lat: number, lng: number) => void }) => {
   const map = useMap();
+  const callbackRef = useRef(onMapClick);
+  callbackRef.current = onMapClick;
+
+  useEffect(() => {
+    const handler = (e: L.LeafletMouseEvent) => {
+      callbackRef.current(e.latlng.lat, e.latlng.lng);
+    };
+    map.on("click", handler);
+    return () => { map.off("click", handler); };
+  }, [map]);
+
   useEffect(() => {
     if (zoom) {
       map.setView([lat, lng], zoom);
@@ -51,6 +53,7 @@ const MapRecenter = ({ lat, lng, zoom }: { lat: number; lng: number; zoom?: numb
       map.setView([lat, lng], map.getZoom());
     }
   }, [lat, lng, zoom, map]);
+
   return null;
 };
 
@@ -62,8 +65,6 @@ const LightPollutionMap = () => {
   const [overlayOpacity, setOverlayOpacity] = useState([0.6]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [mapZoom, setMapZoom] = useState<number | undefined>(undefined);
-
-  // Click-to-get-Bortle state
   const [clickedPoint, setClickedPoint] = useState<{ lat: number; lng: number; bortle: number } | null>(null);
 
   const handleSetLocation = () => {
@@ -90,8 +91,7 @@ const LightPollutionMap = () => {
   };
 
   const handleMapClick = useCallback((clickLat: number, clickLng: number) => {
-    const bortle = estimateBortleFromCoords(clickLat, clickLng, 7);
-    setClickedPoint({ lat: clickLat, lng: clickLng, bortle });
+    setClickedPoint({ lat: clickLat, lng: clickLng, bortle: 5 });
   }, []);
 
   const handleSelectDarkSite = useCallback((site: DarkSite) => {
@@ -152,7 +152,6 @@ const LightPollutionMap = () => {
         <div className={`relative ${isFullscreen ? "flex-1" : "glass-card rounded-2xl overflow-hidden"}`}
              style={!isFullscreen ? { height: "calc(100vh - 420px)", minHeight: "400px" } : undefined}>
 
-          {/* Fullscreen controls overlay */}
           {isFullscreen && (
             <div className="absolute top-4 right-4 z-[1000] flex gap-2">
               <Button size="sm" variant="secondary" onClick={() => setIsFullscreen(false)} className="h-8 gap-1.5 shadow-lg">
@@ -161,14 +160,6 @@ const LightPollutionMap = () => {
             </div>
           )}
 
-          {/* Click hint */}
-          {!clickedPoint && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000] glass-card rounded-full px-4 py-2 flex items-center gap-2 text-xs text-muted-foreground pointer-events-none">
-              <MousePointerClick className="w-3.5 h-3.5" /> Click anywhere to estimate Bortle level
-            </div>
-          )}
-
-          {/* Clicked point info overlay */}
           {clickedPoint && (
             <div className="absolute top-4 left-4 z-[1000] w-72">
               <BortleInfoPanel
@@ -196,23 +187,12 @@ const LightPollutionMap = () => {
                 <span className="text-xs">{lat.toFixed(4)}°, {lng.toFixed(4)}°</span>
               </Popup>
             </Marker>
-            {clickedPoint && (
-              <Marker
-                position={[clickedPoint.lat, clickedPoint.lng]}
-                icon={L.divIcon({
-                  className: "",
-                  html: `<div style="width:12px;height:12px;border-radius:50%;background:hsl(38 90% 55%);border:2px solid white;transform:translate(-6px,-6px);"></div>`,
-                })}
-              />
-            )}
-            <MapRecenter lat={lat} lng={lng} zoom={mapZoom} />
-            <MapClickHandler onClick={handleMapClick} />
+            <MapController lat={lat} lng={lng} zoom={mapZoom} onMapClick={handleMapClick} />
           </MapContainer>
         </div>
 
         {!isFullscreen && (
           <>
-            {/* Side-by-side: Dark Sites + Imaging Impact */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -223,7 +203,6 @@ const LightPollutionMap = () => {
               <ImagingImpactCard selectedBortle={clickedPoint?.bortle} />
             </motion.div>
 
-            {/* Bortle Scale Legend */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

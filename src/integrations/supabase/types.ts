@@ -20,6 +20,8 @@ export type Database = {
           common_name: string | null
           constellation: string | null
           dec: number | null
+          exposure_guide_deep: number | null
+          exposure_guide_fast: number | null
           id: string
           magnitude: number | null
           obj_type: string | null
@@ -33,6 +35,8 @@ export type Database = {
           common_name?: string | null
           constellation?: string | null
           dec?: number | null
+          exposure_guide_deep?: number | null
+          exposure_guide_fast?: number | null
           id?: string
           magnitude?: number | null
           obj_type?: string | null
@@ -46,6 +50,8 @@ export type Database = {
           common_name?: string | null
           constellation?: string | null
           dec?: number | null
+          exposure_guide_deep?: number | null
+          exposure_guide_fast?: number | null
           id?: string
           magnitude?: number | null
           obj_type?: string | null

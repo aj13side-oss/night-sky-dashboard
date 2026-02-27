@@ -1,6 +1,6 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
-import { getSkyImageUrl } from "@/lib/sky-images";
+import { getEsaSkyEmbedUrl } from "@/lib/sky-images";
 import {
   Dialog,
   DialogContent,
@@ -58,16 +58,16 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
             </DialogTitle>
           </DialogHeader>
 
-          {/* Sky Survey Image */}
-          {obj.ra != null && obj.dec != null && (
-            <div className="w-full h-64 rounded-xl overflow-hidden bg-muted/50 border border-border/30">
-              <img
-                src={getSkyImageUrl(obj.ra, obj.dec, obj.size_max, 600, 300) ?? ""}
-                alt={`${obj.catalog_id} sky survey`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
+          {/* ESASky Interactive Viewer */}
+          <div className="w-full h-72 rounded-xl overflow-hidden bg-muted/50 border border-border/30">
+            <iframe
+              src={getEsaSkyEmbedUrl(obj.catalog_id, obj.size_max)}
+              title={`${obj.catalog_id} ESASky viewer`}
+              className="w-full h-full border-0"
+              allow="fullscreen"
+              loading="lazy"
+            />
+          </div>
 
           {/* Info Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

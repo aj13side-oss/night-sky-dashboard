@@ -11,8 +11,7 @@ export function getSkyImageUrl(
 ): string | null {
   if (ra == null || dec == null) return null;
 
-  // FOV: (size_max / 60) * 1.5 margin, clamped [0.05°, 5.0°], default 1.0° if missing
-  const fovDeg = sizeArcmin && sizeArcmin > 0 ? Math.max(0.05, Math.min((sizeArcmin / 60) * 1.5, 5.0)) : 1.0;
+  const fovDeg = calculateFov(sizeArcmin);
 
   const params = new URLSearchParams({
     hips: "CDS/P/DSS2/color",
@@ -27,4 +26,25 @@ export function getSkyImageUrl(
   });
 
   return `https://alasky.cds.unistra.fr/hips-image-services/hips2fits?${params.toString()}`;
+}
+
+/**
+ * Calculate FOV in degrees from size_max (arcmin).
+ * (size_max / 60) * 1.5 margin, clamped [0.05°, 5.0°], default 1.0°.
+ */
+export function calculateFov(sizeArcmin: number | null): number {
+  if (!sizeArcmin || sizeArcmin <= 0) return 1.0;
+  return Math.max(0.05, Math.min((sizeArcmin / 60) * 1.5, 5.0));
+}
+
+/**
+ * Generate an ESASky embed URL for interactive sky viewing.
+ */
+export function getEsaSkyEmbedUrl(
+  catalogId: string,
+  sizeArcmin: number | null
+): string {
+  const fov = calculateFov(sizeArcmin);
+  const target = encodeURIComponent(catalogId.replace(/\s+/g, ""));
+  return `https://sky.esa.int/esasky-tap/embed.html?target=${target}&fov=${fov}&hips=DSS2%20color`;
 }

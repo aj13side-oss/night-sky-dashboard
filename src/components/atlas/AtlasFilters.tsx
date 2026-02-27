@@ -62,10 +62,29 @@ const AtlasFilters = ({ filters, onChange, types, constellations, totalCount }: 
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="tonight_best">⭐ Tonight's Best</SelectItem>
               <SelectItem value="photo_score">Photo Score ↓</SelectItem>
               <SelectItem value="magnitude">Magnitude ↑</SelectItem>
               <SelectItem value="size_max">Size ↓</SelectItem>
               <SelectItem value="catalog_id">Catalog ID</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1 min-w-[130px]">
+          <label className="text-xs text-muted-foreground">Target Size</label>
+          <Select
+            value={filters.sizeCategory || "__all__"}
+            onValueChange={(v) => onChange({ ...filters, sizeCategory: (v === "__all__" ? "" : v) as CelestialFilters["sizeCategory"] })}
+          >
+            <SelectTrigger className="bg-secondary/50 border-border/30 h-9 text-xs">
+              <SelectValue placeholder="All sizes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All sizes</SelectItem>
+              <SelectItem value="small">Small (&lt;5')</SelectItem>
+              <SelectItem value="medium">Medium (5–30')</SelectItem>
+              <SelectItem value="large">Large (&gt;30')</SelectItem>
             </SelectContent>
           </Select>
         </div>

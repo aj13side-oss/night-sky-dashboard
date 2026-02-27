@@ -69,6 +69,9 @@ export type Database = {
           id: string
           latitude: number | null
           longitude: number | null
+          pixel_size: number | null
+          sensor_height: number | null
+          sensor_width: number | null
           username: string | null
         }
         Insert: {
@@ -77,6 +80,9 @@ export type Database = {
           id: string
           latitude?: number | null
           longitude?: number | null
+          pixel_size?: number | null
+          sensor_height?: number | null
+          sensor_width?: number | null
           username?: string | null
         }
         Update: {
@@ -85,6 +91,9 @@ export type Database = {
           id?: string
           latitude?: number | null
           longitude?: number | null
+          pixel_size?: number | null
+          sensor_height?: number | null
+          sensor_width?: number | null
           username?: string | null
         }
         Relationships: []

@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
-import { Telescope, Map, Crosshair, Home, Sparkles, Eclipse } from "lucide-react";
+import { Telescope, Map, Crosshair, Home, Sparkles, Eclipse, EyeOff, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: Home },
@@ -12,6 +13,14 @@ const navItems = [
 
 const AppNav = () => {
   const { pathname } = useLocation();
+  const [nightVision, setNightVision] = useState(() => {
+    return localStorage.getItem("nightVision") === "true";
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("night-vision", nightVision);
+    localStorage.setItem("nightVision", String(nightVision));
+  }, [nightVision]);
 
   return (
     <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-10 bg-background/80">
@@ -37,6 +46,20 @@ const AppNav = () => {
               <span className="hidden sm:inline">{item.label}</span>
             </Link>
           ))}
+
+          <button
+            onClick={() => setNightVision((v) => !v)}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors ml-2",
+              nightVision
+                ? "bg-red-900/30 text-red-400"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+            )}
+            title={nightVision ? "Disable Night Vision" : "Enable Night Vision"}
+          >
+            {nightVision ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span className="hidden sm:inline text-xs">{nightVision ? "Night" : "Night"}</span>
+          </button>
         </nav>
       </div>
     </header>

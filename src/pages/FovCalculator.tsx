@@ -1,7 +1,7 @@
 import AppNav from "@/components/AppNav";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
-import { getSkyImageUrl } from "@/lib/sky-images";
+import { getSkyImageUrlWithFov, type SkyImageSurvey } from "@/lib/sky-images";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
@@ -51,6 +51,7 @@ const FovCalculator = () => {
   const [pixelSize, setPixelSize] = useState(CAMERAS[1].pixelSize);
   const [barlow, setBarlow] = useState(1);
   const [selectedObject, setSelectedObject] = useState<TargetObject>(DEFAULT_TARGET);
+  const [survey, setSurvey] = useState<SkyImageSurvey>("mellinger");
 
   const effectiveFL = focalLength * barlow;
 
@@ -187,15 +188,31 @@ const FovCalculator = () => {
             </div>
 
             <div className="glass-card rounded-2xl p-6 space-y-4">
-              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">FOV Preview</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">FOV Preview</h3>
+                <div className="flex rounded-md border border-border overflow-hidden text-[10px]">
+                  <button
+                    onClick={() => setSurvey("mellinger")}
+                    className={`px-2.5 py-1 transition-colors ${survey === "mellinger" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}
+                  >
+                    📷 Photographer
+                  </button>
+                  <button
+                    onClick={() => setSurvey("dss2")}
+                    className={`px-2.5 py-1 transition-colors border-l border-border ${survey === "dss2" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}
+                  >
+                    🔬 Scientific
+                  </button>
+                </div>
+              </div>
               <div
                 className="relative rounded-xl border border-border overflow-hidden"
                 style={{ paddingBottom: `${(fov.h / Math.max(fov.w, 0.01)) * 100}%`, minHeight: 200 }}
               >
-                {/* Sky survey background image */}
                 {obj?.ra != null && obj?.dec != null && fov.w > 0 ? (
                   <img
-                    src={`https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=CDS/P/DSS2/color&width=600&height=${Math.round(600 * (fov.h / fov.w))}&fov=${fov.w}&projection=TAN&coordsys=icrs&ra=${obj.ra}&dec=${obj.dec}&format=jpg`}
+                    key={`${obj.ra}-${obj.dec}-${survey}`}
+                    src={getSkyImageUrlWithFov(obj.ra, obj.dec, fov.w, fov.h, survey)}
                     alt={obj.name}
                     className="absolute inset-0 w-full h-full object-cover"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
@@ -204,13 +221,10 @@ const FovCalculator = () => {
                   <div className="absolute inset-0 bg-muted/30" />
                 )}
 
-                {/* Sensor frame border */}
                 <div className="absolute inset-0 border-2 border-primary/50 rounded-lg" />
-                {/* Crosshair */}
                 <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/40" />
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/40" />
 
-                {/* Object size circle */}
                 {obj && objFractionW > 0 && (
                   <div
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"

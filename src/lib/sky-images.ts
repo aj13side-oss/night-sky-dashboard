@@ -1,20 +1,36 @@
 /**
+ * Sky survey identifiers for HiPS2FITS and ESASky.
+ * "mellinger" is better for large emission/dark nebulae; "dss2" for fine detail.
+ */
+export type SkyImageSurvey = "dss2" | "mellinger";
+
+const HIPS_IDS: Record<SkyImageSurvey, string> = {
+  dss2: "CDS/P/DSS2/color",
+  mellinger: "CDS/P/Mellinger/color",
+};
+
+const ESA_HIPS: Record<SkyImageSurvey, string> = {
+  dss2: "DSS2%20color",
+  mellinger: "Mellinger%20color",
+};
+
+/**
  * Generate a sky survey thumbnail URL from CDS HiPS2FITS service.
- * Uses DSS2 color survey — free, no API key, CORS-friendly.
  */
 export function getSkyImageUrl(
   ra: number | null,
   dec: number | null,
   sizeArcmin: number | null,
   width = 200,
-  height = 200
+  height = 200,
+  survey: SkyImageSurvey = "mellinger"
 ): string | null {
   if (ra == null || dec == null) return null;
 
   const fovDeg = calculateFov(sizeArcmin);
 
   const params = new URLSearchParams({
-    hips: "CDS/P/DSS2/color",
+    hips: HIPS_IDS[survey],
     width: String(width),
     height: String(height),
     fov: String(fovDeg),
@@ -25,6 +41,32 @@ export function getSkyImageUrl(
     format: "jpg",
   });
 
+  return `https://alasky.cds.unistra.fr/hips-image-services/hips2fits?${params.toString()}`;
+}
+
+/**
+ * Build an HiPS2FITS URL with explicit FOV in degrees (for FOV calculator).
+ */
+export function getSkyImageUrlWithFov(
+  ra: number,
+  dec: number,
+  fovW: number,
+  fovH: number,
+  survey: SkyImageSurvey = "mellinger"
+): string {
+  const w = 600;
+  const h = Math.round(w * (fovH / Math.max(fovW, 0.001)));
+  const params = new URLSearchParams({
+    hips: HIPS_IDS[survey],
+    width: String(w),
+    height: String(h),
+    fov: String(fovW),
+    projection: "TAN",
+    coordsys: "icrs",
+    ra: String(ra),
+    dec: String(dec),
+    format: "jpg",
+  });
   return `https://alasky.cds.unistra.fr/hips-image-services/hips2fits?${params.toString()}`;
 }
 
@@ -42,9 +84,10 @@ export function calculateFov(sizeArcmin: number | null): number {
  */
 export function getEsaSkyEmbedUrl(
   catalogId: string,
-  sizeArcmin: number | null
+  sizeArcmin: number | null,
+  survey: SkyImageSurvey = "mellinger"
 ): string {
   const fov = calculateFov(sizeArcmin);
   const target = encodeURIComponent(catalogId.replace(/\s+/g, ""));
-  return `https://sky.esa.int/esasky-tap/embed.html?target=${target}&fov=${fov}&hips=DSS2%20color`;
+  return `https://sky.esa.int/esasky-tap/embed.html?target=${target}&fov=${fov}&hips=${ESA_HIPS[survey]}`;
 }

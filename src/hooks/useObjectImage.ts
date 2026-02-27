@@ -7,7 +7,7 @@ export interface ObjectImage {
   license: string | null;
   licenseUrl: string | null;
   filePageUrl: string | null;
-  source: "wikipedia" | "skyview" | "survey";
+  source: "wikipedia" | "skyview" | "survey" | "forced";
   pageUrl: string | null;
 }
 
@@ -18,15 +18,100 @@ const ASTRO_CATEGORIES = [
   "astrophotography", "deep-sky objects",
 ];
 
+/**
+ * Extract the Wikimedia Commons filename from a full upload URL.
+ * Example: https://upload.wikimedia.org/wikipedia/commons/a/ab/Some_Image.jpg → Some_Image.jpg
+ */
+function extractWikimediaFilename(url: string): string | null {
+  try {
+    const u = new URL(url);
+    if (!u.hostname.includes("wikimedia.org") && !u.hostname.includes("wikipedia.org")) return null;
+    const parts = u.pathname.split("/");
+    const last = parts[parts.length - 1];
+    return last ? decodeURIComponent(last) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetch metadata (author, license, date) for a Wikimedia Commons file.
+ */
+async function fetchWikimediaMetadata(fileName: string): Promise<{
+  artist: string | null;
+  date: string | null;
+  license: string | null;
+  licenseUrl: string | null;
+  filePageUrl: string;
+}> {
+  const filePageUrl = `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(fileName)}`;
+  const defaults = { artist: null, date: null, license: null, licenseUrl: null, filePageUrl };
+
+  try {
+    const attrUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(fileName)}&prop=imageinfo&iiprop=extmetadata&format=json&origin=*`;
+    const attrRes = await fetch(attrUrl);
+    if (!attrRes.ok) return defaults;
+
+    const attrData = await attrRes.json();
+    const attrPages = attrData?.query?.pages;
+    if (!attrPages) return defaults;
+
+    const attrPage = Object.values(attrPages)[0] as any;
+    const meta = attrPage?.imageinfo?.[0]?.extmetadata;
+    if (!meta) return defaults;
+
+    const artist = meta.Artist?.value?.replace(/<[^>]*>/g, "").trim() || null;
+    const license = meta.LicenseShortName?.value || null;
+    const licenseUrl = meta.LicenseUrl?.value || null;
+
+    let date: string | null = null;
+    const rawDate = meta.DateTimeOriginal?.value || meta.DateTime?.value;
+    if (rawDate) {
+      try {
+        const d = new Date(rawDate);
+        date = !isNaN(d.getTime())
+          ? d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+          : rawDate.split(" ")[0];
+      } catch {
+        date = rawDate.split(" ")[0];
+      }
+    }
+
+    return { artist, date, license, licenseUrl, filePageUrl };
+  } catch {
+    return defaults;
+  }
+}
+
 async function fetchObjectImage(
   catalogId: string,
   commonName: string | null,
   ra: number | null,
   dec: number | null,
   sizeArcmin: number | null,
-  imageSearchQuery: string | null
+  imageSearchQuery: string | null,
+  forcedImageUrl: string | null
 ): Promise<ObjectImage> {
-  // Use image_search_query from DB first, then fallback terms
+  // 1. Forced image URL — use directly, fetch metadata from Wikimedia
+  if (forcedImageUrl) {
+    const fileName = extractWikimediaFilename(forcedImageUrl);
+    const meta = fileName
+      ? await fetchWikimediaMetadata(fileName)
+      : { artist: null, date: null, license: null, licenseUrl: null, filePageUrl: null };
+
+    return {
+      url: forcedImageUrl,
+      artist: meta.artist ?? "Wikimedia Commons",
+      date: meta.date,
+      license: meta.license,
+      licenseUrl: meta.licenseUrl,
+      filePageUrl: meta.filePageUrl ?? null,
+      source: "forced",
+      pageUrl: meta.filePageUrl ?? null,
+    };
+  }
+
+  // 2. Dynamic search via Wikipedia
   const searchTerms = [
     imageSearchQuery,
     commonName,
@@ -39,7 +124,7 @@ async function fetchObjectImage(
     if (result) return result;
   }
 
-  // Fallback: NASA SkyView
+  // 3. Fallback: NASA SkyView
   if (ra != null && dec != null) {
     const sizeDeg = sizeArcmin && sizeArcmin > 0 ? sizeArcmin / 60 : 1.0;
     const skyviewUrl = `https://skyview.gsfc.nasa.gov/cgi-bin/images?Survey=DSS2+Color&position=${ra},${dec}&Size=${sizeDeg}&Pixels=800&Return=JPG`;
@@ -112,7 +197,7 @@ async function tryWikipedia(title: string): Promise<ObjectImage | null> {
     if (src.endsWith(".svg") || src.endsWith(".svg.png")) return null;
     if (original.width && original.width < 300) return null;
 
-    // Attribution - extract rich metadata
+    // Attribution
     const fileName = src.split("/").pop()?.split("?")[0];
     let artist: string | null = null;
     let date: string | null = null;
@@ -122,34 +207,12 @@ async function tryWikipedia(title: string): Promise<ObjectImage | null> {
 
     if (fileName) {
       const decodedName = decodeURIComponent(fileName);
-      filePageUrl = `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(decodedName)}`;
-      try {
-        const attrUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(decodedName)}&prop=imageinfo&iiprop=extmetadata&format=json&origin=*`;
-        const attrRes = await fetch(attrUrl);
-        if (attrRes.ok) {
-          const attrData = await attrRes.json();
-          const attrPages = attrData?.query?.pages;
-          if (attrPages) {
-            const attrPage = Object.values(attrPages)[0] as any;
-            const meta = attrPage?.imageinfo?.[0]?.extmetadata;
-            if (meta) {
-              artist = meta.Artist?.value?.replace(/<[^>]*>/g, "").trim() || null;
-              license = meta.LicenseShortName?.value || null;
-              licenseUrl = meta.LicenseUrl?.value || null;
-              const rawDate = meta.DateTimeOriginal?.value || meta.DateTime?.value;
-              if (rawDate) {
-                // Try to format nicely, fallback to raw
-                try {
-                  const d = new Date(rawDate);
-                  date = !isNaN(d.getTime()) ? d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : rawDate.split(" ")[0];
-                } catch {
-                  date = rawDate.split(" ")[0];
-                }
-              }
-            }
-          }
-        }
-      } catch { /* best-effort */ }
+      const meta = await fetchWikimediaMetadata(decodedName);
+      artist = meta.artist;
+      date = meta.date;
+      license = meta.license;
+      licenseUrl = meta.licenseUrl;
+      filePageUrl = meta.filePageUrl;
     }
 
     return {
@@ -173,10 +236,11 @@ export function useObjectImage(
   ra: number | null | undefined,
   dec: number | null | undefined,
   sizeArcmin: number | null | undefined,
-  imageSearchQuery?: string | null
+  imageSearchQuery?: string | null,
+  forcedImageUrl?: string | null
 ) {
   return useQuery({
-    queryKey: ["object-image", catalogId],
+    queryKey: ["object-image", catalogId, forcedImageUrl],
     queryFn: () =>
       fetchObjectImage(
         catalogId!,
@@ -184,7 +248,8 @@ export function useObjectImage(
         ra ?? null,
         dec ?? null,
         sizeArcmin ?? null,
-        imageSearchQuery ?? null
+        imageSearchQuery ?? null,
+        forcedImageUrl ?? null
       ),
     enabled: !!catalogId,
     staleTime: Infinity,

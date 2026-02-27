@@ -20,6 +20,7 @@ export interface CelestialObject {
   moon_tolerance: number | null;
   ideal_resolution: string | null;
   image_search_query: string | null;
+  forced_image_url: string | null;
 }
 
 export interface CelestialFilters {

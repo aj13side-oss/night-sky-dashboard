@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import SkyAtlas from "./pages/SkyAtlas";
 import FovCalculator from "./pages/FovCalculator";
+import EquipmentProfile from "./pages/EquipmentProfile";
 import WhatToWatch from "./pages/WhatToWatch";
 import LightPollutionMap from "./pages/LightPollutionMap";
 import NotFound from "./pages/NotFound";
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/sky-atlas" element={<SkyAtlas />} />
           <Route path="/fov-calculator" element={<FovCalculator />} />
+          <Route path="/equipment" element={<EquipmentProfile />} />
           <Route path="/what-to-watch" element={<WhatToWatch />} />
           <Route path="/light-pollution" element={<LightPollutionMap />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

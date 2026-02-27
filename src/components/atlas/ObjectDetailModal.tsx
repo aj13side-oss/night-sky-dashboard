@@ -1,19 +1,18 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
-import { getSkyImageUrl, getEsaSkyEmbedUrl } from "@/lib/sky-images";
+import { getEsaSkyEmbedUrl } from "@/lib/sky-images";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, ImageIcon, Globe, Info, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, Globe, Info, ChevronDown, ChevronUp, Telescope } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
 import AltitudeChart from "./AltitudeChart";
 import ExposureGuideModal from "./ExposureGuideModal";
-
+import AladinLiteViewer from "./AladinLiteViewer";
 import NightPlanner from "./NightPlanner";
 import SetupAssistant from "./SetupAssistant";
 
@@ -30,7 +29,6 @@ interface Props {
 
 const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0 }: Props) => {
   const [showExposureInfo, setShowExposureInfo] = useState(false);
-  const [viewMode, setViewMode] = useState<"photo" | "esasky">("photo");
   const [showCredits, setShowCredits] = useState(false);
 
   const { data: wikiImage, isLoading: imgLoading } = useObjectImage(
@@ -41,6 +39,36 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
     obj?.size_max,
     obj?.image_search_query
   );
+
+  const hasWikiImage = !imgLoading && wikiImage?.url;
+
+  // FOV for Aladin: size_max * 1.5 / 60, clamped between 0.05° and 5°
+  const aladinFov = useMemo(() => {
+    if (!obj?.size_max || obj.size_max <= 0) return 1.0;
+    return Math.min(5.0, Math.max(0.05, (obj.size_max * 1.5) / 60));
+  }, [obj?.size_max]);
+
+  const [activeTab, setActiveTab] = useState("aladin");
+
+  // Update default tab when image loading completes
+  useEffect(() => {
+    if (!imgLoading) {
+      if (wikiImage?.url) {
+        setActiveTab("photo");
+      } else if (obj?.ra != null) {
+        setActiveTab("aladin");
+      }
+    }
+  }, [imgLoading, wikiImage?.url, obj?.ra]);
+
+  // Stellarium URL
+  const stellariumUrl = useMemo(() => {
+    if (!obj || obj.ra == null || obj.dec == null) return null;
+    const id = obj.catalog_id.replace(/\s+/g, "");
+    const fov = obj.size_max ? (obj.size_max / 60).toFixed(2) : "1";
+    return `https://stellarium-web.org/skysource/${id}?fov=${fov}&ra=${obj.ra}&dec=${obj.dec}`;
+  }, [obj]);
+
 
   if (!obj) return null;
 
@@ -102,109 +130,113 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
               )}
             </div>
 
-            {/* Right: Image with toggle */}
+            {/* Right: Media Gallery */}
             <div className="sm:w-64 shrink-0 space-y-1.5">
-              <div className="flex items-center justify-between">
-                <div className="flex rounded-md border border-border overflow-hidden text-[10px]">
-                  <button
-                    onClick={() => setViewMode("photo")}
-                    className={`px-2 py-0.5 transition-colors ${viewMode === "photo" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}
-                  >
-                    🖼️ Photo
-                  </button>
-                  <button
-                    onClick={() => setViewMode("esasky")}
-                    className={`px-2 py-0.5 transition-colors border-l border-border ${viewMode === "esasky" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}
-                  >
-                    🔭 ESASky
-                  </button>
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <div className="flex items-center justify-between gap-1">
+                  <TabsList className="h-7 p-0.5 bg-muted/50 text-[10px]">
+                    {hasWikiImage && (
+                      <TabsTrigger value="photo" className="px-2 py-0.5 text-[10px] data-[state=active]:text-primary">
+                        🖼️ Photo
+                      </TabsTrigger>
+                    )}
+                    {obj.ra != null && obj.dec != null && (
+                      <TabsTrigger value="aladin" className="px-2 py-0.5 text-[10px] data-[state=active]:text-primary">
+                        🔭 Map
+                      </TabsTrigger>
+                    )}
+                    {obj.ra != null && obj.dec != null && (
+                      <TabsTrigger value="esasky" className="px-2 py-0.5 text-[10px] data-[state=active]:text-primary">
+                        🛰️ ESASky
+                      </TabsTrigger>
+                    )}
+                  </TabsList>
+                  {stellariumUrl && (
+                    <a
+                      href={stellariumUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 px-1.5 py-0.5 rounded border border-border text-[9px] text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors shrink-0"
+                      title="Open in Stellarium Web"
+                    >
+                      <Telescope className="w-3 h-3" />
+                      <span className="hidden sm:inline">Stellarium</span>
+                    </a>
+                  )}
                 </div>
-                {viewMode === "photo" && wikiImage?.pageUrl && (
-                  <a href={wikiImage.pageUrl} target="_blank" rel="noopener noreferrer" className="text-[9px] text-muted-foreground hover:text-primary transition-colors">
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
-                {viewMode === "esasky" && obj.ra != null && obj.dec != null && (
-                  <a href={getEsaSkyEmbedUrl(obj.catalog_id, obj.size_max)} target="_blank" rel="noopener noreferrer" className="text-[9px] text-muted-foreground hover:text-primary transition-colors">
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
-              </div>
 
-              <div className="relative w-full rounded-xl overflow-hidden bg-muted/50 border border-border/30">
-                {viewMode === "photo" ? (
-                  <>
-                    {imgLoading ? (
-                      <div className="flex items-center justify-center h-40">
-                        <div className="h-5 w-5 border-2 border-primary/40 border-t-primary rounded-full animate-spin" />
-                      </div>
-                    ) : wikiImage?.url ? (
+                {/* Community Photo */}
+                {hasWikiImage && (
+                  <TabsContent value="photo" className="mt-1.5">
+                    <div className="relative w-full rounded-lg overflow-hidden bg-muted/50 border border-border/30">
                       <img
-                        src={wikiImage.url}
+                        src={wikiImage!.url}
                         alt={`${obj.catalog_id} ${obj.common_name ?? ""}`}
                         className="w-full h-auto"
                         loading="eager"
                       />
-                    ) : (
-                      <div className="flex items-center justify-center h-40 text-[10px] text-muted-foreground">
-                        No image available
-                      </div>
-                    )}
-                    {wikiImage && !imgLoading && (
-                      <div className="border-t border-border/30">
-                        <button
-                          onClick={() => setShowCredits(!showCredits)}
-                          className="w-full px-2 py-1 flex items-center justify-between text-[9px] text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          <span className="flex items-center gap-1 truncate">
-                            <Info className="w-2.5 h-2.5 shrink-0" />
-                            {wikiImage.artist ?? "Credits"}
-                          </span>
-                          {showCredits ? <ChevronUp className="w-2.5 h-2.5 shrink-0" /> : <ChevronDown className="w-2.5 h-2.5 shrink-0" />}
-                        </button>
-                        {showCredits && (
-                          <div className="px-2 pb-1.5 space-y-0.5 text-[9px] text-muted-foreground">
-                            {wikiImage.artist && (
-                              <div><span className="text-foreground/70 font-medium">Author:</span> {wikiImage.artist}</div>
-                            )}
-                            {wikiImage.date && (
-                              <div><span className="text-foreground/70 font-medium">Date:</span> {wikiImage.date}</div>
-                            )}
-                            {wikiImage.license && (
-                              <div>
-                                <span className="text-foreground/70 font-medium">License:</span>{" "}
-                                {wikiImage.licenseUrl ? (
-                                  <a href={wikiImage.licenseUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{wikiImage.license}</a>
-                                ) : wikiImage.license}
-                              </div>
-                            )}
-                            {wikiImage.filePageUrl && (
-                              <a href={wikiImage.filePageUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
-                                <Globe className="w-2.5 h-2.5" /> Source
-                              </a>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="w-full h-48">
-                    {obj.ra != null && obj.dec != null ? (
-                      <img
-                        key={obj.catalog_id}
-                        src={getSkyImageUrl(obj.ra, obj.dec, obj.size_max, 400, 300) ?? ""}
-                        alt={`${obj.catalog_id} sky survey`}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-[10px] text-muted-foreground">
-                        No coordinates
-                      </div>
-                    )}
-                  </div>
+                      {wikiImage && (
+                        <div className="border-t border-border/30">
+                          <button
+                            onClick={() => setShowCredits(!showCredits)}
+                            className="w-full px-2 py-1 flex items-center justify-between text-[9px] text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            <span className="flex items-center gap-1 truncate">
+                              <Info className="w-2.5 h-2.5 shrink-0" />
+                              {wikiImage.artist ?? "Credits"}
+                            </span>
+                            {showCredits ? <ChevronUp className="w-2.5 h-2.5 shrink-0" /> : <ChevronDown className="w-2.5 h-2.5 shrink-0" />}
+                          </button>
+                          {showCredits && (
+                            <div className="px-2 pb-1.5 space-y-0.5 text-[9px] text-muted-foreground">
+                              {wikiImage.artist && (
+                                <div><span className="text-foreground/70 font-medium">Author:</span> {wikiImage.artist}</div>
+                              )}
+                              {wikiImage.date && (
+                                <div><span className="text-foreground/70 font-medium">Date:</span> {wikiImage.date}</div>
+                              )}
+                              {wikiImage.license && (
+                                <div>
+                                  <span className="text-foreground/70 font-medium">License:</span>{" "}
+                                  {wikiImage.licenseUrl ? (
+                                    <a href={wikiImage.licenseUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{wikiImage.license}</a>
+                                  ) : wikiImage.license}
+                                </div>
+                              )}
+                              {wikiImage.filePageUrl && (
+                                <a href={wikiImage.filePageUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
+                                  <Globe className="w-2.5 h-2.5" /> Source
+                                </a>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
                 )}
-              </div>
+
+                {/* Aladin Lite */}
+                {obj.ra != null && obj.dec != null && (
+                  <TabsContent value="aladin" className="mt-1.5">
+                    <AladinLiteViewer ra={obj.ra} dec={obj.dec} fovDeg={aladinFov} />
+                  </TabsContent>
+                )}
+
+                {/* ESASky */}
+                {obj.ra != null && obj.dec != null && (
+                  <TabsContent value="esasky" className="mt-1.5">
+                    <div className="w-full h-48 rounded-lg overflow-hidden border border-border/30">
+                      <iframe
+                        src={getEsaSkyEmbedUrl(obj.catalog_id, obj.size_max)}
+                        className="w-full h-full border-0"
+                        title={`ESASky view of ${obj.catalog_id}`}
+                        allowFullScreen
+                      />
+                    </div>
+                  </TabsContent>
+                )}
+              </Tabs>
             </div>
           </div>
 

@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       celestial_objects: {
         Row: {
+          best_months: string | null
           catalog_id: string
           common_name: string | null
           constellation: string | null
@@ -31,6 +32,7 @@ export type Database = {
           surf_brightness: number | null
         }
         Insert: {
+          best_months?: string | null
           catalog_id: string
           common_name?: string | null
           constellation?: string | null
@@ -46,6 +48,7 @@ export type Database = {
           surf_brightness?: number | null
         }
         Update: {
+          best_months?: string | null
           catalog_id?: string
           common_name?: string | null
           constellation?: string | null

@@ -53,20 +53,22 @@ const LightPollutionMap = () => {
     const map = L.map(mapContainerRef.current, {
       center: [lat, lng],
       zoom: 7,
+      zoomControl: true,
     });
 
-    // Dark base layer
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+    // Base layer with LOCAL language names (OpenStreetMap uses native names)
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
     }).addTo(map);
 
-    // Light pollution overlay - World Atlas 2015
+    // Light pollution overlay - VIIRS 2023 from lightpollutionmap.info
     const overlay = L.tileLayer(
-      "https://djlorenz.github.io/astronomy/lp2022/overlay/tiles/{z}/{x}/{y}.png",
+      "https://tiles.lightpollutionmap.info/tiles/viirs_2023/{z}/{x}/{y}.png",
       {
         opacity: 0.6,
-        maxZoom: 8,
-        attribution: 'Light pollution: <a href="https://djlorenz.github.io/astronomy/lp2022/">D. Lorenz</a>',
+        maxZoom: 12,
+        attribution: 'Light pollution &copy; <a href="https://www.lightpollutionmap.info">lightpollutionmap.info</a>',
       }
     );
     overlay.addTo(map);
@@ -147,7 +149,7 @@ const LightPollutionMap = () => {
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <h2 className="text-3xl font-bold text-foreground">Carte de Pollution Lumineuse</h2>
               <p className="text-muted-foreground mt-1">
-                Trouvez les meilleurs sites d'observation — données World Atlas 2022
+                Trouvez les meilleurs sites d'observation — données VIIRS 2023
               </p>
             </motion.div>
 

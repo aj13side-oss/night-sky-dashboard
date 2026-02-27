@@ -1,6 +1,6 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
-import { getSkyImageUrl, getEsaSkyEmbedUrl } from "@/lib/sky-images";
+import { getSkyImageUrl, getEsaSkyEmbedUrl, type SkyImageSurvey } from "@/lib/sky-images";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +29,7 @@ interface Props {
 
 const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0 }: Props) => {
   const [showExposureInfo, setShowExposureInfo] = useState(false);
+  const [survey, setSurvey] = useState<SkyImageSurvey>("mellinger");
 
   if (!obj) return null;
 
@@ -59,22 +60,42 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
             </DialogTitle>
           </DialogHeader>
 
-          {/* Sky Survey Image */}
+          {/* Sky Survey Image with toggle */}
           {obj.ra != null && obj.dec != null && (
-            <div className="relative w-full h-64 rounded-xl overflow-hidden bg-muted/50 border border-border/30 group">
-              <img
-                src={getSkyImageUrl(obj.ra, obj.dec, obj.size_max, 600, 300) ?? ""}
-                alt={`${obj.catalog_id} sky survey`}
-                className="w-full h-full object-cover"
-              />
-              <a
-                href={getEsaSkyEmbedUrl(obj.catalog_id, obj.size_max)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="absolute bottom-2 right-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-background/80 backdrop-blur-sm text-xs font-medium text-foreground hover:bg-primary/20 hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
-              >
-                <ExternalLink className="w-3 h-3" /> Ouvrir dans ESASky
-              </a>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Sky View</span>
+                <div className="flex rounded-md border border-border overflow-hidden text-[10px]">
+                  <button
+                    onClick={() => setSurvey("mellinger")}
+                    className={`px-2.5 py-1 transition-colors ${survey === "mellinger" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}
+                  >
+                    📷 Photographer
+                  </button>
+                  <button
+                    onClick={() => setSurvey("dss2")}
+                    className={`px-2.5 py-1 transition-colors border-l border-border ${survey === "dss2" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}
+                  >
+                    🔬 Scientific
+                  </button>
+                </div>
+              </div>
+              <div className="relative w-full h-64 rounded-xl overflow-hidden bg-muted/50 border border-border/30 group">
+                <img
+                  key={`${obj.catalog_id}-${survey}`}
+                  src={getSkyImageUrl(obj.ra, obj.dec, obj.size_max, 600, 300, survey) ?? ""}
+                  alt={`${obj.catalog_id} sky survey`}
+                  className="w-full h-full object-cover"
+                />
+                <a
+                  href={getEsaSkyEmbedUrl(obj.catalog_id, obj.size_max, survey)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute bottom-2 right-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-background/80 backdrop-blur-sm text-xs font-medium text-foreground hover:bg-primary/20 hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
+                >
+                  <ExternalLink className="w-3 h-3" /> Open in ESASky
+                </a>
+              </div>
             </div>
           )}
 

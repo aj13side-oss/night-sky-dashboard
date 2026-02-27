@@ -2,7 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 
 export interface ObjectImage {
   url: string;
-  attribution: string | null;
+  artist: string | null;
+  date: string | null;
+  license: string | null;
+  licenseUrl: string | null;
+  filePageUrl: string | null;
   source: "wikipedia" | "skyview" | "survey";
   pageUrl: string | null;
 }
@@ -35,13 +39,17 @@ async function fetchObjectImage(
     if (result) return result;
   }
 
-  // Fallback: NASA SkyView (coordinate-based, always accurate)
+  // Fallback: NASA SkyView
   if (ra != null && dec != null) {
     const sizeDeg = sizeArcmin && sizeArcmin > 0 ? sizeArcmin / 60 : 1.0;
     const skyviewUrl = `https://skyview.gsfc.nasa.gov/cgi-bin/images?Survey=DSS2+Color&position=${ra},${dec}&Size=${sizeDeg}&Pixels=800&Return=JPG`;
     return {
       url: skyviewUrl,
-      attribution: "NASA SkyView — DSS2 Color",
+      artist: "NASA/STScI Digital Sky Survey",
+      date: null,
+      license: "Public Domain",
+      licenseUrl: null,
+      filePageUrl: null,
       source: "skyview",
       pageUrl: "https://skyview.gsfc.nasa.gov/",
     };
@@ -49,7 +57,11 @@ async function fetchObjectImage(
 
   return {
     url: "",
-    attribution: null,
+    artist: null,
+    date: null,
+    license: null,
+    licenseUrl: null,
+    filePageUrl: null,
     source: "survey",
     pageUrl: null,
   };
@@ -100,12 +112,19 @@ async function tryWikipedia(title: string): Promise<ObjectImage | null> {
     if (src.endsWith(".svg") || src.endsWith(".svg.png")) return null;
     if (original.width && original.width < 300) return null;
 
-    // Attribution
+    // Attribution - extract rich metadata
     const fileName = src.split("/").pop()?.split("?")[0];
-    let attribution: string | null = null;
+    let artist: string | null = null;
+    let date: string | null = null;
+    let license: string | null = null;
+    let licenseUrl: string | null = null;
+    let filePageUrl: string | null = null;
+
     if (fileName) {
+      const decodedName = decodeURIComponent(fileName);
+      filePageUrl = `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(decodedName)}`;
       try {
-        const attrUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(decodeURIComponent(fileName))}&prop=imageinfo&iiprop=extmetadata&format=json&origin=*`;
+        const attrUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(decodedName)}&prop=imageinfo&iiprop=extmetadata&format=json&origin=*`;
         const attrRes = await fetch(attrUrl);
         if (attrRes.ok) {
           const attrData = await attrRes.json();
@@ -114,10 +133,19 @@ async function tryWikipedia(title: string): Promise<ObjectImage | null> {
             const attrPage = Object.values(attrPages)[0] as any;
             const meta = attrPage?.imageinfo?.[0]?.extmetadata;
             if (meta) {
-              const artist = meta.Artist?.value?.replace(/<[^>]*>/g, "").trim();
-              const license = meta.LicenseShortName?.value;
-              const parts = [artist, license].filter(Boolean);
-              attribution = parts.length > 0 ? parts.join(" · ") : null;
+              artist = meta.Artist?.value?.replace(/<[^>]*>/g, "").trim() || null;
+              license = meta.LicenseShortName?.value || null;
+              licenseUrl = meta.LicenseUrl?.value || null;
+              const rawDate = meta.DateTimeOriginal?.value || meta.DateTime?.value;
+              if (rawDate) {
+                // Try to format nicely, fallback to raw
+                try {
+                  const d = new Date(rawDate);
+                  date = !isNaN(d.getTime()) ? d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : rawDate.split(" ")[0];
+                } catch {
+                  date = rawDate.split(" ")[0];
+                }
+              }
             }
           }
         }
@@ -126,7 +154,11 @@ async function tryWikipedia(title: string): Promise<ObjectImage | null> {
 
     return {
       url: src,
-      attribution: attribution ?? "Wikimedia Commons",
+      artist: artist ?? "Wikimedia Commons",
+      date,
+      license,
+      licenseUrl,
+      filePageUrl,
       source: "wikipedia",
       pageUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent(pageTitle)}`,
     };

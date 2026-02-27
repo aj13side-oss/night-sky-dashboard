@@ -36,14 +36,51 @@ export interface CelestialFilters {
 const PAGE_SIZE = 30;
 
 async function fetchObjects(filters: CelestialFilters, page: number) {
+  const effectivePageSize = filters.limitResults && filters.limitResults < PAGE_SIZE ? filters.limitResults : PAGE_SIZE;
+  const from = page * effectivePageSize;
+
+  // Use fuzzy search RPC when there's a search term
+  if (filters.search.trim()) {
+    const term = filters.search.trim();
+    const { data: fuzzyData, error: fuzzyError } = await supabase
+      .rpc("fuzzy_search_celestial", { search_term: term, similarity_threshold: 0.15 });
+
+    if (fuzzyError) throw fuzzyError;
+
+    let results = (fuzzyData ?? []) as CelestialObject[];
+
+    // Apply client-side filters on fuzzy results
+    if (filters.objTypes.length > 0) {
+      results = results.filter((o) => filters.objTypes.includes(o.obj_type));
+    }
+    if (filters.constellation) {
+      results = results.filter((o) => o.constellation === filters.constellation);
+    }
+    if (filters.maxMagnitude < 20) {
+      results = results.filter((o) => o.magnitude != null && o.magnitude <= filters.maxMagnitude);
+    }
+    if (filters.minPhotoScore > 0) {
+      results = results.filter((o) => o.photo_score != null && o.photo_score >= filters.minPhotoScore);
+    }
+    if (filters.sizeCategory === "small") {
+      results = results.filter((o) => o.size_max != null && o.size_max < 5);
+    } else if (filters.sizeCategory === "medium") {
+      results = results.filter((o) => o.size_max != null && o.size_max >= 5 && o.size_max <= 30);
+    } else if (filters.sizeCategory === "large") {
+      results = results.filter((o) => o.size_max != null && o.size_max > 30);
+    }
+
+    const totalCount = filters.limitResults ? Math.min(results.length, filters.limitResults) : results.length;
+    const maxEnd = filters.limitResults ? Math.min(from + effectivePageSize, filters.limitResults) : from + effectivePageSize;
+    const paged = results.slice(from, maxEnd);
+
+    return { data: paged, count: totalCount };
+  }
+
+  // Standard query without search
   let query = supabase
     .from("celestial_objects")
     .select("*", { count: "exact" });
-
-  if (filters.search.trim()) {
-    const term = `%${filters.search.trim()}%`;
-    query = query.or(`catalog_id.ilike.${term},common_name.ilike.${term}`);
-  }
 
   if (filters.objTypes.length > 0) {
     query = query.in("obj_type", filters.objTypes);
@@ -65,7 +102,6 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
     query = query.gte("photo_score", filters.minPhotoScore);
   }
 
-  // Size category filter
   if (filters.sizeCategory === "small") {
     query = query.lt("size_max", 5);
   } else if (filters.sizeCategory === "medium") {
@@ -90,9 +126,6 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
       break;
   }
 
-  // If limitResults is set, cap total and range
-  const effectivePageSize = filters.limitResults && filters.limitResults < PAGE_SIZE ? filters.limitResults : PAGE_SIZE;
-  const from = page * effectivePageSize;
   const maxEnd = filters.limitResults ? Math.min(from + effectivePageSize - 1, filters.limitResults - 1) : from + effectivePageSize - 1;
   if (filters.limitResults && from >= filters.limitResults) {
     return { data: [] as CelestialObject[], count: 0 };

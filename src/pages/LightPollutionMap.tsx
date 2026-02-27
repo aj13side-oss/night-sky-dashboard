@@ -2,7 +2,6 @@ import AppNav from "@/components/AppNav";
 import { motion } from "framer-motion";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Locate, Maximize2, Minimize2 } from "lucide-react";
@@ -10,7 +9,6 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import BortleInfoPanel from "@/components/lightpollution/BortleInfoPanel";
 import DarkSitesFinder from "@/components/lightpollution/DarkSitesFinder";
-import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
 import CitySearch from "@/components/lightpollution/CitySearch";
 import { DarkSite } from "@/lib/dark-sites";
 
@@ -210,10 +208,8 @@ const LightPollutionMap = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-6"
             >
               <DarkSitesFinder userLat={lat} userLng={lng} onSelectSite={handleSelectDarkSite} />
-              <ImagingImpactCard selectedBortle={clickedPoint?.bortle} />
             </motion.div>
 
             <motion.div

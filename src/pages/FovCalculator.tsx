@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
 import ToolSuggestions from "@/components/ToolSuggestions";
+import TargetObjectPicker from "@/components/fov/TargetObjectPicker";
 import {
   Select,
   SelectContent,
@@ -37,20 +38,7 @@ const CAMERAS = [
   { name: "Sony A7III", sensorW: 35.6, sensorH: 23.8, pixelSize: 5.93, resW: 6000, resH: 4000 },
 ];
 
-const OBJECTS = [
-  { name: "M31 — Andromeda", sizeArcmin: 178 },
-  { name: "M42 — Orion Nebula", sizeArcmin: 65 },
-  { name: "M45 — Pleiades", sizeArcmin: 110 },
-  { name: "M51 — Whirlpool Galaxy", sizeArcmin: 11 },
-  { name: "M13 — Hercules Cluster", sizeArcmin: 20 },
-  { name: "M57 — Ring Nebula", sizeArcmin: 1.4 },
-  { name: "M27 — Dumbbell Nebula", sizeArcmin: 8 },
-  { name: "M104 — Sombrero Galaxy", sizeArcmin: 9 },
-  { name: "NGC 7000 — North America", sizeArcmin: 120 },
-  { name: "Jupiter", sizeArcmin: 0.7 },
-  { name: "Saturn", sizeArcmin: 0.3 },
-  { name: "Moon", sizeArcmin: 31 },
-];
+const DEFAULT_TARGET = { name: "M31 — Andromeda", sizeArcmin: 178 };
 
 const FovCalculator = () => {
   const [telescopeIdx, setTelescopeIdx] = useState("1");
@@ -60,7 +48,7 @@ const FovCalculator = () => {
   const [sensorH, setSensorH] = useState(CAMERAS[1].sensorH);
   const [pixelSize, setPixelSize] = useState(CAMERAS[1].pixelSize);
   const [barlow, setBarlow] = useState(1);
-  const [selectedObject, setSelectedObject] = useState("0");
+  const [selectedObject, setSelectedObject] = useState<{ name: string; sizeArcmin: number }>(DEFAULT_TARGET);
 
   const effectiveFL = focalLength * barlow;
 
@@ -81,7 +69,7 @@ const FovCalculator = () => {
     return { w: wDeg, h: hDeg, wArcmin: wDeg * 60, hArcmin: hDeg * 60, resolution };
   }, [effectiveFL, sensorW, sensorH, pixelSize]);
 
-  const obj = OBJECTS[parseInt(selectedObject)];
+  const obj = selectedObject;
   const objFractionW = obj ? obj.sizeArcmin / fov.wArcmin : 0;
   const objFractionH = obj ? obj.sizeArcmin / fov.hArcmin : 0;
 
@@ -162,17 +150,7 @@ const FovCalculator = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Target Object</Label>
-              <Select value={selectedObject} onValueChange={setSelectedObject}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {OBJECTS.map((o, i) => (
-                    <SelectItem key={i} value={String(i)}>{o.name} ({o.sizeArcmin}')</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <TargetObjectPicker value={selectedObject} onChange={setSelectedObject} />
           </motion.div>
 
           <motion.div

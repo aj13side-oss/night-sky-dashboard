@@ -1,7 +1,9 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
+import { getSkyImageUrl } from "@/lib/sky-images";
 import { motion } from "framer-motion";
 import { Star, Ruler, Eye } from "lucide-react";
+import { useState } from "react";
 
 interface Props {
   obj: CelestialObject;
@@ -30,6 +32,9 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
       ? calculateAltitude(obj.ra, obj.dec, lat, lng)
       : null;
   const vis = alt != null ? getVisibilityLabel(alt) : null;
+  const thumbUrl = getSkyImageUrl(obj.ra, obj.dec, obj.size_max, 200, 200);
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   return (
     <motion.div
@@ -37,8 +42,28 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.02, duration: 0.3 }}
       onClick={onClick}
-      className="glass-card rounded-2xl p-4 cursor-pointer hover:border-primary/30 transition-all group"
+      className="glass-card rounded-2xl overflow-hidden cursor-pointer hover:border-primary/30 transition-all group"
     >
+      {/* Sky thumbnail */}
+      {thumbUrl && !imgError && (
+        <div className="relative w-full h-28 bg-muted/30 overflow-hidden">
+          <img
+            src={thumbUrl}
+            alt={`${obj.catalog_id} sky view`}
+            loading="lazy"
+            onLoad={() => setImgLoaded(true)}
+            onError={() => setImgError(true)}
+            className={`w-full h-full object-cover transition-opacity duration-500 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+          />
+          {!imgLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="p-4">
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="min-w-0">
           <p className="text-sm font-semibold text-foreground truncate">
@@ -80,6 +105,7 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
           <span className="text-muted-foreground font-mono">{alt.toFixed(1)}° alt</span>
         </div>
       )}
+      </div>
     </motion.div>
   );
 };

@@ -1,5 +1,6 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
+import { getSkyImageUrl } from "@/lib/sky-images";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import AltitudeChart from "./AltitudeChart";
 import ExposureGuideModal from "./ExposureGuideModal";
 import FovOverlay from "./FovOverlay";
@@ -26,51 +27,7 @@ interface Props {
 }
 
 const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0 }: Props) => {
-  const aladinRef = useRef<HTMLDivElement>(null);
   const [showExposureInfo, setShowExposureInfo] = useState(false);
-
-  useEffect(() => {
-    if (!open || !obj || obj.ra == null || obj.dec == null) return;
-
-    const loadAladin = async () => {
-      const container = aladinRef.current;
-      if (!container) return;
-
-      if (!(window as any).A) {
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = "https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.min.css";
-        document.head.appendChild(link);
-
-        await new Promise<void>((resolve) => {
-          const script = document.createElement("script");
-          script.src = "https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.min.js";
-          script.onload = () => resolve();
-          document.head.appendChild(script);
-        });
-      }
-
-      const A = (window as any).A;
-      if (A) {
-        container.innerHTML = "";
-        A.init.then(() => {
-          A.aladin(container, {
-            target: `${obj.ra} ${obj.dec}`,
-            fov: Math.min((obj.size_max ?? 30) / 60 * 3, 2),
-            survey: "P/DSS2/color",
-            showReticle: true,
-            showZoomControl: true,
-            showLayersControl: false,
-            showGotoControl: false,
-            showFrame: false,
-          });
-        });
-      }
-    };
-
-    const timeout = setTimeout(loadAladin, 100);
-    return () => clearTimeout(timeout);
-  }, [open, obj]);
 
   if (!obj) return null;
 
@@ -101,11 +58,16 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
             </DialogTitle>
           </DialogHeader>
 
-          {/* Aladin Lite Preview */}
-          <div
-            ref={aladinRef}
-            className="w-full h-64 rounded-xl overflow-hidden bg-muted/50 border border-border/30"
-          />
+          {/* Sky Survey Image */}
+          {obj.ra != null && obj.dec != null && (
+            <div className="w-full h-64 rounded-xl overflow-hidden bg-muted/50 border border-border/30">
+              <img
+                src={getSkyImageUrl(obj.ra, obj.dec, obj.size_max, 600, 300) ?? ""}
+                alt={`${obj.catalog_id} sky survey`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
 
           {/* Info Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

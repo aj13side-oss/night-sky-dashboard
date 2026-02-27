@@ -30,6 +30,7 @@ interface Props {
 const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0 }: Props) => {
   const [showExposureInfo, setShowExposureInfo] = useState(false);
   const [showCredits, setShowCredits] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
 
   const { data: wikiImage, isLoading: imgLoading } = useObjectImage(
     obj?.catalog_id,
@@ -41,7 +42,7 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
     obj?.forced_image_url
   );
 
-  const hasWikiImage = !imgLoading && wikiImage?.url && (wikiImage.source === "wikipedia" || wikiImage.source === "forced");
+  const hasWikiImage = !imgLoading && !imageFailed && wikiImage?.url && (wikiImage.source === "wikipedia" || wikiImage.source === "forced");
 
   // FOV for Aladin: size_max * 1.5 / 60, clamped between 0.05° and 5°
   const aladinFov = useMemo(() => {
@@ -50,6 +51,9 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
   }, [obj?.size_max]);
 
   const [activeTab, setActiveTab] = useState("aladin");
+
+  // Reset imageFailed when object changes
+  useEffect(() => { setImageFailed(false); }, [obj?.catalog_id]);
 
   // Update default tab when image loading completes
   useEffect(() => {
@@ -183,6 +187,7 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
                         src={wikiImage!.url}
                         alt={`${obj.catalog_id} ${obj.common_name ?? ""}`}
                         className="w-full h-auto"
+                        onError={() => { setImageFailed(true); setActiveTab("aladin"); }}
                         loading="eager"
                       />
                       {wikiImage && (

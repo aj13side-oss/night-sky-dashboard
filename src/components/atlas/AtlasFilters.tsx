@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, X, Trophy } from "lucide-react";
+import { Search, X, Trophy, Star } from "lucide-react";
 
 interface Props {
   filters: CelestialFilters;
@@ -36,6 +36,7 @@ const AtlasFilters = ({ filters, onChange, types, constellations, totalCount }: 
         search: "",
         constellation: "",
         maxMagnitude: 20,
+        minPhotoScore: 0,
         sizeCategory: "",
       });
     }
@@ -133,6 +134,21 @@ const AtlasFilters = ({ filters, onChange, types, constellations, totalCount }: 
             min={0}
             max={20}
             step={0.5}
+            className="py-2"
+          />
+        </div>
+
+        <div className="space-y-1 min-w-[180px] flex-1">
+          <label className="text-xs text-muted-foreground flex items-center gap-1">
+            <Star className="w-3 h-3 text-primary" />
+            Min Photo Score: {filters.minPhotoScore > 0 ? filters.minPhotoScore : "All"}
+          </label>
+          <Slider
+            value={[filters.minPhotoScore]}
+            onValueChange={([v]) => onChange({ ...filters, minPhotoScore: v })}
+            min={0}
+            max={100}
+            step={5}
             className="py-2"
           />
         </div>

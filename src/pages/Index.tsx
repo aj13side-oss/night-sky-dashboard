@@ -6,6 +6,7 @@ import SunTimesCard from "@/components/SunTimesCard";
 import HourlyWeatherCard from "@/components/HourlyWeatherCard";
 import CelestialCatalog from "@/components/CelestialCatalog";
 import EphemeridesCard from "@/components/EphemeridesCard";
+import ToolSuggestions from "@/components/ToolSuggestions";
 import { motion } from "framer-motion";
 
 const DashboardContent = () => {
@@ -39,6 +40,7 @@ const DashboardContent = () => {
         <EphemeridesCard />
         <HourlyWeatherCard />
         <CelestialCatalog />
+        <ToolSuggestions />
       </main>
 
       <footer className="border-t border-border/30 mt-12 py-6 text-center text-xs text-muted-foreground">

@@ -13,6 +13,7 @@ import {
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";
+import ToolSuggestions from "@/components/ToolSuggestions";
 
 const defaultFilters: CelestialFilters = {
   search: "",
@@ -119,6 +120,7 @@ const SkyAtlas = () => {
             </Button>
           </div>
         )}
+        <ToolSuggestions />
       </main>
 
       <ObjectDetailModal

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Sparkles, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import ToolSuggestions from "@/components/ToolSuggestions";
 
 const STEPS = ["Location & Time", "Equipment", "Preferences"];
 
@@ -338,6 +339,7 @@ const WhatToWatch = () => {
             )}
           </motion.div>
         )}
+        <ToolSuggestions />
       </main>
     </div>
   );

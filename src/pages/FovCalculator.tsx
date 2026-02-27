@@ -1,12 +1,10 @@
 import AppNav from "@/components/AppNav";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Map } from "lucide-react";
 import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
+import ToolSuggestions from "@/components/ToolSuggestions";
 import {
   Select,
   SelectContent,
@@ -55,7 +53,6 @@ const OBJECTS = [
 ];
 
 const FovCalculator = () => {
-  const navigate = useNavigate();
   const [telescopeIdx, setTelescopeIdx] = useState("1");
   const [cameraIdx, setCameraIdx] = useState("1");
   const [focalLength, setFocalLength] = useState(TELESCOPES[1].focalLength);
@@ -240,33 +237,16 @@ const FovCalculator = () => {
         </div>
 
         {/* Imaging Impact & Dark Sky link */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <ImagingImpactCard />
-          </motion.div>
+        {/* Imaging Impact */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <ImagingImpactCard />
+        </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="glass-card rounded-2xl p-6 flex flex-col items-center justify-center gap-4 text-center"
-          >
-            <Map className="w-10 h-10 text-primary" />
-            <div>
-              <h3 className="text-lg font-semibold text-foreground">Carte de Pollution Lumineuse</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Trouvez les meilleurs sites d'observation près de chez vous avec notre carte interactive Dark Sky.
-              </p>
-            </div>
-            <Button onClick={() => navigate("/light-pollution")} className="gap-2">
-              <Map className="w-4 h-4" /> Ouvrir la carte
-            </Button>
-          </motion.div>
-        </div>
+        <ToolSuggestions />
       </main>
     </div>
   );

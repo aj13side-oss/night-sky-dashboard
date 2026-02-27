@@ -10,6 +10,7 @@ import "leaflet/dist/leaflet.css";
 import BortleInfoPanel from "@/components/lightpollution/BortleInfoPanel";
 import DarkSitesFinder from "@/components/lightpollution/DarkSitesFinder";
 import CitySearch from "@/components/lightpollution/CitySearch";
+import ToolSuggestions from "@/components/ToolSuggestions";
 import { DarkSite } from "@/lib/dark-sites";
 
 // Fix default marker icons
@@ -231,6 +232,8 @@ const LightPollutionMap = () => {
                 ))}
               </div>
             </motion.div>
+
+            <ToolSuggestions />
           </>
         )}
       </main>

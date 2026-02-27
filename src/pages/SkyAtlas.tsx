@@ -14,6 +14,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";
 import ToolSuggestions from "@/components/ToolSuggestions";
+import TonightTopPicks from "@/components/atlas/TonightTopPicks";
 
 const DEFAULT_EXCLUDE_TYPES = ["Star", "Double Star"];
 
@@ -76,6 +77,9 @@ const SkyAtlas = () => {
             {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — Explore {data?.count?.toLocaleString() ?? "..."} celestial objects
           </p>
         </motion.div>
+
+        {/* Tonight's Top Picks */}
+        <TonightTopPicks lat={userPos.lat} lng={userPos.lng} onSelect={setSelected} />
 
         <AtlasFilters
           filters={filters}

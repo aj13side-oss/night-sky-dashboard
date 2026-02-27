@@ -15,6 +15,7 @@ export interface CelestialObject {
   photo_score: number | null;
   exposure_guide_fast: number | null;
   exposure_guide_deep: number | null;
+  best_months: string | null;
 }
 
 export interface CelestialFilters {

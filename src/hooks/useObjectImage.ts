@@ -124,19 +124,19 @@ async function fetchObjectImage(
     if (result) return result;
   }
 
-  // 3. Fallback: NASA SkyView
+  // 3. Fallback: Aladin HiPS (DSS2 color) via CDS hips2fits
   if (ra != null && dec != null) {
-    const sizeDeg = sizeArcmin && sizeArcmin > 0 ? sizeArcmin / 60 : 1.0;
-    const skyviewUrl = `https://skyview.gsfc.nasa.gov/cgi-bin/images?Survey=DSS2+Color&position=${ra},${dec}&Size=${sizeDeg}&Pixels=800&Return=JPG`;
+    const fovDeg = sizeArcmin && sizeArcmin > 0 ? Math.min(Math.max(sizeArcmin * 1.5 / 60, 0.05), 5) : 0.5;
+    const hipsUrl = `https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=CDS/P/DSS2/color&ra=${ra}&dec=${dec}&fov=${fovDeg}&width=600&height=400&format=jpg`;
     return {
-      url: skyviewUrl,
-      artist: "NASA/STScI Digital Sky Survey",
+      url: hipsUrl,
+      artist: "DSS2 / CDS Strasbourg",
       date: null,
       license: "Public Domain",
       licenseUrl: null,
       filePageUrl: null,
-      source: "skyview",
-      pageUrl: "https://skyview.gsfc.nasa.gov/",
+      source: "survey",
+      pageUrl: "https://aladin.cds.unistra.fr/",
     };
   }
 

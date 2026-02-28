@@ -116,6 +116,21 @@ export type Database = {
         }
         Relationships: []
       }
+      temp_urls: {
+        Row: {
+          catalog_id: string | null
+          forced_image_url: string | null
+        }
+        Insert: {
+          catalog_id?: string | null
+          forced_image_url?: string | null
+        }
+        Update: {
+          catalog_id?: string | null
+          forced_image_url?: string | null
+        }
+        Relationships: []
+      }
       user_favorites: {
         Row: {
           created_at: string | null

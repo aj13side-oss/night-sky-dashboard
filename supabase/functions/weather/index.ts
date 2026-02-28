@@ -37,7 +37,6 @@ serve(async (req) => {
     }
 
     const meteoSourceKey = Deno.env.get("METEOSOURCE_API_KEY");
-    const meteoBlueKey = Deno.env.get("METEOBLUE_API_KEY");
 
     const fetches: Promise<Response>[] = [
       fetch(
@@ -61,20 +60,9 @@ serve(async (req) => {
       );
     }
 
-    // Index 3 or 4: MeteoBlue (optional)
-    const meteoBlueIndex = fetches.length;
-    if (meteoBlueKey) {
-      fetches.push(
-        fetch(
-          `https://my.meteoblue.com/packages/basic-1h?apikey=${meteoBlueKey}&lat=${lat}&lon=${lng}&format=json`
-        )
-      );
-    }
-
     const results = await Promise.allSettled(fetches);
     const [openMeteoRes, sevenTimerRes, metNorwayRes] = results;
     const meteoSourceRes = meteoSourceKey ? (results[3] || { status: "rejected" as const, reason: "No API key" }) : { status: "rejected" as const, reason: "No API key" };
-    const meteoBlueRes = meteoBlueKey ? (results[meteoBlueIndex] || { status: "rejected" as const, reason: "No API key" }) : { status: "rejected" as const, reason: "No API key" };
 
     let openMeteo: any = null;
     if (openMeteoRes.status === "fulfilled" && openMeteoRes.value.ok) {
@@ -101,16 +89,6 @@ serve(async (req) => {
       meteoSource = await meteoSourceRes.value.json();
     }
 
-    let meteoBlue: any = null;
-    if (meteoBlueRes.status === "fulfilled" && meteoBlueRes.value.ok) {
-      meteoBlue = await meteoBlueRes.value.json();
-      console.log("MeteoBlue raw keys:", JSON.stringify(Object.keys(meteoBlue)));
-      if (meteoBlue.data_1h) {
-        console.log("MeteoBlue data_1h keys:", JSON.stringify(Object.keys(meteoBlue.data_1h)));
-      } else {
-        console.log("MeteoBlue NO data_1h. Top-level sample:", JSON.stringify(meteoBlue).substring(0, 500));
-      }
-    }
 
     const openMeteoHours: any[] = [];
     if (openMeteo?.hourly) {
@@ -186,39 +164,18 @@ serve(async (req) => {
       }
     }
 
-    const meteoBlueHours: any[] = [];
-    if (meteoBlue?.data_1h) {
-      const mb = meteoBlue.data_1h;
-      for (let i = 0; i < (mb.time || []).length; i++) {
-        meteoBlueHours.push({
-          time: mb.time[i] ? mb.time[i].substring(0, 16).replace(" ", "T") : "",
-          temp: mb.temperature?.[i] ?? null,
-          clouds: mb.totalcloudcover?.[i] ?? null,
-          cloudsLow: mb.lowclouds?.[i] ?? null,
-          cloudsMid: mb.midclouds?.[i] ?? null,
-          cloudsHigh: mb.highclouds?.[i] ?? null,
-          humidity: mb.relativehumidity?.[i] ?? null,
-          wind: mb.windspeed?.[i] ?? null,
-          precipitation: mb.precipitation?.[i] ?? null,
-          visibility: mb.visibility?.[i] ? Math.round(mb.visibility[i] / 1000) : null,
-        });
-      }
-    }
-
     return new Response(
       JSON.stringify({
         openMeteo: openMeteoHours,
         sevenTimer: sevenTimerHours,
         metNorway: metNorwayHours,
         meteoSource: meteoSourceHours,
-        meteoBlue: meteoBlueHours,
         timezone: openMeteo?.timezone || "UTC",
         errors: {
           openMeteo: openMeteoRes.status === "rejected" ? "Failed to fetch" : null,
           sevenTimer: sevenTimerRes.status === "rejected" ? "Failed to fetch" : null,
           metNorway: metNorwayRes.status === "rejected" ? "Failed to fetch" : null,
           meteoSource: !meteoSourceKey ? "No API key" : meteoSourceRes.status === "rejected" ? "Failed to fetch" : (meteoSourceRes.status === "fulfilled" && !meteoSourceRes.value.ok) ? `HTTP ${meteoSourceRes.value.status}` : null,
-          meteoBlue: !meteoBlueKey ? "No API key" : meteoBlueRes.status === "rejected" ? "Failed to fetch" : (meteoBlueRes.status === "fulfilled" && !meteoBlueRes.value.ok) ? `HTTP ${meteoBlueRes.value.status}` : null,
         },
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }

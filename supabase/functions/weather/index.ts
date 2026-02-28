@@ -104,6 +104,12 @@ serve(async (req) => {
     let meteoBlue: any = null;
     if (meteoBlueRes.status === "fulfilled" && meteoBlueRes.value.ok) {
       meteoBlue = await meteoBlueRes.value.json();
+      console.log("MeteoBlue raw keys:", JSON.stringify(Object.keys(meteoBlue)));
+      if (meteoBlue.data_1h) {
+        console.log("MeteoBlue data_1h keys:", JSON.stringify(Object.keys(meteoBlue.data_1h)));
+      } else {
+        console.log("MeteoBlue NO data_1h. Top-level sample:", JSON.stringify(meteoBlue).substring(0, 500));
+      }
     }
 
     const openMeteoHours: any[] = [];

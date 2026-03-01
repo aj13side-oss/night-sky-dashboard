@@ -19,7 +19,27 @@ const MoonPhaseCard = () => {
   const moonset = toLocal(data?.moon?.moonset);
   const closestPhase = data?.moon?.closestPhase;
 
-  const angle = (illumination / 100) * 180;
+  const isWaxing = phaseName.toLowerCase().includes("waxing") ||
+    phaseName.toLowerCase().includes("first") ||
+    phaseName.toLowerCase().includes("new") ||
+    phaseName.toLowerCase().includes("croissant");
+  const fraction = illumination / 100;
+
+  const buildMoonPath = (frac: number, waxing: boolean) => {
+    const r = 60;
+    if (frac < 0.01) return "";
+    if (frac > 0.99) return `M 0,-${r} A ${r},${r} 0 1,1 0,${r} A ${r},${r} 0 1,1 0,-${r} Z`;
+
+    const sweep = waxing ? frac : 1 - frac;
+    const cx = Math.abs(r * (2 * sweep - 1));
+    const largeArc = sweep > 0.5 ? 1 : 0;
+
+    if (waxing) {
+      return `M 0,-${r} A ${r},${r} 0 0,1 0,${r} A ${cx},${r} 0 0,${largeArc} 0,-${r} Z`;
+    } else {
+      return `M 0,-${r} A ${r},${r} 0 0,0 0,${r} A ${cx},${r} 0 0,${1 - largeArc} 0,-${r} Z`;
+    }
+  };
 
   return (
     <div className="glass-card rounded-2xl p-6 flex flex-col items-center gap-4">
@@ -40,23 +60,31 @@ const MoonPhaseCard = () => {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="relative w-32 h-32"
       >
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-muted-foreground/30 to-muted-foreground/10 overflow-hidden">
-          <div
-            className="absolute inset-0 rounded-full"
-            style={{
-              background: `linear-gradient(${angle}deg, 
-                hsl(45 20% 85%) 0%, 
-                hsl(45 20% 85%) 50%, 
-                transparent 50%, 
-                transparent 100%)`,
-            }}
-          />
-          <div className="absolute w-4 h-4 rounded-full bg-muted-foreground/10 top-6 left-8" />
-          <div className="absolute w-6 h-6 rounded-full bg-muted-foreground/10 top-14 left-4" />
-          <div className="absolute w-3 h-3 rounded-full bg-muted-foreground/10 top-10 right-6" />
-        </div>
-        <div className="absolute -inset-3 rounded-full opacity-30"
-          style={{ boxShadow: `0 0 40px 10px hsl(45 30% 70% / 0.2)` }} />
+        <svg viewBox="-70 -70 140 140" className="w-full h-full drop-shadow-lg">
+          <circle cx="0" cy="0" r="60" fill="hsl(220 15% 18%)" />
+          <circle cx="-12" cy="-20" r="6" fill="hsl(220 10% 15%)" opacity="0.5" />
+          <circle cx="15" cy="10" r="8" fill="hsl(220 10% 15%)" opacity="0.4" />
+          <circle cx="-5" cy="25" r="4" fill="hsl(220 10% 15%)" opacity="0.3" />
+          <path d={buildMoonPath(fraction, isWaxing)} fill="url(#moonGradient)" />
+          <clipPath id="litClip">
+            <path d={buildMoonPath(fraction, isWaxing)} />
+          </clipPath>
+          <g clipPath="url(#litClip)">
+            <circle cx="-12" cy="-20" r="6" fill="hsl(45 15% 70%)" opacity="0.3" />
+            <circle cx="15" cy="10" r="8" fill="hsl(45 15% 70%)" opacity="0.25" />
+            <circle cx="-5" cy="25" r="4" fill="hsl(45 15% 70%)" opacity="0.2" />
+            <circle cx="20" cy="-15" r="5" fill="hsl(45 15% 70%)" opacity="0.2" />
+          </g>
+          <defs>
+            <radialGradient id="moonGradient" cx="40%" cy="35%">
+              <stop offset="0%" stopColor="hsl(50 30% 92%)" />
+              <stop offset="60%" stopColor="hsl(45 20% 80%)" />
+              <stop offset="100%" stopColor="hsl(40 15% 70%)" />
+            </radialGradient>
+          </defs>
+        </svg>
+        <div className="absolute -inset-3 rounded-full opacity-20 pointer-events-none"
+          style={{ boxShadow: `0 0 40px 10px hsl(45 30% 70% / ${0.1 + fraction * 0.3})` }} />
       </motion.div>
 
       <div className="text-center space-y-1">

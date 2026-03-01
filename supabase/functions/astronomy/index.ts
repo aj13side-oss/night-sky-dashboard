@@ -82,6 +82,10 @@ serve(async (req) => {
       solarNoon: findPhen(d.sundata, "Upper Transit"),
       civilTwilightBegin: findPhen(d.sundata, "Begin Civil Twilight"),
       civilTwilightEnd: findPhen(d.sundata, "End Civil Twilight"),
+      nauticalTwilightBegin: findPhen(d.sundata, "Begin Nautical Twilight"),
+      nauticalTwilightEnd: findPhen(d.sundata, "End Nautical Twilight"),
+      astronomicalTwilightBegin: findPhen(d.sundata, "Begin Astronomical Twilight"),
+      astronomicalTwilightEnd: findPhen(d.sundata, "End Astronomical Twilight"),
     } : null;
 
     const moon = d ? {

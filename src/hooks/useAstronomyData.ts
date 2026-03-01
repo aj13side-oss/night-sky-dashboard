@@ -7,6 +7,10 @@ interface AstronomySunData {
   solarNoon: string | null;
   civilTwilightBegin: string | null;
   civilTwilightEnd: string | null;
+  nauticalTwilightBegin: string | null;
+  nauticalTwilightEnd: string | null;
+  astronomicalTwilightBegin: string | null;
+  astronomicalTwilightEnd: string | null;
 }
 
 interface AstronomyMoonData {

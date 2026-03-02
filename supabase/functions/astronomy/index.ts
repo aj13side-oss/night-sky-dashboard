@@ -76,17 +76,30 @@ serve(async (req) => {
 
     const d = sunMoonData?.properties?.data;
 
+    // Compute twilight times using astronomy-engine (USNO doesn't provide nautical/astro)
+    const twilights = computeTwilights(observer, dateObj);
+
     const sun = d?.sundata ? {
       sunrise: findPhen(d.sundata, "Rise"),
       sunset: findPhen(d.sundata, "Set"),
       solarNoon: findPhen(d.sundata, "Upper Transit"),
-      civilTwilightBegin: findPhen(d.sundata, "Begin Civil Twilight"),
-      civilTwilightEnd: findPhen(d.sundata, "End Civil Twilight"),
-      nauticalTwilightBegin: findPhen(d.sundata, "Begin Nautical Twilight"),
-      nauticalTwilightEnd: findPhen(d.sundata, "End Nautical Twilight"),
-      astronomicalTwilightBegin: findPhen(d.sundata, "Begin Astronomical Twilight"),
-      astronomicalTwilightEnd: findPhen(d.sundata, "End Astronomical Twilight"),
-    } : null;
+      civilTwilightBegin: findPhen(d.sundata, "Begin Civil Twilight") || twilights.civilBegin,
+      civilTwilightEnd: findPhen(d.sundata, "End Civil Twilight") || twilights.civilEnd,
+      nauticalTwilightBegin: twilights.nauticalBegin,
+      nauticalTwilightEnd: twilights.nauticalEnd,
+      astronomicalTwilightBegin: twilights.astroBegin,
+      astronomicalTwilightEnd: twilights.astroEnd,
+    } : {
+      sunrise: twilights.sunrise,
+      sunset: twilights.sunset,
+      solarNoon: null,
+      civilTwilightBegin: twilights.civilBegin,
+      civilTwilightEnd: twilights.civilEnd,
+      nauticalTwilightBegin: twilights.nauticalBegin,
+      nauticalTwilightEnd: twilights.nauticalEnd,
+      astronomicalTwilightBegin: twilights.astroBegin,
+      astronomicalTwilightEnd: twilights.astroEnd,
+    };
 
     const moon = d ? {
       phase: d.curphase || null,
@@ -126,6 +139,46 @@ function formatUtcTime(d: Date): string {
   const h = d.getUTCHours().toString().padStart(2, "0");
   const m = d.getUTCMinutes().toString().padStart(2, "0");
   return `${h}:${m}`;
+}
+
+function searchSunAltitude(observer: Astronomy.Observer, body: Astronomy.Body, altitude: number, dateObj: Date, direction: number): Date | null {
+  try {
+    // direction: +1 = rising (before noon), -1 = setting (after noon)
+    const result = Astronomy.SearchAltitude(body, observer, direction, dateObj, 1, altitude);
+    return result ? result.date : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function computeTwilights(observer: Astronomy.Observer, dateObj: Date) {
+  const sun = Astronomy.Body.Sun;
+
+  const sunriseDate = searchSunAltitude(observer, sun, -0.833, dateObj, +1);
+  const sunsetDate = searchSunAltitude(observer, sun, -0.833, dateObj, -1);
+
+  // Civil: sun at -6°
+  const civilBeginDate = searchSunAltitude(observer, sun, -6, dateObj, +1);
+  const civilEndDate = searchSunAltitude(observer, sun, -6, dateObj, -1);
+
+  // Nautical: sun at -12°
+  const nauticalBeginDate = searchSunAltitude(observer, sun, -12, dateObj, +1);
+  const nauticalEndDate = searchSunAltitude(observer, sun, -12, dateObj, -1);
+
+  // Astronomical: sun at -18°
+  const astroBeginDate = searchSunAltitude(observer, sun, -18, dateObj, +1);
+  const astroEndDate = searchSunAltitude(observer, sun, -18, dateObj, -1);
+
+  return {
+    sunrise: sunriseDate ? formatUtcTime(sunriseDate) : null,
+    sunset: sunsetDate ? formatUtcTime(sunsetDate) : null,
+    civilBegin: civilBeginDate ? formatUtcTime(civilBeginDate) : null,
+    civilEnd: civilEndDate ? formatUtcTime(civilEndDate) : null,
+    nauticalBegin: nauticalBeginDate ? formatUtcTime(nauticalBeginDate) : null,
+    nauticalEnd: nauticalEndDate ? formatUtcTime(nauticalEndDate) : null,
+    astroBegin: astroBeginDate ? formatUtcTime(astroBeginDate) : null,
+    astroEnd: astroEndDate ? formatUtcTime(astroEndDate) : null,
+  };
 }
 
 function raDecToConstellation(raHours: number, decDeg: number): string {

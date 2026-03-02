@@ -138,6 +138,23 @@ function clamp(val: number, min = 0, max = 100): number {
   return Math.max(min, Math.min(max, val));
 }
 
+function alignToHourlyGrid<R extends { time: string }, S extends { time: string }>(
+  referenceHours: R[],
+  sparseHours: S[]
+): (S | null)[] {
+  // Build a lookup by hour string (HH:MM)
+  const lookup = new Map<string, S>();
+  for (const h of sparseHours) {
+    const key = formatHour(h.time);
+    lookup.set(key, h);
+  }
+  // For each reference hour, find matching sparse hour or null
+  return referenceHours.map((ref) => {
+    const key = formatHour(ref.time);
+    return lookup.get(key) || null;
+  });
+}
+
 function computeGlobalScore(
   om: OpenMeteoHour[],
   st: SevenTimerHour[],
@@ -383,13 +400,24 @@ const HourlyWeatherCard = () => {
               { key: "transparency", label: "Transp." },
               { key: "temp", label: "°C" },
             ]}
-            rows={sevenTimerNight.map((h) => ({
-              hour: { value: formatHour(h.time), style: "" },
-              clouds: { value: `${h.clouds}`, style: cloudHeatmap(h.clouds) },
-              seeing: { value: h.seeing, style: seeingHeatmap(h.seeing) },
-              transparency: { value: h.transparency, style: seeingHeatmap(h.transparency) },
-              temp: { value: h.temp != null ? `${h.temp}°` : "—", style: h.temp != null ? tempHeatmap(h.temp) : "" },
-            }))}
+            rows={alignToHourlyGrid(openMeteoNight, sevenTimerNight).map((h) => {
+              if (!h) {
+                return {
+                  hour: { value: "", style: "" },
+                  clouds: { value: "", style: "" },
+                  seeing: { value: "", style: "" },
+                  transparency: { value: "", style: "" },
+                  temp: { value: "", style: "" },
+                };
+              }
+              return {
+                hour: { value: formatHour(h.time), style: "" },
+                clouds: { value: `${h.clouds}`, style: cloudHeatmap(h.clouds) },
+                seeing: { value: h.seeing, style: seeingHeatmap(h.seeing) },
+                transparency: { value: h.transparency, style: seeingHeatmap(h.transparency) },
+                temp: { value: h.temp != null ? `${h.temp}°` : "—", style: h.temp != null ? tempHeatmap(h.temp) : "" },
+              };
+            })}
           />
 
         </div>

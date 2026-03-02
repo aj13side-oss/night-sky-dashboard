@@ -37,9 +37,13 @@ const DashboardContent = () => {
           <SunTimesCard />
         </div>
 
-        <EphemeridesCard />
         <HourlyWeatherCard />
-        <CelestialCatalog />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <EphemeridesCard />
+          <CelestialCatalog />
+        </div>
+
         <ToolSuggestions />
       </main>
 

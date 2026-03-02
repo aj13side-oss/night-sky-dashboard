@@ -142,16 +142,16 @@ function alignToHourlyGrid<R extends { time: string }, S extends { time: string 
   referenceHours: R[],
   sparseHours: S[]
 ): (S | null)[] {
-  // Build a lookup by hour string (HH:MM)
-  const lookup = new Map<string, S>();
+  // Build a lookup by hour number (0-23)
+  const lookup = new Map<number, S>();
   for (const h of sparseHours) {
-    const key = formatHour(h.time);
-    lookup.set(key, h);
+    const hourNum = parseInt(formatHour(h.time).split(":")[0] ?? "0");
+    lookup.set(hourNum, h);
   }
-  // For each reference hour, find matching sparse hour or null
+  // For each reference hour, find exact match or null
   return referenceHours.map((ref) => {
-    const key = formatHour(ref.time);
-    return lookup.get(key) || null;
+    const hourNum = parseInt(formatHour(ref.time).split(":")[0] ?? "0");
+    return lookup.get(hourNum) || null;
   });
 }
 

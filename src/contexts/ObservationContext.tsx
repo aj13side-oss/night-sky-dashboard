@@ -17,9 +17,9 @@ interface ObservationContextType {
 }
 
 const defaultLocation: ObservationLocation = {
-  name: "Paris, FR",
-  lat: 48.8566,
-  lng: 2.3522,
+  name: "Brullioles, FR",
+  lat: 45.7333,
+  lng: 4.4833,
   timezone: "Europe/Paris",
 };
 

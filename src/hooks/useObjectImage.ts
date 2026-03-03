@@ -110,7 +110,8 @@ async function fetchObjectImage(
   dec: number | null,
   sizeArcmin: number | null,
   imageSearchQuery: string | null,
-  forcedImageUrl: string | null
+  forcedImageUrl: string | null,
+  thumbWidth: number = 400
 ): Promise<ObjectImage> {
   // 1. Forced image URL — use thumbnail version for Wikimedia, fetch metadata
   if (forcedImageUrl) {
@@ -119,8 +120,8 @@ async function fetchObjectImage(
       ? await fetchWikimediaMetadata(fileName)
       : { artist: null, date: null, license: null, licenseUrl: null, filePageUrl: null };
 
-    // Convert full-res Wikimedia URLs to 800px thumbnails for faster loading
-    const thumbUrl = toWikimediaThumbnail(forcedImageUrl, 800);
+    // Convert full-res Wikimedia URLs to thumbnails for faster loading
+    const thumbUrl = toWikimediaThumbnail(forcedImageUrl, thumbWidth);
 
     return {
       url: thumbUrl,
@@ -205,8 +206,8 @@ async function tryWikipedia(title: string): Promise<ObjectImage | null> {
       }
     }
 
-    // Get thumbnail image (800px wide max for lighter loading)
-    const imgUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=pageimages&piprop=thumbnail&pithumbsize=800&format=json&origin=*`;
+    // Get thumbnail image using requested width
+    const imgUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=pageimages&piprop=thumbnail&pithumbsize=${thumbWidth}&format=json&origin=*`;
     const imgRes = await fetch(imgUrl);
     if (!imgRes.ok) return null;
     const imgData = await imgRes.json();
@@ -261,10 +262,11 @@ export function useObjectImage(
   dec: number | null | undefined,
   sizeArcmin: number | null | undefined,
   imageSearchQuery?: string | null,
-  forcedImageUrl?: string | null
+  forcedImageUrl?: string | null,
+  thumbWidth: number = 400
 ) {
   return useQuery({
-    queryKey: ["object-image", catalogId, forcedImageUrl],
+    queryKey: ["object-image", catalogId, forcedImageUrl, thumbWidth],
     queryFn: () =>
       fetchObjectImage(
         catalogId!,
@@ -273,7 +275,8 @@ export function useObjectImage(
         dec ?? null,
         sizeArcmin ?? null,
         imageSearchQuery ?? null,
-        forcedImageUrl ?? null
+        forcedImageUrl ?? null,
+        thumbWidth
       ),
     enabled: !!catalogId,
     staleTime: Infinity,

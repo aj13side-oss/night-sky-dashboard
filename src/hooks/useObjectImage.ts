@@ -35,6 +35,26 @@ function extractWikimediaFilename(url: string): string | null {
 }
 
 /**
+ * Convert a full-resolution Wikimedia Commons URL to a thumbnail URL.
+ * Example: .../commons/a/ab/Image.jpg → .../commons/thumb/a/ab/Image.jpg/800px-Image.jpg
+ */
+function toWikimediaThumbnail(url: string, width = 800): string {
+  try {
+    const u = new URL(url);
+    if (!u.hostname.includes("wikimedia.org") && !u.hostname.includes("wikipedia.org")) return url;
+    // Already a thumbnail
+    if (u.pathname.includes("/thumb/")) return url;
+    // Pattern: /wikipedia/commons/a/ab/File.jpg → /wikipedia/commons/thumb/a/ab/File.jpg/800px-File.jpg
+    const match = u.pathname.match(/^(\/wikipedia\/commons\/)([a-f0-9]\/[a-f0-9]{2}\/)(.+)$/);
+    if (!match) return url;
+    const [, base, hashPath, fileName] = match;
+    return `${u.origin}${base}thumb/${hashPath}${fileName}/${width}px-${fileName}`;
+  } catch {
+    return url;
+  }
+}
+
+/**
  * Fetch metadata (author, license, date) for a Wikimedia Commons file.
  */
 async function fetchWikimediaMetadata(fileName: string): Promise<{
@@ -92,15 +112,18 @@ async function fetchObjectImage(
   imageSearchQuery: string | null,
   forcedImageUrl: string | null
 ): Promise<ObjectImage> {
-  // 1. Forced image URL — use directly, fetch metadata from Wikimedia
+  // 1. Forced image URL — use thumbnail version for Wikimedia, fetch metadata
   if (forcedImageUrl) {
     const fileName = extractWikimediaFilename(forcedImageUrl);
     const meta = fileName
       ? await fetchWikimediaMetadata(fileName)
       : { artist: null, date: null, license: null, licenseUrl: null, filePageUrl: null };
 
+    // Convert full-res Wikimedia URLs to 800px thumbnails for faster loading
+    const thumbUrl = toWikimediaThumbnail(forcedImageUrl, 800);
+
     return {
-      url: forcedImageUrl,
+      url: thumbUrl,
       artist: meta.artist ?? "Wikimedia Commons",
       date: meta.date,
       license: meta.license,

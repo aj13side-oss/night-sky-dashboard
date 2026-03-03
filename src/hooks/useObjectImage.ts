@@ -144,7 +144,7 @@ async function fetchObjectImage(
   ].filter(Boolean) as string[];
 
   for (const term of searchTerms) {
-    const result = await tryWikipedia(term);
+    const result = await tryWikipedia(term, thumbWidth);
     if (result) return result;
   }
 
@@ -177,7 +177,7 @@ async function fetchObjectImage(
   };
 }
 
-async function tryWikipedia(title: string): Promise<ObjectImage | null> {
+async function tryWikipedia(title: string, thumbWidth: number = 400): Promise<ObjectImage | null> {
   try {
     const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(title)}&srnamespace=0&srlimit=3&format=json&origin=*`;
     const searchRes = await fetch(searchUrl);

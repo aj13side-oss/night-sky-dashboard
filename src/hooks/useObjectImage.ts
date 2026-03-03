@@ -127,7 +127,8 @@ async function fetchObjectImage(
   // 3. Fallback: Aladin HiPS (DSS2 color) via CDS hips2fits
   if (ra != null && dec != null) {
     const fovDeg = sizeArcmin && sizeArcmin > 0 ? Math.min(Math.max(sizeArcmin * 1.5 / 60, 0.05), 5) : 0.5;
-    const hipsUrl = `https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=CDS/P/DSS2/color&ra=${ra}&dec=${dec}&fov=${fovDeg}&width=600&height=400&format=jpg`;
+    const fovDegThumb = fovDeg * 1.25; // 80% zoom out for better framing
+    const hipsUrl = `https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=CDS/P/DSS2/color&ra=${ra}&dec=${dec}&fov=${fovDegThumb}&width=300&height=200&format=jpg`;
     return {
       url: hipsUrl,
       artist: "DSS2 / CDS Strasbourg",
@@ -181,8 +182,8 @@ async function tryWikipedia(title: string): Promise<ObjectImage | null> {
       }
     }
 
-    // Get original image
-    const imgUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=pageimages&piprop=original&format=json&origin=*`;
+    // Get thumbnail image (800px wide max for lighter loading)
+    const imgUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=pageimages&piprop=thumbnail&pithumbsize=800&format=json&origin=*`;
     const imgRes = await fetch(imgUrl);
     if (!imgRes.ok) return null;
     const imgData = await imgRes.json();
@@ -190,12 +191,12 @@ async function tryWikipedia(title: string): Promise<ObjectImage | null> {
     if (!pages) return null;
 
     const page = Object.values(pages)[0] as any;
-    const original = page?.original;
-    if (!original?.source) return null;
+    const thumbnail = page?.thumbnail;
+    if (!thumbnail?.source) return null;
 
-    const src: string = original.source;
+    const src: string = thumbnail.source;
     if (src.endsWith(".svg") || src.endsWith(".svg.png")) return null;
-    if (original.width && original.width < 300) return null;
+    if (thumbnail.width && thumbnail.width < 200) return null;
 
     // Attribution
     const fileName = src.split("/").pop()?.split("?")[0];

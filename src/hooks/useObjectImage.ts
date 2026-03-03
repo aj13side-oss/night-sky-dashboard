@@ -92,15 +92,18 @@ async function fetchObjectImage(
   imageSearchQuery: string | null,
   forcedImageUrl: string | null
 ): Promise<ObjectImage> {
-  // 1. Forced image URL — use directly, fetch metadata from Wikimedia
+  // 1. Forced image URL — use thumbnail version for Wikimedia, fetch metadata
   if (forcedImageUrl) {
     const fileName = extractWikimediaFilename(forcedImageUrl);
     const meta = fileName
       ? await fetchWikimediaMetadata(fileName)
       : { artist: null, date: null, license: null, licenseUrl: null, filePageUrl: null };
 
+    // Convert full-res Wikimedia URLs to 800px thumbnails for faster loading
+    const thumbUrl = toWikimediaThumbnail(forcedImageUrl, 800);
+
     return {
-      url: forcedImageUrl,
+      url: thumbUrl,
       artist: meta.artist ?? "Wikimedia Commons",
       date: meta.date,
       license: meta.license,

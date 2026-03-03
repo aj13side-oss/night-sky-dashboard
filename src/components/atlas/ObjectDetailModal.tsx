@@ -39,7 +39,8 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
     obj?.dec,
     obj?.size_max,
     obj?.image_search_query,
-    obj?.forced_image_url
+    obj?.forced_image_url,
+    1500
   );
 
   const hasWikiImage = !imgLoading && !imageFailed && wikiImage?.url && (wikiImage.source === "wikipedia" || wikiImage.source === "forced");
@@ -183,13 +184,21 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
                 {hasWikiImage && (
                   <TabsContent value="photo" className="mt-1.5">
                     <div className="relative w-full rounded-lg overflow-hidden bg-muted/50 border border-border/30">
-                      <img
-                        src={wikiImage!.url}
-                        alt={`${obj.catalog_id} ${obj.common_name ?? ""}`}
-                        className="w-full h-auto"
-                        onError={() => { setImageFailed(true); setActiveTab("aladin"); }}
-                        loading="eager"
-                      />
+                      <a
+                        href={wikiImage!.filePageUrl || wikiImage!.pageUrl || wikiImage!.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block cursor-pointer"
+                        title="Ouvrir sur Wikimedia Commons"
+                      >
+                        <img
+                          src={wikiImage!.url}
+                          alt={`${obj.catalog_id} ${obj.common_name ?? ""}`}
+                          className="w-full h-auto hover:opacity-90 transition-opacity"
+                          onError={() => { setImageFailed(true); setActiveTab("aladin"); }}
+                          loading="eager"
+                        />
+                      </a>
                       {wikiImage && (
                         <div className="border-t border-border/30">
                           {wikiImage.filePageUrl && (

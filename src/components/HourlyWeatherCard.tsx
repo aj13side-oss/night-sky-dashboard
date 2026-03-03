@@ -65,7 +65,7 @@ function filterNightHours<T extends { time: string }>(hours: T[], dateStr: strin
     const normalized = h.time.replace(" ", "T");
     const hourNum = parseInt(normalized.split("T")[1]?.split(":")[0] ?? "0");
     const day = normalized.split("T")[0];
-    return (day === targetDate && hourNum >= 18) || (day === nextDateStr && hourNum <= 6);
+    return (day === targetDate && hourNum >= 18) || (day === nextDateStr && hourNum <= 9);
   });
 }
 
@@ -290,7 +290,7 @@ const HourlyWeatherCard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-foreground">Hourly Weather Comparison</h3>
-          <p className="text-xs text-muted-foreground">18h → 06h · {location.name} · {data?.timezone || ""}</p>
+          <p className="text-xs text-muted-foreground">18h → 09h · {location.name} · {data?.timezone || ""}</p>
         </div>
         <div className="flex items-center gap-2">
           {isLoading && <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />}
@@ -400,10 +400,11 @@ const HourlyWeatherCard = () => {
               { key: "transparency", label: "Transp." },
               { key: "temp", label: "°C" },
             ]}
-            rows={alignToHourlyGrid(openMeteoNight, sevenTimerNight).map((h) => {
+            rows={alignToHourlyGrid(openMeteoNight, sevenTimerNight).map((h, idx) => {
+              const refHour = openMeteoNight[idx] ? formatHour(openMeteoNight[idx].time) : "";
               if (!h) {
                 return {
-                  hour: { value: "", style: "" },
+                  hour: { value: refHour, style: "" },
                   clouds: { value: "", style: "" },
                   seeing: { value: "", style: "" },
                   transparency: { value: "", style: "" },
@@ -411,7 +412,7 @@ const HourlyWeatherCard = () => {
                 };
               }
               return {
-                hour: { value: formatHour(h.time), style: "" },
+                hour: { value: refHour, style: "" },
                 clouds: { value: `${h.clouds}`, style: cloudHeatmap(h.clouds) },
                 seeing: { value: h.seeing, style: seeingHeatmap(h.seeing) },
                 transparency: { value: h.transparency, style: seeingHeatmap(h.transparency) },

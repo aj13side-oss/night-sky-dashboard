@@ -38,19 +38,23 @@ function extractWikimediaFilename(url: string): string | null {
  * Convert a full-resolution Wikimedia Commons URL to a thumbnail URL.
  * Example: .../commons/a/ab/Image.jpg → .../commons/thumb/a/ab/Image.jpg/800px-Image.jpg
  */
-function toWikimediaThumbnail(url: string, width = 800): string {
+/**
+ * Use the Wikimedia API to get a proper thumbnail URL for a given filename.
+ * This is more reliable than manually constructing URLs, which can fail for large files.
+ */
+async function getWikimediaThumbnailUrl(fileName: string, width: number): Promise<string | null> {
   try {
-    const u = new URL(url);
-    if (!u.hostname.includes("wikimedia.org") && !u.hostname.includes("wikipedia.org")) return url;
-    // Already a thumbnail
-    if (u.pathname.includes("/thumb/")) return url;
-    // Pattern: /wikipedia/commons/a/ab/File.jpg → /wikipedia/commons/thumb/a/ab/File.jpg/800px-File.jpg
-    const match = u.pathname.match(/^(\/wikipedia\/commons\/)([a-f0-9]\/[a-f0-9]{2}\/)(.+)$/);
-    if (!match) return url;
-    const [, base, hashPath, fileName] = match;
-    return `${u.origin}${base}thumb/${hashPath}${fileName}/${width}px-${fileName}`;
+    const apiUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(fileName)}&prop=imageinfo&iiprop=url&iiurlwidth=${width}&format=json&origin=*`;
+    const res = await fetch(apiUrl);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const pages = data?.query?.pages;
+    if (!pages) return null;
+    const page = Object.values(pages)[0] as any;
+    const thumburl = page?.imageinfo?.[0]?.thumburl;
+    return thumburl || null;
   } catch {
-    return url;
+    return null;
   }
 }
 
@@ -111,28 +115,31 @@ async function fetchObjectImage(
   sizeArcmin: number | null,
   imageSearchQuery: string | null,
   forcedImageUrl: string | null,
-  thumbWidth: number = 400
+  thumbWidth: number = 600
 ): Promise<ObjectImage> {
   // 1. Forced image URL — use thumbnail version for Wikimedia, fetch metadata
   if (forcedImageUrl) {
     const fileName = extractWikimediaFilename(forcedImageUrl);
-    const meta = fileName
-      ? await fetchWikimediaMetadata(fileName)
-      : { artist: null, date: null, license: null, licenseUrl: null, filePageUrl: null };
-
-    // Convert full-res Wikimedia URLs to thumbnails for faster loading
-    const thumbUrl = toWikimediaThumbnail(forcedImageUrl, thumbWidth);
-
-    return {
-      url: thumbUrl,
-      artist: meta.artist ?? "Wikimedia Commons",
-      date: meta.date,
-      license: meta.license,
-      licenseUrl: meta.licenseUrl,
-      filePageUrl: meta.filePageUrl ?? null,
-      source: "forced",
-      pageUrl: meta.filePageUrl ?? null,
-    };
+    
+    if (fileName) {
+      const thumbUrl = await getWikimediaThumbnailUrl(fileName, thumbWidth);
+      
+      if (thumbUrl) {
+        // File exists on Commons — fetch metadata in background
+        const meta = await fetchWikimediaMetadata(fileName);
+        return {
+          url: thumbUrl,
+          artist: meta.artist ?? "Wikimedia Commons",
+          date: meta.date,
+          license: meta.license,
+          licenseUrl: meta.licenseUrl,
+          filePageUrl: meta.filePageUrl ?? null,
+          source: "forced",
+          pageUrl: meta.filePageUrl ?? null,
+        };
+      }
+      // File doesn't exist on Commons — fall through to Wikipedia search
+    }
   }
 
   // 2. Dynamic search via Wikipedia
@@ -263,7 +270,7 @@ export function useObjectImage(
   sizeArcmin: number | null | undefined,
   imageSearchQuery?: string | null,
   forcedImageUrl?: string | null,
-  thumbWidth: number = 400
+  thumbWidth: number = 600
 ) {
   return useQuery({
     queryKey: ["object-image", catalogId, forcedImageUrl, thumbWidth],

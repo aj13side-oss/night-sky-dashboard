@@ -30,13 +30,14 @@ const MoonPhaseCard = () => {
     if (frac < 0.01) return "";
     if (frac > 0.99) return `M 0,-${r} A ${r},${r} 0 1,1 0,${r} A ${r},${r} 0 1,1 0,-${r} Z`;
 
-    const sweep = waxing ? frac : 1 - frac;
-    const cx = Math.abs(r * (2 * sweep - 1));
-    const largeArc = sweep > 0.5 ? 1 : 0;
+    const cx = Math.abs(r * (2 * frac - 1));
+    const largeArc = frac > 0.5 ? 1 : 0;
 
     if (waxing) {
+      // Lit on right: right semicircle, then terminator back
       return `M 0,-${r} A ${r},${r} 0 0,1 0,${r} A ${cx},${r} 0 0,${largeArc} 0,-${r} Z`;
     } else {
+      // Lit on left: left semicircle, then terminator back
       return `M 0,-${r} A ${r},${r} 0 0,0 0,${r} A ${cx},${r} 0 0,${1 - largeArc} 0,-${r} Z`;
     }
   };

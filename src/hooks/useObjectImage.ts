@@ -44,7 +44,7 @@ function extractWikimediaFilename(url: string): string | null {
  */
 async function getWikimediaThumbnailUrl(fileName: string, width: number): Promise<string | null> {
   try {
-    const apiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(fileName)}&prop=imageinfo&iiprop=url&iiurlwidth=${width}&format=json&origin=*`;
+    const apiUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(fileName)}&prop=imageinfo&iiprop=url&iiurlwidth=${width}&format=json&origin=*`;
     const res = await fetch(apiUrl);
     if (!res.ok) return null;
     const data = await res.json();

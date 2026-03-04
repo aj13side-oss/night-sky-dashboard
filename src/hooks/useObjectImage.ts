@@ -38,19 +38,23 @@ function extractWikimediaFilename(url: string): string | null {
  * Convert a full-resolution Wikimedia Commons URL to a thumbnail URL.
  * Example: .../commons/a/ab/Image.jpg → .../commons/thumb/a/ab/Image.jpg/800px-Image.jpg
  */
-function toWikimediaThumbnail(url: string, width = 800): string {
+/**
+ * Use the Wikimedia API to get a proper thumbnail URL for a given filename.
+ * This is more reliable than manually constructing URLs, which can fail for large files.
+ */
+async function getWikimediaThumbnailUrl(fileName: string, width: number): Promise<string | null> {
   try {
-    const u = new URL(url);
-    if (!u.hostname.includes("wikimedia.org") && !u.hostname.includes("wikipedia.org")) return url;
-    // Already a thumbnail
-    if (u.pathname.includes("/thumb/")) return url;
-    // Pattern: /wikipedia/commons/a/ab/File.jpg → /wikipedia/commons/thumb/a/ab/File.jpg/800px-File.jpg
-    const match = u.pathname.match(/^(\/wikipedia\/commons\/)([a-f0-9]\/[a-f0-9]{2}\/)(.+)$/);
-    if (!match) return url;
-    const [, base, hashPath, fileName] = match;
-    return `${u.origin}${base}thumb/${hashPath}${fileName}/${width}px-${fileName}`;
+    const apiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(fileName)}&prop=imageinfo&iiprop=url&iiurlwidth=${width}&format=json&origin=*`;
+    const res = await fetch(apiUrl);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const pages = data?.query?.pages;
+    if (!pages) return null;
+    const page = Object.values(pages)[0] as any;
+    const thumburl = page?.imageinfo?.[0]?.thumburl;
+    return thumburl || null;
   } catch {
-    return url;
+    return null;
   }
 }
 

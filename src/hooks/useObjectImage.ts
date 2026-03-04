@@ -115,7 +115,7 @@ async function fetchObjectImage(
   sizeArcmin: number | null,
   imageSearchQuery: string | null,
   forcedImageUrl: string | null,
-  thumbWidth: number = 400
+  thumbWidth: number = 600
 ): Promise<ObjectImage> {
   // 1. Forced image URL — use thumbnail version for Wikimedia, fetch metadata
   if (forcedImageUrl) {

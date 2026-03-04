@@ -120,15 +120,19 @@ async function fetchObjectImage(
   // 1. Forced image URL — use thumbnail version for Wikimedia, fetch metadata
   if (forcedImageUrl) {
     const fileName = extractWikimediaFilename(forcedImageUrl);
-    const meta = fileName
-      ? await fetchWikimediaMetadata(fileName)
-      : { artist: null, date: null, license: null, licenseUrl: null, filePageUrl: null };
-
-    // Convert full-res Wikimedia URLs to thumbnails for faster loading
-    const thumbUrl = toWikimediaThumbnail(forcedImageUrl, thumbWidth);
+    
+    // Fetch metadata and proper thumbnail URL in parallel
+    const [meta, thumbUrl] = await Promise.all([
+      fileName
+        ? fetchWikimediaMetadata(fileName)
+        : Promise.resolve({ artist: null, date: null, license: null, licenseUrl: null, filePageUrl: null }),
+      fileName
+        ? getWikimediaThumbnailUrl(fileName, thumbWidth)
+        : Promise.resolve(null),
+    ]);
 
     return {
-      url: thumbUrl,
+      url: thumbUrl || forcedImageUrl,
       artist: meta.artist ?? "Wikimedia Commons",
       date: meta.date,
       license: meta.license,

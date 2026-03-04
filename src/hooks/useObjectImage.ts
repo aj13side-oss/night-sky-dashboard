@@ -271,7 +271,7 @@ export function useObjectImage(
   sizeArcmin: number | null | undefined,
   imageSearchQuery?: string | null,
   forcedImageUrl?: string | null,
-  thumbWidth: number = 400
+  thumbWidth: number = 600
 ) {
   return useQuery({
     queryKey: ["object-image", catalogId, forcedImageUrl, thumbWidth],

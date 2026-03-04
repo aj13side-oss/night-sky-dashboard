@@ -121,26 +121,25 @@ async function fetchObjectImage(
   if (forcedImageUrl) {
     const fileName = extractWikimediaFilename(forcedImageUrl);
     
-    // Fetch metadata and proper thumbnail URL in parallel
-    const [meta, thumbUrl] = await Promise.all([
-      fileName
-        ? fetchWikimediaMetadata(fileName)
-        : Promise.resolve({ artist: null, date: null, license: null, licenseUrl: null, filePageUrl: null }),
-      fileName
-        ? getWikimediaThumbnailUrl(fileName, thumbWidth)
-        : Promise.resolve(null),
-    ]);
-
-    return {
-      url: thumbUrl || forcedImageUrl,
-      artist: meta.artist ?? "Wikimedia Commons",
-      date: meta.date,
-      license: meta.license,
-      licenseUrl: meta.licenseUrl,
-      filePageUrl: meta.filePageUrl ?? null,
-      source: "forced",
-      pageUrl: meta.filePageUrl ?? null,
-    };
+    if (fileName) {
+      const thumbUrl = await getWikimediaThumbnailUrl(fileName, thumbWidth);
+      
+      if (thumbUrl) {
+        // File exists on Commons — fetch metadata in background
+        const meta = await fetchWikimediaMetadata(fileName);
+        return {
+          url: thumbUrl,
+          artist: meta.artist ?? "Wikimedia Commons",
+          date: meta.date,
+          license: meta.license,
+          licenseUrl: meta.licenseUrl,
+          filePageUrl: meta.filePageUrl ?? null,
+          source: "forced",
+          pageUrl: meta.filePageUrl ?? null,
+        };
+      }
+      // File doesn't exist on Commons — fall through to Wikipedia search
+    }
   }
 
   // 2. Dynamic search via Wikipedia

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Telescope, Map, Crosshair, Home, Eclipse, EyeOff, Eye, Settings } from "lucide-react";
+import { Telescope, Map, Crosshair, Home, Eclipse, EyeOff, Eye, Settings, Scale } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
@@ -9,6 +9,7 @@ const navItems = [
   { to: "/fov-calculator", label: "FOV", icon: Crosshair },
   { to: "/light-pollution", label: "Dark Sky", icon: Eclipse },
   { to: "/equipment", label: "Gear", icon: Settings },
+  { to: "/rig-builder", label: "Rig Builder", icon: Scale },
 ];
 
 const AppNav = () => {

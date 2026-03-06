@@ -1,20 +1,28 @@
 import { useState, useMemo } from "react";
 import AppNav from "@/components/AppNav";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Telescope, Camera, Filter, Anchor, ExternalLink, Plus, X, ShoppingCart, Scale } from "lucide-react";
+import { Telescope, Camera, Filter, Anchor, X, Scale } from "lucide-react";
 import {
   useCameras, useTelescopes, useMounts, useFilters,
   type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter,
 } from "@/hooks/useEquipmentCatalog";
+import { EquipmentCard } from "@/components/rigbuilder/EquipmentCard";
+import { CompareTable } from "@/components/rigbuilder/CompareTable";
+import { RangeFilter } from "@/components/rigbuilder/RangeFilter";
+import { RigSummary } from "@/components/rigbuilder/RigSummary";
 
 type Category = "telescopes" | "cameras" | "mounts" | "filters";
+
+// Helper to compute min/max from array
+function bounds(arr: (number | null | undefined)[]): [number, number] {
+  const nums = arr.filter((n): n is number => n != null && !isNaN(n));
+  if (!nums.length) return [0, 100];
+  return [Math.floor(Math.min(...nums)), Math.ceil(Math.max(...nums))];
+}
 
 const RigBuilder = () => {
   const { data: cameras, isLoading: loadingCams } = useCameras();
@@ -27,6 +35,61 @@ const RigBuilder = () => {
     telescopes: [], cameras: [], mounts: [], filters: [],
   });
 
+  // --- Rig picks (one per category for summary) ---
+  const [rigPicks, setRigPicks] = useState<{ telescope: string | null; camera: string | null; mount: string | null; filter: string | null }>({
+    telescope: null, camera: null, mount: null, filter: null,
+  });
+
+  // --- Filter states ---
+  const scopeBoundsFL = useMemo(() => bounds(telescopes?.map(t => t.focal_length_mm) ?? []), [telescopes]);
+  const scopeBoundsAp = useMemo(() => bounds(telescopes?.map(t => t.aperture_mm) ?? []), [telescopes]);
+  const [scopeFL, setScopeFL] = useState<[number, number] | null>(null);
+  const [scopeAp, setScopeAp] = useState<[number, number] | null>(null);
+
+  const camBoundsSW = useMemo(() => bounds(cameras?.map(c => c.sensor_width_mm) ?? []), [cameras]);
+  const camBoundsPx = useMemo(() => bounds(cameras?.map(c => c.pixel_size_um) ?? []), [cameras]);
+  const [camSW, setCamSW] = useState<[number, number] | null>(null);
+  const [camPx, setCamPx] = useState<[number, number] | null>(null);
+
+  const mntBoundsPayload = useMemo(() => bounds(mounts?.map(m => m.payload_kg) ?? []), [mounts]);
+  const mntBoundsWeight = useMemo(() => bounds(mounts?.map(m => m.mount_weight_kg) ?? []), [mounts]);
+  const [mntPayload, setMntPayload] = useState<[number, number] | null>(null);
+  const [mntWeight, setMntWeight] = useState<[number, number] | null>(null);
+
+  // Apply filters
+  const filteredScopes = useMemo(() => {
+    if (!telescopes) return [];
+    const fl = scopeFL ?? scopeBoundsFL;
+    const ap = scopeAp ?? scopeBoundsAp;
+    return telescopes.filter(t => {
+      if (t.focal_length_mm != null && (t.focal_length_mm < fl[0] || t.focal_length_mm > fl[1])) return false;
+      if (t.aperture_mm != null && (t.aperture_mm < ap[0] || t.aperture_mm > ap[1])) return false;
+      return true;
+    });
+  }, [telescopes, scopeFL, scopeAp, scopeBoundsFL, scopeBoundsAp]);
+
+  const filteredCams = useMemo(() => {
+    if (!cameras) return [];
+    const sw = camSW ?? camBoundsSW;
+    const px = camPx ?? camBoundsPx;
+    return cameras.filter(c => {
+      if (c.sensor_width_mm != null && (c.sensor_width_mm < sw[0] || c.sensor_width_mm > sw[1])) return false;
+      if (c.pixel_size_um != null && (c.pixel_size_um < px[0] || c.pixel_size_um > px[1])) return false;
+      return true;
+    });
+  }, [cameras, camSW, camPx, camBoundsSW, camBoundsPx]);
+
+  const filteredMounts = useMemo(() => {
+    if (!mounts) return [];
+    const pl = mntPayload ?? mntBoundsPayload;
+    const wt = mntWeight ?? mntBoundsWeight;
+    return mounts.filter(m => {
+      if (m.payload_kg != null && (m.payload_kg < pl[0] || m.payload_kg > pl[1])) return false;
+      if (m.mount_weight_kg != null && (m.mount_weight_kg < wt[0] || m.mount_weight_kg > wt[1])) return false;
+      return true;
+    });
+  }, [mounts, mntPayload, mntWeight, mntBoundsPayload, mntBoundsWeight]);
+
   const toggleCompare = (cat: Category, id: string) => {
     setCompareIds(prev => {
       const list = prev[cat];
@@ -38,8 +101,13 @@ const RigBuilder = () => {
   };
 
   const clearCompare = (cat: Category) => setCompareIds(prev => ({ ...prev, [cat]: [] }));
-
   const compareCount = compareIds[tab].length;
+
+  // Rig summary picks
+  const pickedTelescope = telescopes?.find(t => t.id === rigPicks.telescope) ?? null;
+  const pickedCamera = cameras?.find(c => c.id === rigPicks.camera) ?? null;
+  const pickedMount = mounts?.find(m => m.id === rigPicks.mount) ?? null;
+  const pickedFilter = filters?.find(f => f.id === rigPicks.filter) ?? null;
 
   return (
     <div className="min-h-screen bg-background star-field">
@@ -52,23 +120,26 @@ const RigBuilder = () => {
             Rig Builder
           </h1>
           <p className="text-muted-foreground mt-1">
-            Comparez le matériel astro et trouvez le setup idéal. Sélectionnez jusqu'à 4 éléments pour les comparer.
+            Compare astrophotography gear side-by-side. Select up to 4 items to compare, or pick one per category to see rig performance.
           </p>
         </motion.div>
+
+        {/* Rig Summary */}
+        <RigSummary telescope={pickedTelescope} camera={pickedCamera} mount={pickedMount} filter={pickedFilter} />
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as Category)}>
           <TabsList className="grid grid-cols-4 w-full max-w-lg">
             <TabsTrigger value="telescopes" className="gap-1.5">
-              <Telescope className="w-3.5 h-3.5" /> Optiques
+              <Telescope className="w-3.5 h-3.5" /> Optics
             </TabsTrigger>
             <TabsTrigger value="cameras" className="gap-1.5">
-              <Camera className="w-3.5 h-3.5" /> Caméras
+              <Camera className="w-3.5 h-3.5" /> Cameras
             </TabsTrigger>
             <TabsTrigger value="mounts" className="gap-1.5">
-              <Anchor className="w-3.5 h-3.5" /> Montures
+              <Anchor className="w-3.5 h-3.5" /> Mounts
             </TabsTrigger>
             <TabsTrigger value="filters" className="gap-1.5">
-              <Filter className="w-3.5 h-3.5" /> Filtres
+              <Filter className="w-3.5 h-3.5" /> Filters
             </TabsTrigger>
           </TabsList>
 
@@ -76,23 +147,34 @@ const RigBuilder = () => {
           {compareCount > 0 && (
             <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
               className="flex items-center gap-3 mt-4 p-3 rounded-lg border border-primary/30 bg-primary/5">
-              <span className="text-sm font-medium text-foreground">{compareCount} sélectionné(s)</span>
+              <span className="text-sm font-medium text-foreground">{compareCount} selected</span>
               <Button size="sm" variant="outline" onClick={() => clearCompare(tab)} className="gap-1">
-                <X className="w-3 h-3" /> Vider
+                <X className="w-3 h-3" /> Clear
               </Button>
             </motion.div>
           )}
 
-          {/* Telescopes */}
+          {/* ==================== TELESCOPES ==================== */}
           <TabsContent value="telescopes">
             {loadingScopes ? <LoadingSkeleton /> : (
               <>
-                <CatalogGrid>
-                  {telescopes?.map(t => (
+                <Card className="border-border/50 mt-4 p-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <RangeFilter label="Focal Length" unit="mm" min={scopeBoundsFL[0]} max={scopeBoundsFL[1]}
+                      value={scopeFL ?? scopeBoundsFL} onChange={setScopeFL} step={10} />
+                    <RangeFilter label="Aperture" unit="mm" min={scopeBoundsAp[0]} max={scopeBoundsAp[1]}
+                      value={scopeAp ?? scopeBoundsAp} onChange={setScopeAp} step={5} />
+                  </div>
+                </Card>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-4">
+                  {filteredScopes.map(t => (
                     <EquipmentCard
                       key={t.id}
                       selected={compareIds.telescopes.includes(t.id)}
-                      onToggle={() => toggleCompare("telescopes", t.id)}
+                      onToggle={() => {
+                        toggleCompare("telescopes", t.id);
+                        setRigPicks(p => ({ ...p, telescope: p.telescope === t.id ? null : t.id }));
+                      }}
                       imageUrl={t.image_url}
                       title={`${t.brand} ${t.model}`}
                       specs={[
@@ -106,16 +188,18 @@ const RigBuilder = () => {
                       affiliateAstro={t.affiliate_astro}
                     />
                   ))}
-                </CatalogGrid>
+                </div>
                 {compareIds.telescopes.length >= 2 && (
                   <CompareTable
                     items={telescopes?.filter(t => compareIds.telescopes.includes(t.id)) ?? []}
                     columns={[
-                      { label: "Focale", render: t => t.focal_length_mm ? `${t.focal_length_mm}mm` : "—" },
-                      { label: "Ouverture", render: t => t.aperture_mm ? `${t.aperture_mm}mm` : "—" },
+                      { label: "Focal Length", render: t => t.focal_length_mm ? `${t.focal_length_mm}mm` : "—" },
+                      { label: "Aperture", render: t => t.aperture_mm ? `${t.aperture_mm}mm` : "—" },
                       { label: "f/D", render: t => t.focal_length_mm && t.aperture_mm ? `f/${(t.focal_length_mm / t.aperture_mm).toFixed(1)}` : "—" },
                       { label: "Type", render: t => t.type ?? "—" },
-                      { label: "Poids", render: t => t.weight_kg ? `${t.weight_kg}kg` : "—" },
+                      { label: "Weight", render: t => t.weight_kg ? `${t.weight_kg}kg` : "—" },
+                      { label: "Image Circle", render: t => t.image_circle_mm ? `${t.image_circle_mm}mm` : "—" },
+                      { label: "Backfocus", render: t => t.required_backfocus_mm ? `${t.required_backfocus_mm}mm` : "—" },
                     ]}
                     getName={t => `${t.brand} ${t.model}`}
                     getAffiliates={t => ({ amazon: t.affiliate_amazon, astro: t.affiliate_astro })}
@@ -125,35 +209,52 @@ const RigBuilder = () => {
             )}
           </TabsContent>
 
-          {/* Cameras */}
+          {/* ==================== CAMERAS ==================== */}
           <TabsContent value="cameras">
             {loadingCams ? <LoadingSkeleton /> : (
               <>
-                <CatalogGrid>
-                  {cameras?.map(c => (
+                <Card className="border-border/50 mt-4 p-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <RangeFilter label="Sensor Width" unit="mm" min={camBoundsSW[0]} max={camBoundsSW[1]}
+                      value={camSW ?? camBoundsSW} onChange={setCamSW} step={0.5} />
+                    <RangeFilter label="Pixel Size" unit="µm" min={camBoundsPx[0]} max={camBoundsPx[1]}
+                      value={camPx ?? camBoundsPx} onChange={setCamPx} step={0.1} />
+                  </div>
+                </Card>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-4">
+                  {filteredCams.map(c => (
                     <EquipmentCard
                       key={c.id}
                       selected={compareIds.cameras.includes(c.id)}
-                      onToggle={() => toggleCompare("cameras", c.id)}
+                      onToggle={() => {
+                        toggleCompare("cameras", c.id);
+                        setRigPicks(p => ({ ...p, camera: p.camera === c.id ? null : c.id }));
+                      }}
                       imageUrl={c.image_url}
                       title={`${c.brand} ${c.model}`}
                       specs={[
                         c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : null,
                         c.pixel_size_um ? `${c.pixel_size_um}µm` : null,
-                        c.is_color !== null ? (c.is_color ? "Couleur" : "Mono") : null,
+                        c.is_color !== null ? (c.is_color ? "Color" : "Mono") : null,
+                        c.qe_percent ? `QE ${c.qe_percent}%` : null,
                       ]}
                       affiliateAmazon={c.affiliate_amazon}
                       affiliateAstro={c.affiliate_astro}
                     />
                   ))}
-                </CatalogGrid>
+                </div>
                 {compareIds.cameras.length >= 2 && (
                   <CompareTable
                     items={cameras?.filter(c => compareIds.cameras.includes(c.id)) ?? []}
                     columns={[
-                      { label: "Capteur", render: c => c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : "—" },
-                      { label: "Pixel", render: c => c.pixel_size_um ? `${c.pixel_size_um}µm` : "—" },
-                      { label: "Type", render: c => c.is_color !== null ? (c.is_color ? "Couleur (OSC)" : "Mono") : "—" },
+                      { label: "Sensor", render: c => c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : "—" },
+                      { label: "Pixel Size", render: c => c.pixel_size_um ? `${c.pixel_size_um}µm` : "—" },
+                      { label: "Type", render: c => c.is_color !== null ? (c.is_color ? "Color (OSC)" : "Mono") : "—" },
+                      { label: "QE", render: c => c.qe_percent ? `${c.qe_percent}%` : "—" },
+                      { label: "Read Noise", render: c => c.read_noise_e ? `${c.read_noise_e}e⁻` : "—" },
+                      { label: "Weight", render: c => c.weight_kg ? `${c.weight_kg}kg` : "—" },
+                      { label: "Interface", render: c => c.interface_type ?? "—" },
+                      { label: "Backfocus", render: c => c.internal_backfocus_mm ? `${c.internal_backfocus_mm}mm` : "—" },
                     ]}
                     getName={c => `${c.brand} ${c.model}`}
                     getAffiliates={c => ({ amazon: c.affiliate_amazon, astro: c.affiliate_astro })}
@@ -163,35 +264,48 @@ const RigBuilder = () => {
             )}
           </TabsContent>
 
-          {/* Mounts */}
+          {/* ==================== MOUNTS ==================== */}
           <TabsContent value="mounts">
             {loadingMounts ? <LoadingSkeleton /> : (
               <>
-                <CatalogGrid>
-                  {mounts?.map(m => (
+                <Card className="border-border/50 mt-4 p-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <RangeFilter label="Payload Capacity" unit="kg" min={mntBoundsPayload[0]} max={mntBoundsPayload[1]}
+                      value={mntPayload ?? mntBoundsPayload} onChange={setMntPayload} step={1} />
+                    <RangeFilter label="Mount Weight" unit="kg" min={mntBoundsWeight[0]} max={mntBoundsWeight[1]}
+                      value={mntWeight ?? mntBoundsWeight} onChange={setMntWeight} step={0.5} />
+                  </div>
+                </Card>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-4">
+                  {filteredMounts.map(m => (
                     <EquipmentCard
                       key={m.id}
                       selected={compareIds.mounts.includes(m.id)}
-                      onToggle={() => toggleCompare("mounts", m.id)}
+                      onToggle={() => {
+                        toggleCompare("mounts", m.id);
+                        setRigPicks(p => ({ ...p, mount: p.mount === m.id ? null : m.id }));
+                      }}
                       imageUrl={m.image_url}
                       title={`${m.brand} ${m.model}`}
                       specs={[
-                        m.payload_kg ? `Charge: ${m.payload_kg}kg` : null,
-                        m.mount_weight_kg ? `Poids: ${m.mount_weight_kg}kg` : null,
+                        m.payload_kg ? `Payload: ${m.payload_kg}kg` : null,
+                        m.mount_weight_kg ? `Weight: ${m.mount_weight_kg}kg` : null,
                         m.mount_type,
+                        m.connectivity,
                       ]}
                       affiliateAmazon={m.affiliate_amazon}
                       affiliateAstro={m.affiliate_astro}
                     />
                   ))}
-                </CatalogGrid>
+                </div>
                 {compareIds.mounts.length >= 2 && (
                   <CompareTable
                     items={mounts?.filter(m => compareIds.mounts.includes(m.id)) ?? []}
                     columns={[
-                      { label: "Charge max", render: m => m.payload_kg ? `${m.payload_kg}kg` : "—" },
-                      { label: "Poids", render: m => m.mount_weight_kg ? `${m.mount_weight_kg}kg` : "—" },
+                      { label: "Payload", render: m => m.payload_kg ? `${m.payload_kg}kg` : "—" },
+                      { label: "Weight", render: m => m.mount_weight_kg ? `${m.mount_weight_kg}kg` : "—" },
                       { label: "Type", render: m => m.mount_type ?? "—" },
+                      { label: "Connectivity", render: m => m.connectivity ?? "—" },
                     ]}
                     getName={m => `${m.brand} ${m.model}`}
                     getAffiliates={m => ({ amazon: m.affiliate_amazon, astro: m.affiliate_astro })}
@@ -201,30 +315,34 @@ const RigBuilder = () => {
             )}
           </TabsContent>
 
-          {/* Filters */}
+          {/* ==================== FILTERS ==================== */}
           <TabsContent value="filters">
             {loadingFilters ? <LoadingSkeleton /> : (
               <>
-                <CatalogGrid>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-4">
                   {filters?.map(f => (
                     <EquipmentCard
                       key={f.id}
                       selected={compareIds.filters.includes(f.id)}
-                      onToggle={() => toggleCompare("filters", f.id)}
+                      onToggle={() => {
+                        toggleCompare("filters", f.id);
+                        setRigPicks(p => ({ ...p, filter: p.filter === f.id ? null : f.id }));
+                      }}
                       imageUrl={f.image_url}
                       title={`${f.brand} ${f.model}`}
-                      specs={[f.type, f.size]}
+                      specs={[f.type, f.size, f.thickness_mm ? `${f.thickness_mm}mm thick` : null]}
                       affiliateAmazon={f.affiliate_amazon}
                       affiliateAstro={f.affiliate_astro}
                     />
                   ))}
-                </CatalogGrid>
+                </div>
                 {compareIds.filters.length >= 2 && (
                   <CompareTable
                     items={filters?.filter(f => compareIds.filters.includes(f.id)) ?? []}
                     columns={[
                       { label: "Type", render: f => f.type ?? "—" },
-                      { label: "Taille", render: f => f.size ?? "—" },
+                      { label: "Size", render: f => f.size ?? "—" },
+                      { label: "Thickness", render: f => f.thickness_mm ? `${f.thickness_mm}mm` : "—" },
                     ]}
                     getName={f => `${f.brand} ${f.model}`}
                     getAffiliates={f => ({ amazon: f.affiliate_amazon, astro: f.affiliate_astro })}
@@ -238,129 +356,6 @@ const RigBuilder = () => {
     </div>
   );
 };
-
-// --- Sub-components ---
-
-function CatalogGrid({ children }: { children: React.ReactNode }) {
-  return <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-4">{children}</div>;
-}
-
-function EquipmentCard({ selected, onToggle, imageUrl, title, specs, affiliateAmazon, affiliateAstro }: {
-  selected: boolean; onToggle: () => void;
-  imageUrl: string | null; title: string;
-  specs: (string | null | undefined)[];
-  affiliateAmazon: string | null; affiliateAstro: string | null;
-}) {
-  const filteredSpecs = specs.filter(Boolean) as string[];
-  return (
-    <Card className={`border-border/50 transition-all cursor-pointer hover:border-primary/40 ${selected ? "ring-2 ring-primary border-primary/50" : ""}`}
-      onClick={onToggle}>
-      <CardContent className="p-4 space-y-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm text-foreground truncate">{title}</h3>
-          </div>
-          <Checkbox checked={selected} className="mt-0.5 shrink-0" />
-        </div>
-
-        {imageUrl && (
-          <div className="rounded-lg overflow-hidden bg-secondary/20 flex items-center justify-center h-24">
-            <img src={imageUrl} alt={title} className="max-h-full object-contain p-2" />
-          </div>
-        )}
-
-        <div className="flex flex-wrap gap-1.5">
-          {filteredSpecs.map((s, i) => (
-            <Badge key={i} variant="secondary" className="text-xs font-mono">{s}</Badge>
-          ))}
-        </div>
-
-        {(affiliateAmazon || affiliateAstro) && (
-          <div className="flex gap-2 pt-1" onClick={e => e.stopPropagation()}>
-            {affiliateAmazon && (
-              <a href={affiliateAmazon} target="_blank" rel="noopener noreferrer"
-                className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
-                <ShoppingCart className="w-3 h-3" /> Amazon
-              </a>
-            )}
-            {affiliateAstro && (
-              <a href={affiliateAstro} target="_blank" rel="noopener noreferrer"
-                className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
-                <ExternalLink className="w-3 h-3" /> Astro-shop
-              </a>
-            )}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function CompareTable<T extends { id: string }>({ items, columns, getName, getAffiliates }: {
-  items: T[];
-  columns: { label: string; render: (item: T) => string }[];
-  getName: (item: T) => string;
-  getAffiliates: (item: T) => { amazon: string | null; astro: string | null };
-}) {
-  return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
-      <Card className="border-primary/20 bg-primary/5">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Scale className="w-5 h-5 text-primary" /> Comparaison
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-32">Spec</TableHead>
-                {items.map(item => (
-                  <TableHead key={item.id} className="text-center font-semibold min-w-[120px]">
-                    {getName(item)}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {columns.map(col => (
-                <TableRow key={col.label}>
-                  <TableCell className="font-medium text-muted-foreground text-xs">{col.label}</TableCell>
-                  {items.map(item => (
-                    <TableCell key={item.id} className="text-center font-mono text-sm">
-                      {col.render(item)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-              <TableRow>
-                <TableCell className="font-medium text-muted-foreground text-xs">Acheter</TableCell>
-                {items.map(item => {
-                  const aff = getAffiliates(item);
-                  return (
-                    <TableCell key={item.id} className="text-center">
-                      <div className="flex justify-center gap-2">
-                        {aff.amazon && (
-                          <a href={aff.amazon} target="_blank" rel="noopener noreferrer"
-                            className="text-[10px] text-primary hover:underline">Amazon</a>
-                        )}
-                        {aff.astro && (
-                          <a href={aff.astro} target="_blank" rel="noopener noreferrer"
-                            className="text-[10px] text-primary hover:underline">Astro-shop</a>
-                        )}
-                        {!aff.amazon && !aff.astro && <span className="text-muted-foreground text-[10px]">—</span>}
-                      </div>
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-}
 
 function LoadingSkeleton() {
   return (

@@ -82,7 +82,7 @@ export function RigSummary({ telescope, camera, mount, filter }: RigSummaryProps
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
       {alerts.map((a, i) => (
-        <Alert key={i} variant={a.type === "error" ? "destructive" : "default"} className="border-yellow-500/40 bg-yellow-500/5">
+        <Alert key={i} variant={a.type === "error" ? "destructive" : "default"} className={a.type === "error" ? "" : "border-accent/40 bg-accent/5"}>
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>{a.title}</AlertTitle>
           <AlertDescription className="text-xs">{a.msg}</AlertDescription>

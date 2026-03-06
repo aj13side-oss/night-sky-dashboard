@@ -17,18 +17,16 @@ import { toast } from "sonner";
 import ToolSuggestions from "@/components/ToolSuggestions";
 
 const TELESCOPE_PRESETS = [
-  { label: "Custom", focalLength: 0 },
-  { label: "William Optics RedCat 51 (250mm)", focalLength: 250 },
-  { label: "Sky-Watcher Evostar 72ED (420mm)", focalLength: 420 },
-  { label: "Sky-Watcher 130PDS (650mm)", focalLength: 650 },
-  { label: "Celestron C8 (2032mm)", focalLength: 2032 },
-  { label: "Sky-Watcher 200P (1000mm)", focalLength: 1000 },
-  { label: "Takahashi FSQ-106 (530mm)", focalLength: 530 },
-  { label: "Celestron RASA 8 (400mm)", focalLength: 400 },
+  { label: "William Optics RedCat 51 (250mm)", focalLength: 250, aperture: 51 },
+  { label: "Sky-Watcher Evostar 72ED (420mm)", focalLength: 420, aperture: 72 },
+  { label: "Sky-Watcher 130PDS (650mm)", focalLength: 650, aperture: 130 },
+  { label: "Celestron C8 (2032mm)", focalLength: 2032, aperture: 203 },
+  { label: "Sky-Watcher 200P (1000mm)", focalLength: 1000, aperture: 200 },
+  { label: "Takahashi FSQ-106 (530mm)", focalLength: 530, aperture: 106 },
+  { label: "Celestron RASA 8 (400mm)", focalLength: 400, aperture: 203 },
 ];
 
 const CAMERA_PRESETS = [
-  { label: "Custom", sensorWidth: 0, sensorHeight: 0, pixelSize: 0, type: "" },
   { label: "ZWO ASI294MC Pro", sensorWidth: 19.1, sensorHeight: 13.0, pixelSize: 4.63, type: "Color (OSC)" },
   { label: "ZWO ASI533MC Pro", sensorWidth: 11.31, sensorHeight: 11.31, pixelSize: 3.76, type: "Color (OSC)" },
   { label: "ZWO ASI2600MC Pro", sensorWidth: 23.5, sensorHeight: 15.7, pixelSize: 3.76, type: "Color (OSC)" },
@@ -40,6 +38,7 @@ const CAMERA_PRESETS = [
 
 interface EquipmentData {
   focalLength: number;
+  aperture: number;
   sensorWidth: number;
   sensorHeight: number;
   pixelSize: number;
@@ -53,6 +52,7 @@ const STORAGE_KEY = "astrodash_equipment";
 const EquipmentProfile = () => {
   const [equipment, setEquipment] = useState<EquipmentData>({
     focalLength: 0,
+    aperture: 0,
     sensorWidth: 0,
     sensorHeight: 0,
     pixelSize: 0,
@@ -61,6 +61,8 @@ const EquipmentProfile = () => {
     cameraName: "",
   });
   const [saved, setSaved] = useState(false);
+  const [telescopePreset, setTelescopePreset] = useState<string>("");
+  const [cameraPreset, setCameraPreset] = useState<string>("");
 
   useEffect(() => {
     try {
@@ -80,19 +82,24 @@ const EquipmentProfile = () => {
   };
 
   const handleTelescopePreset = (label: string) => {
+    setTelescopePreset(label);
+    if (label === "custom") return;
     const preset = TELESCOPE_PRESETS.find((p) => p.label === label);
-    if (preset && preset.focalLength > 0) {
+    if (preset) {
       setEquipment((prev) => ({
         ...prev,
         focalLength: preset.focalLength,
+        aperture: preset.aperture,
         telescopeName: preset.label,
       }));
     }
   };
 
   const handleCameraPreset = (label: string) => {
+    setCameraPreset(label);
+    if (label === "custom") return;
     const preset = CAMERA_PRESETS.find((p) => p.label === label);
-    if (preset && preset.sensorWidth > 0) {
+    if (preset) {
       setEquipment((prev) => ({
         ...prev,
         sensorWidth: preset.sensorWidth,
@@ -113,6 +120,10 @@ const EquipmentProfile = () => {
     : null;
   const fovH = equipment.focalLength > 0 && equipment.sensorHeight > 0
     ? (equipment.sensorHeight / equipment.focalLength) * (180 / Math.PI) * 60
+    : null;
+
+  const fRatio = equipment.focalLength > 0 && equipment.aperture > 0
+    ? equipment.focalLength / equipment.aperture
     : null;
 
   return (
@@ -137,34 +148,50 @@ const EquipmentProfile = () => {
               <CardTitle className="text-lg flex items-center gap-2">
                 <Telescope className="w-5 h-5 text-primary" /> Telescope / Lens
               </CardTitle>
-              <CardDescription>Select a preset or enter your focal length manually.</CardDescription>
+              <CardDescription>Select a preset or choose "Custom" to enter specs manually.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <Label className="text-xs text-muted-foreground">Preset</Label>
-                <Select onValueChange={handleTelescopePreset}>
+                <Select value={telescopePreset} onValueChange={handleTelescopePreset}>
                   <SelectTrigger className="bg-secondary/30 border-border/50">
                     <SelectValue placeholder="Choose a telescope..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {TELESCOPE_PRESETS.filter((p) => p.focalLength > 0).map((p) => (
+                    <SelectItem value="custom">✏️ Custom</SelectItem>
+                    {TELESCOPE_PRESETS.map((p) => (
                       <SelectItem key={p.label} value={p.label}>{p.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label htmlFor="focalLength" className="text-xs text-muted-foreground">
-                  Focal Length (mm)
-                </Label>
-                <Input
-                  id="focalLength"
-                  type="number"
-                  value={equipment.focalLength || ""}
-                  onChange={(e) => setEquipment((prev) => ({ ...prev, focalLength: Number(e.target.value) }))}
-                  placeholder="e.g. 650"
-                  className="bg-secondary/30 border-border/50 font-mono"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="focalLength" className="text-xs text-muted-foreground">
+                    Focal Length (mm)
+                  </Label>
+                  <Input
+                    id="focalLength"
+                    type="number"
+                    value={equipment.focalLength || ""}
+                    onChange={(e) => setEquipment((prev) => ({ ...prev, focalLength: Number(e.target.value) }))}
+                    placeholder="e.g. 650"
+                    className="bg-secondary/30 border-border/50 font-mono"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="aperture" className="text-xs text-muted-foreground">
+                    Aperture (mm)
+                  </Label>
+                  <Input
+                    id="aperture"
+                    type="number"
+                    value={equipment.aperture || ""}
+                    onChange={(e) => setEquipment((prev) => ({ ...prev, aperture: Number(e.target.value) }))}
+                    placeholder="e.g. 80"
+                    className="bg-secondary/30 border-border/50 font-mono"
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -177,17 +204,18 @@ const EquipmentProfile = () => {
               <CardTitle className="text-lg flex items-center gap-2">
                 <Camera className="w-5 h-5 text-primary" /> Camera / Sensor
               </CardTitle>
-              <CardDescription>Select a preset or enter your sensor specs manually.</CardDescription>
+              <CardDescription>Select a preset or choose "Custom" to enter specs manually.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <Label className="text-xs text-muted-foreground">Preset</Label>
-                <Select onValueChange={handleCameraPreset}>
+                <Select value={cameraPreset} onValueChange={handleCameraPreset}>
                   <SelectTrigger className="bg-secondary/30 border-border/50">
                     <SelectValue placeholder="Choose a camera..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {CAMERA_PRESETS.filter((p) => p.sensorWidth > 0).map((p) => (
+                    <SelectItem value="custom">✏️ Custom</SelectItem>
+                    {CAMERA_PRESETS.map((p) => (
                       <SelectItem key={p.label} value={p.label}>{p.label}</SelectItem>
                     ))}
                   </SelectContent>
@@ -262,7 +290,7 @@ const EquipmentProfile = () => {
         </motion.div>
 
         {/* Calculated Stats */}
-        {(samplingRate || fovW) && (
+        {(samplingRate || fovW || fRatio) && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
             <Card className="border-primary/20 bg-primary/5">
               <CardHeader>
@@ -272,7 +300,7 @@ const EquipmentProfile = () => {
                 <CardDescription>Based on your equipment configuration.</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {samplingRate && (
                     <div className="space-y-1">
                       <span className="text-xs text-muted-foreground">Sampling</span>
@@ -291,6 +319,17 @@ const EquipmentProfile = () => {
                         {fovW.toFixed(0)}' × {fovH.toFixed(0)}'
                       </p>
                       <p className="text-[10px] text-muted-foreground">arcminutes</p>
+                    </div>
+                  )}
+                  {fRatio && (
+                    <div className="space-y-1">
+                      <span className="text-xs text-muted-foreground">f/ Ratio</span>
+                      <p className="text-lg font-bold font-mono text-foreground">
+                        f/{fRatio.toFixed(1)}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {fRatio < 4 ? "Very fast" : fRatio < 6 ? "Fast" : fRatio < 10 ? "Moderate" : "Slow"}
+                      </p>
                     </div>
                   )}
                   {equipment.focalLength > 0 && (

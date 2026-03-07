@@ -17,7 +17,6 @@ import { RigSummary } from "@/components/rigbuilder/RigSummary";
 
 type Category = "telescopes" | "cameras" | "mounts" | "filters";
 
-// Helper to compute min/max from array
 function bounds(arr: (number | null | undefined)[]): [number, number] {
   const nums = arr.filter((n): n is number => n != null && !isNaN(n));
   if (!nums.length) return [0, 100];
@@ -35,12 +34,11 @@ const RigBuilder = () => {
     telescopes: [], cameras: [], mounts: [], filters: [],
   });
 
-  // --- Rig picks (one per category for summary) ---
   const [rigPicks, setRigPicks] = useState<{ telescope: string | null; camera: string | null; mount: string | null; filter: string | null }>({
     telescope: null, camera: null, mount: null, filter: null,
   });
 
-  // --- Filter states ---
+  // --- Filter bounds ---
   const scopeBoundsFL = useMemo(() => bounds(telescopes?.map(t => t.focal_length_mm) ?? []), [telescopes]);
   const scopeBoundsAp = useMemo(() => bounds(telescopes?.map(t => t.aperture_mm) ?? []), [telescopes]);
   const [scopeFL, setScopeFL] = useState<[number, number] | null>(null);
@@ -56,7 +54,7 @@ const RigBuilder = () => {
   const [mntPayload, setMntPayload] = useState<[number, number] | null>(null);
   const [mntWeight, setMntWeight] = useState<[number, number] | null>(null);
 
-  // Apply filters
+  // --- Apply filters ---
   const filteredScopes = useMemo(() => {
     if (!telescopes) return [];
     const fl = scopeFL ?? scopeBoundsFL;
@@ -183,15 +181,18 @@ const RigBuilder = () => {
                         t.focal_length_mm && t.aperture_mm ? `f/${(t.focal_length_mm / t.aperture_mm).toFixed(1)}` : null,
                         t.type,
                         t.weight_kg ? `${t.weight_kg}kg` : null,
+                        t.image_circle_mm ? `IC ${t.image_circle_mm}mm` : null,
                       ]}
                       affiliateAmazon={t.affiliate_amazon}
                       affiliateAstro={t.affiliate_astro}
+                      manufacturerUrl={t.manufacturer_url}
                     />
                   ))}
                 </div>
                 {compareIds.telescopes.length >= 2 && (
                   <CompareTable
                     items={telescopes?.filter(t => compareIds.telescopes.includes(t.id)) ?? []}
+                    getImage={t => t.image_url}
                     columns={[
                       { label: "Focal Length", render: t => t.focal_length_mm ? `${t.focal_length_mm}mm` : "—" },
                       { label: "Aperture", render: t => t.aperture_mm ? `${t.aperture_mm}mm` : "—" },
@@ -202,7 +203,7 @@ const RigBuilder = () => {
                       { label: "Backfocus", render: t => t.required_backfocus_mm ? `${t.required_backfocus_mm}mm` : "—" },
                     ]}
                     getName={t => `${t.brand} ${t.model}`}
-                    getAffiliates={t => ({ amazon: t.affiliate_amazon, astro: t.affiliate_astro })}
+                    getAffiliates={t => ({ amazon: t.affiliate_amazon, astro: t.affiliate_astro, manufacturer: t.manufacturer_url })}
                   />
                 )}
               </>
@@ -235,19 +236,25 @@ const RigBuilder = () => {
                       specs={[
                         c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : null,
                         c.pixel_size_um ? `${c.pixel_size_um}µm` : null,
+                        c.resolution_x && c.resolution_y ? `${c.resolution_x}×${c.resolution_y}px` : null,
                         c.is_color !== null ? (c.is_color ? "Color" : "Mono") : null,
                         c.qe_percent ? `QE ${c.qe_percent}%` : null,
+                        c.read_noise_e ? `${c.read_noise_e}e⁻` : null,
+                        c.weight_kg ? `${c.weight_kg}kg` : null,
                       ]}
                       affiliateAmazon={c.affiliate_amazon}
                       affiliateAstro={c.affiliate_astro}
+                      manufacturerUrl={c.manufacturer_url}
                     />
                   ))}
                 </div>
                 {compareIds.cameras.length >= 2 && (
                   <CompareTable
                     items={cameras?.filter(c => compareIds.cameras.includes(c.id)) ?? []}
+                    getImage={c => c.image_url}
                     columns={[
                       { label: "Sensor", render: c => c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : "—" },
+                      { label: "Resolution", render: c => c.resolution_x && c.resolution_y ? `${c.resolution_x}×${c.resolution_y}` : "—" },
                       { label: "Pixel Size", render: c => c.pixel_size_um ? `${c.pixel_size_um}µm` : "—" },
                       { label: "Type", render: c => c.is_color !== null ? (c.is_color ? "Color (OSC)" : "Mono") : "—" },
                       { label: "QE", render: c => c.qe_percent ? `${c.qe_percent}%` : "—" },
@@ -257,7 +264,7 @@ const RigBuilder = () => {
                       { label: "Backfocus", render: c => c.internal_backfocus_mm ? `${c.internal_backfocus_mm}mm` : "—" },
                     ]}
                     getName={c => `${c.brand} ${c.model}`}
-                    getAffiliates={c => ({ amazon: c.affiliate_amazon, astro: c.affiliate_astro })}
+                    getAffiliates={c => ({ amazon: c.affiliate_amazon, astro: c.affiliate_astro, manufacturer: c.manufacturer_url })}
                   />
                 )}
               </>
@@ -295,12 +302,14 @@ const RigBuilder = () => {
                       ]}
                       affiliateAmazon={m.affiliate_amazon}
                       affiliateAstro={m.affiliate_astro}
+                      manufacturerUrl={m.manufacturer_url}
                     />
                   ))}
                 </div>
                 {compareIds.mounts.length >= 2 && (
                   <CompareTable
                     items={mounts?.filter(m => compareIds.mounts.includes(m.id)) ?? []}
+                    getImage={m => m.image_url}
                     columns={[
                       { label: "Payload", render: m => m.payload_kg ? `${m.payload_kg}kg` : "—" },
                       { label: "Weight", render: m => m.mount_weight_kg ? `${m.mount_weight_kg}kg` : "—" },
@@ -308,7 +317,7 @@ const RigBuilder = () => {
                       { label: "Connectivity", render: m => m.connectivity ?? "—" },
                     ]}
                     getName={m => `${m.brand} ${m.model}`}
-                    getAffiliates={m => ({ amazon: m.affiliate_amazon, astro: m.affiliate_astro })}
+                    getAffiliates={m => ({ amazon: m.affiliate_amazon, astro: m.affiliate_astro, manufacturer: m.manufacturer_url })}
                   />
                 )}
               </>
@@ -333,19 +342,21 @@ const RigBuilder = () => {
                       specs={[f.type, f.size, f.thickness_mm ? `${f.thickness_mm}mm thick` : null]}
                       affiliateAmazon={f.affiliate_amazon}
                       affiliateAstro={f.affiliate_astro}
+                      manufacturerUrl={f.manufacturer_url}
                     />
                   ))}
                 </div>
                 {compareIds.filters.length >= 2 && (
                   <CompareTable
                     items={filters?.filter(f => compareIds.filters.includes(f.id)) ?? []}
+                    getImage={f => f.image_url}
                     columns={[
                       { label: "Type", render: f => f.type ?? "—" },
                       { label: "Size", render: f => f.size ?? "—" },
                       { label: "Thickness", render: f => f.thickness_mm ? `${f.thickness_mm}mm` : "—" },
                     ]}
                     getName={f => `${f.brand} ${f.model}`}
-                    getAffiliates={f => ({ amazon: f.affiliate_amazon, astro: f.affiliate_astro })}
+                    getAffiliates={f => ({ amazon: f.affiliate_amazon, astro: f.affiliate_astro, manufacturer: f.manufacturer_url })}
                   />
                 )}
               </>
@@ -364,7 +375,7 @@ function LoadingSkeleton() {
         <Card key={i} className="border-border/50">
           <CardContent className="p-4 space-y-3">
             <Skeleton className="h-5 w-3/4" />
-            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-32 w-full" />
             <div className="flex gap-2">
               <Skeleton className="h-5 w-16" />
               <Skeleton className="h-5 w-20" />

@@ -164,7 +164,7 @@ const RigBuilder = () => {
                       value={scopeAp ?? scopeBoundsAp} onChange={setScopeAp} step={5} />
                   </div>
                 </Card>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-4">
+                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
                   {filteredScopes.map(t => (
                     <EquipmentCard
                       key={t.id}
@@ -222,7 +222,7 @@ const RigBuilder = () => {
                       value={camPx ?? camBoundsPx} onChange={setCamPx} step={0.1} />
                   </div>
                 </Card>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-4">
+                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
                   {filteredCams.map(c => (
                     <EquipmentCard
                       key={c.id}
@@ -283,7 +283,7 @@ const RigBuilder = () => {
                       value={mntWeight ?? mntBoundsWeight} onChange={setMntWeight} step={0.5} />
                   </div>
                 </Card>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-4">
+                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
                   {filteredMounts.map(m => (
                     <EquipmentCard
                       key={m.id}
@@ -328,7 +328,7 @@ const RigBuilder = () => {
           <TabsContent value="filters">
             {loadingFilters ? <LoadingSkeleton /> : (
               <>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-4">
+                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
                   {filters?.map(f => (
                     <EquipmentCard
                       key={f.id}

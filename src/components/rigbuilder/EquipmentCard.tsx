@@ -14,11 +14,8 @@ interface EquipmentCardProps {
   manufacturerUrl?: string | null;
 }
 
-/** Append width param to common image CDNs or return raw URL at ~400px */
 function thumb400(url: string): string {
-  // Already a thumb / resized
   if (url.includes("w=") || url.includes("width=")) return url;
-  // Supabase Storage – use transform
   if (url.includes("supabase.co/storage")) {
     const sep = url.includes("?") ? "&" : "?";
     return `${url}${sep}width=400`;
@@ -44,47 +41,54 @@ export function EquipmentCard({
       className={`border-border/50 transition-all cursor-pointer hover:border-primary/40 ${selected ? "ring-2 ring-primary border-primary/50" : ""}`}
       onClick={onToggle}
     >
-      <CardContent className="p-4 space-y-3">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-semibold text-sm text-foreground truncate flex-1 min-w-0">{title}</h3>
-          <Checkbox checked={selected} className="mt-0.5 shrink-0" />
+      <CardContent className="p-3 space-y-2">
+        <div className="flex items-start justify-between gap-1">
+          <h3 className="font-semibold text-xs text-foreground line-clamp-2 flex-1 min-w-0 leading-tight">{title}</h3>
+          <Checkbox checked={selected} className="mt-0.5 shrink-0 h-3.5 w-3.5" />
         </div>
 
-        {imageUrl && (
-          <div className="rounded-lg overflow-hidden bg-secondary/20 flex items-center justify-center h-32">
+        {imageUrl ? (
+          <div className="rounded-md overflow-hidden bg-secondary/20 flex items-center justify-center aspect-square">
             <img
               src={thumb400(imageUrl)}
               alt={title}
               loading="lazy"
-              className="max-h-full max-w-full object-contain p-2"
+              className="max-h-full max-w-full object-contain p-1.5"
             />
+          </div>
+        ) : (
+          <div className="rounded-md bg-secondary/10 flex items-center justify-center aspect-square">
+            <span className="text-muted-foreground text-[10px]">No image</span>
           </div>
         )}
 
-        <div className="flex flex-wrap gap-1.5">
-          {filteredSpecs.map((s, i) => (
-            <Badge key={i} variant="secondary" className="text-xs font-mono">{s}</Badge>
+        <div className="flex flex-wrap gap-1">
+          {filteredSpecs.slice(0, 4).map((s, i) => (
+            <Badge key={i} variant="secondary" className="text-[10px] font-mono px-1.5 py-0">{s}</Badge>
           ))}
+          {filteredSpecs.length > 4 && (
+            <Badge variant="secondary" className="text-[10px] font-mono px-1.5 py-0">+{filteredSpecs.length - 4}</Badge>
+          )}
         </div>
 
         {hasLinks && (
-          <div className="flex flex-wrap gap-3 pt-1" onClick={e => e.stopPropagation()}>
+          <div className="flex flex-wrap gap-2 pt-0.5" onClick={e => e.stopPropagation()}>
             {manufacturerUrl && (
               <a href={manufacturerUrl} target="_blank" rel="noopener noreferrer"
-                className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
-                <Globe className="w-3 h-3" /> Manufacturer
+                className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
+                <Globe className="w-2.5 h-2.5" /> Site
               </a>
             )}
             {affiliateAmazon && (
               <a href={affiliateAmazon} target="_blank" rel="noopener noreferrer"
-                className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
-                <ShoppingCart className="w-3 h-3" /> Amazon
+                className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
+                <ShoppingCart className="w-2.5 h-2.5" /> Amazon
               </a>
             )}
             {affiliateAstro && (
               <a href={affiliateAstro} target="_blank" rel="noopener noreferrer"
-                className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
-                <ExternalLink className="w-3 h-3" /> Astro-shop
+                className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
+                <ExternalLink className="w-2.5 h-2.5" /> Shop
               </a>
             )}
           </div>

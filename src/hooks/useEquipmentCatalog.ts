@@ -12,6 +12,7 @@ export interface AstroCamera {
   image_url: string | null;
   affiliate_amazon: string | null;
   affiliate_astro: string | null;
+  manufacturer_url: string | null;
   weight_kg: number | null;
   internal_backfocus_mm: number | null;
   qe_percent: number | null;
@@ -32,6 +33,7 @@ export interface AstroTelescope {
   image_url: string | null;
   affiliate_amazon: string | null;
   affiliate_astro: string | null;
+  manufacturer_url: string | null;
   required_backfocus_mm: number | null;
   image_circle_mm: number | null;
 }
@@ -46,6 +48,7 @@ export interface AstroMount {
   image_url: string | null;
   affiliate_amazon: string | null;
   affiliate_astro: string | null;
+  manufacturer_url: string | null;
   connectivity: string | null;
 }
 
@@ -58,6 +61,7 @@ export interface AstroFilter {
   image_url: string | null;
   affiliate_amazon: string | null;
   affiliate_astro: string | null;
+  manufacturer_url: string | null;
   thickness_mm: number | null;
 }
 

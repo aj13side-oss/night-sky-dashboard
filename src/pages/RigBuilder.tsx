@@ -14,6 +14,7 @@ import { EquipmentCard } from "@/components/rigbuilder/EquipmentCard";
 import { CompareTable } from "@/components/rigbuilder/CompareTable";
 import { RangeFilter } from "@/components/rigbuilder/RangeFilter";
 import { RigSummary } from "@/components/rigbuilder/RigSummary";
+import { ChipFilter, ToggleFilter } from "@/components/rigbuilder/ChipFilter";
 
 type Category = "telescopes" | "cameras" | "mounts" | "filters";
 
@@ -43,16 +44,41 @@ const RigBuilder = () => {
   const scopeBoundsAp = useMemo(() => bounds(telescopes?.map(t => t.aperture_mm) ?? []), [telescopes]);
   const [scopeFL, setScopeFL] = useState<[number, number] | null>(null);
   const [scopeAp, setScopeAp] = useState<[number, number] | null>(null);
+  const [scopeType, setScopeType] = useState<string | null>(null);
+  const [scopeBrand, setScopeBrand] = useState<string | null>(null);
 
   const camBoundsSW = useMemo(() => bounds(cameras?.map(c => c.sensor_width_mm) ?? []), [cameras]);
   const camBoundsPx = useMemo(() => bounds(cameras?.map(c => c.pixel_size_um) ?? []), [cameras]);
   const [camSW, setCamSW] = useState<[number, number] | null>(null);
   const [camPx, setCamPx] = useState<[number, number] | null>(null);
+  const [camSensor, setCamSensor] = useState<string | null>(null);
+  const [camColor, setCamColor] = useState<boolean | null>(null);
+  const [camCooling, setCamCooling] = useState<boolean | null>(null);
 
   const mntBoundsPayload = useMemo(() => bounds(mounts?.map(m => m.payload_kg) ?? []), [mounts]);
   const mntBoundsWeight = useMemo(() => bounds(mounts?.map(m => m.mount_weight_kg) ?? []), [mounts]);
   const [mntPayload, setMntPayload] = useState<[number, number] | null>(null);
   const [mntWeight, setMntWeight] = useState<[number, number] | null>(null);
+  const [mntType, setMntType] = useState<string | null>(null);
+  const [mntGoto, setMntGoto] = useState<boolean | null>(null);
+  const [mntBrand, setMntBrand] = useState<string | null>(null);
+
+  const [filterType, setFilterType] = useState<string | null>(null);
+  const [filterSize, setFilterSize] = useState<string | null>(null);
+
+  // --- Unique values for chip filters ---
+  const scopeTypes = useMemo(() => [...new Set(telescopes?.map(t => t.type).filter(Boolean) as string[])].sort(), [telescopes]);
+  const scopeBrands = useMemo(() => [...new Set(telescopes?.map(t => t.brand).filter(Boolean) as string[])].sort(), [telescopes]);
+  const camSensors = useMemo(() => {
+    const counts: Record<string, number> = {};
+    cameras?.forEach(c => { if (c.sensor_name) counts[c.sensor_name] = (counts[c.sensor_name] || 0) + 1; });
+    return Object.entries(counts).filter(([, n]) => n >= 2).sort((a, b) => b[1] - a[1]).map(([name, n]) => `${name} (${n})`);
+  }, [cameras]);
+  const camSensorNames = useMemo(() => camSensors.map(s => s.replace(/ \(\d+\)$/, "")), [camSensors]);
+  const mntTypes = useMemo(() => [...new Set(mounts?.map(m => m.mount_type).filter(Boolean) as string[])].sort(), [mounts]);
+  const mntBrands = useMemo(() => [...new Set(mounts?.map(m => m.brand).filter(Boolean) as string[])].sort(), [mounts]);
+  const filterTypes = useMemo(() => [...new Set(filters?.map(f => f.type).filter(Boolean) as string[])].sort(), [filters]);
+  const filterSizes = useMemo(() => [...new Set(filters?.map(f => f.size).filter(Boolean) as string[])].sort(), [filters]);
 
   // --- Apply filters ---
   const filteredScopes = useMemo(() => {
@@ -62,9 +88,11 @@ const RigBuilder = () => {
     return telescopes.filter(t => {
       if (t.focal_length_mm != null && (t.focal_length_mm < fl[0] || t.focal_length_mm > fl[1])) return false;
       if (t.aperture_mm != null && (t.aperture_mm < ap[0] || t.aperture_mm > ap[1])) return false;
+      if (scopeType && t.type !== scopeType) return false;
+      if (scopeBrand && t.brand !== scopeBrand) return false;
       return true;
     });
-  }, [telescopes, scopeFL, scopeAp, scopeBoundsFL, scopeBoundsAp]);
+  }, [telescopes, scopeFL, scopeAp, scopeBoundsFL, scopeBoundsAp, scopeType, scopeBrand]);
 
   const filteredCams = useMemo(() => {
     if (!cameras) return [];
@@ -73,9 +101,15 @@ const RigBuilder = () => {
     return cameras.filter(c => {
       if (c.sensor_width_mm != null && (c.sensor_width_mm < sw[0] || c.sensor_width_mm > sw[1])) return false;
       if (c.pixel_size_um != null && (c.pixel_size_um < px[0] || c.pixel_size_um > px[1])) return false;
+      if (camSensor && c.sensor_name !== camSensor) return false;
+      if (camColor !== null && c.is_color !== camColor) return false;
+      if (camCooling !== null) {
+        const hasCooling = c.cooling_delta_c != null && c.cooling_delta_c > 0;
+        if (camCooling !== hasCooling) return false;
+      }
       return true;
     });
-  }, [cameras, camSW, camPx, camBoundsSW, camBoundsPx]);
+  }, [cameras, camSW, camPx, camBoundsSW, camBoundsPx, camSensor, camColor, camCooling]);
 
   const filteredMounts = useMemo(() => {
     if (!mounts) return [];
@@ -84,9 +118,21 @@ const RigBuilder = () => {
     return mounts.filter(m => {
       if (m.payload_kg != null && (m.payload_kg < pl[0] || m.payload_kg > pl[1])) return false;
       if (m.mount_weight_kg != null && (m.mount_weight_kg < wt[0] || m.mount_weight_kg > wt[1])) return false;
+      if (mntType && m.mount_type !== mntType) return false;
+      if (mntGoto !== null && m.is_goto !== mntGoto) return false;
+      if (mntBrand && m.brand !== mntBrand) return false;
       return true;
     });
-  }, [mounts, mntPayload, mntWeight, mntBoundsPayload, mntBoundsWeight]);
+  }, [mounts, mntPayload, mntWeight, mntBoundsPayload, mntBoundsWeight, mntType, mntGoto, mntBrand]);
+
+  const filteredFilts = useMemo(() => {
+    if (!filters) return [];
+    return filters.filter(f => {
+      if (filterType && f.type !== filterType) return false;
+      if (filterSize && f.size !== filterSize) return false;
+      return true;
+    });
+  }, [filters, filterType, filterSize]);
 
   const toggleCompare = (cat: Category, id: string) => {
     setCompareIds(prev => {
@@ -156,12 +202,16 @@ const RigBuilder = () => {
           <TabsContent value="telescopes">
             {loadingScopes ? <LoadingSkeleton /> : (
               <>
-                <Card className="border-border/50 mt-4 p-4">
+                <Card className="border-border/50 mt-4 p-4 space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <RangeFilter label="Focal Length" unit="mm" min={scopeBoundsFL[0]} max={scopeBoundsFL[1]}
                       value={scopeFL ?? scopeBoundsFL} onChange={setScopeFL} step={10} />
                     <RangeFilter label="Aperture" unit="mm" min={scopeBoundsAp[0]} max={scopeBoundsAp[1]}
                       value={scopeAp ?? scopeBoundsAp} onChange={setScopeAp} step={5} />
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <ChipFilter label="Type" options={scopeTypes} selected={scopeType} onChange={setScopeType} />
+                    <ChipFilter label="Brand" options={scopeBrands} selected={scopeBrand} onChange={setScopeBrand} />
                   </div>
                 </Card>
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
@@ -218,12 +268,17 @@ const RigBuilder = () => {
           <TabsContent value="cameras">
             {loadingCams ? <LoadingSkeleton /> : (
               <>
-                <Card className="border-border/50 mt-4 p-4">
+                <Card className="border-border/50 mt-4 p-4 space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <RangeFilter label="Sensor Width" unit="mm" min={camBoundsSW[0]} max={camBoundsSW[1]}
                       value={camSW ?? camBoundsSW} onChange={setCamSW} step={0.5} />
                     <RangeFilter label="Pixel Size" unit="µm" min={camBoundsPx[0]} max={camBoundsPx[1]}
                       value={camPx ?? camBoundsPx} onChange={setCamPx} step={0.1} />
+                  </div>
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <ChipFilter label="Sensor" options={camSensors} selected={camSensor ? camSensors.find(s => s.startsWith(camSensor)) ?? null : null} onChange={(v) => setCamSensor(v ? v.replace(/ \(\d+\)$/, "") : null)} />
+                    <ToggleFilter label="Type" value={camColor} onChange={setCamColor} labelYes="Color" labelNo="Mono" />
+                    <ToggleFilter label="Cooling" value={camCooling} onChange={setCamCooling} labelYes="Cooled" labelNo="Uncooled" />
                   </div>
                 </Card>
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
@@ -286,12 +341,17 @@ const RigBuilder = () => {
           <TabsContent value="mounts">
             {loadingMounts ? <LoadingSkeleton /> : (
               <>
-                <Card className="border-border/50 mt-4 p-4">
+                <Card className="border-border/50 mt-4 p-4 space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <RangeFilter label="Payload Capacity" unit="kg" min={mntBoundsPayload[0]} max={mntBoundsPayload[1]}
                       value={mntPayload ?? mntBoundsPayload} onChange={setMntPayload} step={1} />
                     <RangeFilter label="Mount Weight" unit="kg" min={mntBoundsWeight[0]} max={mntBoundsWeight[1]}
                       value={mntWeight ?? mntBoundsWeight} onChange={setMntWeight} step={0.5} />
+                  </div>
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <ChipFilter label="Type" options={mntTypes} selected={mntType} onChange={setMntType} />
+                    <ToggleFilter label="GoTo" value={mntGoto} onChange={setMntGoto} />
+                    <ChipFilter label="Brand" options={mntBrands} selected={mntBrand} onChange={setMntBrand} />
                   </div>
                 </Card>
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
@@ -348,8 +408,14 @@ const RigBuilder = () => {
           <TabsContent value="filters">
             {loadingFilters ? <LoadingSkeleton /> : (
               <>
+                <Card className="border-border/50 mt-4 p-4 space-y-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <ChipFilter label="Type" options={filterTypes} selected={filterType} onChange={setFilterType} />
+                    <ChipFilter label="Size" options={filterSizes} selected={filterSize} onChange={setFilterSize} />
+                  </div>
+                </Card>
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
-                  {filters?.map(f => {
+                  {filteredFilts.map(f => {
                     const { best } = extractPrices(f._raw ?? {});
                     return (
                       <EquipmentCard

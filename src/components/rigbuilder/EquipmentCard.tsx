@@ -52,11 +52,10 @@ export function EquipmentCard({
           </div>
         ) : (
           <div className="rounded-md bg-secondary/10 flex items-center justify-center aspect-square">
-            <span className="text-muted-foreground text-[10px]">Pas d'image</span>
+            <span className="text-muted-foreground text-[10px]">No image</span>
           </div>
         )}
 
-        {/* Best price badge */}
         {bestPrice && (
           <div
             className="flex items-center gap-1 text-[10px]"
@@ -66,10 +65,10 @@ export function EquipmentCard({
             {bestPrice.url ? (
               <a href={bestPrice.url} target="_blank" rel="noopener noreferrer"
                 className="text-primary hover:underline font-semibold">
-                À partir de {bestPrice.price.toLocaleString("fr-FR")}€
+                From {bestPrice.price.toLocaleString()}€
               </a>
             ) : (
-              <span className="text-primary font-semibold">À partir de {bestPrice.price.toLocaleString("fr-FR")}€</span>
+              <span className="text-primary font-semibold">From {bestPrice.price.toLocaleString()}€</span>
             )}
             <span className="text-muted-foreground">({bestPrice.label})</span>
           </div>
@@ -101,7 +100,7 @@ export function EquipmentCard({
             {affiliateAstro && (
               <a href={affiliateAstro} target="_blank" rel="noopener noreferrer"
                 className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
-                <ExternalLink className="w-2.5 h-2.5" /> Boutique
+                <ExternalLink className="w-2.5 h-2.5" /> Shop
               </a>
             )}
           </div>

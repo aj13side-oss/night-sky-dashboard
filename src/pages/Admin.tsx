@@ -23,7 +23,7 @@ const Admin = () => {
       setAuthed(true);
       return;
     }
-    const code = prompt("Code d'accès admin :");
+    const code = prompt("Admin access code:");
     if (code === ADMIN_CODE) {
       localStorage.setItem("admin_auth", "true");
       setAuthed(true);
@@ -42,16 +42,16 @@ const Admin = () => {
           <ShieldCheck className="w-8 h-8 text-primary" />
           <div>
             <h1 className="text-3xl font-bold text-foreground">Admin Panel</h1>
-            <p className="text-sm text-muted-foreground">Gestion du contenu AstroDash</p>
+            <p className="text-sm text-muted-foreground">AstroDash content management</p>
           </div>
         </div>
 
         <Tabs defaultValue="stats">
           <TabsList className="flex flex-wrap h-auto gap-1">
             <TabsTrigger value="stats" className="gap-1.5 text-xs"><BarChart3 className="w-3.5 h-3.5" /> Stats</TabsTrigger>
-            <TabsTrigger value="images" className="gap-1.5 text-xs"><ImageIcon className="w-3.5 h-3.5" /> Images Équip.</TabsTrigger>
-            <TabsTrigger value="celestial" className="gap-1.5 text-xs"><Star className="w-3.5 h-3.5" /> Images Célestes</TabsTrigger>
-            <TabsTrigger value="prices" className="gap-1.5 text-xs"><DollarSign className="w-3.5 h-3.5" /> Prix</TabsTrigger>
+            <TabsTrigger value="images" className="gap-1.5 text-xs"><ImageIcon className="w-3.5 h-3.5" /> Equip. Images</TabsTrigger>
+            <TabsTrigger value="celestial" className="gap-1.5 text-xs"><Star className="w-3.5 h-3.5" /> Celestial Images</TabsTrigger>
+            <TabsTrigger value="prices" className="gap-1.5 text-xs"><DollarSign className="w-3.5 h-3.5" /> Prices</TabsTrigger>
             <TabsTrigger value="urls" className="gap-1.5 text-xs"><Link className="w-3.5 h-3.5" /> URLs</TabsTrigger>
             <TabsTrigger value="presets" className="gap-1.5 text-xs"><Layers className="w-3.5 h-3.5" /> Presets</TabsTrigger>
             <TabsTrigger value="logs" className="gap-1.5 text-xs"><Terminal className="w-3.5 h-3.5" /> Logs</TabsTrigger>

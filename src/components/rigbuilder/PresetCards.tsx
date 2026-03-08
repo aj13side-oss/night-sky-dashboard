@@ -6,14 +6,14 @@ import {
 import type { RigPreset } from "@/hooks/useEquipmentCatalog";
 
 const USE_CASE_LABELS: Record<string, string> = {
-  beginner_deepsky: "Ciel profond débutant",
-  intermediate_deepsky: "Ciel profond intermédiaire",
-  advanced_deepsky: "Ciel profond avancé",
-  widefield: "Grand champ",
+  beginner_deepsky: "Beginner Deep Sky",
+  intermediate_deepsky: "Intermediate Deep Sky",
+  advanced_deepsky: "Advanced Deep Sky",
+  widefield: "Wide Field",
   narrowband: "Narrowband",
-  beginner_planetary: "Planétaire",
+  beginner_planetary: "Planetary",
   budget: "Budget",
-  portable: "Portable / Nomade",
+  portable: "Portable / Travel",
   premium: "Premium",
 };
 
@@ -54,7 +54,7 @@ export function PresetCards({ presets, onLoad }: PresetCardsProps) {
               </div>
               {isFeatured && (
                 <Badge variant="secondary" className="text-[9px] px-1.5 py-0 shrink-0">
-                  Populaire
+                  Popular
                 </Badge>
               )}
             </div>
@@ -68,7 +68,7 @@ export function PresetCards({ presets, onLoad }: PresetCardsProps) {
 
             {p.budget_min_eur != null && p.budget_max_eur != null && (
               <span className="text-xs font-mono text-primary">
-                {p.budget_min_eur.toLocaleString("fr-FR")} – {p.budget_max_eur.toLocaleString("fr-FR")}€
+                {p.budget_min_eur.toLocaleString()} – {p.budget_max_eur.toLocaleString()}€
               </span>
             )}
 
@@ -82,7 +82,7 @@ export function PresetCards({ presets, onLoad }: PresetCardsProps) {
               className="w-full h-7 text-xs border-primary/30 hover:bg-primary/10"
               onClick={() => onLoad(p)}
             >
-              Charger cette config
+              Load this config
             </Button>
           </div>
         );

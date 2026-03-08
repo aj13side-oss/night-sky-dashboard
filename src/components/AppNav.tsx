@@ -6,9 +6,9 @@ import { useState, useEffect } from "react";
 const navItems = [
   { to: "/", label: "Dashboard", icon: Home },
   { to: "/sky-atlas", label: "Atlas", icon: Map },
-  { to: "/fov-calculator", label: "Champ", icon: Crosshair },
-  { to: "/light-pollution", label: "Ciel noir", icon: Eclipse },
-  { to: "/equipment", label: "Équipement", icon: Settings },
+  { to: "/fov-calculator", label: "FOV", icon: Crosshair },
+  { to: "/light-pollution", label: "Dark Sky", icon: Eclipse },
+  { to: "/equipment", label: "Gear", icon: Settings },
   { to: "/rig-builder", label: "Rig Builder", icon: Scale },
 ];
 
@@ -56,10 +56,10 @@ const AppNav = () => {
                 ? "bg-red-900/30 text-red-400"
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
             )}
-            title={nightVision ? "Désactiver vision nocturne" : "Activer vision nocturne"}
+            title={nightVision ? "Disable night vision" : "Enable night vision"}
           >
             {nightVision ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline text-xs">{nightVision ? "Normal" : "Nuit"}</span>
+            <span className="hidden sm:inline text-xs">{nightVision ? "Normal" : "Night"}</span>
           </button>
         </nav>
       </div>

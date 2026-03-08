@@ -19,8 +19,8 @@ export function EquipmentTab({ loading, filters, searchBar, resultCount, searchQ
       {searchBar}
 
       <p className="text-xs text-muted-foreground mt-2">
-        {resultCount} résultat{resultCount > 1 ? "s" : ""}
-        {searchQuery && ` pour "${searchQuery}"`}
+        {resultCount} result{resultCount > 1 ? "s" : ""}
+        {searchQuery && ` for "${searchQuery}"`}
       </p>
 
       <Card className="border-border/50 mt-4 p-4 space-y-4">

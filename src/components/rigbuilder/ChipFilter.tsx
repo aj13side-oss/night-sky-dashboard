@@ -22,7 +22,7 @@ export function ChipFilter({ label, options, selected, onChange }: ChipFilterPro
               : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
           )}
         >
-          Tous
+          All
         </button>
         {options.map(opt => (
           <button
@@ -45,13 +45,13 @@ export function ChipFilter({ label, options, selected, onChange }: ChipFilterPro
 
 interface ToggleFilterProps {
   label: string;
-  value: boolean | null; // null = all, true = yes, false = no
+  value: boolean | null;
   onChange: (v: boolean | null) => void;
   labelYes?: string;
   labelNo?: string;
 }
 
-export function ToggleFilter({ label, value, onChange, labelYes = "Oui", labelNo = "Non" }: ToggleFilterProps) {
+export function ToggleFilter({ label, value, onChange, labelYes = "Yes", labelNo = "No" }: ToggleFilterProps) {
   return (
     <div className="space-y-1.5">
       <span className="text-xs text-muted-foreground">{label}</span>
@@ -67,7 +67,7 @@ export function ToggleFilter({ label, value, onChange, labelYes = "Oui", labelNo
                 : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
             )}
           >
-            {v === null ? "Tous" : v ? labelYes : labelNo}
+            {v === null ? "All" : v ? labelYes : labelNo}
           </button>
         ))}
       </div>

@@ -34,6 +34,7 @@ export default function AdminCelestialAudit() {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"catalog_id" | "common_name" | "magnitude" | "status">("catalog_id");
   const [filterStatus, setFilterStatus] = useState("all");
+  const needsClientFilter = filterStatus !== "all";
   const [replacing, setReplacing] = useState<string | null>(null);
   const [newUrl, setNewUrl] = useState("");
   const [healthMap, setHealthMap] = useState<Record<string, ImageHealth>>({});
@@ -59,7 +60,7 @@ export default function AdminCelestialAudit() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin_celestial", page, objType, constellation, search, sortBy],
+    queryKey: ["admin_celestial", needsClientFilter ? "all" : page, objType, constellation, search, sortBy],
     queryFn: async () => {
       let q = (supabase as any)
         .from("celestial_objects")
@@ -75,15 +76,16 @@ export default function AdminCelestialAudit() {
       if (search.trim()) {
         q = q.or(`catalog_id.ilike.%${search.trim()}%,common_name.ilike.%${search.trim()}%`);
       }
-      q = q.range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+      // When a status filter is active, fetch ALL items for client-side filtering + pagination
+      if (!needsClientFilter) {
+        q = q.range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+      }
       const { data, count, error } = await q;
       if (error) throw error;
       return { items: data ?? [], total: count ?? 0 };
     },
     staleTime: 1000 * 60 * 5,
   });
-
-  const totalPages = Math.ceil((data?.total ?? 0) / PAGE_SIZE);
 
   const setStatus = (id: string, s: AuditStatus) => {
     setAuditMutation.mutate({ targetId: id, status: s });
@@ -123,7 +125,8 @@ export default function AdminCelestialAudit() {
     setScanning(false);
   }, [data]);
 
-  const displayed = useMemo(() => {
+  // Apply client-side filtering
+  const filteredAll = useMemo(() => {
     if (!data?.items) return [];
     let list = data.items;
     if (filterStatus !== "all") {
@@ -151,6 +154,18 @@ export default function AdminCelestialAudit() {
     }
     return list;
   }, [data, filterStatus, audit, healthMap, sortBy]);
+
+  // When client-side filtering, paginate the filtered results; otherwise use server results directly
+  const totalPages = needsClientFilter
+    ? Math.ceil(filteredAll.length / PAGE_SIZE)
+    : Math.ceil((data?.total ?? 0) / PAGE_SIZE);
+
+  const displayed = useMemo(() => {
+    if (needsClientFilter) {
+      return filteredAll.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+    }
+    return filteredAll;
+  }, [filteredAll, needsClientFilter, page]);
 
   const healthBadge = (id: string) => {
     const h = healthMap[id];
@@ -273,7 +288,9 @@ export default function AdminCelestialAudit() {
           {scanning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3" />}
           {scanning ? "Scan en cours..." : "Scanner les images"}
         </Button>
-        <span className="text-xs text-muted-foreground">{data?.total ?? 0} objets · Page {page + 1}/{totalPages || 1}</span>
+        <span className="text-xs text-muted-foreground">
+          {needsClientFilter ? `${filteredAll.length} filtrés / ${data?.total ?? 0}` : `${data?.total ?? 0} objets`} · Page {page + 1}/{totalPages || 1}
+        </span>
       </div>
 
       <div className="flex flex-wrap gap-4">

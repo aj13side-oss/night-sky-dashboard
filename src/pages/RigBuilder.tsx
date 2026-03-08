@@ -202,12 +202,16 @@ const RigBuilder = () => {
           <TabsContent value="telescopes">
             {loadingScopes ? <LoadingSkeleton /> : (
               <>
-                <Card className="border-border/50 mt-4 p-4">
+                <Card className="border-border/50 mt-4 p-4 space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <RangeFilter label="Focal Length" unit="mm" min={scopeBoundsFL[0]} max={scopeBoundsFL[1]}
                       value={scopeFL ?? scopeBoundsFL} onChange={setScopeFL} step={10} />
                     <RangeFilter label="Aperture" unit="mm" min={scopeBoundsAp[0]} max={scopeBoundsAp[1]}
                       value={scopeAp ?? scopeBoundsAp} onChange={setScopeAp} step={5} />
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <ChipFilter label="Type" options={scopeTypes} selected={scopeType} onChange={setScopeType} />
+                    <ChipFilter label="Brand" options={scopeBrands} selected={scopeBrand} onChange={setScopeBrand} />
                   </div>
                 </Card>
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
@@ -264,12 +268,17 @@ const RigBuilder = () => {
           <TabsContent value="cameras">
             {loadingCams ? <LoadingSkeleton /> : (
               <>
-                <Card className="border-border/50 mt-4 p-4">
+                <Card className="border-border/50 mt-4 p-4 space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <RangeFilter label="Sensor Width" unit="mm" min={camBoundsSW[0]} max={camBoundsSW[1]}
                       value={camSW ?? camBoundsSW} onChange={setCamSW} step={0.5} />
                     <RangeFilter label="Pixel Size" unit="µm" min={camBoundsPx[0]} max={camBoundsPx[1]}
                       value={camPx ?? camBoundsPx} onChange={setCamPx} step={0.1} />
+                  </div>
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <ChipFilter label="Sensor" options={camSensors} selected={camSensor ? camSensors.find(s => s.startsWith(camSensor)) ?? null : null} onChange={(v) => setCamSensor(v ? v.replace(/ \(\d+\)$/, "") : null)} />
+                    <ToggleFilter label="Type" value={camColor} onChange={setCamColor} labelYes="Color" labelNo="Mono" />
+                    <ToggleFilter label="Cooling" value={camCooling} onChange={setCamCooling} labelYes="Cooled" labelNo="Uncooled" />
                   </div>
                 </Card>
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
@@ -332,12 +341,17 @@ const RigBuilder = () => {
           <TabsContent value="mounts">
             {loadingMounts ? <LoadingSkeleton /> : (
               <>
-                <Card className="border-border/50 mt-4 p-4">
+                <Card className="border-border/50 mt-4 p-4 space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <RangeFilter label="Payload Capacity" unit="kg" min={mntBoundsPayload[0]} max={mntBoundsPayload[1]}
                       value={mntPayload ?? mntBoundsPayload} onChange={setMntPayload} step={1} />
                     <RangeFilter label="Mount Weight" unit="kg" min={mntBoundsWeight[0]} max={mntBoundsWeight[1]}
                       value={mntWeight ?? mntBoundsWeight} onChange={setMntWeight} step={0.5} />
+                  </div>
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <ChipFilter label="Type" options={mntTypes} selected={mntType} onChange={setMntType} />
+                    <ToggleFilter label="GoTo" value={mntGoto} onChange={setMntGoto} />
+                    <ChipFilter label="Brand" options={mntBrands} selected={mntBrand} onChange={setMntBrand} />
                   </div>
                 </Card>
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
@@ -394,8 +408,14 @@ const RigBuilder = () => {
           <TabsContent value="filters">
             {loadingFilters ? <LoadingSkeleton /> : (
               <>
+                <Card className="border-border/50 mt-4 p-4 space-y-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <ChipFilter label="Type" options={filterTypes} selected={filterType} onChange={setFilterType} />
+                    <ChipFilter label="Size" options={filterSizes} selected={filterSize} onChange={setFilterSize} />
+                  </div>
+                </Card>
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
-                  {filters?.map(f => {
+                  {filteredFilts.map(f => {
                     const { best } = extractPrices(f._raw ?? {});
                     return (
                       <EquipmentCard

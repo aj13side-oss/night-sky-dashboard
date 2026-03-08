@@ -4,12 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 // Retailer price/url pairs — column names match DB: price_amazon, url_amazon, etc.
 const RETAILERS = [
   "amazon",
-  "astroshop",
   "pierro_astro",
-  "maison_astronomie",
-  "telescope_shop",
-  "bhphoto",
-  "opticalpro",
+  "optique_unterlinden",
+  "agena",
+  "high_point_scientific",
+  "astronome_fr",
+  "astroshop_de",
+  "univers_astro",
 ] as const;
 type RetailerKey = typeof RETAILERS[number];
 
@@ -22,12 +23,13 @@ export interface RetailerInfo {
 
 const RETAILER_LABELS: Record<RetailerKey, string> = {
   amazon: "Amazon",
-  astroshop: "Astroshop",
   pierro_astro: "Pierro Astro",
-  maison_astronomie: "Maison Astronomie",
-  telescope_shop: "Telescope Shop",
-  bhphoto: "B&H Photo",
-  opticalpro: "Optical Pro",
+  optique_unterlinden: "Optique Unterlinden",
+  agena: "Agena Astro",
+  high_point_scientific: "High Point Scientific",
+  astronome_fr: "Astronome.fr",
+  astroshop_de: "Astroshop",
+  univers_astro: "Univers Astro",
 };
 
 /** Extract best price and all retailer info from a raw DB row */
@@ -58,8 +60,8 @@ export interface AstroCamera {
   is_color: boolean | null;
   image_url: string | null;
   url_amazon: string | null;
-  url_astroshop: string | null;
-  manufacturer_url: string | null;
+  url_astroshop_de: string | null;
+  url_manufacturer: string | null;
   weight_g: number | null;
   weight_kg: number | null;
   internal_backfocus_mm: number | null;
@@ -84,8 +86,8 @@ export interface AstroTelescope {
   weight_kg: number | null;
   image_url: string | null;
   url_amazon: string | null;
-  url_astroshop: string | null;
-  manufacturer_url: string | null;
+  url_astroshop_de: string | null;
+  url_manufacturer: string | null;
   required_backfocus_mm: number | null;
   image_circle_mm: number | null;
   output_thread: string | null;
@@ -103,8 +105,8 @@ export interface AstroMount {
   mount_type: string | null;
   image_url: string | null;
   url_amazon: string | null;
-  url_astroshop: string | null;
-  manufacturer_url: string | null;
+  url_astroshop_de: string | null;
+  url_manufacturer: string | null;
   connectivity: string | null;
   periodic_error_arcsec: number | null;
   is_goto: boolean | null;
@@ -121,8 +123,8 @@ export interface AstroFilter {
   size: string | null;
   image_url: string | null;
   url_amazon: string | null;
-  url_astroshop: string | null;
-  manufacturer_url: string | null;
+  url_astroshop_de: string | null;
+  url_manufacturer: string | null;
   thickness_mm: number | null;
   _raw: Record<string, any>;
 }
@@ -131,15 +133,15 @@ export interface AstroAccessory {
   id: string;
   brand: string;
   model: string;
-  category: string | null; // DB column is "category" not "type"
-  backfocus_contribution_mm: number | null;
+  category: string | null;
+  optical_length_mm: number | null;
   weight_g: number | null;
-  input_connection: string | null; // DB column is "input_connection" not "input_thread"
-  output_thread: string | null;
+  input_connection: string | null;
+  output_connection: string | null;
   image_url: string | null;
   url_amazon: string | null;
-  url_astroshop: string | null;
-  manufacturer_url: string | null;
+  url_astroshop_de: string | null;
+  url_manufacturer: string | null;
   _raw: Record<string, any>;
 }
 
@@ -151,7 +153,8 @@ function mapCamera(row: any): AstroCamera {
     weight_kg: weight_g ? weight_g / 1000 : (row.weight_kg ?? null),
     interface_type: row.interface_usb ?? row.interface_type ?? null,
     url_amazon: row.url_amazon ?? null,
-    url_astroshop: row.url_astroshop ?? null,
+    url_astroshop_de: row.url_astroshop_de ?? null,
+    url_manufacturer: row.url_manufacturer ?? null,
     _raw: row,
   };
 }
@@ -183,7 +186,8 @@ export function useTelescopes() {
       return ((data ?? []) as any[]).map(r => ({
         ...r,
         url_amazon: r.url_amazon ?? null,
-        url_astroshop: r.url_astroshop ?? null,
+        url_astroshop_de: r.url_astroshop_de ?? null,
+        url_manufacturer: r.url_manufacturer ?? null,
         _raw: r,
       })) as AstroTelescope[];
     },
@@ -203,7 +207,8 @@ export function useMounts() {
       return ((data ?? []) as any[]).map(r => ({
         ...r,
         url_amazon: r.url_amazon ?? null,
-        url_astroshop: r.url_astroshop ?? null,
+        url_astroshop_de: r.url_astroshop_de ?? null,
+        url_manufacturer: r.url_manufacturer ?? null,
         _raw: r,
       })) as AstroMount[];
     },
@@ -223,7 +228,8 @@ export function useFilters() {
       return ((data ?? []) as any[]).map(r => ({
         ...r,
         url_amazon: r.url_amazon ?? null,
-        url_astroshop: r.url_astroshop ?? null,
+        url_astroshop_de: r.url_astroshop_de ?? null,
+        url_manufacturer: r.url_manufacturer ?? null,
         _raw: r,
       })) as AstroFilter[];
     },
@@ -243,9 +249,12 @@ export function useAccessories() {
       return ((data ?? []) as any[]).map(r => ({
         ...r,
         category: r.category ?? null,
+        optical_length_mm: r.optical_length_mm ?? null,
         input_connection: r.input_connection ?? null,
+        output_connection: r.output_connection ?? null,
         url_amazon: r.url_amazon ?? null,
-        url_astroshop: r.url_astroshop ?? null,
+        url_astroshop_de: r.url_astroshop_de ?? null,
+        url_manufacturer: r.url_manufacturer ?? null,
         _raw: r,
       })) as AstroAccessory[];
     },

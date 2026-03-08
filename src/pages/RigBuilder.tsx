@@ -184,10 +184,10 @@ const RigBuilder = () => {
         </motion.div>
 
         {/* Rig Summary */}
-        <RigSummary telescope={pickedTelescope} camera={pickedCamera} mount={pickedMount} filter={pickedFilter} />
+        <RigSummary telescope={pickedTelescope} camera={pickedCamera} mount={pickedMount} filter={pickedFilter} accessories={pickedAccessories} />
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as Category)}>
-          <TabsList className="grid grid-cols-4 w-full max-w-lg">
+          <TabsList className="grid grid-cols-5 w-full max-w-2xl">
             <TabsTrigger value="telescopes" className="gap-1.5">
               <Telescope className="w-3.5 h-3.5" /> Optics
             </TabsTrigger>
@@ -199,6 +199,9 @@ const RigBuilder = () => {
             </TabsTrigger>
             <TabsTrigger value="filters" className="gap-1.5">
               <Filter className="w-3.5 h-3.5" /> Filters
+            </TabsTrigger>
+            <TabsTrigger value="accessories" className="gap-1.5">
+              <Wrench className="w-3.5 h-3.5" /> Acc.
             </TabsTrigger>
           </TabsList>
 

@@ -77,8 +77,10 @@ export default function AdminCelestialAudit() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin_celestial", needsClientFilter ? "all" : page, objType, constellation, search, sortBy],
+    queryKey: ["admin_celestial", needsClientFilter ? "all" : page, objType, constellation, search, sortBy, catalogPrefix],
     queryFn: async () => {
+      const knownPrefixes = CATALOG_PREFIXES.filter(p => p.value !== "all" && p.value !== "other").map(p => p.value);
+
       const buildQuery = () => {
         let q = (supabase as any)
           .from("celestial_objects")
@@ -93,7 +95,16 @@ export default function AdminCelestialAudit() {
         if (search.trim()) {
           q = q.or(`catalog_id.ilike.%${search.trim()}%,common_name.ilike.%${search.trim()}%`);
         }
+        // Server-side catalog prefix filter
+        if (catalogPrefix !== "all" && catalogPrefix !== "other") {
+          q = q.ilike("catalog_id", `${catalogPrefix}%`);
+        }
         return q;
+      };
+
+      const filterOther = (items: any[]) => {
+        if (catalogPrefix !== "other") return items;
+        return items.filter((i: any) => !knownPrefixes.some(p => i.catalog_id?.startsWith(p)));
       };
 
       if (!needsClientFilter) {

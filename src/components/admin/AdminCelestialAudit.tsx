@@ -1,15 +1,17 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2 } from "lucide-react";
+import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChipFilter } from "@/components/rigbuilder/ChipFilter";
 import { thumb400 } from "@/lib/utils";
 import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus, type ImageHealth } from "@/hooks/useImageAudit";
+import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
+import AuditBatchBar from "./AuditBatchBar";
 
 const PAGE_SIZE = 50;
 
@@ -34,6 +36,10 @@ export default function AdminCelestialAudit() {
   const [newUrl, setNewUrl] = useState("");
   const [healthMap, setHealthMap] = useState<Record<string, ImageHealth>>({});
   const [scanning, setScanning] = useState(false);
+  const [cmdOpen, setCmdOpen] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [focusIndex, setFocusIndex] = useState(-1);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const { data: audit = {} } = useAuditStatuses("celestial_objects");
   const setAuditMutation = useSetAuditStatus("celestial_objects");
@@ -100,9 +106,7 @@ export default function AdminCelestialAudit() {
           return { id: item.id, health };
         })
       );
-      for (const r of batchResults) {
-        results[r.id] = r.health;
-      }
+      for (const r of batchResults) results[r.id] = r.health;
     }
 
     setHealthMap(prev => ({ ...prev, ...results }));
@@ -135,6 +139,89 @@ export default function AdminCelestialAudit() {
     return null;
   };
 
+  // Ctrl+K
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); setCmdOpen(o => !o); }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  const toggleSelect = useCallback((id: string) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }, []);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (displayed.length === 0) return;
+      const cols = gridRef.current ? Math.round(gridRef.current.offsetWidth / ((gridRef.current.firstElementChild as HTMLElement)?.offsetWidth || 1)) : 8;
+
+      if (e.key === "ArrowRight") { e.preventDefault(); setFocusIndex(i => Math.min(i + 1, displayed.length - 1)); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); setFocusIndex(i => Math.max(i - 1, 0)); }
+      else if (e.key === "ArrowDown") { e.preventDefault(); setFocusIndex(i => Math.min(i + cols, displayed.length - 1)); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); setFocusIndex(i => Math.max(i - cols, 0)); }
+      else if (focusIndex >= 0 && focusIndex < displayed.length) {
+        const item = displayed[focusIndex];
+        if (e.key === "1") { e.preventDefault(); setStatus(item.id, "ok"); }
+        else if (e.key === "2") { e.preventDefault(); setStatus(item.id, "flagged"); }
+        else if (e.key === "3") { e.preventDefault(); setReplacing(replacing === item.id ? null : item.id); setNewUrl(""); }
+        else if (e.key === "4") { e.preventDefault(); window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${item.catalog_id} ${item.common_name || ''} astronomy astrophotography`)}`, "_blank"); }
+        else if (e.key === " " || e.key === "Space") { e.preventDefault(); toggleSelect(item.id); }
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [displayed, focusIndex, replacing, toggleSelect]);
+
+  useEffect(() => {
+    if (focusIndex >= 0 && gridRef.current) {
+      const card = gridRef.current.children[focusIndex] as HTMLElement;
+      card?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }, [focusIndex]);
+
+  const cmdItems: AuditableItem[] = useMemo(() =>
+    (data?.items ?? []).map((i: any) => ({
+      id: i.id,
+      label: `${i.catalog_id} ${i.common_name || ""}`.trim(),
+      sublabel: `${i.obj_type || ""} · ${i.constellation || ""}`,
+      hasImage: !!i.forced_image_url,
+      status: audit[i.id],
+    }))
+  , [data, audit]);
+
+  const handleCmdAction = useCallback((id: string, action: "ok" | "flag" | "replace" | "google" | "focus") => {
+    const item = (data?.items ?? []).find((i: any) => i.id === id);
+    if (!item) return;
+    if (action === "ok") setAuditMutation.mutate({ targetId: id, status: "ok" });
+    else if (action === "flag") setAuditMutation.mutate({ targetId: id, status: "flagged" });
+    else if (action === "google") window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${item.catalog_id} ${item.common_name || ''} astronomy astrophotography`)}`, "_blank");
+    else if (action === "focus" || action === "replace") {
+      const idx = displayed.findIndex((i: any) => i.id === id);
+      if (idx >= 0) setFocusIndex(idx);
+      if (action === "replace") { setReplacing(id); setNewUrl(""); }
+    }
+  }, [data, displayed, setAuditMutation]);
+
+  // Batch actions
+  const batchOk = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "ok" })); setSelected(new Set()); toast.success(`${selected.size} marqués OK`); };
+  const batchFlag = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "flagged" })); setSelected(new Set()); toast.success(`${selected.size} signalés`); };
+  const batchGoogle = () => {
+    let count = 0;
+    selected.forEach(id => {
+      const item = (data?.items ?? []).find((i: any) => i.id === id);
+      if (item && count < 5) { window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${item.catalog_id} ${item.common_name || ''} astronomy astrophotography`)}`, "_blank"); count++; }
+    });
+    if (selected.size > 5) toast.info(`5 onglets ouverts sur ${selected.size} (limite navigateur)`);
+  };
+
   return (
     <div className="space-y-4 mt-4">
       <div className="flex items-center gap-3 flex-wrap">
@@ -144,6 +231,11 @@ export default function AdminCelestialAudit() {
             onChange={e => { setSearch(e.target.value); setPage(0); }}
             className="pl-9 bg-secondary/30 border-border/50" />
         </div>
+        <Button size="sm" variant="outline" onClick={() => setCmdOpen(true)} className="gap-1.5 text-xs">
+          <CommandIcon className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Recherche rapide</span>
+          <kbd className="ml-1 px-1 py-0.5 rounded bg-muted border border-border text-[9px]">⌘K</kbd>
+        </Button>
         <Button size="sm" variant="outline" onClick={scanImages} disabled={scanning} className="gap-1 text-xs">
           {scanning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3" />}
           {scanning ? "Scan en cours..." : "Scanner les images"}
@@ -165,16 +257,50 @@ export default function AdminCelestialAudit() {
         ))}
       </div>
 
+      <AuditBatchBar
+        count={selected.size}
+        onOk={batchOk}
+        onFlag={batchFlag}
+        onGoogle={batchGoogle}
+        onClear={() => setSelected(new Set())}
+      />
+
+      {focusIndex >= 0 && (
+        <div className="text-[10px] text-muted-foreground bg-muted/30 rounded px-2 py-1 flex gap-3 flex-wrap">
+          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">←→↑↓</kbd> naviguer</span>
+          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">1</kbd> OK</span>
+          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">2</kbd> Flag</span>
+          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">3</kbd> Remplacer</span>
+          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">4</kbd> Google</span>
+          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">Espace</kbd> sélectionner</span>
+        </div>
+      )}
+
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Chargement...</p>
       ) : (
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
-          {displayed.map((item: any) => {
+        <div ref={gridRef} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+          {displayed.map((item: any, idx: number) => {
             const status = audit[item.id] as AuditStatus | undefined;
-            const borderClass = status === "ok" ? "border-green-500/50" : status === "flagged" ? "border-red-500/50" : "border-border/50";
+            const isFocused = idx === focusIndex;
+            const isSelected = selected.has(item.id);
+            const borderClass = isFocused
+              ? "ring-2 ring-primary border-primary"
+              : isSelected
+                ? "ring-1 ring-primary/50 border-primary/50"
+                : status === "ok" ? "border-green-500/50" : status === "flagged" ? "border-red-500/50" : "border-border/50";
             return (
-              <Card key={item.id} className={`${borderClass} overflow-hidden`}>
+              <Card key={item.id} className={`${borderClass} overflow-hidden cursor-pointer transition-all`} onClick={() => setFocusIndex(idx)}>
                 <CardContent className="p-1.5 space-y-1">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1" />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleSelect(item.id); }}
+                      className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${isSelected ? "bg-primary border-primary text-primary-foreground" : "border-border/50 text-transparent hover:border-primary/50"}`}
+                    >
+                      {isSelected && <Check className="w-2.5 h-2.5" />}
+                    </button>
+                  </div>
                   {item.forced_image_url ? (
                     <div className="aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative">
                       <img src={thumb400(item.forced_image_url)} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" />
@@ -204,9 +330,7 @@ export default function AdminCelestialAudit() {
                       <RefreshCw className="w-2.5 h-2.5 mx-auto" />
                     </button>
                     <button
-                      onClick={() => {
-                        window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${item.catalog_id} ${item.common_name || ''} astronomy astrophotography`)}`, "_blank");
-                      }}
+                      onClick={() => window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${item.catalog_id} ${item.common_name || ''} astronomy astrophotography`)}`, "_blank")}
                       title="Google Images"
                       className="flex-1 py-0.5 rounded text-[8px] border border-border/50 text-muted-foreground hover:border-blue-500/50 hover:text-blue-400 transition-colors"
                     >
@@ -249,6 +373,8 @@ export default function AdminCelestialAudit() {
           Suivant <ChevronRight className="w-3 h-3" />
         </Button>
       </div>
+
+      <AuditCommandPalette open={cmdOpen} onOpenChange={setCmdOpen} items={cmdItems} onAction={handleCmdAction} />
     </div>
   );
 }

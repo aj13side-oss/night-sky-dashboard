@@ -196,7 +196,7 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
                         <img
                           src={useDetailFallback && wikiImage!.fallbackUrl ? wikiImage!.fallbackUrl : wikiImage!.url}
                           alt={`${obj.catalog_id} ${obj.common_name ?? ""}`}
-                          className="w-full h-auto hover:opacity-90 transition-opacity"
+                          className="w-full max-h-64 object-contain hover:opacity-90 transition-opacity"
                           onError={() => {
                             if (!useDetailFallback && wikiImage?.fallbackUrl) {
                               setUseDetailFallback(true);

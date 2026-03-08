@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown } from "lucide-react";
+import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,6 +38,7 @@ export default function AdminCelestialAudit() {
   const [replacing, setReplacing] = useState<string | null>(null);
   const [newUrl, setNewUrl] = useState("");
   const [healthMap, setHealthMap] = useState<Record<string, ImageHealth>>({});
+  const [brokenSet, setBrokenSet] = useState<Set<string>>(new Set());
   const [scanning, setScanning] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -144,6 +145,16 @@ export default function AdminCelestialAudit() {
     setScanning(false);
   }, [data]);
 
+  // Track broken images via onError
+  const markBroken = useCallback((id: string) => {
+    setBrokenSet(prev => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  }, []);
+
   // Apply client-side filtering
   const filteredAll = useMemo(() => {
     if (!data?.items) return [];
@@ -156,7 +167,7 @@ export default function AdminCelestialAudit() {
         if (filterStatus === "ok") return s === "ok";
         if (filterStatus === "unchecked") return !s || s === "unchecked";
         if (filterStatus === "heavy") return healthMap[item.id]?.status === "heavy";
-        if (filterStatus === "broken") return healthMap[item.id]?.status === "broken";
+        if (filterStatus === "broken") return brokenSet.has(item.id) || healthMap[item.id]?.status === "broken";
         return true;
       });
     }
@@ -172,7 +183,7 @@ export default function AdminCelestialAudit() {
       list = [...list].sort((a: any, b: any) => statusOrder(a.id) - statusOrder(b.id));
     }
     return list;
-  }, [data, filterStatus, audit, healthMap, sortBy]);
+  }, [data, filterStatus, audit, healthMap, sortBy, brokenSet]);
 
   // When client-side filtering, paginate the filtered results; otherwise use server results directly
   const totalPages = needsClientFilter
@@ -186,8 +197,39 @@ export default function AdminCelestialAudit() {
     return filteredAll;
   }, [filteredAll, needsClientFilter, page]);
 
+  // Grid columns count for row selection
+  const getGridCols = useCallback(() => {
+    if (!gridRef.current || !gridRef.current.firstElementChild) return 10;
+    const gridWidth = gridRef.current.offsetWidth;
+    const cardWidth = (gridRef.current.firstElementChild as HTMLElement).offsetWidth;
+    return Math.max(1, Math.round(gridWidth / cardWidth));
+  }, []);
+
+  const selectAll = useCallback(() => {
+    setSelected(new Set(displayed.map((i: any) => i.id)));
+  }, [displayed]);
+
+  const selectRow = useCallback((startIdx: number) => {
+    const cols = getGridCols();
+    const rowStart = Math.floor(startIdx / cols) * cols;
+    const rowEnd = Math.min(rowStart + cols, displayed.length);
+    setSelected(prev => {
+      const next = new Set(prev);
+      for (let i = rowStart; i < rowEnd; i++) next.add(displayed[i].id);
+      return next;
+    });
+  }, [displayed, getGridCols]);
+
+  const selectBroken = useCallback(() => {
+    const broken = displayed.filter((i: any) => brokenSet.has(i.id) || healthMap[i.id]?.status === "broken");
+    setSelected(new Set(broken.map((i: any) => i.id)));
+    toast.success(`${broken.length} images cassées sélectionnées`);
+  }, [displayed, brokenSet, healthMap]);
+
   const healthBadge = (id: string) => {
     const h = healthMap[id];
+    const isBroken = brokenSet.has(id);
+    if (isBroken && !h) return <Badge variant="destructive" className="text-[7px] px-1 py-0">Cassée</Badge>;
     if (!h) return null;
     if (h.status === "broken") return <Badge variant="destructive" className="text-[7px] px-1 py-0">Cassée</Badge>;
     if (h.status === "heavy") return <Badge className="text-[7px] px-1 py-0 bg-amber-500/20 text-amber-400 border-amber-500/50">{h.sizeKB}KB</Badge>;
@@ -309,6 +351,7 @@ export default function AdminCelestialAudit() {
         </Button>
         <span className="text-xs text-muted-foreground">
           {needsClientFilter ? `${filteredAll.length} filtrés / ${data?.total ?? 0}` : `${data?.total ?? 0} objets`} · Page {page + 1}/{totalPages || 1}
+          {brokenSet.size > 0 && <span className="text-destructive ml-1">· {brokenSet.size} cassées détectées</span>}
         </span>
       </div>
 
@@ -326,13 +369,28 @@ export default function AdminCelestialAudit() {
         ))}
       </div>
 
-      <AuditBatchBar
-        count={selected.size}
-        onOk={batchOk}
-        onFlag={batchFlag}
-        onGoogle={batchGoogle}
-        onClear={() => setSelected(new Set())}
-      />
+      <div className="flex items-center gap-2 flex-wrap">
+        <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={selectAll}>
+          <CheckSquare className="w-3 h-3" /> Tout sélectionner ({displayed.length})
+        </Button>
+        {focusIndex >= 0 && (
+          <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => selectRow(focusIndex)}>
+            <Rows3 className="w-3 h-3" /> Sélectionner la ligne
+          </Button>
+        )}
+        {brokenSet.size > 0 && (
+          <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-destructive/50 text-destructive" onClick={selectBroken}>
+            <X className="w-3 h-3" /> Sélectionner cassées ({brokenSet.size})
+          </Button>
+        )}
+        <AuditBatchBar
+          count={selected.size}
+          onOk={batchOk}
+          onFlag={batchFlag}
+          onGoogle={batchGoogle}
+          onClear={() => setSelected(new Set())}
+        />
+      </div>
 
       {focusIndex >= 0 && (
         <div className="text-[10px] text-muted-foreground bg-muted/30 rounded px-2 py-1 flex gap-3 flex-wrap">
@@ -371,8 +429,14 @@ export default function AdminCelestialAudit() {
                     </button>
                   </div>
                   {item.forced_image_url ? (
-                    <div className="aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative">
-                      <img src={thumbUrl(item.forced_image_url, 100)} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" />
+                    <div className={`aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ${brokenSet.has(item.id) ? "ring-1 ring-destructive" : ""}`}>
+                      <img
+                        src={thumbUrl(item.forced_image_url, 100)}
+                        alt={item.catalog_id}
+                        loading="lazy"
+                        className="max-h-full max-w-full object-contain"
+                        onError={() => markBroken(item.id)}
+                      />
                       <div className="absolute top-0.5 right-0.5">{healthBadge(item.id)}</div>
                     </div>
                   ) : (

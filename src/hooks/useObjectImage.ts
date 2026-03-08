@@ -11,6 +11,8 @@ export interface ObjectImage {
   pageUrl: string | null;
 }
 
+const STAR_TYPES = ["Star", "Double Star", "Variable Star", "Carbon Star", "Star System"];
+
 const ASTRO_CATEGORIES = [
   "astronomy", "nebulae", "galaxies", "messier objects", "ngc objects",
   "star clusters", "planetary nebulae", "emission nebulae", "reflection nebulae",
@@ -19,8 +21,33 @@ const ASTRO_CATEGORIES = [
 ];
 
 /**
- * Extract the Wikimedia Commons filename from a full upload URL.
- * Example: https://upload.wikimedia.org/wikipedia/commons/a/ab/Some_Image.jpg → Some_Image.jpg
+ * Build a Wikimedia thumbnail URL directly from a full-res commons URL.
+ * Pattern: .../commons/a/ab/File.jpg → .../commons/thumb/a/ab/File.jpg/{width}px-File.jpg
+ */
+function buildWikimediaThumbUrl(url: string, width: number): string | null {
+  try {
+    const u = new URL(url);
+    if (!u.hostname.includes("wikimedia.org") && !u.hostname.includes("wikipedia.org")) return null;
+
+    // Already a thumbnail URL
+    if (u.pathname.includes("/thumb/")) {
+      // Replace existing size
+      return url.replace(/\/\d+px-([^/]+)$/, `/${width}px-$1`);
+    }
+
+    // Full-res URL: .../commons/a/ab/File.jpg
+    const match = u.pathname.match(/\/wikipedia\/commons\/([\da-f]\/[\da-f]{2}\/(.+))$/i);
+    if (!match) return null;
+
+    const [, pathPart, fileName] = match;
+    return `https://upload.wikimedia.org/wikipedia/commons/thumb/${pathPart}/${width}px-${fileName}`;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Extract filename from a Wikimedia URL.
  */
 function extractWikimediaFilename(url: string): string | null {
   try {
@@ -29,30 +56,6 @@ function extractWikimediaFilename(url: string): string | null {
     const parts = u.pathname.split("/");
     const last = parts[parts.length - 1];
     return last ? decodeURIComponent(last) : null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Convert a full-resolution Wikimedia Commons URL to a thumbnail URL.
- * Example: .../commons/a/ab/Image.jpg → .../commons/thumb/a/ab/Image.jpg/800px-Image.jpg
- */
-/**
- * Use the Wikimedia API to get a proper thumbnail URL for a given filename.
- * This is more reliable than manually constructing URLs, which can fail for large files.
- */
-async function getWikimediaThumbnailUrl(fileName: string, width: number): Promise<string | null> {
-  try {
-    const apiUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(fileName)}&prop=imageinfo&iiprop=url&iiurlwidth=${width}&format=json&origin=*`;
-    const res = await fetch(apiUrl);
-    if (!res.ok) return null;
-    const data = await res.json();
-    const pages = data?.query?.pages;
-    if (!pages) return null;
-    const page = Object.values(pages)[0] as any;
-    const thumburl = page?.imageinfo?.[0]?.thumburl;
-    return thumburl || null;
   } catch {
     return null;
   }
@@ -115,60 +118,58 @@ async function fetchObjectImage(
   sizeArcmin: number | null,
   imageSearchQuery: string | null,
   forcedImageUrl: string | null,
+  objType: string | null,
   thumbWidth: number = 600
 ): Promise<ObjectImage> {
-  // 1. Forced image URL — use thumbnail version for Wikimedia, fetch metadata
+
+  // 1. Forced image URL — construct thumbnail directly, no API call
   if (forcedImageUrl) {
+    const thumbUrl = buildWikimediaThumbUrl(forcedImageUrl, thumbWidth);
+    const displayUrl = thumbUrl || forcedImageUrl;
+
+    // Fetch metadata in parallel (non-blocking for display)
     const fileName = extractWikimediaFilename(forcedImageUrl);
-    
+    let meta = { artist: null as string | null, date: null as string | null, license: null as string | null, licenseUrl: null as string | null, filePageUrl: null as string | null };
     if (fileName) {
-      const thumbUrl = await getWikimediaThumbnailUrl(fileName, thumbWidth);
-      
-      if (thumbUrl) {
-        // File exists on Commons — fetch metadata in background
-        const meta = await fetchWikimediaMetadata(fileName);
-        return {
-          url: thumbUrl,
-          artist: meta.artist ?? "Wikimedia Commons",
-          date: meta.date,
-          license: meta.license,
-          licenseUrl: meta.licenseUrl,
-          filePageUrl: meta.filePageUrl ?? null,
-          source: "forced",
-          pageUrl: meta.filePageUrl ?? null,
-        };
-      }
-      // Thumbnail API failed — try the raw URL directly (file may still load)
-      return {
-        url: forcedImageUrl,
-        artist: "Wikimedia Commons",
-        date: null,
-        license: null,
-        licenseUrl: null,
-        filePageUrl: null,
-        source: "forced",
-        pageUrl: null,
-      };
+      try {
+        meta = await fetchWikimediaMetadata(fileName);
+      } catch { /* ignore */ }
+    }
+
+    return {
+      url: displayUrl,
+      artist: meta.artist ?? (fileName ? "Wikimedia Commons" : null),
+      date: meta.date,
+      license: meta.license,
+      licenseUrl: meta.licenseUrl,
+      filePageUrl: meta.filePageUrl,
+      source: "forced",
+      pageUrl: meta.filePageUrl,
+    };
+  }
+
+  // 2. Stars → skip Wikipedia, go straight to Aladin
+  const isStar = objType && STAR_TYPES.some(t => objType.toLowerCase().includes(t.toLowerCase()));
+
+  // 3. Dynamic search via Wikipedia (skip for stars)
+  if (!isStar) {
+    const searchTerms = [
+      imageSearchQuery,
+      commonName,
+      catalogId.replace(/\s+/g, " "),
+      catalogId.startsWith("M") ? `Messier ${catalogId.slice(1).trim()}` : null,
+    ].filter(Boolean) as string[];
+
+    for (const term of searchTerms) {
+      const result = await tryWikipedia(term, thumbWidth);
+      if (result) return result;
     }
   }
 
-  // 2. Dynamic search via Wikipedia
-  const searchTerms = [
-    imageSearchQuery,
-    commonName,
-    catalogId.replace(/\s+/g, " "),
-    catalogId.startsWith("M") ? `Messier ${catalogId.slice(1).trim()}` : null,
-  ].filter(Boolean) as string[];
-
-  for (const term of searchTerms) {
-    const result = await tryWikipedia(term, thumbWidth);
-    if (result) return result;
-  }
-
-  // 3. Fallback: Aladin HiPS (DSS2 color) via CDS hips2fits
+  // 4. Fallback: Aladin HiPS (DSS2 color)
   if (ra != null && dec != null) {
     const fovDeg = sizeArcmin && sizeArcmin > 0 ? Math.min(Math.max(sizeArcmin * 1.5 / 60, 0.05), 5) : 0.5;
-    const fovDegThumb = fovDeg * 1.25; // 80% zoom out for better framing
+    const fovDegThumb = fovDeg * 1.25;
     const hipsUrl = `https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=CDS/P/DSS2/color&ra=${ra}&dec=${dec}&fov=${fovDegThumb}&width=300&height=200&format=jpg`;
     return {
       url: hipsUrl,
@@ -205,7 +206,6 @@ async function tryWikipedia(title: string, thumbWidth: number = 400): Promise<Ob
 
     const pageTitle = results[0].title;
 
-    // Check categories for astronomy relevance
     const catUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=categories&cllimit=50&format=json&origin=*`;
     const catRes = await fetch(catUrl);
     if (catRes.ok) {
@@ -223,7 +223,6 @@ async function tryWikipedia(title: string, thumbWidth: number = 400): Promise<Ob
       }
     }
 
-    // Get thumbnail image using requested width
     const imgUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=pageimages&piprop=thumbnail&pithumbsize=${thumbWidth}&format=json&origin=*`;
     const imgRes = await fetch(imgUrl);
     if (!imgRes.ok) return null;
@@ -239,7 +238,6 @@ async function tryWikipedia(title: string, thumbWidth: number = 400): Promise<Ob
     if (src.endsWith(".svg") || src.endsWith(".svg.png")) return null;
     if (thumbnail.width && thumbnail.width < 200) return null;
 
-    // Attribution
     const fileName = src.split("/").pop()?.split("?")[0];
     let artist: string | null = null;
     let date: string | null = null;
@@ -280,6 +278,7 @@ export function useObjectImage(
   sizeArcmin: number | null | undefined,
   imageSearchQuery?: string | null,
   forcedImageUrl?: string | null,
+  objType?: string | null,
   thumbWidth: number = 600
 ) {
   return useQuery({
@@ -293,6 +292,7 @@ export function useObjectImage(
         sizeArcmin ?? null,
         imageSearchQuery ?? null,
         forcedImageUrl ?? null,
+        objType ?? null,
         thumbWidth
       ),
     enabled: !!catalogId,

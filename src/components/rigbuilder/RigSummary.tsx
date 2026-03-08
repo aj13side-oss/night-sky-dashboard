@@ -1,8 +1,10 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, CheckCircle2, Cpu } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Cpu, DollarSign } from "lucide-react";
+import { extractPrices, useCompatibilityRules } from "@/hooks/useEquipmentCatalog";
 import type { AstroTelescope, AstroCamera, AstroMount, AstroFilter } from "@/hooks/useEquipmentCatalog";
 
 interface RigSummaryProps {
@@ -12,122 +14,211 @@ interface RigSummaryProps {
   filter: AstroFilter | null;
 }
 
+type CheckStatus = "ok" | "warning" | "error";
+
+interface Check {
+  key: string;
+  label: string;
+  value: string;
+  status: CheckStatus;
+  msg: string;
+}
+
 export function RigSummary({ telescope, camera, mount, filter }: RigSummaryProps) {
-  if (!telescope && !camera && !mount) return null;
+  const { data: rules } = useCompatibilityRules();
 
-  const fl = telescope?.focal_length_mm ?? 0;
-  const ap = telescope?.aperture_mm ?? 0;
-  const px = camera?.pixel_size_um ?? 0;
-  const sw = camera?.sensor_width_mm ?? 0;
-  const sh = camera?.sensor_height_mm ?? 0;
+  const diagnostics = useMemo(() => {
+    if (!telescope && !camera && !mount) return null;
 
-  // Sampling
-  const sampling = fl > 0 && px > 0 ? (px / fl) * 206.265 : null;
+    const checks: Check[] = [];
 
-  // FOV
-  const fovW = fl > 0 && sw > 0 ? (sw / fl) * (180 / Math.PI) * 60 : null;
-  const fovH = fl > 0 && sh > 0 ? (sh / fl) * (180 / Math.PI) * 60 : null;
+    const fl = telescope?.focal_length_mm ?? 0;
+    const ap = telescope?.aperture_mm ?? 0;
+    const px = camera?.pixel_size_um ?? 0;
+    const sw = camera?.sensor_width_mm ?? 0;
+    const sh = camera?.sensor_height_mm ?? 0;
 
-  // f/ratio
-  const fRatio = fl > 0 && ap > 0 ? fl / ap : null;
+    // Helper to get rule thresholds
+    const getRule = (key: string) => rules?.find(r => r.rule_key === key);
 
-  // Weight check
-  const telescopeWeight = telescope?.weight_kg ?? 0;
-  const cameraWeight = camera?.weight_kg ?? 0;
-  const totalPayload = telescopeWeight + cameraWeight + 1; // +1kg accessories
-  const mountPayload = mount?.payload_kg ?? 0;
-  const overloaded = mountPayload > 0 && totalPayload > mountPayload * 0.7;
-
-  // Backfocus
-  const requiredBF = telescope?.required_backfocus_mm ?? 0;
-  const cameraBF = camera?.internal_backfocus_mm ?? 0;
-  const filterCorrection = filter?.thickness_mm ? filter.thickness_mm / 3 : 0;
-  const spacerNeeded = requiredBF > 0 && cameraBF > 0 ? requiredBF - cameraBF - filterCorrection : null;
-
-  // Vignetting
-  const sensorDiag = sw > 0 && sh > 0 ? Math.sqrt(sw * sw + sh * sh) : 0;
-  const imageCircle = telescope?.image_circle_mm ?? 0;
-  const vignetting = imageCircle > 0 && sensorDiag > imageCircle;
-
-  // Connectivity
-  const cameraInterface = camera?.interface_type;
-  const mountInterface = mount?.connectivity;
-
-  const alerts: { type: "warning" | "error"; title: string; msg: string }[] = [];
-
-  if (overloaded) {
-    alerts.push({
-      type: "warning",
-      title: "Mount overloaded",
-      msg: `Total payload ~${totalPayload.toFixed(1)}kg exceeds 70% of mount capacity (${mountPayload}kg). Expect tracking instability.`,
-    });
-  }
-
-  if (sampling !== null) {
-    if (sampling < 0.6) {
-      alerts.push({ type: "warning", title: "Over-sampled", msg: `Sampling ${sampling.toFixed(2)}″/px — very sensitive to seeing/turbulence.` });
-    } else if (sampling > 2.5) {
-      alerts.push({ type: "warning", title: "Under-sampled", msg: `Sampling ${sampling.toFixed(2)}″/px — risk of blocky stars and lost detail.` });
+    // 1. Sampling
+    if (fl > 0 && px > 0) {
+      const sampling = (px / fl) * 206.265;
+      const rule = getRule("sampling");
+      const warnLow = rule?.threshold_warning ?? 0.6;
+      const warnHigh = rule?.threshold_error ?? 2.5;
+      let status: CheckStatus = "ok";
+      let msg = "Optimal for most seeing conditions";
+      if (sampling < warnLow) {
+        status = "warning";
+        msg = "Over-sampled — very sensitive to seeing/turbulence";
+      } else if (sampling > warnHigh) {
+        status = "warning";
+        msg = "Under-sampled — risk of blocky stars, lost detail";
+      }
+      checks.push({ key: "sampling", label: "Sampling", value: `${sampling.toFixed(2)}″/px`, status, msg });
     }
-  }
 
-  if (vignetting) {
-    alerts.push({
-      type: "error",
-      title: "Vignetting risk",
-      msg: `Sensor diagonal (${sensorDiag.toFixed(1)}mm) exceeds telescope image circle (${imageCircle}mm). Expect dark corners.`,
+    // 2. f/ratio
+    if (fl > 0 && ap > 0) {
+      const fRatio = fl / ap;
+      checks.push({
+        key: "fratio", label: "f/ Ratio", value: `f/${fRatio.toFixed(1)}`,
+        status: "ok",
+        msg: fRatio < 4 ? "Very fast — short exposures" : fRatio < 6 ? "Fast" : fRatio < 10 ? "Moderate" : "Slow — long exposures needed",
+      });
+    }
+
+    // 3. FOV
+    if (fl > 0 && sw > 0 && sh > 0) {
+      const fovW = (sw / fl) * (180 / Math.PI) * 60;
+      const fovH = (sh / fl) * (180 / Math.PI) * 60;
+      checks.push({
+        key: "fov", label: "Field of View", value: `${fovW.toFixed(0)}' × ${fovH.toFixed(0)}'`,
+        status: "ok", msg: "arcminutes",
+      });
+    }
+
+    // 4. Sensor / Image Circle ratio
+    if (sw > 0 && sh > 0 && telescope?.image_circle_mm) {
+      const diag = Math.sqrt(sw * sw + sh * sh);
+      const ic = telescope.image_circle_mm;
+      const ratio = diag / ic;
+      const rule = getRule("sensor_image_circle");
+      const warnT = rule?.threshold_warning ?? 0.85;
+      const errT = rule?.threshold_error ?? 1.0;
+      let status: CheckStatus = "ok";
+      let msg = `Sensor diagonal ${diag.toFixed(1)}mm fits image circle ${ic}mm`;
+      if (ratio > errT) {
+        status = "error";
+        msg = `Sensor diagonal (${diag.toFixed(1)}mm) exceeds image circle (${ic}mm) — severe vignetting`;
+      } else if (ratio > warnT) {
+        status = "warning";
+        msg = `Sensor diagonal (${diag.toFixed(1)}mm) near image circle limit (${ic}mm) — corner vignetting possible`;
+      }
+      checks.push({ key: "vignetting", label: "Vignetting", value: `${(ratio * 100).toFixed(0)}%`, status, msg });
+    }
+
+    // 5. Payload
+    const teleW = telescope?.weight_kg ?? 0;
+    const camW = camera?.weight_kg ?? camera?.weight_g ? (camera?.weight_g ?? 0) / 1000 : 0;
+    const totalPayload = teleW + camW + 1; // +1 kg accessories
+    if (mount?.payload_kg && mount.payload_kg > 0) {
+      const ratio = totalPayload / mount.payload_kg;
+      const rule = getRule("payload_ratio");
+      const warnT = rule?.threshold_warning ?? 0.50;
+      const errT = rule?.threshold_error ?? 0.65;
+      let status: CheckStatus = "ok";
+      let msg = `${totalPayload.toFixed(1)}kg / ${mount.payload_kg}kg — within safe limits`;
+      if (ratio > errT) {
+        status = "error";
+        msg = `Payload ${totalPayload.toFixed(1)}kg exceeds safe limit (${(errT * 100).toFixed(0)}% of ${mount.payload_kg}kg) — tracking instability`;
+      } else if (ratio > warnT) {
+        status = "warning";
+        msg = `Payload ${totalPayload.toFixed(1)}kg at ${(ratio * 100).toFixed(0)}% of capacity — approaching limit`;
+      }
+      checks.push({ key: "payload", label: "Payload", value: `${totalPayload.toFixed(1)} / ${mount.payload_kg}kg`, status, msg });
+    }
+
+    // 6. Backfocus
+    const reqBF = telescope?.required_backfocus_mm ?? 0;
+    const camBF = camera?.internal_backfocus_mm ?? 0;
+    if (reqBF > 0 && camBF > 0) {
+      const filterCorr = filter?.thickness_mm ? filter.thickness_mm / 3 : 0;
+      const spacer = reqBF - camBF - filterCorr;
+      const rule = getRule("backfocus");
+      const warnT = rule?.threshold_warning ?? 5;
+      let status: CheckStatus = "ok";
+      let msg = `Need ${spacer.toFixed(1)}mm spacer ring`;
+      if (Math.abs(spacer) > warnT) {
+        status = "warning";
+        msg = spacer < 0
+          ? `Camera backfocus exceeds requirement by ${Math.abs(spacer).toFixed(1)}mm — may cause issues`
+          : `${spacer.toFixed(1)}mm spacer needed — ensure accurate spacing`;
+      }
+      checks.push({ key: "backfocus", label: "Backfocus Spacer", value: `${spacer.toFixed(1)}mm`, status, msg });
+    }
+
+    // 7. Additional specs
+    if (camera?.interface_type || camera?.interface_usb) {
+      checks.push({ key: "cam_port", label: "Camera Port", value: camera.interface_usb ?? camera.interface_type ?? "", status: "ok", msg: "" });
+    }
+    if (mount?.connectivity) {
+      checks.push({ key: "mnt_port", label: "Mount Port", value: mount.connectivity, status: "ok", msg: "" });
+    }
+    if (camera?.qe_percent) {
+      checks.push({ key: "qe", label: "Quantum Efficiency", value: `${camera.qe_percent}%`, status: "ok", msg: camera.qe_percent >= 80 ? "Excellent" : camera.qe_percent >= 60 ? "Good" : "Average" });
+    }
+    if (camera?.read_noise_e) {
+      checks.push({ key: "readnoise", label: "Read Noise", value: `${camera.read_noise_e}e⁻`, status: "ok", msg: camera.read_noise_e <= 1.5 ? "Very low" : camera.read_noise_e <= 3 ? "Low" : "Moderate" });
+    }
+    if (mount?.periodic_error_arcsec) {
+      checks.push({ key: "pe", label: "Periodic Error", value: `±${mount.periodic_error_arcsec}″`, status: "ok", msg: mount.periodic_error_arcsec <= 5 ? "Excellent" : mount.periodic_error_arcsec <= 15 ? "Good" : "May need guiding" });
+    }
+
+    return checks;
+  }, [telescope, camera, mount, filter, rules]);
+
+  // Total estimated price
+  const totalPrice = useMemo(() => {
+    let total = 0;
+    let count = 0;
+    [telescope, camera, mount, filter].forEach(item => {
+      if (!item) return;
+      const { best } = extractPrices((item as any)._raw ?? {});
+      if (best) { total += best.price; count++; }
     });
-  }
+    return count > 0 ? { total, count } : null;
+  }, [telescope, camera, mount, filter]);
+
+  if (!diagnostics) return null;
+
+  const errors = diagnostics.filter(d => d.status === "error");
+  const warnings = diagnostics.filter(d => d.status === "warning");
+  const globalScore = errors.length > 0 ? "error" : warnings.length > 0 ? "warning" : "ok";
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-      {alerts.map((a, i) => (
-        <Alert key={i} variant={a.type === "error" ? "destructive" : "default"} className={a.type === "error" ? "" : "border-accent/40 bg-accent/5"}>
+      {/* Alert cards for errors/warnings */}
+      {[...errors, ...warnings].map((a) => (
+        <Alert key={a.key} variant={a.status === "error" ? "destructive" : "default"}
+          className={a.status === "error" ? "" : "border-accent/40 bg-accent/5"}>
           <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>{a.title}</AlertTitle>
+          <AlertTitle>{a.label}</AlertTitle>
           <AlertDescription className="text-xs">{a.msg}</AlertDescription>
         </Alert>
       ))}
 
+      {/* Score badge */}
       <Card className="border-primary/20 bg-primary/5">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Cpu className="w-5 h-5 text-primary" /> Rig Performance
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Cpu className="w-5 h-5 text-primary" /> Rig Performance
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              {totalPrice && (
+                <Badge variant="outline" className="gap-1 text-xs border-primary/40">
+                  <DollarSign className="w-3 h-3" />
+                  ~{totalPrice.total.toLocaleString("fr-FR")}€
+                  <span className="text-muted-foreground">({totalPrice.count} items)</span>
+                </Badge>
+              )}
+              <Badge
+                variant={globalScore === "ok" ? "default" : "destructive"}
+                className={globalScore === "ok" ? "bg-green-600/80 hover:bg-green-600" : globalScore === "warning" ? "bg-amber-600/80 hover:bg-amber-600" : ""}
+              >
+                {globalScore === "ok" ? "✓ Compatible" : globalScore === "warning" ? "⚠ Warnings" : "✗ Issues"}
+              </Badge>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {sampling !== null && (
-              <StatBlock label="Sampling" value={`${sampling.toFixed(2)}″/px`}
-                note={sampling < 0.6 ? "Over-sampled" : sampling <= 2.5 ? "Good range" : "Under-sampled"} />
-            )}
-            {fRatio !== null && (
-              <StatBlock label="f/ Ratio" value={`f/${fRatio.toFixed(1)}`}
-                note={fRatio < 4 ? "Very fast" : fRatio < 6 ? "Fast" : fRatio < 10 ? "Moderate" : "Slow"} />
-            )}
-            {fovW !== null && fovH !== null && (
-              <StatBlock label="Field of View" value={`${fovW.toFixed(0)}' × ${fovH.toFixed(0)}'`} note="arcminutes" />
-            )}
-            {mountPayload > 0 && (
-              <StatBlock label="Payload" value={`${totalPayload.toFixed(1)} / ${mountPayload}kg`}
-                note={overloaded ? "⚠️ Over 70%" : "✅ Within limits"} />
-            )}
-            {spacerNeeded !== null && (
-              <StatBlock label="Backfocus spacer" value={`${spacerNeeded.toFixed(1)}mm`}
-                note={spacerNeeded < 0 ? "⚠️ Too much backfocus" : "Spacer ring needed"} />
-            )}
-            {cameraInterface && (
-              <StatBlock label="Camera port" value={cameraInterface} note="" />
-            )}
-            {mountInterface && (
-              <StatBlock label="Mount port" value={mountInterface} note="" />
-            )}
-            {camera?.qe_percent && (
-              <StatBlock label="Quantum Efficiency" value={`${camera.qe_percent}%`} note="" />
-            )}
-            {camera?.read_noise_e && (
-              <StatBlock label="Read Noise" value={`${camera.read_noise_e}e⁻`} note="" />
-            )}
+            {diagnostics.filter(d => d.value).map(d => (
+              <StatBlock key={d.key} label={d.label} value={d.value} note={d.msg}
+                status={d.status} />
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -135,9 +226,10 @@ export function RigSummary({ telescope, camera, mount, filter }: RigSummaryProps
   );
 }
 
-function StatBlock({ label, value, note }: { label: string; value: string; note: string }) {
+function StatBlock({ label, value, note, status }: { label: string; value: string; note: string; status: CheckStatus }) {
+  const borderColor = status === "error" ? "border-l-destructive" : status === "warning" ? "border-l-accent" : "border-l-primary/30";
   return (
-    <div className="space-y-1">
+    <div className={`space-y-1 border-l-2 pl-3 ${borderColor}`}>
       <span className="text-xs text-muted-foreground">{label}</span>
       <p className="text-lg font-bold font-mono text-foreground">{value}</p>
       {note && <p className="text-[10px] text-muted-foreground">{note}</p>}

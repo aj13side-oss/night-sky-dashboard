@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Telescope, Camera, Filter, Anchor, X, Scale } from "lucide-react";
 import {
-  useCameras, useTelescopes, useMounts, useFilters,
+  useCameras, useTelescopes, useMounts, useFilters, extractPrices,
   type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter,
 } from "@/hooks/useEquipmentCatalog";
 import { EquipmentCard } from "@/components/rigbuilder/EquipmentCard";
@@ -165,29 +165,33 @@ const RigBuilder = () => {
                   </div>
                 </Card>
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
-                  {filteredScopes.map(t => (
-                    <EquipmentCard
-                      key={t.id}
-                      selected={compareIds.telescopes.includes(t.id)}
-                      onToggle={() => {
-                        toggleCompare("telescopes", t.id);
-                        setRigPicks(p => ({ ...p, telescope: p.telescope === t.id ? null : t.id }));
-                      }}
-                      imageUrl={t.image_url}
-                      title={`${t.brand} ${t.model}`}
-                      specs={[
-                        t.focal_length_mm ? `${t.focal_length_mm}mm` : null,
-                        t.aperture_mm ? `⌀${t.aperture_mm}mm` : null,
-                        t.focal_length_mm && t.aperture_mm ? `f/${(t.focal_length_mm / t.aperture_mm).toFixed(1)}` : null,
-                        t.type,
-                        t.weight_kg ? `${t.weight_kg}kg` : null,
-                        t.image_circle_mm ? `IC ${t.image_circle_mm}mm` : null,
-                      ]}
-                      affiliateAmazon={t.affiliate_amazon}
-                      affiliateAstro={t.affiliate_astro}
-                      manufacturerUrl={t.manufacturer_url}
-                    />
-                  ))}
+                  {filteredScopes.map(t => {
+                    const { best } = extractPrices(t._raw ?? {});
+                    return (
+                      <EquipmentCard
+                        key={t.id}
+                        selected={compareIds.telescopes.includes(t.id)}
+                        onToggle={() => {
+                          toggleCompare("telescopes", t.id);
+                          setRigPicks(p => ({ ...p, telescope: p.telescope === t.id ? null : t.id }));
+                        }}
+                        imageUrl={t.image_url}
+                        title={`${t.brand} ${t.model}`}
+                        bestPrice={best}
+                        specs={[
+                          t.focal_length_mm ? `${t.focal_length_mm}mm` : null,
+                          t.aperture_mm ? `⌀${t.aperture_mm}mm` : null,
+                          t.focal_length_mm && t.aperture_mm ? `f/${(t.focal_length_mm / t.aperture_mm).toFixed(1)}` : null,
+                          t.type,
+                          t.weight_kg ? `${t.weight_kg}kg` : null,
+                          t.image_circle_mm ? `IC ${t.image_circle_mm}mm` : null,
+                        ]}
+                        affiliateAmazon={t.affiliate_amazon}
+                        affiliateAstro={t.affiliate_astro}
+                        manufacturerUrl={t.manufacturer_url}
+                      />
+                    );
+                  })}
                 </div>
                 {compareIds.telescopes.length >= 2 && (
                   <CompareTable
@@ -195,11 +199,11 @@ const RigBuilder = () => {
                     getImage={t => t.image_url}
                     columns={[
                       { label: "Focal Length", render: t => t.focal_length_mm ? `${t.focal_length_mm}mm` : "—" },
-                      { label: "Aperture", render: t => t.aperture_mm ? `${t.aperture_mm}mm` : "—" },
-                      { label: "f/D", render: t => t.focal_length_mm && t.aperture_mm ? `f/${(t.focal_length_mm / t.aperture_mm).toFixed(1)}` : "—" },
+                      { label: "Aperture", render: t => t.aperture_mm ? `${t.aperture_mm}mm` : "—", bestDirection: "higher" },
+                      { label: "f/D", render: t => t.focal_length_mm && t.aperture_mm ? `f/${(t.focal_length_mm / t.aperture_mm).toFixed(1)}` : "—", bestDirection: "lower" },
                       { label: "Type", render: t => t.type ?? "—" },
-                      { label: "Weight", render: t => t.weight_kg ? `${t.weight_kg}kg` : "—" },
-                      { label: "Image Circle", render: t => t.image_circle_mm ? `${t.image_circle_mm}mm` : "—" },
+                      { label: "Weight", render: t => t.weight_kg ? `${t.weight_kg}kg` : "—", bestDirection: "lower" },
+                      { label: "Image Circle", render: t => t.image_circle_mm ? `${t.image_circle_mm}mm` : "—", bestDirection: "higher" },
                       { label: "Backfocus", render: t => t.required_backfocus_mm ? `${t.required_backfocus_mm}mm` : "—" },
                     ]}
                     getName={t => `${t.brand} ${t.model}`}
@@ -223,43 +227,50 @@ const RigBuilder = () => {
                   </div>
                 </Card>
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
-                  {filteredCams.map(c => (
-                    <EquipmentCard
-                      key={c.id}
-                      selected={compareIds.cameras.includes(c.id)}
-                      onToggle={() => {
-                        toggleCompare("cameras", c.id);
-                        setRigPicks(p => ({ ...p, camera: p.camera === c.id ? null : c.id }));
-                      }}
-                      imageUrl={c.image_url}
-                      title={`${c.brand} ${c.model}`}
-                      specs={[
-                        c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : null,
-                        c.pixel_size_um ? `${c.pixel_size_um}µm` : null,
-                        c.resolution_x && c.resolution_y ? `${c.resolution_x}×${c.resolution_y}px` : null,
-                        c.is_color !== null ? (c.is_color ? "Color" : "Mono") : null,
-                        c.qe_percent ? `QE ${c.qe_percent}%` : null,
-                        c.read_noise_e ? `${c.read_noise_e}e⁻` : null,
-                        c.weight_kg ? `${c.weight_kg}kg` : null,
-                      ]}
-                      affiliateAmazon={c.affiliate_amazon}
-                      affiliateAstro={c.affiliate_astro}
-                      manufacturerUrl={c.manufacturer_url}
-                    />
-                  ))}
+                  {filteredCams.map(c => {
+                    const { best } = extractPrices(c._raw ?? {});
+                    return (
+                      <EquipmentCard
+                        key={c.id}
+                        selected={compareIds.cameras.includes(c.id)}
+                        onToggle={() => {
+                          toggleCompare("cameras", c.id);
+                          setRigPicks(p => ({ ...p, camera: p.camera === c.id ? null : c.id }));
+                        }}
+                        imageUrl={c.image_url}
+                        title={`${c.brand} ${c.model}`}
+                        bestPrice={best}
+                        specs={[
+                          c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : null,
+                          c.pixel_size_um ? `${c.pixel_size_um}µm` : null,
+                          c.sensor_name,
+                          c.is_color !== null ? (c.is_color ? "Color" : "Mono") : null,
+                          c.qe_percent ? `QE ${c.qe_percent}%` : null,
+                          c.read_noise_e ? `${c.read_noise_e}e⁻` : null,
+                        ]}
+                        affiliateAmazon={c.affiliate_amazon}
+                        affiliateAstro={c.affiliate_astro}
+                        manufacturerUrl={c.manufacturer_url}
+                      />
+                    );
+                  })}
                 </div>
                 {compareIds.cameras.length >= 2 && (
                   <CompareTable
                     items={cameras?.filter(c => compareIds.cameras.includes(c.id)) ?? []}
                     getImage={c => c.image_url}
                     columns={[
-                      { label: "Sensor", render: c => c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : "—" },
+                      { label: "Sensor", render: c => c.sensor_name ?? "—" },
+                      { label: "Size", render: c => c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : "—" },
                       { label: "Resolution", render: c => c.resolution_x && c.resolution_y ? `${c.resolution_x}×${c.resolution_y}` : "—" },
                       { label: "Pixel Size", render: c => c.pixel_size_um ? `${c.pixel_size_um}µm` : "—" },
                       { label: "Type", render: c => c.is_color !== null ? (c.is_color ? "Color (OSC)" : "Mono") : "—" },
-                      { label: "QE", render: c => c.qe_percent ? `${c.qe_percent}%` : "—" },
-                      { label: "Read Noise", render: c => c.read_noise_e ? `${c.read_noise_e}e⁻` : "—" },
-                      { label: "Weight", render: c => c.weight_kg ? `${c.weight_kg}kg` : "—" },
+                      { label: "QE", render: c => c.qe_percent ? `${c.qe_percent}%` : "—", bestDirection: "higher" },
+                      { label: "Read Noise", render: c => c.read_noise_e ? `${c.read_noise_e}e⁻` : "—", bestDirection: "lower" },
+                      { label: "Full Well", render: c => c.full_well_e ? `${c.full_well_e.toLocaleString()}e⁻` : "—", bestDirection: "higher" },
+                      { label: "ADC", render: c => c.adc_bits ? `${c.adc_bits}-bit` : "—", bestDirection: "higher" },
+                      { label: "Cooling", render: c => c.cooling_delta_c ? `ΔT ${c.cooling_delta_c}°C` : "—" },
+                      { label: "Weight", render: c => c.weight_kg ? `${c.weight_kg.toFixed(2)}kg` : "—", bestDirection: "lower" },
                       { label: "Interface", render: c => c.interface_type ?? "—" },
                       { label: "Backfocus", render: c => c.internal_backfocus_mm ? `${c.internal_backfocus_mm}mm` : "—" },
                     ]}
@@ -284,37 +295,46 @@ const RigBuilder = () => {
                   </div>
                 </Card>
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
-                  {filteredMounts.map(m => (
-                    <EquipmentCard
-                      key={m.id}
-                      selected={compareIds.mounts.includes(m.id)}
-                      onToggle={() => {
-                        toggleCompare("mounts", m.id);
-                        setRigPicks(p => ({ ...p, mount: p.mount === m.id ? null : m.id }));
-                      }}
-                      imageUrl={m.image_url}
-                      title={`${m.brand} ${m.model}`}
-                      specs={[
-                        m.payload_kg ? `Payload: ${m.payload_kg}kg` : null,
-                        m.mount_weight_kg ? `Weight: ${m.mount_weight_kg}kg` : null,
-                        m.mount_type,
-                        m.connectivity,
-                      ]}
-                      affiliateAmazon={m.affiliate_amazon}
-                      affiliateAstro={m.affiliate_astro}
-                      manufacturerUrl={m.manufacturer_url}
-                    />
-                  ))}
+                  {filteredMounts.map(m => {
+                    const { best } = extractPrices(m._raw ?? {});
+                    return (
+                      <EquipmentCard
+                        key={m.id}
+                        selected={compareIds.mounts.includes(m.id)}
+                        onToggle={() => {
+                          toggleCompare("mounts", m.id);
+                          setRigPicks(p => ({ ...p, mount: p.mount === m.id ? null : m.id }));
+                        }}
+                        imageUrl={m.image_url}
+                        title={`${m.brand} ${m.model}`}
+                        bestPrice={best}
+                        specs={[
+                          m.payload_kg ? `Payload: ${m.payload_kg}kg` : null,
+                          m.mount_weight_kg ? `Weight: ${m.mount_weight_kg}kg` : null,
+                          m.mount_type,
+                          m.is_goto ? "GoTo" : null,
+                          m.periodic_error_arcsec ? `PE ±${m.periodic_error_arcsec}″` : null,
+                          m.connectivity,
+                        ]}
+                        affiliateAmazon={m.affiliate_amazon}
+                        affiliateAstro={m.affiliate_astro}
+                        manufacturerUrl={m.manufacturer_url}
+                      />
+                    );
+                  })}
                 </div>
                 {compareIds.mounts.length >= 2 && (
                   <CompareTable
                     items={mounts?.filter(m => compareIds.mounts.includes(m.id)) ?? []}
                     getImage={m => m.image_url}
                     columns={[
-                      { label: "Payload", render: m => m.payload_kg ? `${m.payload_kg}kg` : "—" },
-                      { label: "Weight", render: m => m.mount_weight_kg ? `${m.mount_weight_kg}kg` : "—" },
+                      { label: "Payload", render: m => m.payload_kg ? `${m.payload_kg}kg` : "—", bestDirection: "higher" },
+                      { label: "Weight", render: m => m.mount_weight_kg ? `${m.mount_weight_kg}kg` : "—", bestDirection: "lower" },
                       { label: "Type", render: m => m.mount_type ?? "—" },
+                      { label: "GoTo", render: m => m.is_goto != null ? (m.is_goto ? "Yes" : "No") : "—" },
+                      { label: "Periodic Error", render: m => m.periodic_error_arcsec ? `±${m.periodic_error_arcsec}″` : "—", bestDirection: "lower" },
                       { label: "Connectivity", render: m => m.connectivity ?? "—" },
+                      { label: "ASCOM/INDI", render: m => m.ascom_indi ?? "—" },
                     ]}
                     getName={m => `${m.brand} ${m.model}`}
                     getAffiliates={m => ({ amazon: m.affiliate_amazon, astro: m.affiliate_astro, manufacturer: m.manufacturer_url })}
@@ -329,22 +349,26 @@ const RigBuilder = () => {
             {loadingFilters ? <LoadingSkeleton /> : (
               <>
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
-                  {filters?.map(f => (
-                    <EquipmentCard
-                      key={f.id}
-                      selected={compareIds.filters.includes(f.id)}
-                      onToggle={() => {
-                        toggleCompare("filters", f.id);
-                        setRigPicks(p => ({ ...p, filter: p.filter === f.id ? null : f.id }));
-                      }}
-                      imageUrl={f.image_url}
-                      title={`${f.brand} ${f.model}`}
-                      specs={[f.type, f.size, f.thickness_mm ? `${f.thickness_mm}mm thick` : null]}
-                      affiliateAmazon={f.affiliate_amazon}
-                      affiliateAstro={f.affiliate_astro}
-                      manufacturerUrl={f.manufacturer_url}
-                    />
-                  ))}
+                  {filters?.map(f => {
+                    const { best } = extractPrices(f._raw ?? {});
+                    return (
+                      <EquipmentCard
+                        key={f.id}
+                        selected={compareIds.filters.includes(f.id)}
+                        onToggle={() => {
+                          toggleCompare("filters", f.id);
+                          setRigPicks(p => ({ ...p, filter: p.filter === f.id ? null : f.id }));
+                        }}
+                        imageUrl={f.image_url}
+                        title={`${f.brand} ${f.model}`}
+                        bestPrice={best}
+                        specs={[f.type, f.size, f.thickness_mm ? `${f.thickness_mm}mm thick` : null]}
+                        affiliateAmazon={f.affiliate_amazon}
+                        affiliateAstro={f.affiliate_astro}
+                        manufacturerUrl={f.manufacturer_url}
+                      />
+                    );
+                  })}
                 </div>
                 {compareIds.filters.length >= 2 && (
                   <CompareTable

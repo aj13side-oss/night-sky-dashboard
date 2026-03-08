@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ShoppingCart, ExternalLink, Globe } from "lucide-react";
+import { ShoppingCart, ExternalLink, Globe, Tag } from "lucide-react";
 
 interface EquipmentCardProps {
   selected: boolean;
@@ -12,6 +12,7 @@ interface EquipmentCardProps {
   affiliateAmazon: string | null;
   affiliateAstro: string | null;
   manufacturerUrl?: string | null;
+  bestPrice?: { price: number; label: string; url: string | null } | null;
 }
 
 function thumb400(url: string): string {
@@ -32,6 +33,7 @@ export function EquipmentCard({
   affiliateAmazon,
   affiliateAstro,
   manufacturerUrl,
+  bestPrice,
 }: EquipmentCardProps) {
   const filteredSpecs = specs.filter(Boolean) as string[];
   const hasLinks = affiliateAmazon || affiliateAstro || manufacturerUrl;
@@ -59,6 +61,25 @@ export function EquipmentCard({
         ) : (
           <div className="rounded-md bg-secondary/10 flex items-center justify-center aspect-square">
             <span className="text-muted-foreground text-[10px]">No image</span>
+          </div>
+        )}
+
+        {/* Best price badge */}
+        {bestPrice && (
+          <div
+            className="flex items-center gap-1 text-[10px]"
+            onClick={e => e.stopPropagation()}
+          >
+            <Tag className="w-3 h-3 text-primary" />
+            {bestPrice.url ? (
+              <a href={bestPrice.url} target="_blank" rel="noopener noreferrer"
+                className="text-primary hover:underline font-semibold">
+                From {bestPrice.price.toLocaleString("fr-FR")}€
+              </a>
+            ) : (
+              <span className="text-primary font-semibold">From {bestPrice.price.toLocaleString("fr-FR")}€</span>
+            )}
+            <span className="text-muted-foreground">({bestPrice.label})</span>
           </div>
         )}
 

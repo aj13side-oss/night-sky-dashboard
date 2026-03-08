@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, X, RefreshCw, Download, Camera, Telescope, Anchor, Filter, Zap, Search, Loader2, Command as CommandIcon, Checkbox } from "lucide-react";
+import { Check, X, RefreshCw, Download, Camera, Telescope, Anchor, Filter, Zap, Search, Loader2, Command as CommandIcon } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useCameras, useTelescopes, useMounts, useFilters, useAccessories } from "@/hooks/useEquipmentCatalog";

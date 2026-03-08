@@ -215,6 +215,24 @@ const RigBuilder = () => {
     });
   };
 
+  const loadPreset = (preset: RigPreset) => {
+    setRigPicks({
+      telescope: preset.telescope_id,
+      camera: preset.camera_id,
+      mount: preset.mount_id,
+      filter: null,
+      accessories: preset.accessory_ids ?? [],
+    });
+    setCompareIds({
+      telescopes: preset.telescope_id ? [preset.telescope_id] : [],
+      cameras: preset.camera_id ? [preset.camera_id] : [],
+      mounts: preset.mount_id ? [preset.mount_id] : [],
+      filters: [],
+      accessories: preset.accessory_ids ?? [],
+    });
+    toast.success(`Configuration "${preset.name}" chargée`);
+  };
+
   const clearCompare = (cat: Category) => setCompareIds(prev => ({ ...prev, [cat]: [] }));
   const compareCount = compareIds[tab].length;
 

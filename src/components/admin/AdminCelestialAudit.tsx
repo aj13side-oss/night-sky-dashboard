@@ -701,6 +701,12 @@ export default function AdminCelestialAudit() {
                   img.src = item.forced_image_url;
                   return;
                 }
+                // If forced URL failed, try wiki image if available
+                if ((step === "thumb" || step === "raw") && wiki?.status === "found" && wiki.url) {
+                  img.dataset.step = "wiki";
+                  img.src = wiki.url;
+                  return;
+                }
                 if (step !== "dss2" && dss2Url) {
                   img.dataset.step = "dss2";
                   img.src = dss2Url;

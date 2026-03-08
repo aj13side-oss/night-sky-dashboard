@@ -288,7 +288,9 @@ export default function AdminCelestialAudit() {
           {scanning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3" />}
           {scanning ? "Scan en cours..." : "Scanner les images"}
         </Button>
-        <span className="text-xs text-muted-foreground">{data?.total ?? 0} objets · Page {page + 1}/{totalPages || 1}</span>
+        <span className="text-xs text-muted-foreground">
+          {needsClientFilter ? `${filteredAll.length} filtrés / ${data?.total ?? 0}` : `${data?.total ?? 0} objets`} · Page {page + 1}/{totalPages || 1}
+        </span>
       </div>
 
       <div className="flex flex-wrap gap-4">

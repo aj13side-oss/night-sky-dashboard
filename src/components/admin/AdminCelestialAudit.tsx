@@ -29,9 +29,8 @@ function buildWikimediaThumbUrl(url: string, width: number): string {
     return url;
   }
 }
-import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus, type ImageHealth } from "@/hooks/useImageAudit";
-import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
-import AuditBatchBar from "./AuditBatchBar";
+
+
 
 interface WikiImage {
   url: string;

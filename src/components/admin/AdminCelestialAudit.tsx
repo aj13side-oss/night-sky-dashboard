@@ -1,31 +1,26 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChipFilter } from "@/components/rigbuilder/ChipFilter";
 import { thumb400 } from "@/lib/utils";
-
-type AuditStatus = "ok" | "flagged" | "unchecked";
-type AuditData = Record<string, AuditStatus>;
-const AUDIT_KEY = "astrodash_celestial_audit";
-
-function loadAudit(): AuditData {
-  try { return JSON.parse(localStorage.getItem(AUDIT_KEY) ?? "{}"); } catch { return {}; }
-}
-function saveAudit(d: AuditData) { localStorage.setItem(AUDIT_KEY, JSON.stringify(d)); }
+import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus, type ImageHealth } from "@/hooks/useImageAudit";
 
 const PAGE_SIZE = 50;
 
 const STATUS_FILTERS = [
-  { value: "all", label: "Tous" },
-  { value: "no_image", label: "Sans image" },
-  { value: "flagged", label: "Flaggés" },
-  { value: "ok", label: "Confirmés OK" },
-  { value: "unchecked", label: "Non vérifiés" },
+  { value: "all", label: "All" },
+  { value: "no_image", label: "No image" },
+  { value: "flagged", label: "Flagged" },
+  { value: "ok", label: "Verified ✓" },
+  { value: "unchecked", label: "Unchecked" },
+  { value: "heavy", label: "⚠ Heavy (>2MB)" },
+  { value: "broken", label: "❌ Broken" },
 ];
 
 export default function AdminCelestialAudit() {
@@ -35,11 +30,14 @@ export default function AdminCelestialAudit() {
   const [constellation, setConstellation] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [audit, setAudit] = useState<AuditData>(loadAudit);
   const [replacing, setReplacing] = useState<string | null>(null);
   const [newUrl, setNewUrl] = useState("");
+  const [healthMap, setHealthMap] = useState<Record<string, ImageHealth>>({});
+  const [scanning, setScanning] = useState(false);
 
-  // Fetch obj_types and constellations for filters
+  const { data: audit = {} } = useAuditStatuses("celestial_objects");
+  const setAuditMutation = useSetAuditStatus("celestial_objects");
+
   const { data: filterOptions } = useQuery({
     queryKey: ["admin_celestial_filters"],
     queryFn: async () => {
@@ -75,22 +73,45 @@ export default function AdminCelestialAudit() {
   const totalPages = Math.ceil((data?.total ?? 0) / PAGE_SIZE);
 
   const setStatus = (id: string, s: AuditStatus) => {
-    const next = { ...audit, [id]: s };
-    setAudit(next);
-    saveAudit(next);
+    setAuditMutation.mutate({ targetId: id, status: s });
   };
 
   const handleReplace = async (id: string) => {
     if (!newUrl.trim()) return;
     const { error } = await (supabase as any).from("celestial_objects").update({ forced_image_url: newUrl.trim() }).eq("id", id);
-    if (error) { toast.error("Erreur: " + error.message); return; }
-    toast.success("Image mise à jour !");
+    if (error) { toast.error("Error: " + error.message); return; }
+    toast.success("Image updated!");
     setReplacing(null);
     setNewUrl("");
     qc.invalidateQueries({ queryKey: ["admin_celestial"] });
   };
 
-  // Client-side status filtering
+  const scanImages = useCallback(async () => {
+    if (!data?.items) return;
+    setScanning(true);
+    const withImages = data.items.filter((i: any) => i.forced_image_url);
+    const results: Record<string, ImageHealth> = {};
+
+    for (let i = 0; i < withImages.length; i += 5) {
+      const batch = withImages.slice(i, i + 5);
+      const batchResults = await Promise.all(
+        batch.map(async (item: any) => {
+          const health = await checkImageHealth(item.forced_image_url);
+          return { id: item.id, health };
+        })
+      );
+      for (const r of batchResults) {
+        results[r.id] = r.health;
+      }
+    }
+
+    setHealthMap(prev => ({ ...prev, ...results }));
+    const broken = Object.values(results).filter(r => r.status === "broken").length;
+    const heavy = Object.values(results).filter(r => r.status === "heavy").length;
+    toast.success(`Scan complete: ${broken} broken, ${heavy} heavy, ${withImages.length - broken - heavy} OK`);
+    setScanning(false);
+  }, [data]);
+
   const displayed = useMemo(() => {
     if (!data?.items) return [];
     if (filterStatus === "all") return data.items;
@@ -99,21 +120,35 @@ export default function AdminCelestialAudit() {
       if (filterStatus === "no_image") return !item.forced_image_url;
       if (filterStatus === "flagged") return s === "flagged";
       if (filterStatus === "ok") return s === "ok";
-      if (filterStatus === "unchecked") return !s;
+      if (filterStatus === "unchecked") return !s || s === "unchecked";
+      if (filterStatus === "heavy") return healthMap[item.id]?.status === "heavy";
+      if (filterStatus === "broken") return healthMap[item.id]?.status === "broken";
       return true;
     });
-  }, [data, filterStatus, audit]);
+  }, [data, filterStatus, audit, healthMap]);
+
+  const healthBadge = (id: string) => {
+    const h = healthMap[id];
+    if (!h) return null;
+    if (h.status === "broken") return <Badge variant="destructive" className="text-[7px] px-1 py-0">Broken</Badge>;
+    if (h.status === "heavy") return <Badge className="text-[7px] px-1 py-0 bg-amber-500/20 text-amber-400 border-amber-500/50">{h.sizeKB}KB</Badge>;
+    return null;
+  };
 
   return (
     <div className="space-y-4 mt-4">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder="Rechercher catalog_id ou nom..." value={search}
+          <Input placeholder="Search catalog_id or name..." value={search}
             onChange={e => { setSearch(e.target.value); setPage(0); }}
             className="pl-9 bg-secondary/30 border-border/50" />
         </div>
-        <span className="text-xs text-muted-foreground">{data?.total ?? 0} objets · Page {page + 1}/{totalPages || 1}</span>
+        <Button size="sm" variant="outline" onClick={scanImages} disabled={scanning} className="gap-1 text-xs">
+          {scanning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3" />}
+          {scanning ? "Scanning..." : "Scan Image Health"}
+        </Button>
+        <span className="text-xs text-muted-foreground">{data?.total ?? 0} objects · Page {page + 1}/{totalPages || 1}</span>
       </div>
 
       <div className="flex flex-wrap gap-4">
@@ -131,7 +166,7 @@ export default function AdminCelestialAudit() {
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-muted-foreground">Chargement...</p>
+        <p className="text-sm text-muted-foreground">Loading...</p>
       ) : (
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
           {displayed.map((item: any) => {
@@ -141,12 +176,13 @@ export default function AdminCelestialAudit() {
               <Card key={item.id} className={`${borderClass} overflow-hidden`}>
                 <CardContent className="p-1.5 space-y-1">
                   {item.forced_image_url ? (
-                    <div className="aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden">
+                    <div className="aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative">
                       <img src={thumb400(item.forced_image_url)} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" />
+                      <div className="absolute top-0.5 right-0.5">{healthBadge(item.id)}</div>
                     </div>
                   ) : (
                     <div className="aspect-square rounded bg-orange-500/10 flex items-center justify-center">
-                      <span className="text-[8px] font-medium text-orange-400">PAS D'IMAGE</span>
+                      <span className="text-[8px] font-medium text-orange-400">NO IMAGE</span>
                     </div>
                   )}
                   <p className="text-[9px] font-bold text-foreground truncate">{item.catalog_id}</p>
@@ -175,14 +211,13 @@ export default function AdminCelestialAudit() {
         </div>
       )}
 
-      {/* Pagination */}
       <div className="flex items-center justify-center gap-3">
         <Button size="sm" variant="outline" disabled={page <= 0} onClick={() => setPage(p => p - 1)} className="gap-1">
-          <ChevronLeft className="w-3 h-3" /> Précédent
+          <ChevronLeft className="w-3 h-3" /> Previous
         </Button>
         <span className="text-xs text-muted-foreground">Page {page + 1} / {totalPages || 1}</span>
         <Button size="sm" variant="outline" disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)} className="gap-1">
-          Suivant <ChevronRight className="w-3 h-3" />
+          Next <ChevronRight className="w-3 h-3" />
         </Button>
       </div>
     </div>

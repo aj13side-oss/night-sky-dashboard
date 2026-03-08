@@ -14,7 +14,22 @@ import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus
 import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
 import AuditBatchBar from "./AuditBatchBar";
 
-const PAGE_SIZE = 200;
+const PAGE_SIZE = 100;
+
+const CATALOG_PREFIXES = [
+  { value: "all", label: "Tous" },
+  { value: "M", label: "Messier (M)" },
+  { value: "NGC", label: "NGC" },
+  { value: "IC", label: "IC" },
+  { value: "Sh2", label: "Sharpless (Sh2)" },
+  { value: "Abell", label: "Abell" },
+  { value: "UGC", label: "UGC" },
+  { value: "PGC", label: "PGC" },
+  { value: "Barnard", label: "Barnard" },
+  { value: "Ced", label: "Cederblad" },
+  { value: "vdB", label: "van den Bergh" },
+  { value: "other", label: "Autres" },
+];
 
 const STATUS_FILTERS = [
   { value: "all", label: "Tous" },

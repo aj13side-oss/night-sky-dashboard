@@ -9,10 +9,28 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChipFilter } from "@/components/rigbuilder/ChipFilter";
-import { thumbUrl } from "@/lib/utils";
 import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus, type ImageHealth } from "@/hooks/useImageAudit";
 import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
 import AuditBatchBar from "./AuditBatchBar";
+
+/** Build Wikimedia thumbnail URL directly from a full-res commons URL */
+function buildWikimediaThumbUrl(url: string, width: number): string {
+  try {
+    const u = new URL(url);
+    if (!u.hostname.includes("wikimedia.org") && !u.hostname.includes("wikipedia.org")) return url;
+    if (u.pathname.includes("/thumb/")) {
+      return url.replace(/\/\d+px-([^/]+)$/, `/${width}px-$1`);
+    }
+    const match = u.pathname.match(/\/wikipedia\/commons\/([\da-f]\/[\da-f]{2}\/(.+))$/i);
+    if (!match) return url;
+    const [, pathPart, fileName] = match;
+    return `https://upload.wikimedia.org/wikipedia/commons/thumb/${pathPart}/${width}px-${fileName}`;
+  } catch {
+    return url;
+  }
+}
+
+
 
 interface WikiImage {
   url: string;
@@ -649,7 +667,7 @@ export default function AdminCelestialAudit() {
                 return (
                   <div className={`aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ${brokenSet.has(item.id) ? "ring-1 ring-destructive" : ""}`}>
                     {shouldLoadImage ? (
-                      <img src={thumbUrl(item.forced_image_url, 100)} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" onError={() => markBroken(item.id)} />
+                      <img src={buildWikimediaThumbUrl(item.forced_image_url, 200)} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" onError={() => markBroken(item.id)} />
                     ) : (
                       <div className="w-full h-full bg-muted/30 animate-pulse" />
                     )}

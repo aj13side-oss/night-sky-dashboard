@@ -48,7 +48,7 @@ const DashboardContent = () => {
       </main>
 
       <footer className="border-t border-border/30 mt-12 py-6 text-center text-xs text-muted-foreground">
-        <p>Data is simulated — connect weather APIs for live conditions</p>
+        <p>AstroDash — Your astrophotography planning companion</p>
       </footer>
     </div>
   );

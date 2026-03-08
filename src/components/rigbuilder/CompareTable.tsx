@@ -4,11 +4,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Scale, Globe, ShoppingCart, ExternalLink, Tag } from "lucide-react";
 import { extractPrices } from "@/hooks/useEquipmentCatalog";
+import { thumb400 } from "@/lib/utils";
 
 interface CompareColumn<T> {
   label: string;
   render: (item: T) => string;
-  /** "higher" means green highlight on max, "lower" on min */
   bestDirection?: "higher" | "lower";
 }
 
@@ -18,15 +18,6 @@ interface CompareTableProps<T extends { id: string; _raw?: Record<string, any> }
   getName: (item: T) => string;
   getImage?: (item: T) => string | null;
   getAffiliates: (item: T) => { amazon: string | null; astro: string | null; manufacturer?: string | null };
-}
-
-function thumb400(url: string): string {
-  if (url.includes("w=") || url.includes("width=")) return url;
-  if (url.includes("supabase.co/storage")) {
-    const sep = url.includes("?") ? "&" : "?";
-    return `${url}${sep}width=400`;
-  }
-  return url;
 }
 
 function parseNum(s: string): number | null {

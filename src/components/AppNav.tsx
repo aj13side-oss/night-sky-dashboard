@@ -59,7 +59,7 @@ const AppNav = () => {
             title={nightVision ? "Disable Night Vision" : "Enable Night Vision"}
           >
             {nightVision ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline text-xs">{nightVision ? "Night" : "Night"}</span>
+            <span className="hidden sm:inline text-xs">{nightVision ? "Normal" : "Night"}</span>
           </button>
         </nav>
       </div>

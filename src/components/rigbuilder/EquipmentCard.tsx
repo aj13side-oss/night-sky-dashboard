@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ShoppingCart, ExternalLink, Globe, Tag } from "lucide-react";
+import { thumb400 } from "@/lib/utils";
 
 interface EquipmentCardProps {
   selected: boolean;
@@ -13,15 +14,6 @@ interface EquipmentCardProps {
   affiliateAstro: string | null;
   manufacturerUrl?: string | null;
   bestPrice?: { price: number; label: string; url: string | null } | null;
-}
-
-function thumb400(url: string): string {
-  if (url.includes("w=") || url.includes("width=")) return url;
-  if (url.includes("supabase.co/storage")) {
-    const sep = url.includes("?") ? "&" : "?";
-    return `${url}${sep}width=400`;
-  }
-  return url;
 }
 
 export function EquipmentCard({

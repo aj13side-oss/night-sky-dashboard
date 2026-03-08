@@ -669,11 +669,36 @@ export default function AdminCelestialAudit() {
                 : status === "ok" ? "border-green-500/50" : status === "flagged" ? "border-red-500/50" : "border-border/50";
 
             const renderImage = () => {
+              const dss2Url = item.ra != null && item.dec != null ? buildDss2ThumbUrl(item.ra, item.dec, item.size_max) : null;
+
+              const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+                const img = e.currentTarget;
+                const step = img.dataset.step || "thumb";
+                if (step === "thumb" && item.forced_image_url && img.src !== item.forced_image_url) {
+                  img.dataset.step = "raw";
+                  img.src = item.forced_image_url;
+                  return;
+                }
+                if (step !== "dss2" && dss2Url) {
+                  img.dataset.step = "dss2";
+                  img.src = dss2Url;
+                  return;
+                }
+                markBroken(item.id);
+              };
+
               if (item.forced_image_url) {
                 return (
                   <div className={`aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ${brokenSet.has(item.id) ? "ring-1 ring-destructive" : ""}`}>
                     {shouldLoadImage ? (
-                      <img src={buildWikimediaThumbUrl(item.forced_image_url, 200)} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" onError={() => markBroken(item.id)} />
+                      <img
+                        src={buildWikimediaThumbUrl(item.forced_image_url, 200)}
+                        data-step="thumb"
+                        alt={item.catalog_id}
+                        loading="lazy"
+                        className="max-h-full max-w-full object-contain"
+                        onError={handleImageError}
+                      />
                     ) : (
                       <div className="w-full h-full bg-muted/30 animate-pulse" />
                     )}
@@ -682,25 +707,42 @@ export default function AdminCelestialAudit() {
                   </div>
                 );
               }
+
               if (wiki?.status === "found" && wiki.url) {
                 return (
-                  <div className="aspect-square rounded bg-blue-500/10 flex items-center justify-center overflow-hidden relative ring-1 ring-blue-500/30">
+                  <div className="aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ring-1 ring-primary/30">
                     {shouldLoadImage ? (
-                      <img src={wiki.url} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" />
+                      <img
+                        src={wiki.url}
+                        data-step="wiki"
+                        alt={item.catalog_id}
+                        loading="lazy"
+                        className="max-h-full max-w-full object-contain"
+                        onError={(e) => {
+                          const img = e.currentTarget;
+                          if (dss2Url && img.dataset.step !== "dss2") {
+                            img.dataset.step = "dss2";
+                            img.src = dss2Url;
+                            return;
+                          }
+                          markBroken(item.id);
+                        }}
+                      />
                     ) : (
                       <div className="w-full h-full bg-muted/30 animate-pulse" />
                     )}
-                    <Badge className="absolute top-0.5 left-0.5 text-[6px] px-0.5 py-0 bg-blue-500/80 text-white border-0">Wiki</Badge>
+                    <Badge className="absolute top-0.5 left-0.5 text-[6px] px-0.5 py-0 bg-primary/80 text-primary-foreground border-0">Wiki</Badge>
                     <button
                       onClick={(e) => { e.stopPropagation(); validateWikiImage(item.id); }}
                       title={`Valider · ${wiki.artist || "?"} · ${wiki.license || "?"}`}
-                      className="absolute bottom-0.5 right-0.5 bg-blue-500 hover:bg-blue-600 text-white rounded px-1 py-0.5 text-[7px] font-medium flex items-center gap-0.5 transition-colors"
+                      className="absolute bottom-0.5 right-0.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded px-1 py-0.5 text-[7px] font-medium flex items-center gap-0.5 transition-colors"
                     >
                       <Download className="w-2.5 h-2.5" /> Valider
                     </button>
                   </div>
                 );
               }
+
               if (wiki?.status === "loading") {
                 return (
                   <div className="aspect-square rounded bg-muted/20 flex items-center justify-center">
@@ -708,16 +750,29 @@ export default function AdminCelestialAudit() {
                   </div>
                 );
               }
-              if (wiki?.status === "not_found") {
+
+              if (dss2Url) {
                 return (
-                  <div className="aspect-square rounded bg-muted/10 flex items-center justify-center">
-                    <span className="text-[7px] font-medium text-muted-foreground">Aucune image</span>
+                  <div className="aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ring-1 ring-primary/20">
+                    {shouldLoadImage ? (
+                      <img
+                        src={dss2Url}
+                        alt={item.catalog_id}
+                        loading="lazy"
+                        className="max-h-full max-w-full object-contain"
+                        onError={() => markBroken(item.id)}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted/30 animate-pulse" />
+                    )}
+                    <Badge className="absolute top-0.5 left-0.5 text-[6px] px-0.5 py-0 bg-muted/80 text-muted-foreground border-0">DSS2</Badge>
                   </div>
                 );
               }
+
               return (
-                <div className="aspect-square rounded bg-orange-500/10 flex items-center justify-center">
-                  <span className="text-[8px] font-medium text-orange-400">PAS D'IMAGE</span>
+                <div className="aspect-square rounded bg-muted/10 flex items-center justify-center">
+                  <span className="text-[7px] font-medium text-muted-foreground">Aucune image</span>
                 </div>
               );
             };

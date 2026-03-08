@@ -14,7 +14,7 @@ import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus
 import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
 import AuditBatchBar from "./AuditBatchBar";
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 200;
 
 const STATUS_FILTERS = [
   { value: "all", label: "Tous" },

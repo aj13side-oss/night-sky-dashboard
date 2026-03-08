@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3, ImageIcon, Download } from "lucide-react";
+import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3, ImageIcon, Download, Trash2, Eye } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,8 +65,8 @@ const CATALOG_PREFIXES = [
 
 const STATUS_FILTERS = [
   { value: "all", label: "Tous" },
-  { value: "no_image", label: "Sans image" },
-  { value: "needs_wiki", label: "🔍 Wiki à trouver" },
+  { value: "needs_image", label: "🔍 Image à trouver" },
+  { value: "no_image", label: "Sans image DB" },
   { value: "flagged", label: "Signalés" },
   { value: "ok", label: "Vérifiés ✓" },
   { value: "unchecked", label: "Non vérifiés" },
@@ -308,7 +308,7 @@ export default function AdminCelestialAudit() {
       list = list.filter((item: any) => {
         const s = audit[item.id];
         if (filterStatus === "no_image") return !item.forced_image_url;
-        if (filterStatus === "needs_wiki") return s === "needs_wiki";
+        if (filterStatus === "needs_image") return s === "needs_image";
         if (filterStatus === "flagged") return s === "flagged";
         if (filterStatus === "ok") return s === "ok";
         if (filterStatus === "unchecked") return !s || s === "unchecked";
@@ -322,7 +322,7 @@ export default function AdminCelestialAudit() {
       const statusOrder = (id: string) => {
         const s = audit[id];
         if (!s || s === "unchecked") return 0;
-        if (s === "needs_wiki") return 1;
+        if (s === "needs_image") return 1;
         if (s === "flagged") return 2;
         if (s === "ok") return 3;
         return 0;
@@ -524,7 +524,7 @@ export default function AdminCelestialAudit() {
   // Batch actions
   const batchOk = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "ok" })); setSelected(new Set()); toast.success(`${selected.size} marqués OK`); };
   const batchFlag = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "flagged" })); setSelected(new Set()); toast.success(`${selected.size} signalés`); };
-  const batchNeedsWiki = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "needs_wiki" })); setSelected(new Set()); toast.success(`${selected.size} marqués "Wiki à trouver"`); };
+  const batchNeedsImage = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "needs_image" })); setSelected(new Set()); toast.success(`${selected.size} marqués "Image à trouver"`); };
   const batchGoogle = () => {
     let count = 0;
     selected.forEach(id => {
@@ -550,6 +550,18 @@ export default function AdminCelestialAudit() {
     toast.success(`${count} images Wikipedia validées !`);
     qc.invalidateQueries({ queryKey: ["admin_celestial"] });
   }, [displayed, wikiImages, qc]);
+
+  // Reset all audit validations
+  const resetAllAudit = useCallback(async () => {
+    if (!confirm("Remettre à zéro TOUTES les validations d'images célestes ?")) return;
+    const { error } = await (supabase as any)
+      .from("image_audit_log")
+      .delete()
+      .eq("target_table", "celestial_objects");
+    if (error) { toast.error("Erreur : " + error.message); return; }
+    toast.success("Toutes les validations ont été remises à zéro !");
+    qc.invalidateQueries({ queryKey: ["image_audit", "celestial_objects"] });
+  }, [qc]);
 
   return (
     <div className="space-y-4 mt-4">
@@ -584,6 +596,9 @@ export default function AdminCelestialAudit() {
         <Button size="sm" variant="outline" onClick={fetchWikiForDisplayed} disabled={wikiFetching} className="gap-1 text-xs">
           {wikiFetching ? <Loader2 className="w-3 h-3 animate-spin" /> : <ImageIcon className="w-3 h-3" />}
           {wikiFetching ? "Recherche Wikipedia..." : "Chercher Wikipedia"}
+        </Button>
+        <Button size="sm" variant="outline" onClick={resetAllAudit} className="gap-1 text-xs border-destructive/50 text-destructive hover:bg-destructive/10">
+          <Trash2 className="w-3 h-3" /> Reset validations
         </Button>
         <span className="text-xs text-muted-foreground">
           {needsClientFilter ? `${filteredAll.length} filtrés / ${data?.total ?? 0}` : `${data?.total ?? 0} objets`} · Page {page + 1}/{totalPages || 1}
@@ -640,6 +655,7 @@ export default function AdminCelestialAudit() {
           count={selected.size}
           onOk={batchOk}
           onFlag={batchFlag}
+          onNeedsImage={batchNeedsImage}
           onGoogle={batchGoogle}
           onClear={() => setSelected(new Set())}
         />
@@ -670,7 +686,7 @@ export default function AdminCelestialAudit() {
               ? "ring-2 ring-primary border-primary"
               : isSelected
                 ? "ring-1 ring-primary/50 border-primary/50"
-                : status === "ok" ? "border-green-500/50" : status === "flagged" ? "border-red-500/50" : "border-border/50";
+                : status === "ok" ? "border-green-500/50" : status === "needs_image" ? "border-amber-500/50" : status === "flagged" ? "border-red-500/50" : "border-border/50";
 
             const renderImage = () => {
               const dss2Url = item.ra != null && item.dec != null ? buildDss2ThumbUrl(item.ra, item.dec, item.size_max) : null;
@@ -797,10 +813,13 @@ export default function AdminCelestialAudit() {
                   <p className="text-[9px] font-bold text-foreground truncate">{item.catalog_id}</p>
                   {item.common_name && <p className="text-[8px] text-muted-foreground truncate">{item.common_name}</p>}
                   <div className="flex gap-0.5">
-                    <button onClick={() => setStatus(item.id, "ok")} className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "ok" ? "bg-green-500/20 border-green-500 text-green-400" : "border-border/50 text-muted-foreground hover:border-green-500/50"}`}>
+                    <button onClick={() => setStatus(item.id, "ok")} title="OK" className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "ok" ? "bg-green-500/20 border-green-500 text-green-400" : "border-border/50 text-muted-foreground hover:border-green-500/50"}`}>
                       <Check className="w-2.5 h-2.5 mx-auto" />
                     </button>
-                    <button onClick={() => setStatus(item.id, "flagged")} className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "flagged" ? "bg-red-500/20 border-red-500 text-red-400" : "border-border/50 text-muted-foreground hover:border-red-500/50"}`}>
+                    <button onClick={() => setStatus(item.id, "needs_image")} title="Image à trouver" className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "needs_image" ? "bg-amber-500/20 border-amber-500 text-amber-400" : "border-border/50 text-muted-foreground hover:border-amber-500/50"}`}>
+                      <Eye className="w-2.5 h-2.5 mx-auto" />
+                    </button>
+                    <button onClick={() => setStatus(item.id, "flagged")} title="Signaler" className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "flagged" ? "bg-red-500/20 border-red-500 text-red-400" : "border-border/50 text-muted-foreground hover:border-red-500/50"}`}>
                       <X className="w-2.5 h-2.5 mx-auto" />
                     </button>
                     <button onClick={() => { setReplacing(replacing === item.id ? null : item.id); setNewUrl(""); }} className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${

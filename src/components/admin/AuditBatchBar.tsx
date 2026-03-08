@@ -1,15 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { Check, X, Search, XCircle } from "lucide-react";
+import { Check, X, Search, XCircle, Eye } from "lucide-react";
 
 type Props = {
   count: number;
   onOk: () => void;
   onFlag: () => void;
+  onNeedsImage?: () => void;
   onGoogle: () => void;
   onClear: () => void;
 };
 
-export default function AuditBatchBar({ count, onOk, onFlag, onGoogle, onClear }: Props) {
+export default function AuditBatchBar({ count, onOk, onFlag, onNeedsImage, onGoogle, onClear }: Props) {
   if (count === 0) return null;
 
   return (
@@ -19,6 +20,11 @@ export default function AuditBatchBar({ count, onOk, onFlag, onGoogle, onClear }
         <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-green-500/50 text-green-400 hover:bg-green-500/10" onClick={onOk}>
           <Check className="w-3 h-3" /> OK
         </Button>
+        {onNeedsImage && (
+          <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-amber-500/50 text-amber-400 hover:bg-amber-500/10" onClick={onNeedsImage}>
+            <Eye className="w-3 h-3" /> À trouver
+          </Button>
+        )}
         <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-red-500/50 text-red-400 hover:bg-red-500/10" onClick={onFlag}>
           <X className="w-3 h-3" /> Flag
         </Button>

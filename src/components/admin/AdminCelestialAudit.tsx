@@ -32,6 +32,7 @@ export default function AdminCelestialAudit() {
   const [objType, setObjType] = useState<string | null>(null);
   const [constellation, setConstellation] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<"catalog_id" | "common_name" | "magnitude" | "status">("catalog_id");
   const [filterStatus, setFilterStatus] = useState("all");
   const [replacing, setReplacing] = useState<string | null>(null);
   const [newUrl, setNewUrl] = useState("");
@@ -58,12 +59,17 @@ export default function AdminCelestialAudit() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin_celestial", page, objType, constellation, search],
+    queryKey: ["admin_celestial", page, objType, constellation, search, sortBy],
     queryFn: async () => {
       let q = (supabase as any)
         .from("celestial_objects")
-        .select("id, catalog_id, common_name, obj_type, constellation, forced_image_url, magnitude", { count: "exact" })
-        .order("catalog_id");
+        .select("id, catalog_id, common_name, obj_type, constellation, forced_image_url, magnitude", { count: "exact" });
+
+      // Server-side sorting (except status which is client-side)
+      if (sortBy === "common_name") q = q.order("common_name", { ascending: true, nullsFirst: false });
+      else if (sortBy === "magnitude") q = q.order("magnitude", { ascending: true, nullsFirst: false });
+      else q = q.order("catalog_id");
+
       if (objType) q = q.eq("obj_type", objType);
       if (constellation) q = q.eq("constellation", constellation);
       if (search.trim()) {
@@ -119,18 +125,32 @@ export default function AdminCelestialAudit() {
 
   const displayed = useMemo(() => {
     if (!data?.items) return [];
-    if (filterStatus === "all") return data.items;
-    return data.items.filter((item: any) => {
-      const s = audit[item.id];
-      if (filterStatus === "no_image") return !item.forced_image_url;
-      if (filterStatus === "flagged") return s === "flagged";
-      if (filterStatus === "ok") return s === "ok";
-      if (filterStatus === "unchecked") return !s || s === "unchecked";
-      if (filterStatus === "heavy") return healthMap[item.id]?.status === "heavy";
-      if (filterStatus === "broken") return healthMap[item.id]?.status === "broken";
-      return true;
-    });
-  }, [data, filterStatus, audit, healthMap]);
+    let list = data.items;
+    if (filterStatus !== "all") {
+      list = list.filter((item: any) => {
+        const s = audit[item.id];
+        if (filterStatus === "no_image") return !item.forced_image_url;
+        if (filterStatus === "flagged") return s === "flagged";
+        if (filterStatus === "ok") return s === "ok";
+        if (filterStatus === "unchecked") return !s || s === "unchecked";
+        if (filterStatus === "heavy") return healthMap[item.id]?.status === "heavy";
+        if (filterStatus === "broken") return healthMap[item.id]?.status === "broken";
+        return true;
+      });
+    }
+    // Client-side sort by status
+    if (sortBy === "status") {
+      const statusOrder = (id: string) => {
+        const s = audit[id];
+        if (!s || s === "unchecked") return 0;
+        if (s === "flagged") return 1;
+        if (s === "ok") return 2;
+        return 0;
+      };
+      list = [...list].sort((a: any, b: any) => statusOrder(a.id) - statusOrder(b.id));
+    }
+    return list;
+  }, [data, filterStatus, audit, healthMap, sortBy]);
 
   const healthBadge = (id: string) => {
     const h = healthMap[id];

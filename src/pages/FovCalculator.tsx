@@ -8,50 +8,81 @@ import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
 import ToolSuggestions from "@/components/ToolSuggestions";
 import TargetObjectPicker, { type TargetObject } from "@/components/fov/TargetObjectPicker";
 import ExposureCalculator from "@/components/fov/ExposureCalculator";
+import { useCameras, useTelescopes } from "@/hooks/useEquipmentCatalog";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-
-const TELESCOPES = [
-  { name: "Custom", focalLength: 0, aperture: 0 },
-  { name: "Skywatcher 130/900", focalLength: 900, aperture: 130 },
-  { name: "Skywatcher 200/1000", focalLength: 1000, aperture: 200 },
-  { name: "Celestron C8 (203/2032)", focalLength: 2032, aperture: 203 },
-  { name: "Celestron C11 (280/2800)", focalLength: 2800, aperture: 280 },
-  { name: "Takahashi FSQ-106 (530)", focalLength: 530, aperture: 106 },
-  { name: "William Optics ZS61 (360)", focalLength: 360, aperture: 61 },
-  { name: "Skywatcher Evostar 72ED (420)", focalLength: 420, aperture: 72 },
-  { name: "Skywatcher Quattro 200P (800)", focalLength: 800, aperture: 200 },
-];
-
-const CAMERAS = [
-  { name: "Custom", sensorW: 0, sensorH: 0, pixelSize: 0, resW: 0, resH: 0 },
-  { name: "ZWO ASI294MC Pro", sensorW: 23.2, sensorH: 15.5, pixelSize: 4.63, resW: 4144, resH: 2822 },
-  { name: "ZWO ASI533MC Pro", sensorW: 11.31, sensorH: 11.31, pixelSize: 3.76, resW: 3008, resH: 3008 },
-  { name: "ZWO ASI2600MC Pro", sensorW: 23.5, sensorH: 15.7, pixelSize: 3.76, resW: 6248, resH: 4176 },
-  { name: "ZWO ASI183MC Pro", sensorW: 13.2, sensorH: 8.8, pixelSize: 2.4, resW: 5496, resH: 3672 },
-  { name: "Canon EOS Ra", sensorW: 36.0, sensorH: 24.0, pixelSize: 5.36, resW: 6720, resH: 4480 },
-  { name: "Canon EOS 6D", sensorW: 35.8, sensorH: 23.9, pixelSize: 6.55, resW: 5472, resH: 3648 },
-  { name: "Nikon D810a", sensorW: 35.9, sensorH: 24.0, pixelSize: 4.88, resW: 7360, resH: 4912 },
-  { name: "Sony A7III", sensorW: 35.6, sensorH: 23.8, pixelSize: 5.93, resW: 6000, resH: 4000 },
-];
 
 const DEFAULT_TARGET: TargetObject = { name: "M31 — Andromeda", sizeArcmin: 178, exposureFast: 30, exposureDeep: 120, ra: 10.6847, dec: 41.2687 };
 
 const FovCalculator = () => {
-  const [telescopeIdx, setTelescopeIdx] = useState("1");
-  const [cameraIdx, setCameraIdx] = useState("1");
-  const [focalLength, setFocalLength] = useState(TELESCOPES[1].focalLength);
-  const [sensorW, setSensorW] = useState(CAMERAS[1].sensorW);
-  const [sensorH, setSensorH] = useState(CAMERAS[1].sensorH);
-  const [pixelSize, setPixelSize] = useState(CAMERAS[1].pixelSize);
+  const { data: dbTelescopes } = useTelescopes();
+  const { data: dbCameras } = useCameras();
+
+  const [telescopeId, setTelescopeId] = useState<string>("custom");
+  const [cameraId, setCameraId] = useState<string>("custom");
+  const [focalLength, setFocalLength] = useState(900);
+  const [sensorW, setSensorW] = useState(23.2);
+  const [sensorH, setSensorH] = useState(15.5);
+  const [pixelSize, setPixelSize] = useState(4.63);
   const [barlow, setBarlow] = useState(1);
   const [selectedObject, setSelectedObject] = useState<TargetObject>(DEFAULT_TARGET);
   const [survey, setSurvey] = useState<SkyImageSurvey>("mellinger");
+
+  // Load saved equipment from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("astrodash_equipment");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.telescopeId) setTelescopeId(parsed.telescopeId);
+        if (parsed.cameraId) setCameraId(parsed.cameraId);
+        if (parsed.focalLength) setFocalLength(parsed.focalLength);
+        if (parsed.sensorWidth) setSensorW(parsed.sensorWidth);
+        if (parsed.sensorHeight) setSensorH(parsed.sensorHeight);
+        if (parsed.pixelSize) setPixelSize(parsed.pixelSize);
+      }
+    } catch {}
+  }, []);
+
+  // When DB data loads and we have saved IDs, apply the values
+  useEffect(() => {
+    if (telescopeId !== "custom" && dbTelescopes) {
+      const t = dbTelescopes.find(t => t.id === telescopeId);
+      if (t) setFocalLength(t.focal_length_mm ?? focalLength);
+    }
+  }, [dbTelescopes, telescopeId]);
+
+  useEffect(() => {
+    if (cameraId !== "custom" && dbCameras) {
+      const c = dbCameras.find(c => c.id === cameraId);
+      if (c) {
+        setSensorW(c.sensor_width_mm ?? sensorW);
+        setSensorH(c.sensor_height_mm ?? sensorH);
+        setPixelSize(c.pixel_size_um ?? pixelSize);
+      }
+    }
+  }, [dbCameras, cameraId]);
+
+  const handleTelescopeChange = (id: string) => {
+    setTelescopeId(id);
+    if (id === "custom") return;
+    const t = dbTelescopes?.find(t => t.id === id);
+    if (t) {
+      if (t.focal_length_mm) setFocalLength(t.focal_length_mm);
+    }
+  };
+
+  const handleCameraChange = (id: string) => {
+    setCameraId(id);
+    if (id === "custom") return;
+    const c = dbCameras?.find(c => c.id === id);
+    if (c) {
+      if (c.sensor_width_mm) setSensorW(c.sensor_width_mm);
+      if (c.sensor_height_mm) setSensorH(c.sensor_height_mm);
+      if (c.pixel_size_um) setPixelSize(c.pixel_size_um);
+    }
+  };
 
   const effectiveFL = focalLength * barlow;
 
@@ -61,8 +92,11 @@ const FovCalculator = () => {
       focalLength: effectiveFL,
       sensorWidth: sensorW,
       sensorHeight: sensorH,
+      pixelSize,
+      telescopeId: telescopeId !== "custom" ? telescopeId : undefined,
+      cameraId: cameraId !== "custom" ? cameraId : undefined,
     }));
-  }, [effectiveFL, sensorW, sensorH]);
+  }, [effectiveFL, sensorW, sensorH, pixelSize, telescopeId, cameraId]);
 
   const fov = useMemo(() => {
     if (effectiveFL <= 0) return { w: 0, h: 0, wArcmin: 0, hArcmin: 0, resolution: 0 };
@@ -87,25 +121,20 @@ const FovCalculator = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="glass-card rounded-2xl p-6 space-y-5"
-          >
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+            className="glass-card rounded-2xl p-6 space-y-5">
             <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Equipment Setup</h3>
 
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Telescope</Label>
-              <Select value={telescopeIdx} onValueChange={(v) => {
-                setTelescopeIdx(v);
-                const t = TELESCOPES[parseInt(v)];
-                if (t.focalLength > 0) setFocalLength(t.focalLength);
-              }}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
+              <Select value={telescopeId} onValueChange={handleTelescopeChange}>
+                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Choisir un télescope..." /></SelectTrigger>
                 <SelectContent>
-                  {TELESCOPES.map((t, i) => (
-                    <SelectItem key={i} value={String(i)}>{t.name}</SelectItem>
+                  <SelectItem value="custom">✏️ Custom</SelectItem>
+                  {dbTelescopes?.map(t => (
+                    <SelectItem key={t.id} value={t.id}>
+                      {t.brand} {t.model} ({t.focal_length_mm}mm{t.f_ratio ? ` f/${t.f_ratio}` : ""})
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -124,15 +153,14 @@ const FovCalculator = () => {
 
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Camera</Label>
-              <Select value={cameraIdx} onValueChange={(v) => {
-                setCameraIdx(v);
-                const c = CAMERAS[parseInt(v)];
-                if (c.sensorW > 0) { setSensorW(c.sensorW); setSensorH(c.sensorH); setPixelSize(c.pixelSize); }
-              }}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
+              <Select value={cameraId} onValueChange={handleCameraChange}>
+                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Choisir une caméra..." /></SelectTrigger>
                 <SelectContent>
-                  {CAMERAS.map((c, i) => (
-                    <SelectItem key={i} value={String(i)}>{c.name}</SelectItem>
+                  <SelectItem value="custom">✏️ Custom</SelectItem>
+                  {dbCameras?.map(c => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.brand} {c.model} ({c.pixel_size_um}µm)
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -156,12 +184,7 @@ const FovCalculator = () => {
             <TargetObjectPicker value={selectedObject} onChange={setSelectedObject} />
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="space-y-6"
-          >
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="space-y-6">
             <div className="glass-card rounded-2xl p-6 space-y-4">
               <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Results</h3>
               <div className="grid grid-cols-2 gap-4">
@@ -169,21 +192,10 @@ const FovCalculator = () => {
                 <ResultItem label="FOV Height" value={`${fov.h.toFixed(2)}° (${fov.hArcmin.toFixed(1)}')`} />
                 <ResultItem label="Effective FL" value={`${effectiveFL} mm`} />
                 <ResultItem label="Sampling" value={`${fov.resolution.toFixed(2)} "/px`} />
-                <ResultItem
-                  label="Sampling Quality"
-                  value={
-                    fov.resolution < 0.5 ? "Oversampled" :
-                    fov.resolution < 1.5 ? "Optimal" :
-                    fov.resolution < 3 ? "Undersampled" : "Very wide"
-                  }
-                  highlight={fov.resolution >= 0.5 && fov.resolution < 1.5}
-                />
-                {obj && (
-                  <ResultItem
-                    label={`${obj.name} framing`}
-                    value={`${(objFractionW * 100).toFixed(0)}% of width`}
-                  />
-                )}
+                <ResultItem label="Sampling Quality"
+                  value={fov.resolution < 0.5 ? "Oversampled" : fov.resolution < 1.5 ? "Optimal" : fov.resolution < 3 ? "Undersampled" : "Very wide"}
+                  highlight={fov.resolution >= 0.5 && fov.resolution < 1.5} />
+                {obj && <ResultItem label={`${obj.name} framing`} value={`${(objFractionW * 100).toFixed(0)}% of width`} />}
               </div>
             </div>
 
@@ -191,48 +203,32 @@ const FovCalculator = () => {
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">FOV Preview</h3>
                 <div className="flex rounded-md border border-border overflow-hidden text-[10px]">
-                  <button
-                    onClick={() => setSurvey("mellinger")}
-                    className={`px-2.5 py-1 transition-colors ${survey === "mellinger" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}
-                  >
+                  <button onClick={() => setSurvey("mellinger")}
+                    className={`px-2.5 py-1 transition-colors ${survey === "mellinger" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
                     📷 Photographer
                   </button>
-                  <button
-                    onClick={() => setSurvey("dss2")}
-                    className={`px-2.5 py-1 transition-colors border-l border-border ${survey === "dss2" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}
-                  >
+                  <button onClick={() => setSurvey("dss2")}
+                    className={`px-2.5 py-1 transition-colors border-l border-border ${survey === "dss2" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
                     🔬 Scientific
                   </button>
                 </div>
               </div>
-              <div
-                className="relative rounded-xl border border-border overflow-hidden"
-                style={{ paddingBottom: `${(fov.h / Math.max(fov.w, 0.01)) * 100}%`, minHeight: 200 }}
-              >
+              <div className="relative rounded-xl border border-border overflow-hidden"
+                style={{ paddingBottom: `${(fov.h / Math.max(fov.w, 0.01)) * 100}%`, minHeight: 200 }}>
                 {obj?.ra != null && obj?.dec != null && fov.w > 0 ? (
-                  <img
-                    key={`${obj.ra}-${obj.dec}-${survey}`}
+                  <img key={`${obj.ra}-${obj.dec}-${survey}`}
                     src={getSkyImageUrlWithFov(obj.ra, obj.dec, fov.w, fov.h, survey)}
-                    alt={obj.name}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                  />
+                    alt={obj.name} className="absolute inset-0 w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                 ) : (
                   <div className="absolute inset-0 bg-muted/30" />
                 )}
-
                 <div className="absolute inset-0 border-2 border-primary/50 rounded-lg" />
                 <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/40" />
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/40" />
-
                 {obj && objFractionW > 0 && (
-                  <div
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"
-                    style={{
-                      width: `${Math.min(objFractionW * 100, 200)}%`,
-                      paddingBottom: `${Math.min(objFractionH * 100, 200)}%`,
-                    }}
-                  />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"
+                    style={{ width: `${Math.min(objFractionW * 100, 200)}%`, paddingBottom: `${Math.min(objFractionH * 100, 200)}%` }} />
                 )}
                 <div className="absolute bottom-2 left-2 text-[10px] font-mono text-white/80 drop-shadow-md bg-black/40 px-1.5 py-0.5 rounded">
                   {fov.w.toFixed(2)}° × {fov.h.toFixed(2)}°
@@ -247,21 +243,11 @@ const FovCalculator = () => {
           </motion.div>
         </div>
 
-        {/* Exposure Calculator */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <ExposureCalculator target={selectedObject} />
         </motion.div>
 
-        {/* Imaging Impact */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-        >
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
           <ImagingImpactCard />
         </motion.div>
 

@@ -5,10 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Telescope, Camera, Filter, Anchor, X, Scale } from "lucide-react";
+import { Telescope, Camera, Filter, Anchor, X, Scale, Wrench } from "lucide-react";
 import {
-  useCameras, useTelescopes, useMounts, useFilters, extractPrices,
-  type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter,
+  useCameras, useTelescopes, useMounts, useFilters, useAccessories, extractPrices,
+  type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter, type AstroAccessory,
 } from "@/hooks/useEquipmentCatalog";
 import { EquipmentCard } from "@/components/rigbuilder/EquipmentCard";
 import { CompareTable } from "@/components/rigbuilder/CompareTable";
@@ -16,7 +16,7 @@ import { RangeFilter } from "@/components/rigbuilder/RangeFilter";
 import { RigSummary } from "@/components/rigbuilder/RigSummary";
 import { ChipFilter, ToggleFilter } from "@/components/rigbuilder/ChipFilter";
 
-type Category = "telescopes" | "cameras" | "mounts" | "filters";
+type Category = "telescopes" | "cameras" | "mounts" | "filters" | "accessories";
 
 function bounds(arr: (number | null | undefined)[]): [number, number] {
   const nums = arr.filter((n): n is number => n != null && !isNaN(n));

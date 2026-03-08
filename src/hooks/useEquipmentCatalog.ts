@@ -193,6 +193,37 @@ export function useFilters() {
   });
 }
 
+// Accessories
+export interface AstroAccessory {
+  id: string;
+  brand: string;
+  model: string;
+  type: string | null; // Coma Corrector, Field Flattener, Reducer, OAG, Focuser, Filter Wheel, Guidescope, etc.
+  backfocus_contribution_mm: number | null;
+  weight_g: number | null;
+  input_thread: string | null;
+  output_thread: string | null;
+  image_url: string | null;
+  affiliate_amazon: string | null;
+  affiliate_astro: string | null;
+  manufacturer_url: string | null;
+  _raw: Record<string, any>;
+}
+
+export function useAccessories() {
+  return useQuery({
+    queryKey: ["astro_accessories"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("astro_accessories")
+        .select("*")
+        .order("brand");
+      if (error) throw error;
+      return ((data ?? []) as any[]).map(r => ({ ...r, _raw: r })) as AstroAccessory[];
+    },
+  });
+}
+
 // Compatibility rules
 export interface CompatibilityRule {
   id: string;
@@ -214,6 +245,6 @@ export function useCompatibilityRules() {
       if (error) throw error;
       return (data ?? []) as CompatibilityRule[];
     },
-    staleTime: 1000 * 60 * 30, // 30 min cache
+    staleTime: 1000 * 60 * 30,
   });
 }

@@ -125,7 +125,8 @@ export default function AdminCelestialAudit() {
     setScanning(false);
   }, [data]);
 
-  const displayed = useMemo(() => {
+  // Apply client-side filtering
+  const filteredAll = useMemo(() => {
     if (!data?.items) return [];
     let list = data.items;
     if (filterStatus !== "all") {
@@ -153,6 +154,18 @@ export default function AdminCelestialAudit() {
     }
     return list;
   }, [data, filterStatus, audit, healthMap, sortBy]);
+
+  // When client-side filtering, paginate the filtered results; otherwise use server results directly
+  const totalPages = needsClientFilter
+    ? Math.ceil(filteredAll.length / PAGE_SIZE)
+    : Math.ceil((data?.total ?? 0) / PAGE_SIZE);
+
+  const displayed = useMemo(() => {
+    if (needsClientFilter) {
+      return filteredAll.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+    }
+    return filteredAll;
+  }, [filteredAll, needsClientFilter, page]);
 
   const healthBadge = (id: string) => {
     const h = healthMap[id];

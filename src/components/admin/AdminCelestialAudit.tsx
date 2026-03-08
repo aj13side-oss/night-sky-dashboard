@@ -107,14 +107,14 @@ export default function AdminCelestialAudit() {
         return items.filter((i: any) => !knownPrefixes.some(p => i.catalog_id?.startsWith(p)));
       };
 
-      if (!needsClientFilter) {
+      if (!needsClientFilter && catalogPrefix !== "other") {
         const q = buildQuery().range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
         const { data, count, error } = await q;
         if (error) throw error;
         return { items: data ?? [], total: count ?? 0 };
       }
 
-      // Fetch ALL rows in batches of 1000 to bypass Supabase default limit
+      // Fetch ALL rows in batches of 1000 for client-side filtering
       const allItems: any[] = [];
       let from = 0;
       const BATCH = 1000;
@@ -129,7 +129,8 @@ export default function AdminCelestialAudit() {
         if (batch.length < BATCH) break;
         from += BATCH;
       }
-      return { items: allItems, total };
+      const filtered = filterOther(allItems);
+      return { items: filtered, total: catalogPrefix === "other" ? filtered.length : total };
     },
     staleTime: 1000 * 60 * 5,
   });

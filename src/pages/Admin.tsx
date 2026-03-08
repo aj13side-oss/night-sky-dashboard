@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import AppNav from "@/components/AppNav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, ImageIcon, Star, DollarSign, Link, Layers, Terminal, ShieldCheck } from "lucide-react";
+import { BarChart3, ImageIcon, Star, DollarSign, Link, Layers, Terminal, ShieldCheck, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import AdminStats from "@/components/admin/AdminStats";
 import AdminImageAudit from "@/components/admin/AdminImageAudit";
 import AdminCelestialAudit from "@/components/admin/AdminCelestialAudit";
@@ -11,39 +13,62 @@ import AdminUrls from "@/components/admin/AdminUrls";
 import AdminPresets from "@/components/admin/AdminPresets";
 import AdminLogs from "@/components/admin/AdminLogs";
 
-const ADMIN_CODE = "astrodash2026";
-
 const Admin = () => {
   const navigate = useNavigate();
   const [authed, setAuthed] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem("admin_auth");
-    if (stored === "true") {
+    const check = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { navigate("/admin/login"); return; }
+
+      const { data: isAdmin } = await (supabase as any).rpc("has_role", {
+        _user_id: session.user.id,
+        _role: "admin",
+      });
+
+      if (!isAdmin) {
+        await supabase.auth.signOut();
+        navigate("/admin/login");
+        return;
+      }
+
       setAuthed(true);
-      return;
-    }
-    const code = prompt("Admin access code:");
-    if (code === ADMIN_CODE) {
-      localStorage.setItem("admin_auth", "true");
-      setAuthed(true);
-    } else {
-      navigate("/");
-    }
+      setChecking(false);
+    };
+
+    check();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) { setAuthed(false); navigate("/admin/login"); }
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
-  if (!authed) return null;
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/admin/login");
+  };
+
+  if (checking || !authed) return null;
 
   return (
     <div className="min-h-screen bg-background">
       <AppNav />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-        <div className="flex items-center gap-3">
-          <ShieldCheck className="w-8 h-8 text-primary" />
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Admin Panel</h1>
-            <p className="text-sm text-muted-foreground">AstroDash content management</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="w-8 h-8 text-primary" />
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Admin Panel</h1>
+              <p className="text-sm text-muted-foreground">AstroDash content management</p>
+            </div>
           </div>
+          <Button variant="outline" size="sm" onClick={handleLogout} className="gap-1.5">
+            <LogOut className="w-3.5 h-3.5" /> Log out
+          </Button>
         </div>
 
         <Tabs defaultValue="stats">

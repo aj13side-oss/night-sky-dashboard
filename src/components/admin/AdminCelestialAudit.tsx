@@ -66,6 +66,7 @@ const CATALOG_PREFIXES = [
 const STATUS_FILTERS = [
   { value: "all", label: "Tous" },
   { value: "no_image", label: "Sans image" },
+  { value: "needs_wiki", label: "🔍 Wiki à trouver" },
   { value: "flagged", label: "Signalés" },
   { value: "ok", label: "Vérifiés ✓" },
   { value: "unchecked", label: "Non vérifiés" },
@@ -307,6 +308,7 @@ export default function AdminCelestialAudit() {
       list = list.filter((item: any) => {
         const s = audit[item.id];
         if (filterStatus === "no_image") return !item.forced_image_url;
+        if (filterStatus === "needs_wiki") return s === "needs_wiki";
         if (filterStatus === "flagged") return s === "flagged";
         if (filterStatus === "ok") return s === "ok";
         if (filterStatus === "unchecked") return !s || s === "unchecked";
@@ -320,8 +322,9 @@ export default function AdminCelestialAudit() {
       const statusOrder = (id: string) => {
         const s = audit[id];
         if (!s || s === "unchecked") return 0;
-        if (s === "flagged") return 1;
-        if (s === "ok") return 2;
+        if (s === "needs_wiki") return 1;
+        if (s === "flagged") return 2;
+        if (s === "ok") return 3;
         return 0;
       };
       list = [...list].sort((a: any, b: any) => statusOrder(a.id) - statusOrder(b.id));
@@ -521,6 +524,7 @@ export default function AdminCelestialAudit() {
   // Batch actions
   const batchOk = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "ok" })); setSelected(new Set()); toast.success(`${selected.size} marqués OK`); };
   const batchFlag = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "flagged" })); setSelected(new Set()); toast.success(`${selected.size} signalés`); };
+  const batchNeedsWiki = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "needs_wiki" })); setSelected(new Set()); toast.success(`${selected.size} marqués "Wiki à trouver"`); };
   const batchGoogle = () => {
     let count = 0;
     selected.forEach(id => {

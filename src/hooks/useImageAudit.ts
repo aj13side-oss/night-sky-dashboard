@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export type AuditStatus = "ok" | "flagged" | "unchecked";
+export type AuditStatus = "ok" | "flagged" | "needs_wiki" | "unchecked";
 
 interface AuditRow {
   id: string;

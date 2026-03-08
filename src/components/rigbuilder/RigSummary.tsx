@@ -169,19 +169,19 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
     }
 
     return checks;
-  }, [telescope, camera, mount, filter, rules]);
+  }, [telescope, camera, mount, filter, accessories, rules]);
 
   // Total estimated price
   const totalPrice = useMemo(() => {
     let total = 0;
     let count = 0;
-    [telescope, camera, mount, filter].forEach(item => {
+    [telescope, camera, mount, filter, ...accessories].forEach(item => {
       if (!item) return;
       const { best } = extractPrices((item as any)._raw ?? {});
       if (best) { total += best.price; count++; }
     });
     return count > 0 ? { total, count } : null;
-  }, [telescope, camera, mount, filter]);
+  }, [telescope, camera, mount, filter, accessories]);
 
   if (!diagnostics) return null;
 

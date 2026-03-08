@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { toast } from "sonner";
 import AppNav from "@/components/AppNav";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,12 +10,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Telescope, Camera, Filter, Anchor, X, Scale, Wrench, Search } from "lucide-react";
+import { Telescope, Camera, Filter, Anchor, X, Scale, Wrench, Search, Sparkles } from "lucide-react";
 import {
-  useCameras, useTelescopes, useMounts, useFilters, useAccessories, extractPrices,
-  type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter, type AstroAccessory,
+  useCameras, useTelescopes, useMounts, useFilters, useAccessories, useRigPresets, extractPrices,
+  type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter, type AstroAccessory, type RigPreset,
 } from "@/hooks/useEquipmentCatalog";
 import { EquipmentCard } from "@/components/rigbuilder/EquipmentCard";
+import { PresetCards } from "@/components/rigbuilder/PresetCards";
 import { CompareTable } from "@/components/rigbuilder/CompareTable";
 import { RangeFilter } from "@/components/rigbuilder/RangeFilter";
 import { RigSummary } from "@/components/rigbuilder/RigSummary";

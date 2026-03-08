@@ -551,6 +551,18 @@ export default function AdminCelestialAudit() {
     qc.invalidateQueries({ queryKey: ["admin_celestial"] });
   }, [displayed, wikiImages, qc]);
 
+  // Reset all audit validations
+  const resetAllAudit = useCallback(async () => {
+    if (!confirm("Remettre à zéro TOUTES les validations d'images célestes ?")) return;
+    const { error } = await (supabase as any)
+      .from("image_audit_log")
+      .delete()
+      .eq("target_table", "celestial_objects");
+    if (error) { toast.error("Erreur : " + error.message); return; }
+    toast.success("Toutes les validations ont été remises à zéro !");
+    qc.invalidateQueries({ queryKey: ["image_audit", "celestial_objects"] });
+  }, [qc]);
+
   return (
     <div className="space-y-4 mt-4">
       <div className="flex items-center gap-3 flex-wrap">

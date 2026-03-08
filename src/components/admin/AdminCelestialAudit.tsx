@@ -30,7 +30,11 @@ function buildWikimediaThumbUrl(url: string, width: number): string {
   }
 }
 
-
+function buildDss2ThumbUrl(ra: number, dec: number, sizeArcmin: number | null | undefined): string {
+  const fovDeg = sizeArcmin && sizeArcmin > 0 ? Math.min(Math.max(sizeArcmin * 1.5 / 60, 0.05), 5) : 0.5;
+  const fovDegThumb = fovDeg * 1.25;
+  return `https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=CDS/P/DSS2/color&ra=${ra}&dec=${dec}&fov=${fovDegThumb}&width=300&height=200&format=jpg`;
+}
 
 interface WikiImage {
   url: string;

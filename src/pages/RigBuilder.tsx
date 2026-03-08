@@ -14,6 +14,7 @@ import { EquipmentCard } from "@/components/rigbuilder/EquipmentCard";
 import { CompareTable } from "@/components/rigbuilder/CompareTable";
 import { RangeFilter } from "@/components/rigbuilder/RangeFilter";
 import { RigSummary } from "@/components/rigbuilder/RigSummary";
+import { ChipFilter, ToggleFilter } from "@/components/rigbuilder/ChipFilter";
 
 type Category = "telescopes" | "cameras" | "mounts" | "filters";
 

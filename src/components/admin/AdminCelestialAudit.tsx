@@ -121,6 +121,8 @@ export default function AdminCelestialAudit() {
         else if (sortBy === "magnitude") q = q.order("magnitude", { ascending: true, nullsFirst: false });
         else q = q.order("catalog_id");
 
+        // Always exclude stars
+        q = q.neq("obj_type", "Star").neq("obj_type", "Double Star").neq("obj_type", "Variable Star").neq("obj_type", "Carbon Star").neq("obj_type", "Star System");
         if (objType) q = q.eq("obj_type", objType);
         if (constellation) q = q.eq("constellation", constellation);
         if (search.trim()) {

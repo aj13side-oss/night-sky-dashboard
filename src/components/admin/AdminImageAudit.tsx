@@ -7,14 +7,14 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check, X, RefreshCw, Download, Camera, Telescope, Anchor, Filter, Zap, AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useCameras, useTelescopes, useMounts, useFilters } from "@/hooks/useEquipmentCatalog";
+import { useCameras, useTelescopes, useMounts, useFilters, useAccessories } from "@/hooks/useEquipmentCatalog";
 import { ChipFilter } from "@/components/rigbuilder/ChipFilter";
 import { useQueryClient } from "@tanstack/react-query";
 import { thumb400 } from "@/lib/utils";
 import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus, type ImageHealth } from "@/hooks/useImageAudit";
 
 type EquipItem = { id: string; brand: string; model: string; image_url: string | null };
-type TableName = "astro_cameras" | "astro_telescopes" | "astro_mounts" | "astro_filters";
+type TableName = "astro_cameras" | "astro_telescopes" | "astro_mounts" | "astro_filters" | "astro_accessories";
 
 function AuditGrid({ items, tableName, filterStatus, brandFilter }: {
   items: EquipItem[]; tableName: TableName; filterStatus: string; brandFilter: string | null;
@@ -188,15 +188,16 @@ export default function AdminImageAudit() {
   const { data: telescopes } = useTelescopes();
   const { data: mounts } = useMounts();
   const { data: filters } = useFilters();
+  const { data: accessories } = useAccessories();
 
   const [cat, setCat] = useState("cameras");
   const [filterStatus, setFilterStatus] = useState("all");
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
 
   const items: EquipItem[] = useMemo(() => {
-    const src = cat === "cameras" ? cameras : cat === "telescopes" ? telescopes : cat === "mounts" ? mounts : filters;
+    const src = cat === "cameras" ? cameras : cat === "telescopes" ? telescopes : cat === "mounts" ? mounts : cat === "accessories" ? accessories : filters;
     return (src ?? []).map(i => ({ id: i.id, brand: i.brand, model: i.model, image_url: i.image_url }));
-  }, [cat, cameras, telescopes, mounts, filters]);
+  }, [cat, cameras, telescopes, mounts, filters, accessories]);
 
   const tableName: TableName = `astro_${cat}` as TableName;
   const brands = useMemo(() => [...new Set(items.map(i => i.brand))].sort(), [items]);
@@ -209,6 +210,7 @@ export default function AdminImageAudit() {
           <TabsTrigger value="telescopes" className="gap-1 text-xs"><Telescope className="w-3 h-3" /> Telescopes</TabsTrigger>
           <TabsTrigger value="mounts" className="gap-1 text-xs"><Anchor className="w-3 h-3" /> Mounts</TabsTrigger>
           <TabsTrigger value="filters" className="gap-1 text-xs"><Filter className="w-3 h-3" /> Filters</TabsTrigger>
+          <TabsTrigger value="accessories" className="gap-1 text-xs"><Zap className="w-3 h-3" /> Accessories</TabsTrigger>
         </TabsList>
       </Tabs>
 

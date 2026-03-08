@@ -358,11 +358,23 @@ export default function AdminCelestialAudit() {
   }, [wikiImages, qc]);
 
 
+  // Auto-trigger Wikipedia fetch when displayed items change
+  useEffect(() => {
+    // Cancel any in-progress fetch when page changes
+    wikiFetchRef.current = false;
+    const timeout = setTimeout(() => {
+      const hasItemsWithoutImage = displayed.some((i: any) => !i.forced_image_url && !wikiImages[i.id]);
+      if (hasItemsWithoutImage) {
+        fetchWikiForDisplayed();
+      }
+    }, 500); // Small delay to let the page settle
+    return () => { clearTimeout(timeout); wikiFetchRef.current = false; };
+  }, [displayed]); // intentionally not including wikiImages to avoid infinite loop
+
   const [visibleCount, setVisibleCount] = useState(0);
   useEffect(() => {
     setVisibleCount(0);
     if (displayed.length === 0) return;
-    // Reveal in batches of 20 every 100ms
     const timer = setInterval(() => {
       setVisibleCount(prev => {
         const next = prev + 20;

@@ -460,6 +460,7 @@ export default function AdminCelestialAudit() {
       ) : (
         <div ref={gridRef} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
           {displayed.map((item: any, idx: number) => {
+            const shouldLoadImage = idx < visibleCount;
             const status = audit[item.id] as AuditStatus | undefined;
             const isFocused = idx === focusIndex;
             const isSelected = selected.has(item.id);

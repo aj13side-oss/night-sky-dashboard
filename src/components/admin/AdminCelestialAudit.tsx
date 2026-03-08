@@ -591,6 +591,11 @@ export default function AdminCelestialAudit() {
             <X className="w-3 h-3" /> Sélectionner cassées ({brokenSet.size})
           </Button>
         )}
+        {Object.values(wikiImages).some(w => w.status === "found") && (
+          <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-blue-500/50 text-blue-400" onClick={batchValidateWiki}>
+            <Download className="w-3 h-3" /> Valider toutes les Wikipedia ({Object.values(wikiImages).filter(w => w.status === "found").length})
+          </Button>
+        )}
         <AuditBatchBar
           count={selected.size}
           onOk={batchOk}

@@ -186,7 +186,128 @@ export default function AdminCelestialAudit() {
     setScanning(false);
   }, [data]);
 
-  // Track broken images via onError
+  // Wikipedia image search for items without forced_image_url
+  const ASTRO_CATEGORIES = ["astronomy", "nebulae", "galaxies", "messier objects", "ngc objects",
+    "star clusters", "planetary nebulae", "emission nebulae", "reflection nebulae",
+    "supernova remnants", "galaxy clusters", "open clusters", "globular clusters",
+    "astrophotography", "deep-sky objects"];
+
+  const fetchWikiImage = useCallback(async (item: any): Promise<WikiImage> => {
+    const searchTerms = [
+      item.image_search_query,
+      item.common_name,
+      item.catalog_id?.replace(/\s+/g, " "),
+      item.catalog_id?.startsWith("M") ? `Messier ${item.catalog_id.slice(1).trim()}` : null,
+    ].filter(Boolean) as string[];
+
+    for (const term of searchTerms) {
+      try {
+        const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(term)}&srnamespace=0&srlimit=3&format=json&origin=*`;
+        const searchRes = await fetch(searchUrl);
+        if (!searchRes.ok) continue;
+        const searchData = await searchRes.json();
+        const results = searchData?.query?.search;
+        if (!results?.length) continue;
+        const pageTitle = results[0].title;
+
+        // Check astronomy relevance
+        const catUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=categories&cllimit=50&format=json&origin=*`;
+        const catRes = await fetch(catUrl);
+        if (catRes.ok) {
+          const catData = await catRes.json();
+          const page = Object.values(catData?.query?.pages || {})[0] as any;
+          const cats: string[] = (page?.categories || []).map((c: any) => (c.title || "").replace("Category:", "").toLowerCase());
+          if (!cats.some(cat => ASTRO_CATEGORIES.some(kw => cat.includes(kw)))) continue;
+        }
+
+        // Get thumbnail
+        const imgUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=pageimages&piprop=thumbnail&pithumbsize=200&format=json&origin=*`;
+        const imgRes = await fetch(imgUrl);
+        if (!imgRes.ok) continue;
+        const imgData = await imgRes.json();
+        const page = Object.values(imgData?.query?.pages || {})[0] as any;
+        const thumb = page?.thumbnail;
+        if (!thumb?.source || thumb.source.endsWith(".svg")) continue;
+
+        // Get metadata
+        const fileName = decodeURIComponent(thumb.source.split("/").pop()?.split("?")[0] || "");
+        let artist: string | null = null, license: string | null = null, licenseUrl: string | null = null, filePageUrl: string | null = null;
+        if (fileName) {
+          try {
+            const metaUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(fileName)}&prop=imageinfo&iiprop=extmetadata&format=json&origin=*`;
+            const metaRes = await fetch(metaUrl);
+            if (metaRes.ok) {
+              const metaData = await metaRes.json();
+              const metaPage = Object.values(metaData?.query?.pages || {})[0] as any;
+              const meta = metaPage?.imageinfo?.[0]?.extmetadata;
+              if (meta) {
+                artist = meta.Artist?.value?.replace(/<[^>]*>/g, "").trim() || null;
+                license = meta.LicenseShortName?.value || null;
+                licenseUrl = meta.LicenseUrl?.value || null;
+              }
+            }
+          } catch {}
+          filePageUrl = `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(fileName)}`;
+        }
+
+        return {
+          url: thumb.source,
+          artist,
+          license,
+          licenseUrl,
+          filePageUrl,
+          pageUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent(pageTitle)}`,
+          status: "found",
+        };
+      } catch {}
+    }
+    return { url: "", artist: null, license: null, licenseUrl: null, filePageUrl: null, pageUrl: null, status: "not_found" };
+  }, []);
+
+  // Auto-fetch Wikipedia images for displayed items without forced_image_url
+  const fetchWikiForDisplayed = useCallback(async () => {
+    if (wikiFetchRef.current) return;
+    const toFetch = displayed.filter((i: any) => !i.forced_image_url && !wikiImages[i.id]);
+    if (toFetch.length === 0) return;
+    wikiFetchRef.current = true;
+    setWikiFetching(true);
+
+    for (let i = 0; i < toFetch.length; i += 3) {
+      if (!wikiFetchRef.current) break;
+      const batch = toFetch.slice(i, i + 3);
+      const results = await Promise.all(batch.map(async (item: any) => {
+        setWikiImages(prev => ({ ...prev, [item.id]: { url: "", artist: null, license: null, licenseUrl: null, filePageUrl: null, pageUrl: null, status: "loading" } }));
+        const result = await fetchWikiImage(item);
+        return { id: item.id, result };
+      }));
+      for (const r of results) {
+        setWikiImages(prev => ({ ...prev, [r.id]: r.result }));
+      }
+    }
+    wikiFetchRef.current = false;
+    setWikiFetching(false);
+  }, [displayed, wikiImages, fetchWikiImage]);
+
+  // Validate Wikipedia image → save as forced_image_url
+  const validateWikiImage = useCallback(async (id: string) => {
+    const wiki = wikiImages[id];
+    if (!wiki || wiki.status !== "found" || !wiki.url) return;
+
+    // Get the full-resolution Wikimedia URL (not the thumbnail)
+    // The thumbnail URL pattern: .../thumb/a/ab/File.jpg/200px-File.jpg → extract original
+    let originalUrl = wiki.url;
+    const thumbMatch = wiki.url.match(/\/thumb\/(.*?)\/\d+px-/);
+    if (thumbMatch) {
+      originalUrl = `https://upload.wikimedia.org/wikipedia/commons/${thumbMatch[1]}`;
+    }
+
+    const { error } = await (supabase as any).from("celestial_objects").update({ forced_image_url: originalUrl }).eq("id", id);
+    if (error) { toast.error("Erreur : " + error.message); return; }
+    toast.success("Image Wikipedia validée et sauvegardée !");
+    qc.invalidateQueries({ queryKey: ["admin_celestial"] });
+  }, [wikiImages, qc]);
+
+
   const markBroken = useCallback((id: string) => {
     setBrokenSet(prev => {
       if (prev.has(id)) return prev;

@@ -55,6 +55,8 @@ const RigBuilder = () => {
   const { data: mounts, isLoading: loadingMounts } = useMounts();
   const { data: filters, isLoading: loadingFilters } = useFilters();
   const { data: accessories, isLoading: loadingAccessories } = useAccessories();
+  const { data: presets } = useRigPresets();
+  const [presetsOpen, setPresetsOpen] = useState(true);
 
   const [tab, setTab] = useState<Category>("telescopes");
   const [searchQuery, setSearchQuery] = useState("");

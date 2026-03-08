@@ -14,7 +14,22 @@ import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus
 import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
 import AuditBatchBar from "./AuditBatchBar";
 
-const PAGE_SIZE = 200;
+const PAGE_SIZE = 100;
+
+const CATALOG_PREFIXES = [
+  { value: "all", label: "Tous" },
+  { value: "M", label: "Messier (M)" },
+  { value: "NGC", label: "NGC" },
+  { value: "IC", label: "IC" },
+  { value: "Sh2", label: "Sharpless (Sh2)" },
+  { value: "Abell", label: "Abell" },
+  { value: "UGC", label: "UGC" },
+  { value: "PGC", label: "PGC" },
+  { value: "Barnard", label: "Barnard" },
+  { value: "Ced", label: "Cederblad" },
+  { value: "vdB", label: "van den Bergh" },
+  { value: "other", label: "Autres" },
+];
 
 const STATUS_FILTERS = [
   { value: "all", label: "Tous" },
@@ -34,7 +49,8 @@ export default function AdminCelestialAudit() {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"catalog_id" | "common_name" | "magnitude" | "status">("catalog_id");
   const [filterStatus, setFilterStatus] = useState("all");
-  const needsClientFilter = filterStatus !== "all";
+  const [catalogPrefix, setCatalogPrefix] = useState("all");
+  const needsClientFilter = filterStatus !== "all" || catalogPrefix === "other";
   const [replacing, setReplacing] = useState<string | null>(null);
   const [newUrl, setNewUrl] = useState("");
   const [healthMap, setHealthMap] = useState<Record<string, ImageHealth>>({});
@@ -61,8 +77,10 @@ export default function AdminCelestialAudit() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin_celestial", needsClientFilter ? "all" : page, objType, constellation, search, sortBy],
+    queryKey: ["admin_celestial", needsClientFilter ? "all" : page, objType, constellation, search, sortBy, catalogPrefix],
     queryFn: async () => {
+      const knownPrefixes = CATALOG_PREFIXES.filter(p => p.value !== "all" && p.value !== "other").map(p => p.value);
+
       const buildQuery = () => {
         let q = (supabase as any)
           .from("celestial_objects")
@@ -77,17 +95,26 @@ export default function AdminCelestialAudit() {
         if (search.trim()) {
           q = q.or(`catalog_id.ilike.%${search.trim()}%,common_name.ilike.%${search.trim()}%`);
         }
+        // Server-side catalog prefix filter
+        if (catalogPrefix !== "all" && catalogPrefix !== "other") {
+          q = q.ilike("catalog_id", `${catalogPrefix}%`);
+        }
         return q;
       };
 
-      if (!needsClientFilter) {
+      const filterOther = (items: any[]) => {
+        if (catalogPrefix !== "other") return items;
+        return items.filter((i: any) => !knownPrefixes.some(p => i.catalog_id?.startsWith(p)));
+      };
+
+      if (!needsClientFilter && catalogPrefix !== "other") {
         const q = buildQuery().range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
         const { data, count, error } = await q;
         if (error) throw error;
         return { items: data ?? [], total: count ?? 0 };
       }
 
-      // Fetch ALL rows in batches of 1000 to bypass Supabase default limit
+      // Fetch ALL rows in batches of 1000 for client-side filtering
       const allItems: any[] = [];
       let from = 0;
       const BATCH = 1000;
@@ -102,7 +129,8 @@ export default function AdminCelestialAudit() {
         if (batch.length < BATCH) break;
         from += BATCH;
       }
-      return { items: allItems, total };
+      const filtered = filterOther(allItems);
+      return { items: filtered, total: catalogPrefix === "other" ? filtered.length : total };
     },
     staleTime: 1000 * 60 * 5,
   });
@@ -197,7 +225,22 @@ export default function AdminCelestialAudit() {
     return filteredAll;
   }, [filteredAll, needsClientFilter, page]);
 
-  // Grid columns count for row selection
+  // Stagger image loading to prevent browser connection saturation
+  const [visibleCount, setVisibleCount] = useState(0);
+  useEffect(() => {
+    setVisibleCount(0);
+    if (displayed.length === 0) return;
+    // Reveal in batches of 20 every 100ms
+    const timer = setInterval(() => {
+      setVisibleCount(prev => {
+        const next = prev + 20;
+        if (next >= displayed.length) { clearInterval(timer); return displayed.length; }
+        return next;
+      });
+    }, 80);
+    return () => clearInterval(timer);
+  }, [displayed]);
+
   const getGridCols = useCallback(() => {
     if (!gridRef.current || !gridRef.current.firstElementChild) return 10;
     const gridWidth = gridRef.current.offsetWidth;
@@ -361,6 +404,15 @@ export default function AdminCelestialAudit() {
       </div>
 
       <div className="flex flex-wrap gap-1.5">
+        {CATALOG_PREFIXES.map(f => (
+          <button key={f.value} onClick={() => { setCatalogPrefix(f.value); setPage(0); }}
+            className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${catalogPrefix === f.value ? "bg-primary text-primary-foreground border-primary" : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"}`}>
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap gap-1.5">
         {STATUS_FILTERS.map(f => (
           <button key={f.value} onClick={() => setFilterStatus(f.value)}
             className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${filterStatus === f.value ? "bg-primary text-primary-foreground border-primary" : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"}`}>
@@ -408,6 +460,7 @@ export default function AdminCelestialAudit() {
       ) : (
         <div ref={gridRef} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
           {displayed.map((item: any, idx: number) => {
+            const shouldLoadImage = idx < visibleCount;
             const status = audit[item.id] as AuditStatus | undefined;
             const isFocused = idx === focusIndex;
             const isSelected = selected.has(item.id);
@@ -430,13 +483,17 @@ export default function AdminCelestialAudit() {
                   </div>
                   {item.forced_image_url ? (
                     <div className={`aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ${brokenSet.has(item.id) ? "ring-1 ring-destructive" : ""}`}>
-                      <img
-                        src={thumbUrl(item.forced_image_url, 100)}
-                        alt={item.catalog_id}
-                        loading="lazy"
-                        className="max-h-full max-w-full object-contain"
-                        onError={() => markBroken(item.id)}
-                      />
+                      {shouldLoadImage ? (
+                        <img
+                          src={thumbUrl(item.forced_image_url, 100)}
+                          alt={item.catalog_id}
+                          loading="lazy"
+                          className="max-h-full max-w-full object-contain"
+                          onError={() => markBroken(item.id)}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-muted/30 animate-pulse" />
+                      )}
                       <div className="absolute top-0.5 right-0.5">{healthBadge(item.id)}</div>
                     </div>
                   ) : (

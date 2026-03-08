@@ -60,7 +60,7 @@ export default function AdminCelestialAudit() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin_celestial", page, objType, constellation, search, sortBy],
+    queryKey: ["admin_celestial", needsClientFilter ? "all" : page, objType, constellation, search, sortBy],
     queryFn: async () => {
       let q = (supabase as any)
         .from("celestial_objects")
@@ -76,15 +76,16 @@ export default function AdminCelestialAudit() {
       if (search.trim()) {
         q = q.or(`catalog_id.ilike.%${search.trim()}%,common_name.ilike.%${search.trim()}%`);
       }
-      q = q.range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+      // When a status filter is active, fetch ALL items for client-side filtering + pagination
+      if (!needsClientFilter) {
+        q = q.range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+      }
       const { data, count, error } = await q;
       if (error) throw error;
       return { items: data ?? [], total: count ?? 0 };
     },
     staleTime: 1000 * 60 * 5,
   });
-
-  const totalPages = Math.ceil((data?.total ?? 0) / PAGE_SIZE);
 
   const setStatus = (id: string, s: AuditStatus) => {
     setAuditMutation.mutate({ targetId: id, status: s });

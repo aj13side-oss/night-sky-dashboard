@@ -601,6 +601,7 @@ export default function AdminCelestialAudit() {
           {displayed.map((item: any, idx: number) => {
             const shouldLoadImage = idx < visibleCount;
             const status = audit[item.id] as AuditStatus | undefined;
+            const wiki = wikiImages[item.id];
             const isFocused = idx === focusIndex;
             const isSelected = selected.has(item.id);
             const borderClass = isFocused
@@ -608,6 +609,61 @@ export default function AdminCelestialAudit() {
               : isSelected
                 ? "ring-1 ring-primary/50 border-primary/50"
                 : status === "ok" ? "border-green-500/50" : status === "flagged" ? "border-red-500/50" : "border-border/50";
+
+            const renderImage = () => {
+              if (item.forced_image_url) {
+                return (
+                  <div className={`aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ${brokenSet.has(item.id) ? "ring-1 ring-destructive" : ""}`}>
+                    {shouldLoadImage ? (
+                      <img src={thumbUrl(item.forced_image_url, 100)} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" onError={() => markBroken(item.id)} />
+                    ) : (
+                      <div className="w-full h-full bg-muted/30 animate-pulse" />
+                    )}
+                    <div className="absolute top-0.5 right-0.5">{healthBadge(item.id)}</div>
+                    <Badge className="absolute top-0.5 left-0.5 text-[6px] px-0.5 py-0 bg-muted/80 text-muted-foreground border-0">DB</Badge>
+                  </div>
+                );
+              }
+              if (wiki?.status === "found" && wiki.url) {
+                return (
+                  <div className="aspect-square rounded bg-blue-500/10 flex items-center justify-center overflow-hidden relative ring-1 ring-blue-500/30">
+                    {shouldLoadImage ? (
+                      <img src={wiki.url} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" />
+                    ) : (
+                      <div className="w-full h-full bg-muted/30 animate-pulse" />
+                    )}
+                    <Badge className="absolute top-0.5 left-0.5 text-[6px] px-0.5 py-0 bg-blue-500/80 text-white border-0">Wiki</Badge>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); validateWikiImage(item.id); }}
+                      title={`Valider · ${wiki.artist || "?"} · ${wiki.license || "?"}`}
+                      className="absolute bottom-0.5 right-0.5 bg-blue-500 hover:bg-blue-600 text-white rounded px-1 py-0.5 text-[7px] font-medium flex items-center gap-0.5 transition-colors"
+                    >
+                      <Download className="w-2.5 h-2.5" /> Valider
+                    </button>
+                  </div>
+                );
+              }
+              if (wiki?.status === "loading") {
+                return (
+                  <div className="aspect-square rounded bg-muted/20 flex items-center justify-center">
+                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                  </div>
+                );
+              }
+              if (wiki?.status === "not_found") {
+                return (
+                  <div className="aspect-square rounded bg-muted/10 flex items-center justify-center">
+                    <span className="text-[7px] font-medium text-muted-foreground">Aucune image</span>
+                  </div>
+                );
+              }
+              return (
+                <div className="aspect-square rounded bg-orange-500/10 flex items-center justify-center">
+                  <span className="text-[8px] font-medium text-orange-400">PAS D'IMAGE</span>
+                </div>
+              );
+            };
+
             return (
               <Card key={item.id} className={`${borderClass} overflow-hidden cursor-pointer transition-all`} onClick={() => setFocusIndex(idx)}>
                 <CardContent className="p-1.5 space-y-1">
@@ -620,26 +676,7 @@ export default function AdminCelestialAudit() {
                       {isSelected && <Check className="w-2.5 h-2.5" />}
                     </button>
                   </div>
-                  {item.forced_image_url ? (
-                    <div className={`aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ${brokenSet.has(item.id) ? "ring-1 ring-destructive" : ""}`}>
-                      {shouldLoadImage ? (
-                        <img
-                          src={thumbUrl(item.forced_image_url, 100)}
-                          alt={item.catalog_id}
-                          loading="lazy"
-                          className="max-h-full max-w-full object-contain"
-                          onError={() => markBroken(item.id)}
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-muted/30 animate-pulse" />
-                      )}
-                      <div className="absolute top-0.5 right-0.5">{healthBadge(item.id)}</div>
-                    </div>
-                  ) : (
-                    <div className="aspect-square rounded bg-orange-500/10 flex items-center justify-center">
-                      <span className="text-[8px] font-medium text-orange-400">PAS D'IMAGE</span>
-                    </div>
-                  )}
+                  {renderImage()}
                   <p className="text-[9px] font-bold text-foreground truncate">{item.catalog_id}</p>
                   {item.common_name && <p className="text-[8px] text-muted-foreground truncate">{item.common_name}</p>}
                   <div className="flex gap-0.5">

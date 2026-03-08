@@ -655,6 +655,7 @@ export default function AdminCelestialAudit() {
           count={selected.size}
           onOk={batchOk}
           onFlag={batchFlag}
+          onNeedsImage={batchNeedsImage}
           onGoogle={batchGoogle}
           onClear={() => setSelected(new Set())}
         />

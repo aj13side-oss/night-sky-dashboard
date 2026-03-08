@@ -308,6 +308,7 @@ export default function AdminCelestialAudit() {
       list = list.filter((item: any) => {
         const s = audit[item.id];
         if (filterStatus === "no_image") return !item.forced_image_url;
+        if (filterStatus === "needs_wiki") return s === "needs_wiki";
         if (filterStatus === "flagged") return s === "flagged";
         if (filterStatus === "ok") return s === "ok";
         if (filterStatus === "unchecked") return !s || s === "unchecked";

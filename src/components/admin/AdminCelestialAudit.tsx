@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChipFilter } from "@/components/rigbuilder/ChipFilter";
-import { thumb400 } from "@/lib/utils";
+import { thumbUrl } from "@/lib/utils";
 import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus, type ImageHealth } from "@/hooks/useImageAudit";
 import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
 import AuditBatchBar from "./AuditBatchBar";
@@ -62,27 +62,46 @@ export default function AdminCelestialAudit() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin_celestial", needsClientFilter ? "all" : page, objType, constellation, search, sortBy],
     queryFn: async () => {
-      let q = (supabase as any)
-        .from("celestial_objects")
-        .select("id, catalog_id, common_name, obj_type, constellation, forced_image_url, magnitude", { count: "exact" });
+      const buildQuery = () => {
+        let q = (supabase as any)
+          .from("celestial_objects")
+          .select("id, catalog_id, common_name, obj_type, constellation, forced_image_url, magnitude", { count: "exact" });
 
-      // Server-side sorting (except status which is client-side)
-      if (sortBy === "common_name") q = q.order("common_name", { ascending: true, nullsFirst: false });
-      else if (sortBy === "magnitude") q = q.order("magnitude", { ascending: true, nullsFirst: false });
-      else q = q.order("catalog_id");
+        if (sortBy === "common_name") q = q.order("common_name", { ascending: true, nullsFirst: false });
+        else if (sortBy === "magnitude") q = q.order("magnitude", { ascending: true, nullsFirst: false });
+        else q = q.order("catalog_id");
 
-      if (objType) q = q.eq("obj_type", objType);
-      if (constellation) q = q.eq("constellation", constellation);
-      if (search.trim()) {
-        q = q.or(`catalog_id.ilike.%${search.trim()}%,common_name.ilike.%${search.trim()}%`);
-      }
-      // When a status filter is active, fetch ALL items for client-side filtering + pagination
+        if (objType) q = q.eq("obj_type", objType);
+        if (constellation) q = q.eq("constellation", constellation);
+        if (search.trim()) {
+          q = q.or(`catalog_id.ilike.%${search.trim()}%,common_name.ilike.%${search.trim()}%`);
+        }
+        return q;
+      };
+
       if (!needsClientFilter) {
-        q = q.range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+        const q = buildQuery().range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+        const { data, count, error } = await q;
+        if (error) throw error;
+        return { items: data ?? [], total: count ?? 0 };
       }
-      const { data, count, error } = await q;
-      if (error) throw error;
-      return { items: data ?? [], total: count ?? 0 };
+
+      // Fetch ALL rows in batches of 1000 to bypass Supabase default limit
+      const allItems: any[] = [];
+      let from = 0;
+      const BATCH = 1000;
+      let total = 0;
+      while (true) {
+        const q = buildQuery().range(from, from + BATCH - 1);
+        const { data: batch, count, error } = await q;
+        if (error) throw error;
+        if (count != null) total = count;
+        if (!batch || batch.length === 0) break;
+        allItems.push(...batch);
+        if (batch.length < BATCH) break;
+        from += BATCH;
+      }
+      return { items: allItems, total };
     },
     staleTime: 1000 * 60 * 5,
   });
@@ -353,7 +372,7 @@ export default function AdminCelestialAudit() {
                   </div>
                   {item.forced_image_url ? (
                     <div className="aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative">
-                      <img src={thumb400(item.forced_image_url)} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" />
+                      <img src={thumbUrl(item.forced_image_url, 100)} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" />
                       <div className="absolute top-0.5 right-0.5">{healthBadge(item.id)}</div>
                     </div>
                   ) : (

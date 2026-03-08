@@ -10,6 +10,7 @@ import EquipmentProfile from "./pages/EquipmentProfile";
 import RigBuilder from "./pages/RigBuilder";
 import LightPollutionMap from "./pages/LightPollutionMap";
 import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

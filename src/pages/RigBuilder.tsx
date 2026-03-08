@@ -69,6 +69,7 @@ const RigBuilder = () => {
 
   const [filterType, setFilterType] = useState<string | null>(null);
   const [filterSize, setFilterSize] = useState<string | null>(null);
+  const [accType, setAccType] = useState<string | null>(null);
 
   // --- Unique values for chip filters ---
   const scopeTypes = useMemo(() => [...new Set(telescopes?.map(t => t.type).filter(Boolean) as string[])].sort(), [telescopes]);
@@ -83,6 +84,7 @@ const RigBuilder = () => {
   const mntBrands = useMemo(() => [...new Set(mounts?.map(m => m.brand).filter(Boolean) as string[])].sort(), [mounts]);
   const filterTypes = useMemo(() => [...new Set(filters?.map(f => f.type).filter(Boolean) as string[])].sort(), [filters]);
   const filterSizes = useMemo(() => [...new Set(filters?.map(f => f.size).filter(Boolean) as string[])].sort(), [filters]);
+  const accTypes = useMemo(() => [...new Set(accessories?.map(a => a.type).filter(Boolean) as string[])].sort(), [accessories]);
 
   // --- Apply filters ---
   const filteredScopes = useMemo(() => {
@@ -138,6 +140,14 @@ const RigBuilder = () => {
     });
   }, [filters, filterType, filterSize]);
 
+  const filteredAccessories = useMemo(() => {
+    if (!accessories) return [];
+    return accessories.filter(a => {
+      if (accType && a.type !== accType) return false;
+      return true;
+    });
+  }, [accessories, accType]);
+
   const toggleCompare = (cat: Category, id: string) => {
     setCompareIds(prev => {
       const list = prev[cat];
@@ -156,6 +166,7 @@ const RigBuilder = () => {
   const pickedCamera = cameras?.find(c => c.id === rigPicks.camera) ?? null;
   const pickedMount = mounts?.find(m => m.id === rigPicks.mount) ?? null;
   const pickedFilter = filters?.find(f => f.id === rigPicks.filter) ?? null;
+  const pickedAccessories = accessories?.filter(a => rigPicks.accessories.includes(a.id)) ?? [];
 
   return (
     <div className="min-h-screen bg-background star-field">

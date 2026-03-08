@@ -9,6 +9,8 @@ export interface ObjectImage {
   filePageUrl: string | null;
   source: "wikipedia" | "skyview" | "survey" | "forced";
   pageUrl: string | null;
+  /** DSS2 fallback URL the component can use if the main URL fails to load */
+  fallbackUrl: string | null;
 }
 
 const STAR_TYPES = ["Star", "Double Star", "Variable Star", "Carbon Star", "Star System"];
@@ -20,25 +22,21 @@ const ASTRO_CATEGORIES = [
   "astrophotography", "deep-sky objects",
 ];
 
+// ── Wikimedia helpers ──────────────────────────────────────────────
+
 /**
- * Build a Wikimedia thumbnail URL directly from a full-res commons URL.
- * Pattern: .../commons/a/ab/File.jpg → .../commons/thumb/a/ab/File.jpg/{width}px-File.jpg
+ * Build a Wikimedia thumbnail URL from a full-res commons URL.
+ * .../commons/a/ab/File.jpg → .../commons/thumb/a/ab/File.jpg/{w}px-File.jpg
  */
 function buildWikimediaThumbUrl(url: string, width: number): string | null {
   try {
     const u = new URL(url);
     if (!u.hostname.includes("wikimedia.org") && !u.hostname.includes("wikipedia.org")) return null;
-
-    // Already a thumbnail URL
     if (u.pathname.includes("/thumb/")) {
-      // Replace existing size
       return url.replace(/\/\d+px-([^/]+)$/, `/${width}px-$1`);
     }
-
-    // Full-res URL: .../commons/a/ab/File.jpg
     const match = u.pathname.match(/\/wikipedia\/commons\/([\da-f]\/[\da-f]{2}\/(.+))$/i);
     if (!match) return null;
-
     const [, pathPart, fileName] = match;
     return `https://upload.wikimedia.org/wikipedia/commons/thumb/${pathPart}/${width}px-${fileName}`;
   } catch {
@@ -46,9 +44,6 @@ function buildWikimediaThumbUrl(url: string, width: number): string | null {
   }
 }
 
-/**
- * Extract filename from a Wikimedia URL.
- */
 function extractWikimediaFilename(url: string): string | null {
   try {
     const u = new URL(url);
@@ -61,9 +56,22 @@ function extractWikimediaFilename(url: string): string | null {
   }
 }
 
-/**
- * Fetch metadata (author, license, date) for a Wikimedia Commons file.
- */
+/** Use the Wikimedia API to get a thumbnail (most reliable for large files). */
+async function getWikimediaThumbnailViaApi(fileName: string, width: number): Promise<string | null> {
+  try {
+    const apiUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(fileName)}&prop=imageinfo&iiprop=url&iiurlwidth=${width}&format=json&origin=*`;
+    const res = await fetch(apiUrl);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const pages = data?.query?.pages;
+    if (!pages) return null;
+    const page = Object.values(pages)[0] as any;
+    return page?.imageinfo?.[0]?.thumburl || null;
+  } catch {
+    return null;
+  }
+}
+
 async function fetchWikimediaMetadata(fileName: string): Promise<{
   artist: string | null;
   date: string | null;
@@ -73,17 +81,12 @@ async function fetchWikimediaMetadata(fileName: string): Promise<{
 }> {
   const filePageUrl = `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(fileName)}`;
   const defaults = { artist: null, date: null, license: null, licenseUrl: null, filePageUrl };
-
   try {
     const attrUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(fileName)}&prop=imageinfo&iiprop=extmetadata&format=json&origin=*`;
     const attrRes = await fetch(attrUrl);
     if (!attrRes.ok) return defaults;
-
     const attrData = await attrRes.json();
-    const attrPages = attrData?.query?.pages;
-    if (!attrPages) return defaults;
-
-    const attrPage = Object.values(attrPages)[0] as any;
+    const attrPage = Object.values(attrData?.query?.pages ?? {})[0] as any;
     const meta = attrPage?.imageinfo?.[0]?.extmetadata;
     if (!meta) return defaults;
 
@@ -99,16 +102,23 @@ async function fetchWikimediaMetadata(fileName: string): Promise<{
         date = !isNaN(d.getTime())
           ? d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
           : rawDate.split(" ")[0];
-      } catch {
-        date = rawDate.split(" ")[0];
-      }
+      } catch { date = rawDate.split(" ")[0]; }
     }
-
     return { artist, date, license, licenseUrl, filePageUrl };
   } catch {
     return defaults;
   }
 }
+
+// ── DSS2 helper ────────────────────────────────────────────────────
+
+function buildDss2Url(ra: number, dec: number, sizeArcmin: number | null): string {
+  const fovDeg = sizeArcmin && sizeArcmin > 0 ? Math.min(Math.max(sizeArcmin * 1.5 / 60, 0.05), 5) : 0.5;
+  const fovDegThumb = fovDeg * 1.25;
+  return `https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=CDS/P/DSS2/color&ra=${ra}&dec=${dec}&fov=${fovDegThumb}&width=300&height=200&format=jpg`;
+}
+
+// ── Main fetch ─────────────────────────────────────────────────────
 
 async function fetchObjectImage(
   catalogId: string,
@@ -121,34 +131,55 @@ async function fetchObjectImage(
   objType: string | null,
   thumbWidth: number = 600
 ): Promise<ObjectImage> {
+  // Build a DSS2 fallback URL for any object with coordinates
+  const dss2Fallback = (ra != null && dec != null) ? buildDss2Url(ra, dec, sizeArcmin) : null;
 
-  // 1. Forced image URL — construct thumbnail directly, no API call
+  // 1. Forced image URL — try API thumbnail first, then direct construction
   if (forcedImageUrl) {
-    const thumbUrl = buildWikimediaThumbUrl(forcedImageUrl, thumbWidth);
-    const displayUrl = thumbUrl || forcedImageUrl;
-
-    // Fetch metadata in parallel (non-blocking for display)
     const fileName = extractWikimediaFilename(forcedImageUrl);
-    let meta = { artist: null as string | null, date: null as string | null, license: null as string | null, licenseUrl: null as string | null, filePageUrl: null as string | null };
+    let displayUrl: string = forcedImageUrl;
+
     if (fileName) {
-      try {
-        meta = await fetchWikimediaMetadata(fileName);
-      } catch { /* ignore */ }
+      // Strategy 1: API call (most reliable, handles huge files)
+      const apiThumb = await getWikimediaThumbnailViaApi(fileName, thumbWidth);
+      if (apiThumb) {
+        displayUrl = apiThumb;
+      } else {
+        // Strategy 2: Direct URL construction
+        const directThumb = buildWikimediaThumbUrl(forcedImageUrl, thumbWidth);
+        if (directThumb) displayUrl = directThumb;
+        // Strategy 3: raw URL as last resort (may be blocked for huge files)
+      }
+
+      const meta = await fetchWikimediaMetadata(fileName);
+      return {
+        url: displayUrl,
+        artist: meta.artist ?? "Wikimedia Commons",
+        date: meta.date,
+        license: meta.license,
+        licenseUrl: meta.licenseUrl,
+        filePageUrl: meta.filePageUrl,
+        source: "forced",
+        pageUrl: meta.filePageUrl,
+        fallbackUrl: dss2Fallback,
+      };
     }
 
+    // Non-Wikimedia forced URL
     return {
-      url: displayUrl,
-      artist: meta.artist ?? (fileName ? "Wikimedia Commons" : null),
-      date: meta.date,
-      license: meta.license,
-      licenseUrl: meta.licenseUrl,
-      filePageUrl: meta.filePageUrl,
+      url: forcedImageUrl,
+      artist: null,
+      date: null,
+      license: null,
+      licenseUrl: null,
+      filePageUrl: null,
       source: "forced",
-      pageUrl: meta.filePageUrl,
+      pageUrl: null,
+      fallbackUrl: dss2Fallback,
     };
   }
 
-  // 2. Stars → skip Wikipedia, go straight to Aladin
+  // 2. Stars → skip Wikipedia, go straight to DSS2
   const isStar = objType && STAR_TYPES.some(t => objType.toLowerCase().includes(t.toLowerCase()));
 
   // 3. Dynamic search via Wikipedia (skip for stars)
@@ -161,18 +192,15 @@ async function fetchObjectImage(
     ].filter(Boolean) as string[];
 
     for (const term of searchTerms) {
-      const result = await tryWikipedia(term, thumbWidth);
+      const result = await tryWikipedia(term, thumbWidth, dss2Fallback);
       if (result) return result;
     }
   }
 
-  // 4. Fallback: Aladin HiPS (DSS2 color)
-  if (ra != null && dec != null) {
-    const fovDeg = sizeArcmin && sizeArcmin > 0 ? Math.min(Math.max(sizeArcmin * 1.5 / 60, 0.05), 5) : 0.5;
-    const fovDegThumb = fovDeg * 1.25;
-    const hipsUrl = `https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=CDS/P/DSS2/color&ra=${ra}&dec=${dec}&fov=${fovDegThumb}&width=300&height=200&format=jpg`;
+  // 4. Fallback: DSS2
+  if (dss2Fallback) {
     return {
-      url: hipsUrl,
+      url: dss2Fallback,
       artist: "DSS2 / CDS Strasbourg",
       date: null,
       license: "Public Domain",
@@ -180,22 +208,18 @@ async function fetchObjectImage(
       filePageUrl: null,
       source: "survey",
       pageUrl: "https://aladin.cds.unistra.fr/",
+      fallbackUrl: null,
     };
   }
 
   return {
     url: "",
-    artist: null,
-    date: null,
-    license: null,
-    licenseUrl: null,
-    filePageUrl: null,
-    source: "survey",
-    pageUrl: null,
+    artist: null, date: null, license: null, licenseUrl: null,
+    filePageUrl: null, source: "survey", pageUrl: null, fallbackUrl: null,
   };
 }
 
-async function tryWikipedia(title: string, thumbWidth: number = 400): Promise<ObjectImage | null> {
+async function tryWikipedia(title: string, thumbWidth: number = 400, fallbackUrl: string | null = null): Promise<ObjectImage | null> {
   try {
     const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(title)}&srnamespace=0&srlimit=3&format=json&origin=*`;
     const searchRes = await fetch(searchUrl);
@@ -216,10 +240,7 @@ async function tryWikipedia(title: string, thumbWidth: number = 400): Promise<Ob
         const cats: string[] = (page?.categories || []).map((c: any) =>
           (c.title || "").replace("Category:", "").toLowerCase()
         );
-        const isAstro = cats.some((cat) =>
-          ASTRO_CATEGORIES.some((kw) => cat.includes(kw))
-        );
-        if (!isAstro) return null;
+        if (!cats.some(cat => ASTRO_CATEGORIES.some(kw => cat.includes(kw)))) return null;
       }
     }
 
@@ -239,31 +260,20 @@ async function tryWikipedia(title: string, thumbWidth: number = 400): Promise<Ob
     if (thumbnail.width && thumbnail.width < 200) return null;
 
     const fileName = src.split("/").pop()?.split("?")[0];
-    let artist: string | null = null;
-    let date: string | null = null;
-    let license: string | null = null;
-    let licenseUrl: string | null = null;
-    let filePageUrl: string | null = null;
+    let artist: string | null = null, date: string | null = null;
+    let license: string | null = null, licenseUrl: string | null = null, filePageUrl: string | null = null;
 
     if (fileName) {
-      const decodedName = decodeURIComponent(fileName);
-      const meta = await fetchWikimediaMetadata(decodedName);
-      artist = meta.artist;
-      date = meta.date;
-      license = meta.license;
-      licenseUrl = meta.licenseUrl;
-      filePageUrl = meta.filePageUrl;
+      const meta = await fetchWikimediaMetadata(decodeURIComponent(fileName));
+      artist = meta.artist; date = meta.date;
+      license = meta.license; licenseUrl = meta.licenseUrl; filePageUrl = meta.filePageUrl;
     }
 
     return {
-      url: src,
-      artist: artist ?? "Wikimedia Commons",
-      date,
-      license,
-      licenseUrl,
-      filePageUrl,
+      url: src, artist: artist ?? "Wikimedia Commons", date, license, licenseUrl, filePageUrl,
       source: "wikipedia",
       pageUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent(pageTitle)}`,
+      fallbackUrl,
     };
   } catch {
     return null;

@@ -48,6 +48,9 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
   const thumbUrl = wikiImage?.url || null;
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [useFallback, setUseFallback] = useState(false);
+
+  const displayUrl = useFallback && wikiImage?.fallbackUrl ? wikiImage.fallbackUrl : thumbUrl;
 
   const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra, obj.dec, lat, lng);
   const isLegendary = score.total >= 100;
@@ -72,15 +75,22 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
       }`}
     >
       {/* Thumbnail with badges */}
-      {(!imgError && (wikiLoading || thumbUrl)) && (
+      {(!imgError && (wikiLoading || displayUrl)) && (
         <div className="relative w-full h-28 bg-muted/30 overflow-hidden">
-          {thumbUrl && (
+          {displayUrl && (
             <img
-              src={thumbUrl}
+              src={displayUrl}
               alt={`${obj.catalog_id}`}
               loading="lazy"
               onLoad={() => setImgLoaded(true)}
-              onError={() => setImgError(true)}
+              onError={() => {
+                if (!useFallback && wikiImage?.fallbackUrl) {
+                  setUseFallback(true);
+                  setImgLoaded(false);
+                } else {
+                  setImgError(true);
+                }
+              }}
               className={`w-full h-full object-cover transition-opacity duration-500 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
             />
           )}

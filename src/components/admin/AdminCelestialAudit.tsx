@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3, ImageIcon, Download } from "lucide-react";
+import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3, ImageIcon, Download, Trash2, Eye } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,8 +65,8 @@ const CATALOG_PREFIXES = [
 
 const STATUS_FILTERS = [
   { value: "all", label: "Tous" },
-  { value: "no_image", label: "Sans image" },
-  { value: "needs_wiki", label: "🔍 Wiki à trouver" },
+  { value: "needs_image", label: "🔍 Image à trouver" },
+  { value: "no_image", label: "Sans image DB" },
   { value: "flagged", label: "Signalés" },
   { value: "ok", label: "Vérifiés ✓" },
   { value: "unchecked", label: "Non vérifiés" },
@@ -308,7 +308,7 @@ export default function AdminCelestialAudit() {
       list = list.filter((item: any) => {
         const s = audit[item.id];
         if (filterStatus === "no_image") return !item.forced_image_url;
-        if (filterStatus === "needs_wiki") return s === "needs_wiki";
+        if (filterStatus === "needs_image") return s === "needs_image";
         if (filterStatus === "flagged") return s === "flagged";
         if (filterStatus === "ok") return s === "ok";
         if (filterStatus === "unchecked") return !s || s === "unchecked";
@@ -322,7 +322,7 @@ export default function AdminCelestialAudit() {
       const statusOrder = (id: string) => {
         const s = audit[id];
         if (!s || s === "unchecked") return 0;
-        if (s === "needs_wiki") return 1;
+        if (s === "needs_image") return 1;
         if (s === "flagged") return 2;
         if (s === "ok") return 3;
         return 0;
@@ -524,7 +524,7 @@ export default function AdminCelestialAudit() {
   // Batch actions
   const batchOk = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "ok" })); setSelected(new Set()); toast.success(`${selected.size} marqués OK`); };
   const batchFlag = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "flagged" })); setSelected(new Set()); toast.success(`${selected.size} signalés`); };
-  const batchNeedsWiki = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "needs_wiki" })); setSelected(new Set()); toast.success(`${selected.size} marqués "Wiki à trouver"`); };
+  const batchNeedsImage = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "needs_image" })); setSelected(new Set()); toast.success(`${selected.size} marqués "Image à trouver"`); };
   const batchGoogle = () => {
     let count = 0;
     selected.forEach(id => {

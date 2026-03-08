@@ -66,6 +66,9 @@ export default function AdminCelestialAudit() {
   const [healthMap, setHealthMap] = useState<Record<string, ImageHealth>>({});
   const [brokenSet, setBrokenSet] = useState<Set<string>>(new Set());
   const [scanning, setScanning] = useState(false);
+  const [wikiImages, setWikiImages] = useState<Record<string, WikiImage>>({});
+  const [wikiFetching, setWikiFetching] = useState(false);
+  const wikiFetchRef = useRef(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [focusIndex, setFocusIndex] = useState(-1);

@@ -14,13 +14,13 @@ import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus
 const PAGE_SIZE = 50;
 
 const STATUS_FILTERS = [
-  { value: "all", label: "All" },
-  { value: "no_image", label: "No image" },
-  { value: "flagged", label: "Flagged" },
-  { value: "ok", label: "Verified ✓" },
-  { value: "unchecked", label: "Unchecked" },
-  { value: "heavy", label: "⚠ Heavy (>2MB)" },
-  { value: "broken", label: "❌ Broken" },
+  { value: "all", label: "Tous" },
+  { value: "no_image", label: "Sans image" },
+  { value: "flagged", label: "Signalés" },
+  { value: "ok", label: "Vérifiés ✓" },
+  { value: "unchecked", label: "Non vérifiés" },
+  { value: "heavy", label: "⚠ Lourdes (>2MB)" },
+  { value: "broken", label: "❌ Cassées" },
 ];
 
 export default function AdminCelestialAudit() {
@@ -79,8 +79,8 @@ export default function AdminCelestialAudit() {
   const handleReplace = async (id: string) => {
     if (!newUrl.trim()) return;
     const { error } = await (supabase as any).from("celestial_objects").update({ forced_image_url: newUrl.trim() }).eq("id", id);
-    if (error) { toast.error("Error: " + error.message); return; }
-    toast.success("Image updated!");
+    if (error) { toast.error("Erreur : " + error.message); return; }
+    toast.success("Image mise à jour !");
     setReplacing(null);
     setNewUrl("");
     qc.invalidateQueries({ queryKey: ["admin_celestial"] });
@@ -108,7 +108,7 @@ export default function AdminCelestialAudit() {
     setHealthMap(prev => ({ ...prev, ...results }));
     const broken = Object.values(results).filter(r => r.status === "broken").length;
     const heavy = Object.values(results).filter(r => r.status === "heavy").length;
-    toast.success(`Scan complete: ${broken} broken, ${heavy} heavy, ${withImages.length - broken - heavy} OK`);
+    toast.success(`Scan terminé : ${broken} cassées, ${heavy} lourdes, ${withImages.length - broken - heavy} OK`);
     setScanning(false);
   }, [data]);
 
@@ -130,7 +130,7 @@ export default function AdminCelestialAudit() {
   const healthBadge = (id: string) => {
     const h = healthMap[id];
     if (!h) return null;
-    if (h.status === "broken") return <Badge variant="destructive" className="text-[7px] px-1 py-0">Broken</Badge>;
+    if (h.status === "broken") return <Badge variant="destructive" className="text-[7px] px-1 py-0">Cassée</Badge>;
     if (h.status === "heavy") return <Badge className="text-[7px] px-1 py-0 bg-amber-500/20 text-amber-400 border-amber-500/50">{h.sizeKB}KB</Badge>;
     return null;
   };
@@ -140,15 +140,15 @@ export default function AdminCelestialAudit() {
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder="Search catalog_id or name..." value={search}
+          <Input placeholder="Rechercher catalog_id ou nom..." value={search}
             onChange={e => { setSearch(e.target.value); setPage(0); }}
             className="pl-9 bg-secondary/30 border-border/50" />
         </div>
         <Button size="sm" variant="outline" onClick={scanImages} disabled={scanning} className="gap-1 text-xs">
           {scanning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3" />}
-          {scanning ? "Scanning..." : "Scan Image Health"}
+          {scanning ? "Scan en cours..." : "Scanner les images"}
         </Button>
-        <span className="text-xs text-muted-foreground">{data?.total ?? 0} objects · Page {page + 1}/{totalPages || 1}</span>
+        <span className="text-xs text-muted-foreground">{data?.total ?? 0} objets · Page {page + 1}/{totalPages || 1}</span>
       </div>
 
       <div className="flex flex-wrap gap-4">
@@ -166,7 +166,7 @@ export default function AdminCelestialAudit() {
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-muted-foreground">Loading...</p>
+        <p className="text-sm text-muted-foreground">Chargement...</p>
       ) : (
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
           {displayed.map((item: any) => {
@@ -182,7 +182,7 @@ export default function AdminCelestialAudit() {
                     </div>
                   ) : (
                     <div className="aspect-square rounded bg-orange-500/10 flex items-center justify-center">
-                      <span className="text-[8px] font-medium text-orange-400">NO IMAGE</span>
+                      <span className="text-[8px] font-medium text-orange-400">PAS D'IMAGE</span>
                     </div>
                   )}
                   <p className="text-[9px] font-bold text-foreground truncate">{item.catalog_id}</p>
@@ -194,14 +194,43 @@ export default function AdminCelestialAudit() {
                     <button onClick={() => setStatus(item.id, "flagged")} className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "flagged" ? "bg-red-500/20 border-red-500 text-red-400" : "border-border/50 text-muted-foreground hover:border-red-500/50"}`}>
                       <X className="w-2.5 h-2.5 mx-auto" />
                     </button>
-                    <button onClick={() => { setReplacing(replacing === item.id ? null : item.id); setNewUrl(""); }} className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${replacing === item.id ? "bg-primary/20 border-primary text-primary" : "border-border/50 text-muted-foreground hover:border-primary/50"}`}>
+                    <button onClick={() => { setReplacing(replacing === item.id ? null : item.id); setNewUrl(""); }} className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${
+                      replacing === item.id
+                        ? "bg-primary/20 border-primary text-primary"
+                        : !item.forced_image_url
+                          ? "border-orange-500/50 text-orange-400 hover:border-primary/50"
+                          : "border-border/50 text-muted-foreground hover:border-primary/50"
+                    }`}>
                       <RefreshCw className="w-2.5 h-2.5 mx-auto" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${item.catalog_id} ${item.common_name || ''} astronomy astrophotography`)}`, "_blank");
+                      }}
+                      title="Google Images"
+                      className="flex-1 py-0.5 rounded text-[8px] border border-border/50 text-muted-foreground hover:border-blue-500/50 hover:text-blue-400 transition-colors"
+                    >
+                      <Search className="w-2.5 h-2.5 mx-auto" />
                     </button>
                   </div>
                   {replacing === item.id && (
-                    <div className="flex gap-0.5">
-                      <Input value={newUrl} onChange={e => setNewUrl(e.target.value)} placeholder="URL..." className="h-5 text-[9px] px-1" />
-                      <Button size="sm" className="h-5 px-1.5 text-[9px]" onClick={() => handleReplace(item.id)}>OK</Button>
+                    <div className="space-y-0.5">
+                      <div className="flex gap-0.5">
+                        <Input value={newUrl} onChange={e => setNewUrl(e.target.value)} placeholder="Coller l'URL de l'image..." className="h-5 text-[9px] px-1" />
+                        <Button size="sm" className="h-5 px-1.5 text-[9px]" variant="outline"
+                          onClick={async () => {
+                            try {
+                              const text = await navigator.clipboard.readText();
+                              setNewUrl(text);
+                            } catch { toast.error("Accès presse-papiers refusé"); }
+                          }}>📋</Button>
+                        <Button size="sm" className="h-5 px-1.5 text-[9px]" onClick={() => handleReplace(item.id)}>OK</Button>
+                      </div>
+                      {newUrl && newUrl.match(/^https?:\/\//) && (
+                        <div className="aspect-video rounded bg-secondary/20 flex items-center justify-center overflow-hidden">
+                          <img src={newUrl} alt="preview" className="max-h-full max-w-full object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                        </div>
+                      )}
                     </div>
                   )}
                 </CardContent>
@@ -213,11 +242,11 @@ export default function AdminCelestialAudit() {
 
       <div className="flex items-center justify-center gap-3">
         <Button size="sm" variant="outline" disabled={page <= 0} onClick={() => setPage(p => p - 1)} className="gap-1">
-          <ChevronLeft className="w-3 h-3" /> Previous
+          <ChevronLeft className="w-3 h-3" /> Précédent
         </Button>
         <span className="text-xs text-muted-foreground">Page {page + 1} / {totalPages || 1}</span>
         <Button size="sm" variant="outline" disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)} className="gap-1">
-          Next <ChevronRight className="w-3 h-3" />
+          Suivant <ChevronRight className="w-3 h-3" />
         </Button>
       </div>
     </div>

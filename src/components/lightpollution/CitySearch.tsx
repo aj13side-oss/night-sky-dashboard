@@ -36,7 +36,7 @@ const CitySearch = ({ onSelectCity }: Props) => {
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`,
-        { headers: { "Accept-Language": "fr,en" } }
+        { headers: { "Accept-Language": "en,fr" } }
       );
       const data: SearchResult[] = await res.json();
       setResults(data);
@@ -65,7 +65,7 @@ const CitySearch = ({ onSelectCity }: Props) => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Rechercher une ville…"
+          placeholder="Search a city…"
           className="bg-secondary/50 h-9 w-48"
         />
         <Button size="sm" variant="outline" onClick={handleSearch} disabled={isLoading} className="h-9 gap-1.5">

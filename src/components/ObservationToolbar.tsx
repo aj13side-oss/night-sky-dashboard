@@ -81,7 +81,7 @@ const ObservationToolbar = () => {
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`,
-        { headers: { "Accept-Language": "fr,en" } }
+        { headers: { "Accept-Language": "en,fr" } }
       );
       const data: NominatimResult[] = await res.json();
       setSearchResults(data);

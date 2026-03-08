@@ -22,8 +22,8 @@ function StatCard({ icon: Icon, label, total, withImage, color }: {
         {pct != null && (
           <>
             <div className="flex justify-between text-[10px] text-muted-foreground">
-              <span>{withImage} avec image</span>
-              <span>{total - withImage!} sans</span>
+              <span>{withImage} with image</span>
+              <span>{total - withImage!} without</span>
             </div>
             <div className="h-1.5 rounded-full bg-muted overflow-hidden">
               <div className={`h-full rounded-full ${barColor}`} style={{ width: `${pct}%` }} />
@@ -79,20 +79,20 @@ export default function AdminStats() {
 
   return (
     <div className="space-y-4 mt-4">
-      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Produits</h3>
+      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Products</h3>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard icon={Camera} label="Caméras" total={cameras?.length ?? 0} withImage={camWithImg} />
-        <StatCard icon={Telescope} label="Télescopes" total={telescopes?.length ?? 0} withImage={scopeWithImg} />
-        <StatCard icon={Anchor} label="Montures" total={mounts?.length ?? 0} withImage={mntWithImg} />
-        <StatCard icon={Filter} label="Filtres" total={filters?.length ?? 0} withImage={filtWithImg} />
+        <StatCard icon={Camera} label="Cameras" total={cameras?.length ?? 0} withImage={camWithImg} />
+        <StatCard icon={Telescope} label="Telescopes" total={telescopes?.length ?? 0} withImage={scopeWithImg} />
+        <StatCard icon={Anchor} label="Mounts" total={mounts?.length ?? 0} withImage={mntWithImg} />
+        <StatCard icon={Filter} label="Filters" total={filters?.length ?? 0} withImage={filtWithImg} />
       </div>
 
       <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Infrastructure</h3>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard icon={Wrench} label="Accessoires" total={accessories?.length ?? 0} />
-        <StatCard icon={Star} label="Objets célestes" total={celestialCount?.total ?? 0} withImage={celestialCount?.withImage} />
+        <StatCard icon={Wrench} label="Accessories" total={accessories?.length ?? 0} />
+        <StatCard icon={Star} label="Celestial Objects" total={celestialCount?.total ?? 0} withImage={celestialCount?.withImage} />
         <StatCard icon={Layers} label="Presets" total={presets?.length ?? 0} />
-        <StatCard icon={DollarSign} label="Produits avec prix" total={priceCount ?? 0} color="text-green-400" />
+        <StatCard icon={DollarSign} label="Products with price" total={priceCount ?? 0} color="text-green-400" />
       </div>
     </div>
   );

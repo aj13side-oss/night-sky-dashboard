@@ -344,10 +344,12 @@ export default function AdminCelestialAudit() {
     return filteredAll;
   }, [filteredAll, needsClientFilter, page]);
 
-  // Auto-fetch Wikipedia images for displayed items without forced_image_url
+  // Auto-fetch Wikipedia images for displayed items (including those with broken forced_image_url)
   const fetchWikiForDisplayed = useCallback(async () => {
     if (wikiFetchRef.current) return;
-    const toFetch = displayed.filter((i: any) => !i.forced_image_url && !wikiImages[i.id]);
+    const toFetch = displayed.filter((i: any) => !wikiImages[i.id] && (
+      !i.forced_image_url || brokenSet.has(i.id)
+    ));
     if (toFetch.length === 0) return;
     wikiFetchRef.current = true;
     setWikiFetching(true);
@@ -390,8 +392,8 @@ export default function AdminCelestialAudit() {
     // Cancel any in-progress fetch when page changes
     wikiFetchRef.current = false;
     const timeout = setTimeout(() => {
-      const hasItemsWithoutImage = displayed.some((i: any) => !i.forced_image_url && !wikiImages[i.id]);
-      if (hasItemsWithoutImage) {
+      const hasItemsNeedingWiki = displayed.some((i: any) => !wikiImages[i.id] && (!i.forced_image_url || brokenSet.has(i.id)));
+      if (hasItemsNeedingWiki) {
         fetchWikiForDisplayed();
       }
     }, 500); // Small delay to let the page settle
@@ -697,6 +699,12 @@ export default function AdminCelestialAudit() {
                 if (step === "thumb" && item.forced_image_url && img.src !== item.forced_image_url) {
                   img.dataset.step = "raw";
                   img.src = item.forced_image_url;
+                  return;
+                }
+                // If forced URL failed, try wiki image if available
+                if ((step === "thumb" || step === "raw") && wiki?.status === "found" && wiki.url) {
+                  img.dataset.step = "wiki";
+                  img.src = wiki.url;
                   return;
                 }
                 if (step !== "dss2" && dss2Url) {

@@ -368,7 +368,7 @@ const RigBuilder = () => {
                           t.type, t.weight_kg ? `${t.weight_kg}kg` : null,
                           t.image_circle_mm ? `IC ${t.image_circle_mm}mm` : null,
                         ]}
-                        affiliateAmazon={t.url_amazon} affiliateAstro={t.url_astroshop} manufacturerUrl={t.manufacturer_url}
+                        affiliateAmazon={t.url_amazon} affiliateAstro={t.url_astroshop_de} manufacturerUrl={t.url_manufacturer}
                       />
                     );
                   })}
@@ -387,7 +387,7 @@ const RigBuilder = () => {
                       { label: "Backfocus", render: t => t.required_backfocus_mm ? `${t.required_backfocus_mm}mm` : "—" },
                     ]}
                     getName={t => `${t.brand} ${t.model}`}
-                    getAffiliates={t => ({ amazon: t.url_amazon, astro: t.url_astroshop, manufacturer: t.manufacturer_url })}
+                    getAffiliates={t => ({ amazon: t.url_amazon, astro: t.url_astroshop_de, manufacturer: t.url_manufacturer })}
                   />
                 )}
               </>
@@ -425,7 +425,7 @@ const RigBuilder = () => {
                           c.qe_percent ? `QE ${c.qe_percent}%` : null,
                           c.read_noise_e ? `${c.read_noise_e}e⁻` : null,
                         ]}
-                        affiliateAmazon={c.url_amazon} affiliateAstro={c.url_astroshop} manufacturerUrl={c.manufacturer_url}
+                        affiliateAmazon={c.url_amazon} affiliateAstro={c.url_astroshop_de} manufacturerUrl={c.url_manufacturer}
                       />
                     );
                   })}
@@ -450,7 +450,7 @@ const RigBuilder = () => {
                       { label: "Backfocus", render: c => c.internal_backfocus_mm ? `${c.internal_backfocus_mm}mm` : "—" },
                     ]}
                     getName={c => `${c.brand} ${c.model}`}
-                    getAffiliates={c => ({ amazon: c.url_amazon, astro: c.url_astroshop, manufacturer: c.manufacturer_url })}
+                    getAffiliates={c => ({ amazon: c.url_amazon, astro: c.url_astroshop_de, manufacturer: c.url_manufacturer })}
                   />
                 )}
               </>
@@ -488,7 +488,7 @@ const RigBuilder = () => {
                           m.periodic_error_arcsec ? `PE ±${m.periodic_error_arcsec}″` : null,
                           m.connectivity,
                         ]}
-                        affiliateAmazon={m.url_amazon} affiliateAstro={m.url_astroshop} manufacturerUrl={m.manufacturer_url}
+                        affiliateAmazon={m.url_amazon} affiliateAstro={m.url_astroshop_de} manufacturerUrl={m.url_manufacturer}
                       />
                     );
                   })}
@@ -507,7 +507,7 @@ const RigBuilder = () => {
                       { label: "ASCOM/INDI", render: m => m.ascom_indi ?? "—" },
                     ]}
                     getName={m => `${m.brand} ${m.model}`}
-                    getAffiliates={m => ({ amazon: m.url_amazon, astro: m.url_astroshop, manufacturer: m.manufacturer_url })}
+                    getAffiliates={m => ({ amazon: m.url_amazon, astro: m.url_astroshop_de, manufacturer: m.url_manufacturer })}
                   />
                 )}
               </>
@@ -532,7 +532,7 @@ const RigBuilder = () => {
                         onToggle={() => { toggleCompare("filters", f.id); setRigPicks(p => ({ ...p, filter: p.filter === f.id ? null : f.id })); }}
                         imageUrl={f.image_url} title={`${f.brand} ${f.model}`} bestPrice={best}
                         specs={[f.type, f.size, f.thickness_mm ? `${f.thickness_mm}mm thick` : null]}
-                        affiliateAmazon={f.url_amazon} affiliateAstro={f.url_astroshop} manufacturerUrl={f.manufacturer_url}
+                        affiliateAmazon={f.url_amazon} affiliateAstro={f.url_astroshop_de} manufacturerUrl={f.url_manufacturer}
                       />
                     );
                   })}
@@ -547,7 +547,7 @@ const RigBuilder = () => {
                       { label: "Thickness", render: f => f.thickness_mm ? `${f.thickness_mm}mm` : "—" },
                     ]}
                     getName={f => `${f.brand} ${f.model}`}
-                    getAffiliates={f => ({ amazon: f.url_amazon, astro: f.url_astroshop, manufacturer: f.manufacturer_url })}
+                    getAffiliates={f => ({ amazon: f.url_amazon, astro: f.url_astroshop_de, manufacturer: f.url_manufacturer })}
                   />
                 )}
               </>
@@ -576,12 +576,12 @@ const RigBuilder = () => {
                         }}
                         imageUrl={a.image_url} title={`${a.brand} ${a.model}`} bestPrice={best}
                         specs={[
-                          a.category, a.backfocus_contribution_mm ? `BF +${a.backfocus_contribution_mm}mm` : null,
+                          a.category, a.optical_length_mm ? `BF +${a.optical_length_mm}mm` : null,
                           a.weight_g ? `${a.weight_g}g` : null,
                           a.input_connection ? `In: ${a.input_connection}` : null,
-                          a.output_thread ? `Out: ${a.output_thread}` : null,
+                          a.output_connection ? `Out: ${a.output_connection}` : null,
                         ]}
-                        affiliateAmazon={a.url_amazon} affiliateAstro={a.url_astroshop} manufacturerUrl={a.manufacturer_url}
+                        affiliateAmazon={a.url_amazon} affiliateAstro={a.url_astroshop_de} manufacturerUrl={a.url_manufacturer}
                       />
                     );
                   })}
@@ -590,15 +590,15 @@ const RigBuilder = () => {
                   <CompareTable
                     items={accessories?.filter(a => compareIds.accessories.includes(a.id)) ?? []}
                     getImage={a => a.image_url}
-                    columns={[
+                     columns={[
                       { label: "Category", render: a => a.category ?? "—" },
-                      { label: "Backfocus", render: a => a.backfocus_contribution_mm ? `${a.backfocus_contribution_mm}mm` : "—" },
+                      { label: "Backfocus", render: a => a.optical_length_mm ? `${a.optical_length_mm}mm` : "—" },
                       { label: "Weight", render: a => a.weight_g ? `${a.weight_g}g` : "—", bestDirection: "lower" },
                       { label: "Input", render: a => a.input_connection ?? "—" },
-                      { label: "Output", render: a => a.output_thread ?? "—" },
+                      { label: "Output", render: a => a.output_connection ?? "—" },
                     ]}
                     getName={a => `${a.brand} ${a.model}`}
-                    getAffiliates={a => ({ amazon: a.url_amazon, astro: a.url_astroshop, manufacturer: a.manufacturer_url })}
+                    getAffiliates={a => ({ amazon: a.url_amazon, astro: a.url_astroshop_de, manufacturer: a.url_manufacturer })}
                   />
                 )}
               </>

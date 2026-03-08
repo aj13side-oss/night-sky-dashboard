@@ -128,17 +128,17 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
     const camBF = camera?.internal_backfocus_mm ?? 0;
     if (reqBF > 0 && camBF > 0) {
       const filterCorr = filter?.thickness_mm ? filter.thickness_mm / 3 : 0;
-      const accBF = accessories.reduce((sum, a) => sum + (a.backfocus_contribution_mm ?? 0), 0);
+      const accBF = accessories.reduce((sum, a) => sum + (a.optical_length_mm ?? 0), 0);
       const trainBF = camBF + filterCorr + accBF;
       const spacer = reqBF - trainBF;
-      const rule = getRule("backfocus");
+      const rule = getRule("backfocus_mismatch");
       const warnT = rule?.max_value ?? 5;
       let status: CheckStatus = "ok";
 
       const trainParts: string[] = [`Caméra ${camBF}mm`];
       if (filterCorr > 0) trainParts.push(`Filtre ${filterCorr.toFixed(1)}mm`);
       accessories.forEach(a => {
-        if (a.backfocus_contribution_mm) trainParts.push(`${a.brand} ${a.model} ${a.backfocus_contribution_mm}mm`);
+        if (a.optical_length_mm) trainParts.push(`${a.brand} ${a.model} ${a.optical_length_mm}mm`);
       });
       const trainDetail = trainParts.join(" + ");
 

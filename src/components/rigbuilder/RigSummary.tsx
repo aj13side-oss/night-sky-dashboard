@@ -100,10 +100,11 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
       checks.push({ key: "vignetting", label: "Vignetting", value: `${(ratio * 100).toFixed(0)}%`, status, msg });
     }
 
-    // 5. Payload
+    // 5. Payload (including accessories weight)
     const teleW = telescope?.weight_kg ?? 0;
     const camW = camera?.weight_kg ?? camera?.weight_g ? (camera?.weight_g ?? 0) / 1000 : 0;
-    const totalPayload = teleW + camW + 1; // +1 kg accessories
+    const accW = accessories.reduce((sum, a) => sum + ((a.weight_g ?? 0) / 1000), 0);
+    const totalPayload = teleW + camW + accW + (accessories.length > 0 ? 0 : 1); // +1kg estimate only if no accessories specified
     if (mount?.payload_kg && mount.payload_kg > 0) {
       const ratio = totalPayload / mount.payload_kg;
       const rule = getRule("payload_ratio");
@@ -121,23 +122,33 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
       checks.push({ key: "payload", label: "Payload", value: `${totalPayload.toFixed(1)} / ${mount.payload_kg}kg`, status, msg });
     }
 
-    // 6. Backfocus
+    // 6. Backfocus — full optical train
     const reqBF = telescope?.required_backfocus_mm ?? 0;
     const camBF = camera?.internal_backfocus_mm ?? 0;
     if (reqBF > 0 && camBF > 0) {
       const filterCorr = filter?.thickness_mm ? filter.thickness_mm / 3 : 0;
-      const spacer = reqBF - camBF - filterCorr;
+      const accBF = accessories.reduce((sum, a) => sum + (a.backfocus_contribution_mm ?? 0), 0);
+      const trainBF = camBF + filterCorr + accBF;
+      const spacer = reqBF - trainBF;
       const rule = getRule("backfocus");
       const warnT = rule?.threshold_warning ?? 5;
       let status: CheckStatus = "ok";
-      let msg = `Need ${spacer.toFixed(1)}mm spacer ring`;
+
+      const trainParts: string[] = [`Camera ${camBF}mm`];
+      if (filterCorr > 0) trainParts.push(`Filter ${filterCorr.toFixed(1)}mm`);
+      accessories.forEach(a => {
+        if (a.backfocus_contribution_mm) trainParts.push(`${a.brand} ${a.model} ${a.backfocus_contribution_mm}mm`);
+      });
+      const trainDetail = trainParts.join(" + ");
+
+      let msg = `Train: ${trainDetail} = ${trainBF.toFixed(1)}mm → Need ${spacer.toFixed(1)}mm spacer`;
       if (Math.abs(spacer) > warnT) {
         status = "warning";
         msg = spacer < 0
-          ? `Camera backfocus exceeds requirement by ${Math.abs(spacer).toFixed(1)}mm — may cause issues`
-          : `${spacer.toFixed(1)}mm spacer needed — ensure accurate spacing`;
+          ? `Train total (${trainBF.toFixed(1)}mm) exceeds required backfocus (${reqBF}mm) by ${Math.abs(spacer).toFixed(1)}mm`
+          : `${spacer.toFixed(1)}mm spacer needed — ${trainDetail}`;
       }
-      checks.push({ key: "backfocus", label: "Backfocus Spacer", value: `${spacer.toFixed(1)}mm`, status, msg });
+      checks.push({ key: "backfocus", label: "Backfocus Train", value: `${spacer.toFixed(1)}mm spacer`, status, msg });
     }
 
     // 7. Additional specs

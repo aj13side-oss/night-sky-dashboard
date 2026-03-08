@@ -264,48 +264,6 @@ export default function AdminCelestialAudit() {
     return { url: "", artist: null, license: null, licenseUrl: null, filePageUrl: null, pageUrl: null, status: "not_found" };
   }, []);
 
-  // Auto-fetch Wikipedia images for displayed items without forced_image_url
-  const fetchWikiForDisplayed = useCallback(async () => {
-    if (wikiFetchRef.current) return;
-    const toFetch = displayed.filter((i: any) => !i.forced_image_url && !wikiImages[i.id]);
-    if (toFetch.length === 0) return;
-    wikiFetchRef.current = true;
-    setWikiFetching(true);
-
-    for (let i = 0; i < toFetch.length; i += 3) {
-      if (!wikiFetchRef.current) break;
-      const batch = toFetch.slice(i, i + 3);
-      const results = await Promise.all(batch.map(async (item: any) => {
-        setWikiImages(prev => ({ ...prev, [item.id]: { url: "", artist: null, license: null, licenseUrl: null, filePageUrl: null, pageUrl: null, status: "loading" } }));
-        const result = await fetchWikiImage(item);
-        return { id: item.id, result };
-      }));
-      for (const r of results) {
-        setWikiImages(prev => ({ ...prev, [r.id]: r.result }));
-      }
-    }
-    wikiFetchRef.current = false;
-    setWikiFetching(false);
-  }, [displayed, wikiImages, fetchWikiImage]);
-
-  // Validate Wikipedia image → save as forced_image_url
-  const validateWikiImage = useCallback(async (id: string) => {
-    const wiki = wikiImages[id];
-    if (!wiki || wiki.status !== "found" || !wiki.url) return;
-
-    // Get the full-resolution Wikimedia URL (not the thumbnail)
-    // The thumbnail URL pattern: .../thumb/a/ab/File.jpg/200px-File.jpg → extract original
-    let originalUrl = wiki.url;
-    const thumbMatch = wiki.url.match(/\/thumb\/(.*?)\/\d+px-/);
-    if (thumbMatch) {
-      originalUrl = `https://upload.wikimedia.org/wikipedia/commons/${thumbMatch[1]}`;
-    }
-
-    const { error } = await (supabase as any).from("celestial_objects").update({ forced_image_url: originalUrl }).eq("id", id);
-    if (error) { toast.error("Erreur : " + error.message); return; }
-    toast.success("Image Wikipedia validée et sauvegardée !");
-    qc.invalidateQueries({ queryKey: ["admin_celestial"] });
-  }, [wikiImages, qc]);
 
 
   const markBroken = useCallback((id: string) => {

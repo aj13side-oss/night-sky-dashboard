@@ -344,10 +344,12 @@ export default function AdminCelestialAudit() {
     return filteredAll;
   }, [filteredAll, needsClientFilter, page]);
 
-  // Auto-fetch Wikipedia images for displayed items without forced_image_url
+  // Auto-fetch Wikipedia images for displayed items (including those with broken forced_image_url)
   const fetchWikiForDisplayed = useCallback(async () => {
     if (wikiFetchRef.current) return;
-    const toFetch = displayed.filter((i: any) => !i.forced_image_url && !wikiImages[i.id]);
+    const toFetch = displayed.filter((i: any) => !wikiImages[i.id] && (
+      !i.forced_image_url || brokenSet.has(i.id)
+    ));
     if (toFetch.length === 0) return;
     wikiFetchRef.current = true;
     setWikiFetching(true);

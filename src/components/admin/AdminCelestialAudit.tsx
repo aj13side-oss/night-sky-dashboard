@@ -322,8 +322,9 @@ export default function AdminCelestialAudit() {
       const statusOrder = (id: string) => {
         const s = audit[id];
         if (!s || s === "unchecked") return 0;
-        if (s === "flagged") return 1;
-        if (s === "ok") return 2;
+        if (s === "needs_wiki") return 1;
+        if (s === "flagged") return 2;
+        if (s === "ok") return 3;
         return 0;
       };
       list = [...list].sort((a: any, b: any) => statusOrder(a.id) - statusOrder(b.id));

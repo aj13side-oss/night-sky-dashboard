@@ -39,90 +39,91 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
     const sw = camera?.sensor_width_mm ?? 0;
     const sh = camera?.sensor_height_mm ?? 0;
 
-    // Helper to get rule thresholds
+    // Helper to get rule by key
     const getRule = (key: string) => rules?.find(r => r.rule_key === key);
 
-    // 1. Sampling
+    // 1. Échantillonnage
     if (fl > 0 && px > 0) {
       const sampling = (px / fl) * 206.265;
-      const rule = getRule("sampling");
-      const warnLow = rule?.threshold_warning ?? 0.6;
-      const warnHigh = rule?.threshold_error ?? 2.5;
+      const ruleOver = getRule("sampling_oversampled");
+      const ruleUnder = getRule("sampling_undersampled");
+      const minOk = ruleOver?.max_value ?? 0.6;   // below this → oversampled
+      const maxOk = ruleUnder?.min_value ?? 2.5;   // above this → undersampled
       let status: CheckStatus = "ok";
-      let msg = "Optimal for most seeing conditions";
-      if (sampling < warnLow) {
+      let msg = "Optimal pour la plupart des conditions de seeing";
+      if (sampling < minOk) {
         status = "warning";
-        msg = "Over-sampled — very sensitive to seeing/turbulence";
-      } else if (sampling > warnHigh) {
+        msg = "Sur-échantillonné — très sensible au seeing / turbulence";
+      } else if (sampling > maxOk) {
         status = "warning";
-        msg = "Under-sampled — risk of blocky stars, lost detail";
+        msg = "Sous-échantillonné — risque d'étoiles pixelisées";
       }
-      checks.push({ key: "sampling", label: "Sampling", value: `${sampling.toFixed(2)}″/px`, status, msg });
+      checks.push({ key: "sampling", label: "Échantillonnage", value: `${sampling.toFixed(2)}″/px`, status, msg });
     }
 
-    // 2. f/ratio
+    // 2. Rapport f/D
     if (fl > 0 && ap > 0) {
       const fRatio = fl / ap;
       checks.push({
-        key: "fratio", label: "f/ Ratio", value: `f/${fRatio.toFixed(1)}`,
+        key: "fratio", label: "Rapport f/D", value: `f/${fRatio.toFixed(1)}`,
         status: "ok",
-        msg: fRatio < 4 ? "Very fast — short exposures" : fRatio < 6 ? "Fast" : fRatio < 10 ? "Moderate" : "Slow — long exposures needed",
+        msg: fRatio < 4 ? "Très rapide — poses courtes" : fRatio < 6 ? "Rapide" : fRatio < 10 ? "Modéré" : "Lent — poses longues nécessaires",
       });
     }
 
-    // 3. FOV
+    // 3. Champ de vision
     if (fl > 0 && sw > 0 && sh > 0) {
       const fovW = (sw / fl) * (180 / Math.PI) * 60;
       const fovH = (sh / fl) * (180 / Math.PI) * 60;
       checks.push({
-        key: "fov", label: "Field of View", value: `${fovW.toFixed(0)}' × ${fovH.toFixed(0)}'`,
-        status: "ok", msg: "arcminutes",
+        key: "fov", label: "Champ de vision", value: `${fovW.toFixed(0)}' × ${fovH.toFixed(0)}'`,
+        status: "ok", msg: "en arcminutes",
       });
     }
 
-    // 4. Sensor / Image Circle ratio
+    // 4. Capteur vs cercle d'image
     if (sw > 0 && sh > 0 && telescope?.image_circle_mm) {
       const diag = Math.sqrt(sw * sw + sh * sh);
       const ic = telescope.image_circle_mm;
       const ratio = diag / ic;
-      const rule = getRule("sensor_image_circle");
-      const warnT = rule?.threshold_warning ?? 0.85;
-      const errT = rule?.threshold_error ?? 1.0;
+      const rule = getRule("sensor_vs_image_circle");
+      const warnT = rule?.min_value ?? 0.85;
+      const errT = rule?.max_value ?? 1.0;
       let status: CheckStatus = "ok";
-      let msg = `Sensor diagonal ${diag.toFixed(1)}mm fits image circle ${ic}mm`;
+      let msg = `Diagonale capteur ${diag.toFixed(1)}mm dans le cercle image ${ic}mm`;
       if (ratio > errT) {
         status = "error";
-        msg = `Sensor diagonal (${diag.toFixed(1)}mm) exceeds image circle (${ic}mm) — severe vignetting`;
+        msg = `Diagonale capteur (${diag.toFixed(1)}mm) dépasse le cercle image (${ic}mm) — vignetage sévère`;
       } else if (ratio > warnT) {
         status = "warning";
-        msg = `Sensor diagonal (${diag.toFixed(1)}mm) near image circle limit (${ic}mm) — corner vignetting possible`;
+        msg = `Diagonale capteur (${diag.toFixed(1)}mm) proche de la limite (${ic}mm) — vignetage en coins possible`;
       }
-      checks.push({ key: "vignetting", label: "Vignetting", value: `${(ratio * 100).toFixed(0)}%`, status, msg });
+      checks.push({ key: "vignetting", label: "Vignetage", value: `${(ratio * 100).toFixed(0)}%`, status, msg });
     }
 
-    // 5. Payload (including accessories weight)
+    // 5. Charge utile (incluant poids accessoires)
     const teleW = telescope?.weight_kg ?? 0;
-    const camW = camera?.weight_kg ?? camera?.weight_g ? (camera?.weight_g ?? 0) / 1000 : 0;
+    const camW = camera?.weight_kg ?? (camera?.weight_g ? camera.weight_g / 1000 : 0);
     const accW = accessories.reduce((sum, a) => sum + ((a.weight_g ?? 0) / 1000), 0);
-    const totalPayload = teleW + camW + accW + (accessories.length > 0 ? 0 : 1); // +1kg estimate only if no accessories specified
+    const totalPayload = teleW + camW + accW + (accessories.length > 0 ? 0 : 1);
     if (mount?.payload_kg && mount.payload_kg > 0) {
       const ratio = totalPayload / mount.payload_kg;
       const rule = getRule("payload_ratio");
-      const warnT = rule?.threshold_warning ?? 0.50;
-      const errT = rule?.threshold_error ?? 0.65;
+      const warnT = rule?.min_value ?? 0.50;
+      const errT = rule?.max_value ?? 0.65;
       let status: CheckStatus = "ok";
-      let msg = `${totalPayload.toFixed(1)}kg / ${mount.payload_kg}kg — within safe limits`;
+      let msg = `${totalPayload.toFixed(1)}kg / ${mount.payload_kg}kg — dans les limites`;
       if (ratio > errT) {
         status = "error";
-        msg = `Payload ${totalPayload.toFixed(1)}kg exceeds safe limit (${(errT * 100).toFixed(0)}% of ${mount.payload_kg}kg) — tracking instability`;
+        msg = `Charge ${totalPayload.toFixed(1)}kg dépasse la limite sûre (${(errT * 100).toFixed(0)}% de ${mount.payload_kg}kg) — instabilité de suivi`;
       } else if (ratio > warnT) {
         status = "warning";
-        msg = `Payload ${totalPayload.toFixed(1)}kg at ${(ratio * 100).toFixed(0)}% of capacity — approaching limit`;
+        msg = `Charge ${totalPayload.toFixed(1)}kg à ${(ratio * 100).toFixed(0)}% de la capacité — proche de la limite`;
       }
-      checks.push({ key: "payload", label: "Payload", value: `${totalPayload.toFixed(1)} / ${mount.payload_kg}kg`, status, msg });
+      checks.push({ key: "payload", label: "Charge utile", value: `${totalPayload.toFixed(1)} / ${mount.payload_kg}kg`, status, msg });
     }
 
-    // 6. Backfocus — full optical train
+    // 6. Backfocus — train optique complet
     const reqBF = telescope?.required_backfocus_mm ?? 0;
     const camBF = camera?.internal_backfocus_mm ?? 0;
     if (reqBF > 0 && camBF > 0) {
@@ -131,47 +132,47 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
       const trainBF = camBF + filterCorr + accBF;
       const spacer = reqBF - trainBF;
       const rule = getRule("backfocus");
-      const warnT = rule?.threshold_warning ?? 5;
+      const warnT = rule?.max_value ?? 5;
       let status: CheckStatus = "ok";
 
-      const trainParts: string[] = [`Camera ${camBF}mm`];
-      if (filterCorr > 0) trainParts.push(`Filter ${filterCorr.toFixed(1)}mm`);
+      const trainParts: string[] = [`Caméra ${camBF}mm`];
+      if (filterCorr > 0) trainParts.push(`Filtre ${filterCorr.toFixed(1)}mm`);
       accessories.forEach(a => {
         if (a.backfocus_contribution_mm) trainParts.push(`${a.brand} ${a.model} ${a.backfocus_contribution_mm}mm`);
       });
       const trainDetail = trainParts.join(" + ");
 
-      let msg = `Train: ${trainDetail} = ${trainBF.toFixed(1)}mm → Need ${spacer.toFixed(1)}mm spacer`;
+      let msg = `Train : ${trainDetail} = ${trainBF.toFixed(1)}mm → Spacer de ${spacer.toFixed(1)}mm nécessaire`;
       if (Math.abs(spacer) > warnT) {
         status = "warning";
         msg = spacer < 0
-          ? `Train total (${trainBF.toFixed(1)}mm) exceeds required backfocus (${reqBF}mm) by ${Math.abs(spacer).toFixed(1)}mm`
-          : `${spacer.toFixed(1)}mm spacer needed — ${trainDetail}`;
+          ? `Train total (${trainBF.toFixed(1)}mm) dépasse le backfocus requis (${reqBF}mm) de ${Math.abs(spacer).toFixed(1)}mm`
+          : `Spacer de ${spacer.toFixed(1)}mm nécessaire — ${trainDetail}`;
       }
-      checks.push({ key: "backfocus", label: "Backfocus Train", value: `${spacer.toFixed(1)}mm spacer`, status, msg });
+      checks.push({ key: "backfocus", label: "Train optique (BF)", value: `${spacer.toFixed(1)}mm spacer`, status, msg });
     }
 
-    // 7. Additional specs
+    // 7. Specs additionnelles
     if (camera?.interface_type || camera?.interface_usb) {
-      checks.push({ key: "cam_port", label: "Camera Port", value: camera.interface_usb ?? camera.interface_type ?? "", status: "ok", msg: "" });
+      checks.push({ key: "cam_port", label: "Port caméra", value: camera.interface_usb ?? camera.interface_type ?? "", status: "ok", msg: "" });
     }
     if (mount?.connectivity) {
-      checks.push({ key: "mnt_port", label: "Mount Port", value: mount.connectivity, status: "ok", msg: "" });
+      checks.push({ key: "mnt_port", label: "Port monture", value: mount.connectivity, status: "ok", msg: "" });
     }
     if (camera?.qe_percent) {
-      checks.push({ key: "qe", label: "Quantum Efficiency", value: `${camera.qe_percent}%`, status: "ok", msg: camera.qe_percent >= 80 ? "Excellent" : camera.qe_percent >= 60 ? "Good" : "Average" });
+      checks.push({ key: "qe", label: "Rendement quantique", value: `${camera.qe_percent}%`, status: "ok", msg: camera.qe_percent >= 80 ? "Excellent" : camera.qe_percent >= 60 ? "Bon" : "Moyen" });
     }
     if (camera?.read_noise_e) {
-      checks.push({ key: "readnoise", label: "Read Noise", value: `${camera.read_noise_e}e⁻`, status: "ok", msg: camera.read_noise_e <= 1.5 ? "Very low" : camera.read_noise_e <= 3 ? "Low" : "Moderate" });
+      checks.push({ key: "readnoise", label: "Bruit de lecture", value: `${camera.read_noise_e}e⁻`, status: "ok", msg: camera.read_noise_e <= 1.5 ? "Très faible" : camera.read_noise_e <= 3 ? "Faible" : "Modéré" });
     }
     if (mount?.periodic_error_arcsec) {
-      checks.push({ key: "pe", label: "Periodic Error", value: `±${mount.periodic_error_arcsec}″`, status: "ok", msg: mount.periodic_error_arcsec <= 5 ? "Excellent" : mount.periodic_error_arcsec <= 15 ? "Good" : "May need guiding" });
+      checks.push({ key: "pe", label: "Erreur périodique", value: `±${mount.periodic_error_arcsec}″`, status: "ok", msg: mount.periodic_error_arcsec <= 5 ? "Excellent" : mount.periodic_error_arcsec <= 15 ? "Bon" : "Autoguidage recommandé" });
     }
 
     return checks;
   }, [telescope, camera, mount, filter, accessories, rules]);
 
-  // Total estimated price
+  // Prix total estimé
   const totalPrice = useMemo(() => {
     let total = 0;
     let count = 0;
@@ -191,7 +192,6 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-      {/* Alert cards for errors/warnings */}
       {[...errors, ...warnings].map((a) => (
         <Alert key={a.key} variant={a.status === "error" ? "destructive" : "default"}
           className={a.status === "error" ? "" : "border-accent/40 bg-accent/5"}>
@@ -201,26 +201,25 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
         </Alert>
       ))}
 
-      {/* Score badge */}
       <Card className="border-primary/20 bg-primary/5">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
-              <Cpu className="w-5 h-5 text-primary" /> Rig Performance
+              <Cpu className="w-5 h-5 text-primary" /> Performance du setup
             </CardTitle>
             <div className="flex items-center gap-2">
               {totalPrice && (
                 <Badge variant="outline" className="gap-1 text-xs border-primary/40">
                   <DollarSign className="w-3 h-3" />
                   ~{totalPrice.total.toLocaleString("fr-FR")}€
-                  <span className="text-muted-foreground">({totalPrice.count} items)</span>
+                  <span className="text-muted-foreground">({totalPrice.count} éléments)</span>
                 </Badge>
               )}
               <Badge
                 variant={globalScore === "ok" ? "default" : "destructive"}
                 className={globalScore === "ok" ? "bg-green-600/80 hover:bg-green-600" : globalScore === "warning" ? "bg-amber-600/80 hover:bg-amber-600" : ""}
               >
-                {globalScore === "ok" ? "✓ Compatible" : globalScore === "warning" ? "⚠ Warnings" : "✗ Issues"}
+                {globalScore === "ok" ? "✓ Compatible" : globalScore === "warning" ? "⚠ Attention" : "✗ Problèmes"}
               </Badge>
             </div>
           </div>

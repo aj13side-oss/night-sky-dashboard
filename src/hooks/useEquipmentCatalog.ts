@@ -1,11 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-// Retailer price/url pairs
+// Retailer price/url pairs — column names match DB: price_amazon, url_amazon, etc.
 const RETAILERS = [
-  "amazon_fr", "amazon_de", "amazon_com",
-  "astroshop", "pierro_astro", "maison_astronomie",
-  "telescope_shop", "bhphoto", "opticalpro",
+  "amazon",
+  "astroshop",
+  "pierro_astro",
+  "maison_astronomie",
+  "telescope_shop",
+  "bhphoto",
+  "opticalpro",
 ] as const;
 type RetailerKey = typeof RETAILERS[number];
 
@@ -17,9 +21,7 @@ export interface RetailerInfo {
 }
 
 const RETAILER_LABELS: Record<RetailerKey, string> = {
-  amazon_fr: "Amazon FR",
-  amazon_de: "Amazon DE",
-  amazon_com: "Amazon US",
+  amazon: "Amazon",
   astroshop: "Astroshop",
   pierro_astro: "Pierro Astro",
   maison_astronomie: "Maison Astronomie",
@@ -55,11 +57,11 @@ export interface AstroCamera {
   resolution_mp: number | null;
   is_color: boolean | null;
   image_url: string | null;
-  affiliate_amazon: string | null;
-  affiliate_astro: string | null;
+  url_amazon: string | null;
+  url_astroshop: string | null;
   manufacturer_url: string | null;
   weight_g: number | null;
-  weight_kg: number | null; // computed
+  weight_kg: number | null;
   internal_backfocus_mm: number | null;
   qe_percent: number | null;
   read_noise_e: number | null;
@@ -67,8 +69,7 @@ export interface AstroCamera {
   adc_bits: number | null;
   cooling_delta_c: number | null;
   interface_usb: string | null;
-  interface_type: string | null; // alias
-  // raw retailer data
+  interface_type: string | null;
   _raw: Record<string, any>;
 }
 
@@ -82,8 +83,8 @@ export interface AstroTelescope {
   type: string | null;
   weight_kg: number | null;
   image_url: string | null;
-  affiliate_amazon: string | null;
-  affiliate_astro: string | null;
+  url_amazon: string | null;
+  url_astroshop: string | null;
   manufacturer_url: string | null;
   required_backfocus_mm: number | null;
   image_circle_mm: number | null;
@@ -101,8 +102,8 @@ export interface AstroMount {
   mount_weight_kg: number | null;
   mount_type: string | null;
   image_url: string | null;
-  affiliate_amazon: string | null;
-  affiliate_astro: string | null;
+  url_amazon: string | null;
+  url_astroshop: string | null;
   manufacturer_url: string | null;
   connectivity: string | null;
   periodic_error_arcsec: number | null;
@@ -119,10 +120,26 @@ export interface AstroFilter {
   type: string | null;
   size: string | null;
   image_url: string | null;
-  affiliate_amazon: string | null;
-  affiliate_astro: string | null;
+  url_amazon: string | null;
+  url_astroshop: string | null;
   manufacturer_url: string | null;
   thickness_mm: number | null;
+  _raw: Record<string, any>;
+}
+
+export interface AstroAccessory {
+  id: string;
+  brand: string;
+  model: string;
+  category: string | null; // DB column is "category" not "type"
+  backfocus_contribution_mm: number | null;
+  weight_g: number | null;
+  input_connection: string | null; // DB column is "input_connection" not "input_thread"
+  output_thread: string | null;
+  image_url: string | null;
+  url_amazon: string | null;
+  url_astroshop: string | null;
+  manufacturer_url: string | null;
   _raw: Record<string, any>;
 }
 
@@ -133,6 +150,8 @@ function mapCamera(row: any): AstroCamera {
     weight_g,
     weight_kg: weight_g ? weight_g / 1000 : (row.weight_kg ?? null),
     interface_type: row.interface_usb ?? row.interface_type ?? null,
+    url_amazon: row.url_amazon ?? null,
+    url_astroshop: row.url_astroshop ?? null,
     _raw: row,
   };
 }
@@ -160,7 +179,12 @@ export function useTelescopes() {
         .select("*")
         .order("brand");
       if (error) throw error;
-      return ((data ?? []) as any[]).map(r => ({ ...r, _raw: r })) as AstroTelescope[];
+      return ((data ?? []) as any[]).map(r => ({
+        ...r,
+        url_amazon: r.url_amazon ?? null,
+        url_astroshop: r.url_astroshop ?? null,
+        _raw: r,
+      })) as AstroTelescope[];
     },
   });
 }
@@ -174,7 +198,12 @@ export function useMounts() {
         .select("*")
         .order("brand");
       if (error) throw error;
-      return ((data ?? []) as any[]).map(r => ({ ...r, _raw: r })) as AstroMount[];
+      return ((data ?? []) as any[]).map(r => ({
+        ...r,
+        url_amazon: r.url_amazon ?? null,
+        url_astroshop: r.url_astroshop ?? null,
+        _raw: r,
+      })) as AstroMount[];
     },
   });
 }
@@ -188,26 +217,14 @@ export function useFilters() {
         .select("*")
         .order("brand");
       if (error) throw error;
-      return ((data ?? []) as any[]).map(r => ({ ...r, _raw: r })) as AstroFilter[];
+      return ((data ?? []) as any[]).map(r => ({
+        ...r,
+        url_amazon: r.url_amazon ?? null,
+        url_astroshop: r.url_astroshop ?? null,
+        _raw: r,
+      })) as AstroFilter[];
     },
   });
-}
-
-// Accessories
-export interface AstroAccessory {
-  id: string;
-  brand: string;
-  model: string;
-  type: string | null; // Coma Corrector, Field Flattener, Reducer, OAG, Focuser, Filter Wheel, Guidescope, etc.
-  backfocus_contribution_mm: number | null;
-  weight_g: number | null;
-  input_thread: string | null;
-  output_thread: string | null;
-  image_url: string | null;
-  affiliate_amazon: string | null;
-  affiliate_astro: string | null;
-  manufacturer_url: string | null;
-  _raw: Record<string, any>;
 }
 
 export function useAccessories() {
@@ -219,7 +236,14 @@ export function useAccessories() {
         .select("*")
         .order("brand");
       if (error) throw error;
-      return ((data ?? []) as any[]).map(r => ({ ...r, _raw: r })) as AstroAccessory[];
+      return ((data ?? []) as any[]).map(r => ({
+        ...r,
+        category: r.category ?? null,
+        input_connection: r.input_connection ?? null,
+        url_amazon: r.url_amazon ?? null,
+        url_astroshop: r.url_astroshop ?? null,
+        _raw: r,
+      })) as AstroAccessory[];
     },
   });
 }
@@ -230,8 +254,8 @@ export interface CompatibilityRule {
   rule_key: string;
   label: string;
   description: string | null;
-  threshold_warning: number | null;
-  threshold_error: number | null;
+  min_value: number | null;
+  max_value: number | null;
   unit: string | null;
 }
 

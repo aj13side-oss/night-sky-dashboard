@@ -41,7 +41,8 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
     obj.dec,
     obj.size_max,
     obj.image_search_query,
-    obj.forced_image_url
+    obj.forced_image_url,
+    obj.obj_type
   );
 
   const thumbUrl = wikiImage?.url || null;

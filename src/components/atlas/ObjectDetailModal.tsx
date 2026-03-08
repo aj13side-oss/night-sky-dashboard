@@ -40,6 +40,7 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
     obj?.size_max,
     obj?.image_search_query,
     obj?.forced_image_url,
+    obj?.obj_type,
     1500
   );
 

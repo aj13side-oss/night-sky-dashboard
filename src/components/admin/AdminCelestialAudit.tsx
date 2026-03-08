@@ -524,6 +524,7 @@ export default function AdminCelestialAudit() {
   // Batch actions
   const batchOk = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "ok" })); setSelected(new Set()); toast.success(`${selected.size} marqués OK`); };
   const batchFlag = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "flagged" })); setSelected(new Set()); toast.success(`${selected.size} signalés`); };
+  const batchNeedsWiki = () => { selected.forEach(id => setAuditMutation.mutate({ targetId: id, status: "needs_wiki" })); setSelected(new Set()); toast.success(`${selected.size} marqués "Wiki à trouver"`); };
   const batchGoogle = () => {
     let count = 0;
     selected.forEach(id => {

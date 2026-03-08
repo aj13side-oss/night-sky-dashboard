@@ -368,13 +368,28 @@ export default function AdminCelestialAudit() {
         ))}
       </div>
 
-      <AuditBatchBar
-        count={selected.size}
-        onOk={batchOk}
-        onFlag={batchFlag}
-        onGoogle={batchGoogle}
-        onClear={() => setSelected(new Set())}
-      />
+      <div className="flex items-center gap-2 flex-wrap">
+        <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={selectAll}>
+          <CheckSquare className="w-3 h-3" /> Tout sélectionner ({displayed.length})
+        </Button>
+        {focusIndex >= 0 && (
+          <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => selectRow(focusIndex)}>
+            <Rows3 className="w-3 h-3" /> Sélectionner la ligne
+          </Button>
+        )}
+        {brokenSet.size > 0 && (
+          <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-destructive/50 text-destructive" onClick={selectBroken}>
+            <X className="w-3 h-3" /> Sélectionner cassées ({brokenSet.size})
+          </Button>
+        )}
+        <AuditBatchBar
+          count={selected.size}
+          onOk={batchOk}
+          onFlag={batchFlag}
+          onGoogle={batchGoogle}
+          onClear={() => setSelected(new Set())}
+        />
+      </div>
 
       {focusIndex >= 0 && (
         <div className="text-[10px] text-muted-foreground bg-muted/30 rounded px-2 py-1 flex gap-3 flex-wrap">
@@ -413,8 +428,14 @@ export default function AdminCelestialAudit() {
                     </button>
                   </div>
                   {item.forced_image_url ? (
-                    <div className="aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative">
-                      <img src={thumbUrl(item.forced_image_url, 100)} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" />
+                    <div className={`aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ${brokenSet.has(item.id) ? "ring-1 ring-destructive" : ""}`}>
+                      <img
+                        src={thumbUrl(item.forced_image_url, 100)}
+                        alt={item.catalog_id}
+                        loading="lazy"
+                        className="max-h-full max-w-full object-contain"
+                        onError={() => markBroken(item.id)}
+                      />
                       <div className="absolute top-0.5 right-0.5">{healthBadge(item.id)}</div>
                     </div>
                   ) : (

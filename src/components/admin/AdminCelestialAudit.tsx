@@ -66,6 +66,7 @@ const CATALOG_PREFIXES = [
 const STATUS_FILTERS = [
   { value: "all", label: "Tous" },
   { value: "no_image", label: "Sans image" },
+  { value: "needs_wiki", label: "🔍 Wiki à trouver" },
   { value: "flagged", label: "Signalés" },
   { value: "ok", label: "Vérifiés ✓" },
   { value: "unchecked", label: "Non vérifiés" },

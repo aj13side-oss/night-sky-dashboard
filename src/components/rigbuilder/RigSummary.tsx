@@ -3,15 +3,16 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, CheckCircle2, Cpu, DollarSign } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Cpu, DollarSign, Wrench } from "lucide-react";
 import { extractPrices, useCompatibilityRules } from "@/hooks/useEquipmentCatalog";
-import type { AstroTelescope, AstroCamera, AstroMount, AstroFilter } from "@/hooks/useEquipmentCatalog";
+import type { AstroTelescope, AstroCamera, AstroMount, AstroFilter, AstroAccessory } from "@/hooks/useEquipmentCatalog";
 
 interface RigSummaryProps {
   telescope: AstroTelescope | null;
   camera: AstroCamera | null;
   mount: AstroMount | null;
   filter: AstroFilter | null;
+  accessories?: AstroAccessory[];
 }
 
 type CheckStatus = "ok" | "warning" | "error";
@@ -24,7 +25,7 @@ interface Check {
   msg: string;
 }
 
-export function RigSummary({ telescope, camera, mount, filter }: RigSummaryProps) {
+export function RigSummary({ telescope, camera, mount, filter, accessories = [] }: RigSummaryProps) {
   const { data: rules } = useCompatibilityRules();
 
   const diagnostics = useMemo(() => {
@@ -99,10 +100,11 @@ export function RigSummary({ telescope, camera, mount, filter }: RigSummaryProps
       checks.push({ key: "vignetting", label: "Vignetting", value: `${(ratio * 100).toFixed(0)}%`, status, msg });
     }
 
-    // 5. Payload
+    // 5. Payload (including accessories weight)
     const teleW = telescope?.weight_kg ?? 0;
     const camW = camera?.weight_kg ?? camera?.weight_g ? (camera?.weight_g ?? 0) / 1000 : 0;
-    const totalPayload = teleW + camW + 1; // +1 kg accessories
+    const accW = accessories.reduce((sum, a) => sum + ((a.weight_g ?? 0) / 1000), 0);
+    const totalPayload = teleW + camW + accW + (accessories.length > 0 ? 0 : 1); // +1kg estimate only if no accessories specified
     if (mount?.payload_kg && mount.payload_kg > 0) {
       const ratio = totalPayload / mount.payload_kg;
       const rule = getRule("payload_ratio");
@@ -120,23 +122,33 @@ export function RigSummary({ telescope, camera, mount, filter }: RigSummaryProps
       checks.push({ key: "payload", label: "Payload", value: `${totalPayload.toFixed(1)} / ${mount.payload_kg}kg`, status, msg });
     }
 
-    // 6. Backfocus
+    // 6. Backfocus — full optical train
     const reqBF = telescope?.required_backfocus_mm ?? 0;
     const camBF = camera?.internal_backfocus_mm ?? 0;
     if (reqBF > 0 && camBF > 0) {
       const filterCorr = filter?.thickness_mm ? filter.thickness_mm / 3 : 0;
-      const spacer = reqBF - camBF - filterCorr;
+      const accBF = accessories.reduce((sum, a) => sum + (a.backfocus_contribution_mm ?? 0), 0);
+      const trainBF = camBF + filterCorr + accBF;
+      const spacer = reqBF - trainBF;
       const rule = getRule("backfocus");
       const warnT = rule?.threshold_warning ?? 5;
       let status: CheckStatus = "ok";
-      let msg = `Need ${spacer.toFixed(1)}mm spacer ring`;
+
+      const trainParts: string[] = [`Camera ${camBF}mm`];
+      if (filterCorr > 0) trainParts.push(`Filter ${filterCorr.toFixed(1)}mm`);
+      accessories.forEach(a => {
+        if (a.backfocus_contribution_mm) trainParts.push(`${a.brand} ${a.model} ${a.backfocus_contribution_mm}mm`);
+      });
+      const trainDetail = trainParts.join(" + ");
+
+      let msg = `Train: ${trainDetail} = ${trainBF.toFixed(1)}mm → Need ${spacer.toFixed(1)}mm spacer`;
       if (Math.abs(spacer) > warnT) {
         status = "warning";
         msg = spacer < 0
-          ? `Camera backfocus exceeds requirement by ${Math.abs(spacer).toFixed(1)}mm — may cause issues`
-          : `${spacer.toFixed(1)}mm spacer needed — ensure accurate spacing`;
+          ? `Train total (${trainBF.toFixed(1)}mm) exceeds required backfocus (${reqBF}mm) by ${Math.abs(spacer).toFixed(1)}mm`
+          : `${spacer.toFixed(1)}mm spacer needed — ${trainDetail}`;
       }
-      checks.push({ key: "backfocus", label: "Backfocus Spacer", value: `${spacer.toFixed(1)}mm`, status, msg });
+      checks.push({ key: "backfocus", label: "Backfocus Train", value: `${spacer.toFixed(1)}mm spacer`, status, msg });
     }
 
     // 7. Additional specs
@@ -157,19 +169,19 @@ export function RigSummary({ telescope, camera, mount, filter }: RigSummaryProps
     }
 
     return checks;
-  }, [telescope, camera, mount, filter, rules]);
+  }, [telescope, camera, mount, filter, accessories, rules]);
 
   // Total estimated price
   const totalPrice = useMemo(() => {
     let total = 0;
     let count = 0;
-    [telescope, camera, mount, filter].forEach(item => {
+    [telescope, camera, mount, filter, ...accessories].forEach(item => {
       if (!item) return;
       const { best } = extractPrices((item as any)._raw ?? {});
       if (best) { total += best.price; count++; }
     });
     return count > 0 ? { total, count } : null;
-  }, [telescope, camera, mount, filter]);
+  }, [telescope, camera, mount, filter, accessories]);
 
   if (!diagnostics) return null;
 

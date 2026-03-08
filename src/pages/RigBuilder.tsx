@@ -5,10 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Telescope, Camera, Filter, Anchor, X, Scale } from "lucide-react";
+import { Telescope, Camera, Filter, Anchor, X, Scale, Wrench } from "lucide-react";
 import {
-  useCameras, useTelescopes, useMounts, useFilters, extractPrices,
-  type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter,
+  useCameras, useTelescopes, useMounts, useFilters, useAccessories, extractPrices,
+  type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter, type AstroAccessory,
 } from "@/hooks/useEquipmentCatalog";
 import { EquipmentCard } from "@/components/rigbuilder/EquipmentCard";
 import { CompareTable } from "@/components/rigbuilder/CompareTable";
@@ -16,7 +16,7 @@ import { RangeFilter } from "@/components/rigbuilder/RangeFilter";
 import { RigSummary } from "@/components/rigbuilder/RigSummary";
 import { ChipFilter, ToggleFilter } from "@/components/rigbuilder/ChipFilter";
 
-type Category = "telescopes" | "cameras" | "mounts" | "filters";
+type Category = "telescopes" | "cameras" | "mounts" | "filters" | "accessories";
 
 function bounds(arr: (number | null | undefined)[]): [number, number] {
   const nums = arr.filter((n): n is number => n != null && !isNaN(n));
@@ -29,14 +29,18 @@ const RigBuilder = () => {
   const { data: telescopes, isLoading: loadingScopes } = useTelescopes();
   const { data: mounts, isLoading: loadingMounts } = useMounts();
   const { data: filters, isLoading: loadingFilters } = useFilters();
+  const { data: accessories, isLoading: loadingAccessories } = useAccessories();
 
   const [tab, setTab] = useState<Category>("telescopes");
   const [compareIds, setCompareIds] = useState<Record<Category, string[]>>({
-    telescopes: [], cameras: [], mounts: [], filters: [],
+    telescopes: [], cameras: [], mounts: [], filters: [], accessories: [],
   });
 
-  const [rigPicks, setRigPicks] = useState<{ telescope: string | null; camera: string | null; mount: string | null; filter: string | null }>({
-    telescope: null, camera: null, mount: null, filter: null,
+  const [rigPicks, setRigPicks] = useState<{
+    telescope: string | null; camera: string | null; mount: string | null;
+    filter: string | null; accessories: string[];
+  }>({
+    telescope: null, camera: null, mount: null, filter: null, accessories: [],
   });
 
   // --- Filter bounds ---
@@ -65,6 +69,7 @@ const RigBuilder = () => {
 
   const [filterType, setFilterType] = useState<string | null>(null);
   const [filterSize, setFilterSize] = useState<string | null>(null);
+  const [accType, setAccType] = useState<string | null>(null);
 
   // --- Unique values for chip filters ---
   const scopeTypes = useMemo(() => [...new Set(telescopes?.map(t => t.type).filter(Boolean) as string[])].sort(), [telescopes]);
@@ -79,6 +84,7 @@ const RigBuilder = () => {
   const mntBrands = useMemo(() => [...new Set(mounts?.map(m => m.brand).filter(Boolean) as string[])].sort(), [mounts]);
   const filterTypes = useMemo(() => [...new Set(filters?.map(f => f.type).filter(Boolean) as string[])].sort(), [filters]);
   const filterSizes = useMemo(() => [...new Set(filters?.map(f => f.size).filter(Boolean) as string[])].sort(), [filters]);
+  const accTypes = useMemo(() => [...new Set(accessories?.map(a => a.type).filter(Boolean) as string[])].sort(), [accessories]);
 
   // --- Apply filters ---
   const filteredScopes = useMemo(() => {
@@ -134,6 +140,14 @@ const RigBuilder = () => {
     });
   }, [filters, filterType, filterSize]);
 
+  const filteredAccessories = useMemo(() => {
+    if (!accessories) return [];
+    return accessories.filter(a => {
+      if (accType && a.type !== accType) return false;
+      return true;
+    });
+  }, [accessories, accType]);
+
   const toggleCompare = (cat: Category, id: string) => {
     setCompareIds(prev => {
       const list = prev[cat];
@@ -152,6 +166,7 @@ const RigBuilder = () => {
   const pickedCamera = cameras?.find(c => c.id === rigPicks.camera) ?? null;
   const pickedMount = mounts?.find(m => m.id === rigPicks.mount) ?? null;
   const pickedFilter = filters?.find(f => f.id === rigPicks.filter) ?? null;
+  const pickedAccessories = accessories?.filter(a => rigPicks.accessories.includes(a.id)) ?? [];
 
   return (
     <div className="min-h-screen bg-background star-field">
@@ -169,10 +184,10 @@ const RigBuilder = () => {
         </motion.div>
 
         {/* Rig Summary */}
-        <RigSummary telescope={pickedTelescope} camera={pickedCamera} mount={pickedMount} filter={pickedFilter} />
+        <RigSummary telescope={pickedTelescope} camera={pickedCamera} mount={pickedMount} filter={pickedFilter} accessories={pickedAccessories} />
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as Category)}>
-          <TabsList className="grid grid-cols-4 w-full max-w-lg">
+          <TabsList className="grid grid-cols-5 w-full max-w-2xl">
             <TabsTrigger value="telescopes" className="gap-1.5">
               <Telescope className="w-3.5 h-3.5" /> Optics
             </TabsTrigger>
@@ -184,6 +199,9 @@ const RigBuilder = () => {
             </TabsTrigger>
             <TabsTrigger value="filters" className="gap-1.5">
               <Filter className="w-3.5 h-3.5" /> Filters
+            </TabsTrigger>
+            <TabsTrigger value="accessories" className="gap-1.5">
+              <Wrench className="w-3.5 h-3.5" /> Acc.
             </TabsTrigger>
           </TabsList>
 
@@ -447,6 +465,66 @@ const RigBuilder = () => {
                     ]}
                     getName={f => `${f.brand} ${f.model}`}
                     getAffiliates={f => ({ amazon: f.affiliate_amazon, astro: f.affiliate_astro, manufacturer: f.manufacturer_url })}
+                  />
+                )}
+              </>
+            )}
+          </TabsContent>
+
+          {/* ==================== ACCESSORIES ==================== */}
+          <TabsContent value="accessories">
+            {loadingAccessories ? <LoadingSkeleton /> : (
+              <>
+                <Card className="border-border/50 mt-4 p-4 space-y-4">
+                  <ChipFilter label="Type" options={accTypes} selected={accType} onChange={setAccType} />
+                </Card>
+                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
+                  {filteredAccessories.map(a => {
+                    const { best } = extractPrices(a._raw ?? {});
+                    const isInRig = rigPicks.accessories.includes(a.id);
+                    return (
+                      <EquipmentCard
+                        key={a.id}
+                        selected={compareIds.accessories.includes(a.id)}
+                        onToggle={() => {
+                          toggleCompare("accessories", a.id);
+                          setRigPicks(p => ({
+                            ...p,
+                            accessories: isInRig
+                              ? p.accessories.filter(id => id !== a.id)
+                              : [...p.accessories, a.id],
+                          }));
+                        }}
+                        imageUrl={a.image_url}
+                        title={`${a.brand} ${a.model}`}
+                        bestPrice={best}
+                        specs={[
+                          a.type,
+                          a.backfocus_contribution_mm ? `BF +${a.backfocus_contribution_mm}mm` : null,
+                          a.weight_g ? `${a.weight_g}g` : null,
+                          a.input_thread ? `In: ${a.input_thread}` : null,
+                          a.output_thread ? `Out: ${a.output_thread}` : null,
+                        ]}
+                        affiliateAmazon={a.affiliate_amazon}
+                        affiliateAstro={a.affiliate_astro}
+                        manufacturerUrl={a.manufacturer_url}
+                      />
+                    );
+                  })}
+                </div>
+                {compareIds.accessories.length >= 2 && (
+                  <CompareTable
+                    items={accessories?.filter(a => compareIds.accessories.includes(a.id)) ?? []}
+                    getImage={a => a.image_url}
+                    columns={[
+                      { label: "Type", render: a => a.type ?? "—" },
+                      { label: "Backfocus", render: a => a.backfocus_contribution_mm ? `${a.backfocus_contribution_mm}mm` : "—" },
+                      { label: "Weight", render: a => a.weight_g ? `${a.weight_g}g` : "—", bestDirection: "lower" },
+                      { label: "Input Thread", render: a => a.input_thread ?? "—" },
+                      { label: "Output Thread", render: a => a.output_thread ?? "—" },
+                    ]}
+                    getName={a => `${a.brand} ${a.model}`}
+                    getAffiliates={a => ({ amazon: a.affiliate_amazon, astro: a.affiliate_astro, manufacturer: a.manufacturer_url })}
                   />
                 )}
               </>

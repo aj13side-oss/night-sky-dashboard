@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3 } from "lucide-react";
+import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3, ImageIcon, Download } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,16 @@ import { thumbUrl } from "@/lib/utils";
 import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus, type ImageHealth } from "@/hooks/useImageAudit";
 import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
 import AuditBatchBar from "./AuditBatchBar";
+
+interface WikiImage {
+  url: string;
+  artist: string | null;
+  license: string | null;
+  licenseUrl: string | null;
+  filePageUrl: string | null;
+  pageUrl: string | null;
+  status: "loading" | "found" | "not_found" | "error";
+}
 
 const PAGE_SIZE = 100;
 
@@ -56,6 +66,9 @@ export default function AdminCelestialAudit() {
   const [healthMap, setHealthMap] = useState<Record<string, ImageHealth>>({});
   const [brokenSet, setBrokenSet] = useState<Set<string>>(new Set());
   const [scanning, setScanning] = useState(false);
+  const [wikiImages, setWikiImages] = useState<Record<string, WikiImage>>({});
+  const [wikiFetching, setWikiFetching] = useState(false);
+  const wikiFetchRef = useRef(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [focusIndex, setFocusIndex] = useState(-1);
@@ -84,7 +97,7 @@ export default function AdminCelestialAudit() {
       const buildQuery = () => {
         let q = (supabase as any)
           .from("celestial_objects")
-          .select("id, catalog_id, common_name, obj_type, constellation, forced_image_url, magnitude", { count: "exact" });
+          .select("id, catalog_id, common_name, obj_type, constellation, forced_image_url, magnitude, image_search_query, ra, dec, size_max", { count: "exact" });
 
         if (sortBy === "common_name") q = q.order("common_name", { ascending: true, nullsFirst: false });
         else if (sortBy === "magnitude") q = q.order("magnitude", { ascending: true, nullsFirst: false });
@@ -173,7 +186,86 @@ export default function AdminCelestialAudit() {
     setScanning(false);
   }, [data]);
 
-  // Track broken images via onError
+  // Wikipedia image search for items without forced_image_url
+  const ASTRO_CATEGORIES = ["astronomy", "nebulae", "galaxies", "messier objects", "ngc objects",
+    "star clusters", "planetary nebulae", "emission nebulae", "reflection nebulae",
+    "supernova remnants", "galaxy clusters", "open clusters", "globular clusters",
+    "astrophotography", "deep-sky objects"];
+
+  const fetchWikiImage = useCallback(async (item: any): Promise<WikiImage> => {
+    const searchTerms = [
+      item.image_search_query,
+      item.common_name,
+      item.catalog_id?.replace(/\s+/g, " "),
+      item.catalog_id?.startsWith("M") ? `Messier ${item.catalog_id.slice(1).trim()}` : null,
+    ].filter(Boolean) as string[];
+
+    for (const term of searchTerms) {
+      try {
+        const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(term)}&srnamespace=0&srlimit=3&format=json&origin=*`;
+        const searchRes = await fetch(searchUrl);
+        if (!searchRes.ok) continue;
+        const searchData = await searchRes.json();
+        const results = searchData?.query?.search;
+        if (!results?.length) continue;
+        const pageTitle = results[0].title;
+
+        // Check astronomy relevance
+        const catUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=categories&cllimit=50&format=json&origin=*`;
+        const catRes = await fetch(catUrl);
+        if (catRes.ok) {
+          const catData = await catRes.json();
+          const page = Object.values(catData?.query?.pages || {})[0] as any;
+          const cats: string[] = (page?.categories || []).map((c: any) => (c.title || "").replace("Category:", "").toLowerCase());
+          if (!cats.some(cat => ASTRO_CATEGORIES.some(kw => cat.includes(kw)))) continue;
+        }
+
+        // Get thumbnail
+        const imgUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=pageimages&piprop=thumbnail&pithumbsize=200&format=json&origin=*`;
+        const imgRes = await fetch(imgUrl);
+        if (!imgRes.ok) continue;
+        const imgData = await imgRes.json();
+        const page = Object.values(imgData?.query?.pages || {})[0] as any;
+        const thumb = page?.thumbnail;
+        if (!thumb?.source || thumb.source.endsWith(".svg")) continue;
+
+        // Get metadata
+        const fileName = decodeURIComponent(thumb.source.split("/").pop()?.split("?")[0] || "");
+        let artist: string | null = null, license: string | null = null, licenseUrl: string | null = null, filePageUrl: string | null = null;
+        if (fileName) {
+          try {
+            const metaUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(fileName)}&prop=imageinfo&iiprop=extmetadata&format=json&origin=*`;
+            const metaRes = await fetch(metaUrl);
+            if (metaRes.ok) {
+              const metaData = await metaRes.json();
+              const metaPage = Object.values(metaData?.query?.pages || {})[0] as any;
+              const meta = metaPage?.imageinfo?.[0]?.extmetadata;
+              if (meta) {
+                artist = meta.Artist?.value?.replace(/<[^>]*>/g, "").trim() || null;
+                license = meta.LicenseShortName?.value || null;
+                licenseUrl = meta.LicenseUrl?.value || null;
+              }
+            }
+          } catch {}
+          filePageUrl = `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(fileName)}`;
+        }
+
+        return {
+          url: thumb.source,
+          artist,
+          license,
+          licenseUrl,
+          filePageUrl,
+          pageUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent(pageTitle)}`,
+          status: "found",
+        };
+      } catch {}
+    }
+    return { url: "", artist: null, license: null, licenseUrl: null, filePageUrl: null, pageUrl: null, status: "not_found" };
+  }, []);
+
+
+
   const markBroken = useCallback((id: string) => {
     setBrokenSet(prev => {
       if (prev.has(id)) return prev;
@@ -225,7 +317,47 @@ export default function AdminCelestialAudit() {
     return filteredAll;
   }, [filteredAll, needsClientFilter, page]);
 
-  // Stagger image loading to prevent browser connection saturation
+  // Auto-fetch Wikipedia images for displayed items without forced_image_url
+  const fetchWikiForDisplayed = useCallback(async () => {
+    if (wikiFetchRef.current) return;
+    const toFetch = displayed.filter((i: any) => !i.forced_image_url && !wikiImages[i.id]);
+    if (toFetch.length === 0) return;
+    wikiFetchRef.current = true;
+    setWikiFetching(true);
+
+    for (let i = 0; i < toFetch.length; i += 3) {
+      if (!wikiFetchRef.current) break;
+      const batch = toFetch.slice(i, i + 3);
+      const results = await Promise.all(batch.map(async (item: any) => {
+        setWikiImages(prev => ({ ...prev, [item.id]: { url: "", artist: null, license: null, licenseUrl: null, filePageUrl: null, pageUrl: null, status: "loading" } }));
+        const result = await fetchWikiImage(item);
+        return { id: item.id, result };
+      }));
+      for (const r of results) {
+        setWikiImages(prev => ({ ...prev, [r.id]: r.result }));
+      }
+    }
+    wikiFetchRef.current = false;
+    setWikiFetching(false);
+  }, [displayed, wikiImages, fetchWikiImage]);
+
+  // Validate Wikipedia image → save as forced_image_url
+  const validateWikiImage = useCallback(async (id: string) => {
+    const wiki = wikiImages[id];
+    if (!wiki || wiki.status !== "found" || !wiki.url) return;
+    // Get full-resolution Wikimedia URL from thumbnail
+    let originalUrl = wiki.url;
+    const thumbMatch = wiki.url.match(/\/thumb\/(.*?)\/\d+px-/);
+    if (thumbMatch) {
+      originalUrl = `https://upload.wikimedia.org/wikipedia/commons/${thumbMatch[1]}`;
+    }
+    const { error } = await (supabase as any).from("celestial_objects").update({ forced_image_url: originalUrl }).eq("id", id);
+    if (error) { toast.error("Erreur : " + error.message); return; }
+    toast.success("Image Wikipedia validée !");
+    qc.invalidateQueries({ queryKey: ["admin_celestial"] });
+  }, [wikiImages, qc]);
+
+
   const [visibleCount, setVisibleCount] = useState(0);
   useEffect(() => {
     setVisibleCount(0);
@@ -362,6 +494,23 @@ export default function AdminCelestialAudit() {
     if (selected.size > 5) toast.info(`5 onglets ouverts sur ${selected.size} (limite navigateur)`);
   };
 
+  // Batch validate all found Wikipedia images on page
+  const batchValidateWiki = useCallback(async () => {
+    const wikiFound = displayed.filter((i: any) => !i.forced_image_url && wikiImages[i.id]?.status === "found" && wikiImages[i.id]?.url);
+    if (wikiFound.length === 0) { toast.info("Aucune image Wikipedia à valider"); return; }
+    let count = 0;
+    for (const item of wikiFound) {
+      const wiki = wikiImages[item.id];
+      let originalUrl = wiki.url;
+      const thumbMatch = wiki.url.match(/\/thumb\/(.*?)\/\d+px-/);
+      if (thumbMatch) originalUrl = `https://upload.wikimedia.org/wikipedia/commons/${thumbMatch[1]}`;
+      const { error } = await (supabase as any).from("celestial_objects").update({ forced_image_url: originalUrl }).eq("id", item.id);
+      if (!error) count++;
+    }
+    toast.success(`${count} images Wikipedia validées !`);
+    qc.invalidateQueries({ queryKey: ["admin_celestial"] });
+  }, [displayed, wikiImages, qc]);
+
   return (
     <div className="space-y-4 mt-4">
       <div className="flex items-center gap-3 flex-wrap">
@@ -392,9 +541,16 @@ export default function AdminCelestialAudit() {
           {scanning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3" />}
           {scanning ? "Scan en cours..." : "Scanner les images"}
         </Button>
+        <Button size="sm" variant="outline" onClick={fetchWikiForDisplayed} disabled={wikiFetching} className="gap-1 text-xs">
+          {wikiFetching ? <Loader2 className="w-3 h-3 animate-spin" /> : <ImageIcon className="w-3 h-3" />}
+          {wikiFetching ? "Recherche Wikipedia..." : "Chercher Wikipedia"}
+        </Button>
         <span className="text-xs text-muted-foreground">
           {needsClientFilter ? `${filteredAll.length} filtrés / ${data?.total ?? 0}` : `${data?.total ?? 0} objets`} · Page {page + 1}/{totalPages || 1}
           {brokenSet.size > 0 && <span className="text-destructive ml-1">· {brokenSet.size} cassées détectées</span>}
+          {Object.values(wikiImages).filter(w => w.status === "found").length > 0 && (
+            <span className="text-blue-400 ml-1">· {Object.values(wikiImages).filter(w => w.status === "found").length} Wikipedia trouvées</span>
+          )}
         </span>
       </div>
 
@@ -435,6 +591,11 @@ export default function AdminCelestialAudit() {
             <X className="w-3 h-3" /> Sélectionner cassées ({brokenSet.size})
           </Button>
         )}
+        {Object.values(wikiImages).some(w => w.status === "found") && (
+          <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-blue-500/50 text-blue-400" onClick={batchValidateWiki}>
+            <Download className="w-3 h-3" /> Valider toutes les Wikipedia ({Object.values(wikiImages).filter(w => w.status === "found").length})
+          </Button>
+        )}
         <AuditBatchBar
           count={selected.size}
           onOk={batchOk}
@@ -462,6 +623,7 @@ export default function AdminCelestialAudit() {
           {displayed.map((item: any, idx: number) => {
             const shouldLoadImage = idx < visibleCount;
             const status = audit[item.id] as AuditStatus | undefined;
+            const wiki = wikiImages[item.id];
             const isFocused = idx === focusIndex;
             const isSelected = selected.has(item.id);
             const borderClass = isFocused
@@ -469,6 +631,61 @@ export default function AdminCelestialAudit() {
               : isSelected
                 ? "ring-1 ring-primary/50 border-primary/50"
                 : status === "ok" ? "border-green-500/50" : status === "flagged" ? "border-red-500/50" : "border-border/50";
+
+            const renderImage = () => {
+              if (item.forced_image_url) {
+                return (
+                  <div className={`aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ${brokenSet.has(item.id) ? "ring-1 ring-destructive" : ""}`}>
+                    {shouldLoadImage ? (
+                      <img src={thumbUrl(item.forced_image_url, 100)} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" onError={() => markBroken(item.id)} />
+                    ) : (
+                      <div className="w-full h-full bg-muted/30 animate-pulse" />
+                    )}
+                    <div className="absolute top-0.5 right-0.5">{healthBadge(item.id)}</div>
+                    <Badge className="absolute top-0.5 left-0.5 text-[6px] px-0.5 py-0 bg-muted/80 text-muted-foreground border-0">DB</Badge>
+                  </div>
+                );
+              }
+              if (wiki?.status === "found" && wiki.url) {
+                return (
+                  <div className="aspect-square rounded bg-blue-500/10 flex items-center justify-center overflow-hidden relative ring-1 ring-blue-500/30">
+                    {shouldLoadImage ? (
+                      <img src={wiki.url} alt={item.catalog_id} loading="lazy" className="max-h-full max-w-full object-contain" />
+                    ) : (
+                      <div className="w-full h-full bg-muted/30 animate-pulse" />
+                    )}
+                    <Badge className="absolute top-0.5 left-0.5 text-[6px] px-0.5 py-0 bg-blue-500/80 text-white border-0">Wiki</Badge>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); validateWikiImage(item.id); }}
+                      title={`Valider · ${wiki.artist || "?"} · ${wiki.license || "?"}`}
+                      className="absolute bottom-0.5 right-0.5 bg-blue-500 hover:bg-blue-600 text-white rounded px-1 py-0.5 text-[7px] font-medium flex items-center gap-0.5 transition-colors"
+                    >
+                      <Download className="w-2.5 h-2.5" /> Valider
+                    </button>
+                  </div>
+                );
+              }
+              if (wiki?.status === "loading") {
+                return (
+                  <div className="aspect-square rounded bg-muted/20 flex items-center justify-center">
+                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                  </div>
+                );
+              }
+              if (wiki?.status === "not_found") {
+                return (
+                  <div className="aspect-square rounded bg-muted/10 flex items-center justify-center">
+                    <span className="text-[7px] font-medium text-muted-foreground">Aucune image</span>
+                  </div>
+                );
+              }
+              return (
+                <div className="aspect-square rounded bg-orange-500/10 flex items-center justify-center">
+                  <span className="text-[8px] font-medium text-orange-400">PAS D'IMAGE</span>
+                </div>
+              );
+            };
+
             return (
               <Card key={item.id} className={`${borderClass} overflow-hidden cursor-pointer transition-all`} onClick={() => setFocusIndex(idx)}>
                 <CardContent className="p-1.5 space-y-1">
@@ -481,26 +698,7 @@ export default function AdminCelestialAudit() {
                       {isSelected && <Check className="w-2.5 h-2.5" />}
                     </button>
                   </div>
-                  {item.forced_image_url ? (
-                    <div className={`aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ${brokenSet.has(item.id) ? "ring-1 ring-destructive" : ""}`}>
-                      {shouldLoadImage ? (
-                        <img
-                          src={thumbUrl(item.forced_image_url, 100)}
-                          alt={item.catalog_id}
-                          loading="lazy"
-                          className="max-h-full max-w-full object-contain"
-                          onError={() => markBroken(item.id)}
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-muted/30 animate-pulse" />
-                      )}
-                      <div className="absolute top-0.5 right-0.5">{healthBadge(item.id)}</div>
-                    </div>
-                  ) : (
-                    <div className="aspect-square rounded bg-orange-500/10 flex items-center justify-center">
-                      <span className="text-[8px] font-medium text-orange-400">PAS D'IMAGE</span>
-                    </div>
-                  )}
+                  {renderImage()}
                   <p className="text-[9px] font-bold text-foreground truncate">{item.catalog_id}</p>
                   {item.common_name && <p className="text-[8px] text-muted-foreground truncate">{item.common_name}</p>}
                   <div className="flex gap-0.5">

@@ -41,7 +41,7 @@ export function CompareTable<T extends { id: string; _raw?: Record<string, any> 
       <Card className="border-primary/20 bg-primary/5">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg flex items-center gap-2">
-            <Scale className="w-5 h-5 text-primary" /> Comparaison
+            <Scale className="w-5 h-5 text-primary" /> Comparison
           </CardTitle>
         </CardHeader>
         <CardContent className="overflow-x-auto">
@@ -79,7 +79,7 @@ export function CompareTable<T extends { id: string; _raw?: Record<string, any> 
 
               <TableRow>
                 <TableCell className="font-medium text-muted-foreground text-xs">
-                  <div className="flex items-center gap-1"><Tag className="w-3 h-3" /> Meilleur prix</div>
+                  <div className="flex items-center gap-1"><Tag className="w-3 h-3" /> Best Price</div>
                 </TableCell>
                 {items.map(item => {
                   const { best, retailers } = extractPrices(item._raw ?? {});
@@ -87,12 +87,12 @@ export function CompareTable<T extends { id: string; _raw?: Record<string, any> 
                     <TableCell key={item.id} className="text-center">
                       {best ? (
                         <div className="space-y-1">
-                          <span className="font-bold text-primary text-sm">{best.price.toLocaleString("fr-FR")}€</span>
+                          <span className="font-bold text-primary text-sm">{best.price.toLocaleString()}€</span>
                           <div className="text-[9px] text-muted-foreground">{best.label}</div>
                           {retailers.length > 1 && (
                             <details className="text-left">
                               <summary className="text-[9px] text-muted-foreground cursor-pointer hover:text-foreground">
-                                {retailers.length} revendeurs
+                                {retailers.length} retailers
                               </summary>
                               <div className="mt-1 space-y-0.5">
                                 {retailers.map(r => (
@@ -100,10 +100,10 @@ export function CompareTable<T extends { id: string; _raw?: Record<string, any> 
                                     <span className="text-muted-foreground">{r.label}</span>
                                     {r.url ? (
                                       <a href={r.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-mono">
-                                        {r.price!.toLocaleString("fr-FR")}€
+                                        {r.price!.toLocaleString()}€
                                       </a>
                                     ) : (
-                                      <span className="font-mono">{r.price!.toLocaleString("fr-FR")}€</span>
+                                      <span className="font-mono">{r.price!.toLocaleString()}€</span>
                                     )}
                                   </div>
                                 ))}
@@ -135,7 +135,7 @@ export function CompareTable<T extends { id: string; _raw?: Record<string, any> 
               ))}
 
               <TableRow>
-                <TableCell className="font-medium text-muted-foreground text-xs">Liens</TableCell>
+                <TableCell className="font-medium text-muted-foreground text-xs">Links</TableCell>
                 {items.map(item => {
                   const aff = getAffiliates(item);
                   return (
@@ -144,7 +144,7 @@ export function CompareTable<T extends { id: string; _raw?: Record<string, any> 
                         {aff.manufacturer && (
                           <a href={aff.manufacturer} target="_blank" rel="noopener noreferrer"
                             className="text-[10px] text-primary hover:underline flex items-center gap-1">
-                            <Globe className="w-3 h-3" /> Fabricant
+                            <Globe className="w-3 h-3" /> Manufacturer
                           </a>
                         )}
                         {aff.amazon && (
@@ -156,7 +156,7 @@ export function CompareTable<T extends { id: string; _raw?: Record<string, any> 
                         {aff.astro && (
                           <a href={aff.astro} target="_blank" rel="noopener noreferrer"
                             className="text-[10px] text-primary hover:underline flex items-center gap-1">
-                            <ExternalLink className="w-3 h-3" /> Boutique
+                            <ExternalLink className="w-3 h-3" /> Shop
                           </a>
                         )}
                         {!aff.amazon && !aff.astro && !aff.manufacturer && (

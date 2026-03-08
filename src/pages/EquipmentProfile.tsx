@@ -59,7 +59,7 @@ const EquipmentProfile = () => {
       cameraId: cameraPreset !== "custom" ? cameraPreset : undefined,
     }));
     setSaved(true);
-    toast.success("Profil équipement sauvegardé !", { description: "Sauvegardé localement dans votre navigateur." });
+    toast.success("Equipment profile saved!", { description: "Stored locally in your browser." });
     setTimeout(() => setSaved(false), 2000);
   };
 
@@ -108,9 +108,9 @@ const EquipmentProfile = () => {
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground flex items-center gap-3">
-            <Telescope className="w-8 h-8 text-primary" /> Profil Équipement
+            <Telescope className="w-8 h-8 text-primary" /> Equipment Profile
           </h1>
-          <p className="text-muted-foreground mt-1">Sauvegardez votre matériel pour des recommandations personnalisées.</p>
+          <p className="text-muted-foreground mt-1">Save your gear for personalized recommendations across AstroDash.</p>
         </motion.div>
 
         {/* Telescope Section */}
@@ -118,19 +118,19 @@ const EquipmentProfile = () => {
           <Card className="border-border/50">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <Telescope className="w-5 h-5 text-primary" /> Télescope / Objectif
+                <Telescope className="w-5 h-5 text-primary" /> Telescope / Lens
               </CardTitle>
-              <CardDescription>Sélectionnez un preset ou choisissez "Personnalisé" pour entrer les specs manuellement.</CardDescription>
+              <CardDescription>Select a preset or choose "Custom" to enter specs manually.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <Label className="text-xs text-muted-foreground">Preset</Label>
                 <Select value={telescopePreset} onValueChange={handleTelescopePreset}>
                   <SelectTrigger className="bg-secondary/30 border-border/50">
-                    <SelectValue placeholder="Choisir un télescope..." />
+                    <SelectValue placeholder="Choose a telescope..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="custom">✏️ Personnalisé</SelectItem>
+                    <SelectItem value="custom">✏️ Custom</SelectItem>
                     {dbTelescopes?.map(t => (
                       <SelectItem key={t.id} value={t.id}>
                         {t.brand} {t.model} ({t.focal_length_mm}mm)
@@ -141,16 +141,16 @@ const EquipmentProfile = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="focalLength" className="text-xs text-muted-foreground">Focale (mm)</Label>
+                  <Label htmlFor="focalLength" className="text-xs text-muted-foreground">Focal Length (mm)</Label>
                   <Input id="focalLength" type="number" value={equipment.focalLength || ""}
                     onChange={(e) => setEquipment(prev => ({ ...prev, focalLength: Number(e.target.value) }))}
-                    placeholder="ex. 650" className="bg-secondary/30 border-border/50 font-mono" />
+                    placeholder="e.g. 650" className="bg-secondary/30 border-border/50 font-mono" />
                 </div>
                 <div>
-                  <Label htmlFor="aperture" className="text-xs text-muted-foreground">Ouverture (mm)</Label>
+                  <Label htmlFor="aperture" className="text-xs text-muted-foreground">Aperture (mm)</Label>
                   <Input id="aperture" type="number" value={equipment.aperture || ""}
                     onChange={(e) => setEquipment(prev => ({ ...prev, aperture: Number(e.target.value) }))}
-                    placeholder="ex. 80" className="bg-secondary/30 border-border/50 font-mono" />
+                    placeholder="e.g. 80" className="bg-secondary/30 border-border/50 font-mono" />
                 </div>
               </div>
             </CardContent>
@@ -162,19 +162,19 @@ const EquipmentProfile = () => {
           <Card className="border-border/50">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <Camera className="w-5 h-5 text-primary" /> Caméra / Capteur
+                <Camera className="w-5 h-5 text-primary" /> Camera / Sensor
               </CardTitle>
-              <CardDescription>Sélectionnez un preset ou choisissez "Personnalisé" pour entrer les specs manuellement.</CardDescription>
+              <CardDescription>Select a preset or choose "Custom" to enter specs manually.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <Label className="text-xs text-muted-foreground">Preset</Label>
                 <Select value={cameraPreset} onValueChange={handleCameraPreset}>
                   <SelectTrigger className="bg-secondary/30 border-border/50">
-                    <SelectValue placeholder="Choisir une caméra..." />
+                    <SelectValue placeholder="Choose a camera..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="custom">✏️ Personnalisé</SelectItem>
+                    <SelectItem value="custom">✏️ Custom</SelectItem>
                     {dbCameras?.map(c => (
                       <SelectItem key={c.id} value={c.id}>
                         {c.brand} {c.model} ({c.pixel_size_um}µm)
@@ -185,32 +185,32 @@ const EquipmentProfile = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="sensorWidth" className="text-xs text-muted-foreground">Largeur capteur (mm)</Label>
+                  <Label htmlFor="sensorWidth" className="text-xs text-muted-foreground">Sensor Width (mm)</Label>
                   <Input id="sensorWidth" type="number" step="0.1" value={equipment.sensorWidth || ""}
                     onChange={(e) => setEquipment(prev => ({ ...prev, sensorWidth: Number(e.target.value) }))}
-                    placeholder="ex. 23.5" className="bg-secondary/30 border-border/50 font-mono" />
+                    placeholder="e.g. 23.5" className="bg-secondary/30 border-border/50 font-mono" />
                 </div>
                 <div>
-                  <Label htmlFor="sensorHeight" className="text-xs text-muted-foreground">Hauteur capteur (mm)</Label>
+                  <Label htmlFor="sensorHeight" className="text-xs text-muted-foreground">Sensor Height (mm)</Label>
                   <Input id="sensorHeight" type="number" step="0.1" value={equipment.sensorHeight || ""}
                     onChange={(e) => setEquipment(prev => ({ ...prev, sensorHeight: Number(e.target.value) }))}
-                    placeholder="ex. 15.7" className="bg-secondary/30 border-border/50 font-mono" />
+                    placeholder="e.g. 15.7" className="bg-secondary/30 border-border/50 font-mono" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="pixelSize" className="text-xs text-muted-foreground">Taille pixel (µm)</Label>
+                  <Label htmlFor="pixelSize" className="text-xs text-muted-foreground">Pixel Size (µm)</Label>
                   <Input id="pixelSize" type="number" step="0.01" value={equipment.pixelSize || ""}
                     onChange={(e) => setEquipment(prev => ({ ...prev, pixelSize: Number(e.target.value) }))}
-                    placeholder="ex. 3.76" className="bg-secondary/30 border-border/50 font-mono" />
+                    placeholder="e.g. 3.76" className="bg-secondary/30 border-border/50 font-mono" />
                 </div>
                 <div>
-                  <Label htmlFor="cameraType" className="text-xs text-muted-foreground">Type caméra</Label>
+                  <Label htmlFor="cameraType" className="text-xs text-muted-foreground">Camera Type</Label>
                   <Select value={equipment.cameraType} onValueChange={(v) => setEquipment(prev => ({ ...prev, cameraType: v }))}>
-                    <SelectTrigger className="bg-secondary/30 border-border/50"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
+                    <SelectTrigger className="bg-secondary/30 border-border/50"><SelectValue placeholder="Select..." /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Color (OSC)">Couleur (OSC)</SelectItem>
-                      <SelectItem value="Color (DSLR)">Couleur (DSLR)</SelectItem>
+                      <SelectItem value="Color (OSC)">Color (OSC)</SelectItem>
+                      <SelectItem value="Color (DSLR)">Color (DSLR)</SelectItem>
                       <SelectItem value="Mono">Mono</SelectItem>
                     </SelectContent>
                   </Select>
@@ -226,43 +226,43 @@ const EquipmentProfile = () => {
             <Card className="border-primary/20 bg-primary/5">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Info className="w-5 h-5 text-primary" /> Setup calculé
+                  <Info className="w-5 h-5 text-primary" /> Calculated Setup
                 </CardTitle>
-                <CardDescription>Basé sur votre configuration.</CardDescription>
+                <CardDescription>Based on your equipment configuration.</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {samplingRate && (
                     <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Échantillonnage</span>
+                      <span className="text-xs text-muted-foreground">Sampling</span>
                       <p className="text-lg font-bold font-mono text-foreground">{samplingRate.toFixed(2)}″/px</p>
                       <p className="text-[10px] text-muted-foreground">
-                        {samplingRate < 0.8 ? "Sur-échantillonné" : samplingRate < 2.0 ? "Plage idéale" : samplingRate < 4.0 ? "Sous-échantillonné" : "Très large"}
+                        {samplingRate < 0.8 ? "Oversampled" : samplingRate < 2.0 ? "Ideal range" : samplingRate < 4.0 ? "Undersampled" : "Very wide"}
                       </p>
                     </div>
                   )}
                   {fovW && fovH && (
                     <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Champ de vue</span>
+                      <span className="text-xs text-muted-foreground">Field of View</span>
                       <p className="text-lg font-bold font-mono text-foreground">{fovW.toFixed(0)}' × {fovH.toFixed(0)}'</p>
                       <p className="text-[10px] text-muted-foreground">arcminutes</p>
                     </div>
                   )}
                   {fRatio && (
                     <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Rapport f/D</span>
+                      <span className="text-xs text-muted-foreground">f/ratio</span>
                       <p className="text-lg font-bold font-mono text-foreground">f/{fRatio.toFixed(1)}</p>
                       <p className="text-[10px] text-muted-foreground">
-                        {fRatio < 4 ? "Très rapide" : fRatio < 6 ? "Rapide" : fRatio < 10 ? "Modéré" : "Lent"}
+                        {fRatio < 4 ? "Very fast" : fRatio < 6 ? "Fast" : fRatio < 10 ? "Moderate" : "Slow"}
                       </p>
                     </div>
                   )}
                   {equipment.focalLength > 0 && (
                     <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Focale</span>
+                      <span className="text-xs text-muted-foreground">Focal Length</span>
                       <p className="text-lg font-bold font-mono text-foreground">{equipment.focalLength}mm</p>
                       <p className="text-[10px] text-muted-foreground">
-                        {equipment.focalLength < 400 ? "Grand champ" : equipment.focalLength < 1000 ? "Moyen" : "Longue focale"}
+                        {equipment.focalLength < 400 ? "Wide field" : equipment.focalLength < 1000 ? "Mid-range" : "Long focal"}
                       </p>
                     </div>
                   )}
@@ -276,10 +276,10 @@ const EquipmentProfile = () => {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
           <Button onClick={handleSave} size="lg" className="w-full gap-2">
             {saved ? <CheckCircle2 className="w-5 h-5" /> : <Save className="w-5 h-5" />}
-            {saved ? "Sauvé !" : "Sauvegarder le profil"}
+            {saved ? "Saved!" : "Save Equipment Profile"}
           </Button>
           <p className="text-[10px] text-muted-foreground text-center mt-2">
-            Sauvegardé localement dans votre navigateur. Utilisé par l'Atlas, le calculateur de champ et l'assistant.
+            Stored locally in your browser. Used by the Atlas, FOV calculator, and assistant.
           </p>
         </motion.div>
 

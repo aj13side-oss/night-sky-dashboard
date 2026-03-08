@@ -113,8 +113,8 @@ const FovCalculator = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h2 className="text-3xl font-bold text-foreground">Calculateur de champ</h2>
-          <p className="text-muted-foreground mt-1">Visualisez comment les objets s'inscrivent dans votre setup télescope + caméra</p>
+          <h2 className="text-3xl font-bold text-foreground">FOV Calculator</h2>
+          <p className="text-muted-foreground mt-1">Visualize how objects fit in your telescope + camera setup</p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -123,11 +123,11 @@ const FovCalculator = () => {
             <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Configuration</h3>
 
             <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Télescope</Label>
+              <Label className="text-xs text-muted-foreground">Telescope</Label>
               <Select value={telescopeId} onValueChange={handleTelescopeChange}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Choisir un télescope..." /></SelectTrigger>
+                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Choose a telescope..." /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="custom">✏️ Personnalisé</SelectItem>
+                  <SelectItem value="custom">✏️ Custom</SelectItem>
                   {dbTelescopes?.map(t => (
                     <SelectItem key={t.id} value={t.id}>
                       {t.brand} {t.model} ({t.focal_length_mm}mm{t.f_ratio ? ` f/${t.f_ratio}` : ""})
@@ -139,21 +139,21 @@ const FovCalculator = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Focale (mm)</Label>
+                <Label className="text-xs text-muted-foreground">Focal Length (mm)</Label>
                 <Input type="number" value={focalLength} onChange={(e) => setFocalLength(Number(e.target.value))} className="bg-secondary/50 font-mono" />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Barlow / Réducteur</Label>
+                <Label className="text-xs text-muted-foreground">Barlow / Reducer</Label>
                 <Input type="number" step="0.1" value={barlow} onChange={(e) => setBarlow(Number(e.target.value))} className="bg-secondary/50 font-mono" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Caméra</Label>
+              <Label className="text-xs text-muted-foreground">Camera</Label>
               <Select value={cameraId} onValueChange={handleCameraChange}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Choisir une caméra..." /></SelectTrigger>
+                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Choose a camera..." /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="custom">✏️ Personnalisé</SelectItem>
+                  <SelectItem value="custom">✏️ Custom</SelectItem>
                   {dbCameras?.map(c => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.brand} {c.model} ({c.pixel_size_um}µm)
@@ -165,11 +165,11 @@ const FovCalculator = () => {
 
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Capteur L (mm)</Label>
+                <Label className="text-xs text-muted-foreground">Sensor W (mm)</Label>
                 <Input type="number" step="0.1" value={sensorW} onChange={(e) => setSensorW(Number(e.target.value))} className="bg-secondary/50 font-mono" />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Capteur H (mm)</Label>
+                <Label className="text-xs text-muted-foreground">Sensor H (mm)</Label>
                 <Input type="number" step="0.1" value={sensorH} onChange={(e) => setSensorH(Number(e.target.value))} className="bg-secondary/50 font-mono" />
               </div>
               <div className="space-y-1">
@@ -183,22 +183,22 @@ const FovCalculator = () => {
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="space-y-6">
             <div className="glass-card rounded-2xl p-6 space-y-4">
-              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Résultats</h3>
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Results</h3>
               <div className="grid grid-cols-2 gap-4">
-                <ResultItem label="Champ largeur" value={`${fov.w.toFixed(2)}° (${fov.wArcmin.toFixed(1)}')`} />
-                <ResultItem label="Champ hauteur" value={`${fov.h.toFixed(2)}° (${fov.hArcmin.toFixed(1)}')`} />
-                <ResultItem label="Focale effective" value={`${effectiveFL} mm`} />
-                <ResultItem label="Échantillonnage" value={`${fov.resolution.toFixed(2)} "/px`} />
-                <ResultItem label="Qualité échantillonnage"
-                  value={fov.resolution < 0.5 ? "Sur-échantillonné" : fov.resolution < 1.5 ? "Optimal" : fov.resolution < 3 ? "Sous-échantillonné" : "Très large"}
+                <ResultItem label="FOV Width" value={`${fov.w.toFixed(2)}° (${fov.wArcmin.toFixed(1)}')`} />
+                <ResultItem label="FOV Height" value={`${fov.h.toFixed(2)}° (${fov.hArcmin.toFixed(1)}')`} />
+                <ResultItem label="Effective Focal Length" value={`${effectiveFL} mm`} />
+                <ResultItem label="Sampling" value={`${fov.resolution.toFixed(2)} "/px`} />
+                <ResultItem label="Sampling Quality"
+                  value={fov.resolution < 0.5 ? "Oversampled" : fov.resolution < 1.5 ? "Optimal" : fov.resolution < 3 ? "Undersampled" : "Very wide"}
                   highlight={fov.resolution >= 0.5 && fov.resolution < 1.5} />
-                {obj && <ResultItem label={`Cadrage ${obj.name}`} value={`${(objFractionW * 100).toFixed(0)}% de la largeur`} />}
+                {obj && <ResultItem label={`Framing ${obj.name}`} value={`${(objFractionW * 100).toFixed(0)}% of width`} />}
               </div>
             </div>
 
             <div className="glass-card rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Aperçu du champ</h3>
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">FOV Preview</h3>
                 <div className="flex rounded-md border border-border overflow-hidden text-[10px]">
                   <button onClick={() => setSurvey("mellinger")}
                     className={`px-2.5 py-1 transition-colors ${survey === "mellinger" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
@@ -206,7 +206,7 @@ const FovCalculator = () => {
                   </button>
                   <button onClick={() => setSurvey("dss2")}
                     className={`px-2.5 py-1 transition-colors border-l border-border ${survey === "dss2" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
-                    🔬 Scientifique
+                    🔬 Scientific
                   </button>
                 </div>
               </div>

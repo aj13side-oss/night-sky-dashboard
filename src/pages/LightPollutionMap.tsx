@@ -149,9 +149,9 @@ const LightPollutionMap = () => {
         {!isFullscreen && (
           <>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <h2 className="text-3xl font-bold text-foreground">Carte de Pollution Lumineuse</h2>
+              <h2 className="text-3xl font-bold text-foreground">Light Pollution Map</h2>
               <p className="text-muted-foreground mt-1">
-                Trouvez les meilleurs sites d'observation — Light Pollution Atlas 2024
+                Find the best observation sites — Light Pollution Atlas 2024
               </p>
             </motion.div>
 
@@ -163,10 +163,10 @@ const LightPollutionMap = () => {
             >
               <CitySearch onSelectCity={handleSelectCity} />
               <Button size="sm" variant="outline" onClick={handleGeolocate} className="h-9 gap-1.5">
-                <Locate className="w-3.5 h-3.5" /> Ma position
+                <Locate className="w-3.5 h-3.5" /> My Location
               </Button>
               <div className="flex items-center gap-2 ml-auto">
-                <Label className="text-xs text-muted-foreground whitespace-nowrap">Opacité</Label>
+                <Label className="text-xs text-muted-foreground whitespace-nowrap">Opacity</Label>
                 <Slider value={overlayOpacity} onValueChange={setOverlayOpacity} min={0} max={1} step={0.05} className="w-24" />
               </div>
               <Button size="sm" variant="ghost" onClick={() => setIsFullscreen(true)} className="h-9 gap-1.5">
@@ -184,7 +184,7 @@ const LightPollutionMap = () => {
           {isFullscreen && (
             <div className="absolute top-4 right-4 z-[1000] flex gap-2">
               <Button size="sm" variant="secondary" onClick={() => setIsFullscreen(false)} className="h-8 gap-1.5 shadow-lg">
-                <Minimize2 className="w-3.5 h-3.5" /> Quitter plein écran
+                <Minimize2 className="w-3.5 h-3.5" /> Exit Fullscreen
               </Button>
             </div>
           )}
@@ -219,7 +219,7 @@ const LightPollutionMap = () => {
               transition={{ delay: 0.15 }}
               className="glass-card rounded-2xl p-6 space-y-3"
             >
-              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Échelle de Bortle</h3>
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Bortle Scale</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {BORTLE_SCALE.map((b) => (
                   <div key={b.level} className="flex items-center gap-3 py-1">

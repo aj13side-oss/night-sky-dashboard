@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3 } from "lucide-react";
+import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3, ImageIcon, Download } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,16 @@ import { thumbUrl } from "@/lib/utils";
 import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus, type ImageHealth } from "@/hooks/useImageAudit";
 import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
 import AuditBatchBar from "./AuditBatchBar";
+
+interface WikiImage {
+  url: string;
+  artist: string | null;
+  license: string | null;
+  licenseUrl: string | null;
+  filePageUrl: string | null;
+  pageUrl: string | null;
+  status: "loading" | "found" | "not_found" | "error";
+}
 
 const PAGE_SIZE = 100;
 

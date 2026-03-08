@@ -295,6 +295,20 @@ const RigBuilder = () => {
 
         <RigSummary telescope={pickedTelescope} camera={pickedCamera} mount={pickedMount} filter={pickedFilter} accessories={pickedAccessories} />
 
+        {presets && presets.length > 0 && (
+          <div>
+            <button
+              onClick={() => setPresetsOpen(o => !o)}
+              className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors mb-2"
+            >
+              <Sparkles className="w-4 h-4 text-primary" />
+              Configurations recommandées ({presets.length})
+              <span className={`text-xs transition-transform ${presetsOpen ? "rotate-180" : ""}`}>▼</span>
+            </button>
+            {presetsOpen && <PresetCards presets={presets} onLoad={loadPreset} />}
+          </div>
+        )}
+
         <Tabs value={tab} onValueChange={(v) => { setTab(v as Category); setSearchQuery(""); setSortBy("brand"); }}>
           <TabsList className="grid grid-cols-5 w-full max-w-2xl">
             <TabsTrigger value="telescopes" className="gap-1.5">

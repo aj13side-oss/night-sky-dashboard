@@ -524,9 +524,16 @@ export default function AdminCelestialAudit() {
           {scanning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3" />}
           {scanning ? "Scan en cours..." : "Scanner les images"}
         </Button>
+        <Button size="sm" variant="outline" onClick={fetchWikiForDisplayed} disabled={wikiFetching} className="gap-1 text-xs">
+          {wikiFetching ? <Loader2 className="w-3 h-3 animate-spin" /> : <ImageIcon className="w-3 h-3" />}
+          {wikiFetching ? "Recherche Wikipedia..." : "Chercher Wikipedia"}
+        </Button>
         <span className="text-xs text-muted-foreground">
           {needsClientFilter ? `${filteredAll.length} filtrés / ${data?.total ?? 0}` : `${data?.total ?? 0} objets`} · Page {page + 1}/{totalPages || 1}
           {brokenSet.size > 0 && <span className="text-destructive ml-1">· {brokenSet.size} cassées détectées</span>}
+          {Object.values(wikiImages).filter(w => w.status === "found").length > 0 && (
+            <span className="text-blue-400 ml-1">· {Object.values(wikiImages).filter(w => w.status === "found").length} Wikipedia trouvées</span>
+          )}
         </span>
       </div>
 

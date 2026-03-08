@@ -686,7 +686,7 @@ export default function AdminCelestialAudit() {
               ? "ring-2 ring-primary border-primary"
               : isSelected
                 ? "ring-1 ring-primary/50 border-primary/50"
-                : status === "ok" ? "border-green-500/50" : status === "flagged" ? "border-red-500/50" : "border-border/50";
+                : status === "ok" ? "border-green-500/50" : status === "needs_image" ? "border-amber-500/50" : status === "flagged" ? "border-red-500/50" : "border-border/50";
 
             const renderImage = () => {
               const dss2Url = item.ra != null && item.dec != null ? buildDss2ThumbUrl(item.ra, item.dec, item.size_max) : null;

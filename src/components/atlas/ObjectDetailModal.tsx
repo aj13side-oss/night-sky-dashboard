@@ -31,6 +31,7 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
   const [showExposureInfo, setShowExposureInfo] = useState(false);
   const [showCredits, setShowCredits] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  const [useDetailFallback, setUseDetailFallback] = useState(false);
 
   const { data: wikiImage, isLoading: imgLoading } = useObjectImage(
     obj?.catalog_id,

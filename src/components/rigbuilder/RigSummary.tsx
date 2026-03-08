@@ -40,7 +40,7 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
     const sh = camera?.sensor_height_mm ?? 0;
 
     // Helper to get rule by key
-    const getRule = (key: string) => rules?.find(r => r.rule_key === key);
+    const getRule = (key: string) => rules?.find(r => r.rule_key === key && r.is_active);
 
     // 1. Échantillonnage
     if (fl > 0 && px > 0) {

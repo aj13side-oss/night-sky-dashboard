@@ -163,7 +163,7 @@ export function useCameras() {
   return useQuery({
     queryKey: ["astro_cameras"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("astro_cameras")
         .select("*")
         .order("brand");
@@ -178,7 +178,7 @@ export function useTelescopes() {
   return useQuery({
     queryKey: ["astro_telescopes"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("astro_telescopes")
         .select("*")
         .order("brand");
@@ -199,7 +199,7 @@ export function useMounts() {
   return useQuery({
     queryKey: ["astro_mounts"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("astro_mounts")
         .select("*")
         .order("brand");
@@ -220,7 +220,7 @@ export function useFilters() {
   return useQuery({
     queryKey: ["astro_filters"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("astro_filters")
         .select("*")
         .order("brand");
@@ -241,7 +241,7 @@ export function useAccessories() {
   return useQuery({
     queryKey: ["astro_accessories"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("astro_accessories")
         .select("*")
         .order("brand");
@@ -264,20 +264,26 @@ export function useAccessories() {
 
 // Compatibility rules
 export interface CompatibilityRule {
-  id: string;
+  id: number;
   rule_key: string;
-  label: string;
-  description: string | null;
-  min_value: number | null;
-  max_value: number | null;
-  unit: string | null;
+  rule_category: string;
+  description_fr: string;
+  message_fr: string;
+  message_en: string;
+  severity: string;
+  min_value: number;
+  max_value: number;
+  unit: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export function useCompatibilityRules() {
   return useQuery({
     queryKey: ["rig_compatibility_rules"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("rig_compatibility_rules")
         .select("*");
       if (error) throw error;
@@ -309,7 +315,7 @@ export function useRigPresets() {
   return useQuery({
     queryKey: ["rig_presets"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("rig_presets")
         .select("*")
         .order("sort_order");

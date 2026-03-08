@@ -25,7 +25,7 @@ interface Check {
   msg: string;
 }
 
-export function RigSummary({ telescope, camera, mount, filter }: RigSummaryProps) {
+export function RigSummary({ telescope, camera, mount, filter, accessories = [] }: RigSummaryProps) {
   const { data: rules } = useCompatibilityRules();
 
   const diagnostics = useMemo(() => {

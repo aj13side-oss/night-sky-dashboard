@@ -34,6 +34,7 @@ export default function AdminCelestialAudit() {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"catalog_id" | "common_name" | "magnitude" | "status">("catalog_id");
   const [filterStatus, setFilterStatus] = useState("all");
+  const needsClientFilter = filterStatus !== "all";
   const [replacing, setReplacing] = useState<string | null>(null);
   const [newUrl, setNewUrl] = useState("");
   const [healthMap, setHealthMap] = useState<Record<string, ImageHealth>>({});

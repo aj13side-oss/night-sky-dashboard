@@ -344,12 +344,13 @@ export default function AdminCelestialAudit() {
     return filteredAll;
   }, [filteredAll, needsClientFilter, page]);
 
-  // Auto-fetch Wikipedia images for displayed items (including those with broken forced_image_url)
+  // Auto-fetch Wikipedia images for displayed items to mirror Atlas fallback logic
   const fetchWikiForDisplayed = useCallback(async () => {
     if (wikiFetchRef.current) return;
-    const toFetch = displayed.filter((i: any) => !wikiImages[i.id] && (
-      !i.forced_image_url || brokenSet.has(i.id)
-    ));
+    const toFetch = displayed.filter((i: any) => {
+      const cached = wikiImages[i.id];
+      return !cached || cached.status === "not_found" || cached.status === "error";
+    });
     if (toFetch.length === 0) return;
     wikiFetchRef.current = true;
     setWikiFetching(true);
@@ -392,7 +393,10 @@ export default function AdminCelestialAudit() {
     // Cancel any in-progress fetch when page changes
     wikiFetchRef.current = false;
     const timeout = setTimeout(() => {
-      const hasItemsNeedingWiki = displayed.some((i: any) => !wikiImages[i.id] && (!i.forced_image_url || brokenSet.has(i.id)));
+      const hasItemsNeedingWiki = displayed.some((i: any) => {
+        const cached = wikiImages[i.id];
+        return !cached || cached.status === "not_found" || cached.status === "error";
+      });
       if (hasItemsNeedingWiki) {
         fetchWikiForDisplayed();
       }

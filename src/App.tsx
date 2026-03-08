@@ -9,6 +9,7 @@ import FovCalculator from "./pages/FovCalculator";
 import EquipmentProfile from "./pages/EquipmentProfile";
 import RigBuilder from "./pages/RigBuilder";
 import LightPollutionMap from "./pages/LightPollutionMap";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/equipment" element={<EquipmentProfile />} />
           <Route path="/rig-builder" element={<RigBuilder />} />
           <Route path="/light-pollution" element={<LightPollutionMap />} />
+          <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

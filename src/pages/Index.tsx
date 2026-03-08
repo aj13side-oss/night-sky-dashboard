@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { ObservationProvider, useObservation } from "@/contexts/ObservationContext";
 import AppNav from "@/components/AppNav";
 import ObservationToolbar from "@/components/ObservationToolbar";
@@ -49,6 +50,11 @@ const DashboardContent = () => {
 
       <footer className="border-t border-border/30 mt-12 py-6 text-center text-xs text-muted-foreground">
         <p>AstroDash — Your astrophotography planning companion</p>
+        {localStorage.getItem("admin_auth") === "true" && (
+          <Link to="/admin" className="inline-flex items-center gap-1 mt-2 text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+            🔒 Admin
+          </Link>
+        )}
       </footer>
     </div>
   );

@@ -252,6 +252,18 @@ export default function AdminCelestialAudit() {
             onChange={e => { setSearch(e.target.value); setPage(0); }}
             className="pl-9 bg-secondary/30 border-border/50" />
         </div>
+        <Select value={sortBy} onValueChange={(v: any) => { setSortBy(v); setPage(0); }}>
+          <SelectTrigger className="w-[180px] h-9 text-xs bg-secondary/30 border-border/50">
+            <ArrowUpDown className="w-3 h-3 mr-1.5" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="catalog_id">Tri : Catalogue (A→Z)</SelectItem>
+            <SelectItem value="common_name">Tri : Nom commun (A→Z)</SelectItem>
+            <SelectItem value="magnitude">Tri : Magnitude</SelectItem>
+            <SelectItem value="status">Tri : Statut vérification</SelectItem>
+          </SelectContent>
+        </Select>
         <Button size="sm" variant="outline" onClick={() => setCmdOpen(true)} className="gap-1.5 text-xs">
           <CommandIcon className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Recherche rapide</span>

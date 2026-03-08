@@ -494,6 +494,23 @@ export default function AdminCelestialAudit() {
     if (selected.size > 5) toast.info(`5 onglets ouverts sur ${selected.size} (limite navigateur)`);
   };
 
+  // Batch validate all found Wikipedia images on page
+  const batchValidateWiki = useCallback(async () => {
+    const wikiFound = displayed.filter((i: any) => !i.forced_image_url && wikiImages[i.id]?.status === "found" && wikiImages[i.id]?.url);
+    if (wikiFound.length === 0) { toast.info("Aucune image Wikipedia à valider"); return; }
+    let count = 0;
+    for (const item of wikiFound) {
+      const wiki = wikiImages[item.id];
+      let originalUrl = wiki.url;
+      const thumbMatch = wiki.url.match(/\/thumb\/(.*?)\/\d+px-/);
+      if (thumbMatch) originalUrl = `https://upload.wikimedia.org/wikipedia/commons/${thumbMatch[1]}`;
+      const { error } = await (supabase as any).from("celestial_objects").update({ forced_image_url: originalUrl }).eq("id", item.id);
+      if (!error) count++;
+    }
+    toast.success(`${count} images Wikipedia validées !`);
+    qc.invalidateQueries({ queryKey: ["admin_celestial"] });
+  }, [displayed, wikiImages, qc]);
+
   return (
     <div className="space-y-4 mt-4">
       <div className="flex items-center gap-3 flex-wrap">

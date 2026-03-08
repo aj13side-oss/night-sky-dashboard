@@ -45,9 +45,16 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
     obj.obj_type
   );
 
-  const thumbUrl = wikiImage?.url || null;
+  const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
+
+  // Update src when data changes
+  const thumbUrl = wikiImage?.url || null;
+  if (thumbUrl && imgSrc !== thumbUrl && !imgError) {
+    setImgSrc(thumbUrl);
+    setImgLoaded(false);
+  }
 
   const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra, obj.dec, lat, lng);
   const isLegendary = score.total >= 100;

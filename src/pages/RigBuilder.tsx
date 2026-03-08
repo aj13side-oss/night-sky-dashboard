@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { toast } from "sonner";
 import AppNav from "@/components/AppNav";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,12 +10,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Telescope, Camera, Filter, Anchor, X, Scale, Wrench, Search } from "lucide-react";
+import { Telescope, Camera, Filter, Anchor, X, Scale, Wrench, Search, Sparkles } from "lucide-react";
 import {
-  useCameras, useTelescopes, useMounts, useFilters, useAccessories, extractPrices,
-  type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter, type AstroAccessory,
+  useCameras, useTelescopes, useMounts, useFilters, useAccessories, useRigPresets, extractPrices,
+  type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter, type AstroAccessory, type RigPreset,
 } from "@/hooks/useEquipmentCatalog";
 import { EquipmentCard } from "@/components/rigbuilder/EquipmentCard";
+import { PresetCards } from "@/components/rigbuilder/PresetCards";
 import { CompareTable } from "@/components/rigbuilder/CompareTable";
 import { RangeFilter } from "@/components/rigbuilder/RangeFilter";
 import { RigSummary } from "@/components/rigbuilder/RigSummary";
@@ -53,6 +55,8 @@ const RigBuilder = () => {
   const { data: mounts, isLoading: loadingMounts } = useMounts();
   const { data: filters, isLoading: loadingFilters } = useFilters();
   const { data: accessories, isLoading: loadingAccessories } = useAccessories();
+  const { data: presets } = useRigPresets();
+  const [presetsOpen, setPresetsOpen] = useState(true);
 
   const [tab, setTab] = useState<Category>("telescopes");
   const [searchQuery, setSearchQuery] = useState("");
@@ -211,6 +215,24 @@ const RigBuilder = () => {
     });
   };
 
+  const loadPreset = (preset: RigPreset) => {
+    setRigPicks({
+      telescope: preset.telescope_id,
+      camera: preset.camera_id,
+      mount: preset.mount_id,
+      filter: null,
+      accessories: preset.accessory_ids ?? [],
+    });
+    setCompareIds({
+      telescopes: preset.telescope_id ? [preset.telescope_id] : [],
+      cameras: preset.camera_id ? [preset.camera_id] : [],
+      mounts: preset.mount_id ? [preset.mount_id] : [],
+      filters: [],
+      accessories: preset.accessory_ids ?? [],
+    });
+    toast.success(`Configuration "${preset.name}" chargée`);
+  };
+
   const clearCompare = (cat: Category) => setCompareIds(prev => ({ ...prev, [cat]: [] }));
   const compareCount = compareIds[tab].length;
 
@@ -272,6 +294,20 @@ const RigBuilder = () => {
         </motion.div>
 
         <RigSummary telescope={pickedTelescope} camera={pickedCamera} mount={pickedMount} filter={pickedFilter} accessories={pickedAccessories} />
+
+        {presets && presets.length > 0 && (
+          <div>
+            <button
+              onClick={() => setPresetsOpen(o => !o)}
+              className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors mb-2"
+            >
+              <Sparkles className="w-4 h-4 text-primary" />
+              Configurations recommandées ({presets.length})
+              <span className={`text-xs transition-transform ${presetsOpen ? "rotate-180" : ""}`}>▼</span>
+            </button>
+            {presetsOpen && <PresetCards presets={presets} onLoad={loadPreset} />}
+          </div>
+        )}
 
         <Tabs value={tab} onValueChange={(v) => { setTab(v as Category); setSearchQuery(""); setSortBy("brand"); }}>
           <TabsList className="grid grid-cols-5 w-full max-w-2xl">

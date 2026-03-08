@@ -286,3 +286,36 @@ export function useCompatibilityRules() {
     staleTime: 1000 * 60 * 30,
   });
 }
+
+// Rig presets
+export interface RigPreset {
+  id: string;
+  name: string;
+  slug: string;
+  description_fr: string;
+  use_case: string;
+  camera_id: string | null;
+  telescope_id: string | null;
+  mount_id: string | null;
+  accessory_ids: string[] | null;
+  budget_min_eur: number | null;
+  budget_max_eur: number | null;
+  difficulty_level: number | null;
+  is_featured: boolean | null;
+  sort_order: number | null;
+}
+
+export function useRigPresets() {
+  return useQuery({
+    queryKey: ["rig_presets"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("rig_presets")
+        .select("*")
+        .order("sort_order");
+      if (error) throw error;
+      return (data ?? []) as RigPreset[];
+    },
+    staleTime: 1000 * 60 * 60,
+  });
+}

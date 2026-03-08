@@ -470,6 +470,66 @@ const RigBuilder = () => {
               </>
             )}
           </TabsContent>
+
+          {/* ==================== ACCESSORIES ==================== */}
+          <TabsContent value="accessories">
+            {loadingAccessories ? <LoadingSkeleton /> : (
+              <>
+                <Card className="border-border/50 mt-4 p-4 space-y-4">
+                  <ChipFilter label="Type" options={accTypes} selected={accType} onChange={setAccType} />
+                </Card>
+                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
+                  {filteredAccessories.map(a => {
+                    const { best } = extractPrices(a._raw ?? {});
+                    const isInRig = rigPicks.accessories.includes(a.id);
+                    return (
+                      <EquipmentCard
+                        key={a.id}
+                        selected={compareIds.accessories.includes(a.id)}
+                        onToggle={() => {
+                          toggleCompare("accessories", a.id);
+                          setRigPicks(p => ({
+                            ...p,
+                            accessories: isInRig
+                              ? p.accessories.filter(id => id !== a.id)
+                              : [...p.accessories, a.id],
+                          }));
+                        }}
+                        imageUrl={a.image_url}
+                        title={`${a.brand} ${a.model}`}
+                        bestPrice={best}
+                        specs={[
+                          a.type,
+                          a.backfocus_contribution_mm ? `BF +${a.backfocus_contribution_mm}mm` : null,
+                          a.weight_g ? `${a.weight_g}g` : null,
+                          a.input_thread ? `In: ${a.input_thread}` : null,
+                          a.output_thread ? `Out: ${a.output_thread}` : null,
+                        ]}
+                        affiliateAmazon={a.affiliate_amazon}
+                        affiliateAstro={a.affiliate_astro}
+                        manufacturerUrl={a.manufacturer_url}
+                      />
+                    );
+                  })}
+                </div>
+                {compareIds.accessories.length >= 2 && (
+                  <CompareTable
+                    items={accessories?.filter(a => compareIds.accessories.includes(a.id)) ?? []}
+                    getImage={a => a.image_url}
+                    columns={[
+                      { label: "Type", render: a => a.type ?? "—" },
+                      { label: "Backfocus", render: a => a.backfocus_contribution_mm ? `${a.backfocus_contribution_mm}mm` : "—" },
+                      { label: "Weight", render: a => a.weight_g ? `${a.weight_g}g` : "—", bestDirection: "lower" },
+                      { label: "Input Thread", render: a => a.input_thread ?? "—" },
+                      { label: "Output Thread", render: a => a.output_thread ?? "—" },
+                    ]}
+                    getName={a => `${a.brand} ${a.model}`}
+                    getAffiliates={a => ({ amazon: a.affiliate_amazon, astro: a.affiliate_astro, manufacturer: a.manufacturer_url })}
+                  />
+                )}
+              </>
+            )}
+          </TabsContent>
         </Tabs>
       </main>
     </div>

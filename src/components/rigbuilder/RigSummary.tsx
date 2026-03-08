@@ -3,15 +3,16 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, CheckCircle2, Cpu, DollarSign } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Cpu, DollarSign, Wrench } from "lucide-react";
 import { extractPrices, useCompatibilityRules } from "@/hooks/useEquipmentCatalog";
-import type { AstroTelescope, AstroCamera, AstroMount, AstroFilter } from "@/hooks/useEquipmentCatalog";
+import type { AstroTelescope, AstroCamera, AstroMount, AstroFilter, AstroAccessory } from "@/hooks/useEquipmentCatalog";
 
 interface RigSummaryProps {
   telescope: AstroTelescope | null;
   camera: AstroCamera | null;
   mount: AstroMount | null;
   filter: AstroFilter | null;
+  accessories?: AstroAccessory[];
 }
 
 type CheckStatus = "ok" | "warning" | "error";

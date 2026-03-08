@@ -50,7 +50,7 @@ export default function AdminCelestialAudit() {
   const [sortBy, setSortBy] = useState<"catalog_id" | "common_name" | "magnitude" | "status">("catalog_id");
   const [filterStatus, setFilterStatus] = useState("all");
   const [catalogPrefix, setCatalogPrefix] = useState("all");
-  const needsClientFilter = filterStatus !== "all";
+  const needsClientFilter = filterStatus !== "all" || catalogPrefix === "other";
   const [replacing, setReplacing] = useState<string | null>(null);
   const [newUrl, setNewUrl] = useState("");
   const [healthMap, setHealthMap] = useState<Record<string, ImageHealth>>({});

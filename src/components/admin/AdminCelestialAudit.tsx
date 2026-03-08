@@ -389,6 +389,15 @@ export default function AdminCelestialAudit() {
       </div>
 
       <div className="flex flex-wrap gap-1.5">
+        {CATALOG_PREFIXES.map(f => (
+          <button key={f.value} onClick={() => { setCatalogPrefix(f.value); setPage(0); }}
+            className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${catalogPrefix === f.value ? "bg-primary text-primary-foreground border-primary" : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"}`}>
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap gap-1.5">
         {STATUS_FILTERS.map(f => (
           <button key={f.value} onClick={() => setFilterStatus(f.value)}
             className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${filterStatus === f.value ? "bg-primary text-primary-foreground border-primary" : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"}`}>

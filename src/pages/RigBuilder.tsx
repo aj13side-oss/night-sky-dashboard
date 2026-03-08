@@ -4,8 +4,12 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Telescope, Camera, Filter, Anchor, X, Scale, Wrench } from "lucide-react";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import { Telescope, Camera, Filter, Anchor, X, Scale, Wrench, Search } from "lucide-react";
 import {
   useCameras, useTelescopes, useMounts, useFilters, useAccessories, extractPrices,
   type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter, type AstroAccessory,
@@ -24,6 +28,25 @@ function bounds(arr: (number | null | undefined)[]): [number, number] {
   return [Math.floor(Math.min(...nums)), Math.ceil(Math.max(...nums))];
 }
 
+function getBestPrice(item: { _raw?: Record<string, any> }): number | null {
+  const { best } = extractPrices(item._raw ?? {});
+  return best?.price ?? null;
+}
+
+function sortItems<T extends { brand: string; model: string; _raw?: Record<string, any> }>(
+  items: T[], sortBy: string, extraSort?: (a: T, b: T, key: string) => number | null
+): T[] {
+  return [...items].sort((a, b) => {
+    if (sortBy === "brand") return `${a.brand} ${a.model}`.localeCompare(`${b.brand} ${b.model}`);
+    if (sortBy === "name") return a.model.localeCompare(b.model);
+    if (sortBy === "price_asc") return (getBestPrice(a) ?? Infinity) - (getBestPrice(b) ?? Infinity);
+    if (sortBy === "price_desc") return (getBestPrice(b) ?? 0) - (getBestPrice(a) ?? 0);
+    const extra = extraSort?.(a, b, sortBy);
+    if (extra != null) return extra;
+    return 0;
+  });
+}
+
 const RigBuilder = () => {
   const { data: cameras, isLoading: loadingCams } = useCameras();
   const { data: telescopes, isLoading: loadingScopes } = useTelescopes();
@@ -32,6 +55,8 @@ const RigBuilder = () => {
   const { data: accessories, isLoading: loadingAccessories } = useAccessories();
 
   const [tab, setTab] = useState<Category>("telescopes");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("brand");
   const [compareIds, setCompareIds] = useState<Record<Category, string[]>>({
     telescopes: [], cameras: [], mounts: [], filters: [], accessories: [],
   });
@@ -83,28 +108,38 @@ const RigBuilder = () => {
   const mntBrands = useMemo(() => [...new Set(mounts?.map(m => m.brand).filter(Boolean) as string[])].sort(), [mounts]);
   const filterTypes = useMemo(() => [...new Set(filters?.map(f => f.type).filter(Boolean) as string[])].sort(), [filters]);
   const filterSizes = useMemo(() => [...new Set(filters?.map(f => f.size).filter(Boolean) as string[])].sort(), [filters]);
-  // Accessories use "category" not "type"
   const accTypes = useMemo(() => [...new Set(accessories?.map(a => a.category).filter(Boolean) as string[])].sort(), [accessories]);
 
-  // --- Apply filters ---
+  const q = searchQuery.toLowerCase().trim();
+
+  // --- Apply filters + search + sort ---
   const filteredScopes = useMemo(() => {
     if (!telescopes) return [];
     const fl = scopeFL ?? scopeBoundsFL;
     const ap = scopeAp ?? scopeBoundsAp;
-    return telescopes.filter(t => {
+    const filtered = telescopes.filter(t => {
+      if (q && !`${t.brand} ${t.model}`.toLowerCase().includes(q)) return false;
       if (t.focal_length_mm != null && (t.focal_length_mm < fl[0] || t.focal_length_mm > fl[1])) return false;
       if (t.aperture_mm != null && (t.aperture_mm < ap[0] || t.aperture_mm > ap[1])) return false;
       if (scopeType && t.type !== scopeType) return false;
       if (scopeBrand && t.brand !== scopeBrand) return false;
       return true;
     });
-  }, [telescopes, scopeFL, scopeAp, scopeBoundsFL, scopeBoundsAp, scopeType, scopeBrand]);
+    return sortItems(filtered, sortBy, (a, b, key) => {
+      if (key === "focal_asc") return (a.focal_length_mm ?? 0) - (b.focal_length_mm ?? 0);
+      if (key === "focal_desc") return (b.focal_length_mm ?? 0) - (a.focal_length_mm ?? 0);
+      if (key === "aperture_asc") return (a.aperture_mm ?? 0) - (b.aperture_mm ?? 0);
+      if (key === "weight_asc") return (a.weight_kg ?? 999) - (b.weight_kg ?? 999);
+      return null;
+    });
+  }, [telescopes, scopeFL, scopeAp, scopeBoundsFL, scopeBoundsAp, scopeType, scopeBrand, q, sortBy]);
 
   const filteredCams = useMemo(() => {
     if (!cameras) return [];
     const sw = camSW ?? camBoundsSW;
     const px = camPx ?? camBoundsPx;
-    return cameras.filter(c => {
+    const filtered = cameras.filter(c => {
+      if (q && !`${c.brand} ${c.model} ${c.sensor_name ?? ""}`.toLowerCase().includes(q)) return false;
       if (c.sensor_width_mm != null && (c.sensor_width_mm < sw[0] || c.sensor_width_mm > sw[1])) return false;
       if (c.pixel_size_um != null && (c.pixel_size_um < px[0] || c.pixel_size_um > px[1])) return false;
       if (camSensor && c.sensor_name !== camSensor) return false;
@@ -115,13 +150,21 @@ const RigBuilder = () => {
       }
       return true;
     });
-  }, [cameras, camSW, camPx, camBoundsSW, camBoundsPx, camSensor, camColor, camCooling]);
+    return sortItems(filtered, sortBy, (a, b, key) => {
+      if (key === "pixel_asc") return (a.pixel_size_um ?? 0) - (b.pixel_size_um ?? 0);
+      if (key === "sensor_asc") return (a.sensor_width_mm ?? 0) - (b.sensor_width_mm ?? 0);
+      if (key === "qe_desc") return (b.qe_percent ?? 0) - (a.qe_percent ?? 0);
+      if (key === "weight_asc") return (a.weight_kg ?? 999) - (b.weight_kg ?? 999);
+      return null;
+    });
+  }, [cameras, camSW, camPx, camBoundsSW, camBoundsPx, camSensor, camColor, camCooling, q, sortBy]);
 
   const filteredMounts = useMemo(() => {
     if (!mounts) return [];
     const pl = mntPayload ?? mntBoundsPayload;
     const wt = mntWeight ?? mntBoundsWeight;
-    return mounts.filter(m => {
+    const filtered = mounts.filter(m => {
+      if (q && !`${m.brand} ${m.model}`.toLowerCase().includes(q)) return false;
       if (m.payload_kg != null && (m.payload_kg < pl[0] || m.payload_kg > pl[1])) return false;
       if (m.mount_weight_kg != null && (m.mount_weight_kg < wt[0] || m.mount_weight_kg > wt[1])) return false;
       if (mntType && m.mount_type !== mntType) return false;
@@ -129,24 +172,34 @@ const RigBuilder = () => {
       if (mntBrand && m.brand !== mntBrand) return false;
       return true;
     });
-  }, [mounts, mntPayload, mntWeight, mntBoundsPayload, mntBoundsWeight, mntType, mntGoto, mntBrand]);
+    return sortItems(filtered, sortBy, (a, b, key) => {
+      if (key === "payload_asc") return (a.payload_kg ?? 0) - (b.payload_kg ?? 0);
+      if (key === "payload_desc") return (b.payload_kg ?? 0) - (a.payload_kg ?? 0);
+      if (key === "weight_asc") return (a.mount_weight_kg ?? 999) - (b.mount_weight_kg ?? 999);
+      return null;
+    });
+  }, [mounts, mntPayload, mntWeight, mntBoundsPayload, mntBoundsWeight, mntType, mntGoto, mntBrand, q, sortBy]);
 
   const filteredFilts = useMemo(() => {
     if (!filters) return [];
-    return filters.filter(f => {
+    const filtered = filters.filter(f => {
+      if (q && !`${f.brand} ${f.model}`.toLowerCase().includes(q)) return false;
       if (filterType && f.type !== filterType) return false;
       if (filterSize && f.size !== filterSize) return false;
       return true;
     });
-  }, [filters, filterType, filterSize]);
+    return sortItems(filtered, sortBy);
+  }, [filters, filterType, filterSize, q, sortBy]);
 
   const filteredAccessories = useMemo(() => {
     if (!accessories) return [];
-    return accessories.filter(a => {
+    const filtered = accessories.filter(a => {
+      if (q && !`${a.brand} ${a.model}`.toLowerCase().includes(q)) return false;
       if (accType && a.category !== accType) return false;
       return true;
     });
-  }, [accessories, accType]);
+    return sortItems(filtered, sortBy);
+  }, [accessories, accType, q, sortBy]);
 
   const toggleCompare = (cat: Category, id: string) => {
     setCompareIds(prev => {
@@ -161,12 +214,47 @@ const RigBuilder = () => {
   const clearCompare = (cat: Category) => setCompareIds(prev => ({ ...prev, [cat]: [] }));
   const compareCount = compareIds[tab].length;
 
-  // Rig summary picks
   const pickedTelescope = telescopes?.find(t => t.id === rigPicks.telescope) ?? null;
   const pickedCamera = cameras?.find(c => c.id === rigPicks.camera) ?? null;
   const pickedMount = mounts?.find(m => m.id === rigPicks.mount) ?? null;
   const pickedFilter = filters?.find(f => f.id === rigPicks.filter) ?? null;
   const pickedAccessories = accessories?.filter(a => rigPicks.accessories.includes(a.id)) ?? [];
+
+  // Sort options per tab
+  const sortOptions: Record<Category, { value: string; label: string }[]> = {
+    telescopes: [
+      { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
+      { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
+      { value: "focal_asc", label: "Focal ↑" }, { value: "focal_desc", label: "Focal ↓" },
+      { value: "aperture_asc", label: "Ouverture ↑" }, { value: "weight_asc", label: "Poids ↑" },
+    ],
+    cameras: [
+      { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
+      { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
+      { value: "pixel_asc", label: "Pixel ↑" }, { value: "sensor_asc", label: "Capteur ↑" },
+      { value: "qe_desc", label: "QE ↓" }, { value: "weight_asc", label: "Poids ↑" },
+    ],
+    mounts: [
+      { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
+      { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
+      { value: "payload_asc", label: "Charge ↑" }, { value: "payload_desc", label: "Charge ↓" },
+      { value: "weight_asc", label: "Poids ↑" },
+    ],
+    filters: [
+      { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
+      { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
+    ],
+    accessories: [
+      { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
+      { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
+    ],
+  };
+
+  const currentCount = tab === "telescopes" ? filteredScopes.length
+    : tab === "cameras" ? filteredCams.length
+    : tab === "mounts" ? filteredMounts.length
+    : tab === "filters" ? filteredFilts.length
+    : filteredAccessories.length;
 
   return (
     <div className="min-h-screen bg-background star-field">
@@ -183,10 +271,9 @@ const RigBuilder = () => {
           </p>
         </motion.div>
 
-        {/* Rig Summary */}
         <RigSummary telescope={pickedTelescope} camera={pickedCamera} mount={pickedMount} filter={pickedFilter} accessories={pickedAccessories} />
 
-        <Tabs value={tab} onValueChange={(v) => setTab(v as Category)}>
+        <Tabs value={tab} onValueChange={(v) => { setTab(v as Category); setSearchQuery(""); setSortBy("brand"); }}>
           <TabsList className="grid grid-cols-5 w-full max-w-2xl">
             <TabsTrigger value="telescopes" className="gap-1.5">
               <Telescope className="w-3.5 h-3.5" /> Optics
@@ -216,6 +303,41 @@ const RigBuilder = () => {
             </motion.div>
           )}
 
+          {/* Search + Sort bar */}
+          <div className="flex items-center gap-3 mt-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Rechercher par nom, marque..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 bg-secondary/30 border-border/50"
+              />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[160px] bg-secondary/30 border-border/50">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {sortOptions[tab].map(o => (
+                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Result count */}
+          <p className="text-xs text-muted-foreground mt-2">
+            {currentCount} résultat{currentCount > 1 ? "s" : ""}
+            {searchQuery && ` pour "${searchQuery}"`}
+          </p>
+
           {/* ==================== TELESCOPES ==================== */}
           <TabsContent value="telescopes">
             {loadingScopes ? <LoadingSkeleton /> : (
@@ -236,27 +358,17 @@ const RigBuilder = () => {
                   {filteredScopes.map(t => {
                     const { best } = extractPrices(t._raw ?? {});
                     return (
-                      <EquipmentCard
-                        key={t.id}
-                        selected={compareIds.telescopes.includes(t.id)}
-                        onToggle={() => {
-                          toggleCompare("telescopes", t.id);
-                          setRigPicks(p => ({ ...p, telescope: p.telescope === t.id ? null : t.id }));
-                        }}
-                        imageUrl={t.image_url}
-                        title={`${t.brand} ${t.model}`}
-                        bestPrice={best}
+                      <EquipmentCard key={t.id} selected={compareIds.telescopes.includes(t.id)}
+                        onToggle={() => { toggleCompare("telescopes", t.id); setRigPicks(p => ({ ...p, telescope: p.telescope === t.id ? null : t.id })); }}
+                        imageUrl={t.image_url} title={`${t.brand} ${t.model}`} bestPrice={best}
                         specs={[
                           t.focal_length_mm ? `${t.focal_length_mm}mm` : null,
                           t.aperture_mm ? `⌀${t.aperture_mm}mm` : null,
                           t.focal_length_mm && t.aperture_mm ? `f/${(t.focal_length_mm / t.aperture_mm).toFixed(1)}` : null,
-                          t.type,
-                          t.weight_kg ? `${t.weight_kg}kg` : null,
+                          t.type, t.weight_kg ? `${t.weight_kg}kg` : null,
                           t.image_circle_mm ? `IC ${t.image_circle_mm}mm` : null,
                         ]}
-                        affiliateAmazon={t.url_amazon}
-                        affiliateAstro={t.url_astroshop}
-                        manufacturerUrl={t.manufacturer_url}
+                        affiliateAmazon={t.url_amazon} affiliateAstro={t.url_astroshop} manufacturerUrl={t.manufacturer_url}
                       />
                     );
                   })}
@@ -303,27 +415,17 @@ const RigBuilder = () => {
                   {filteredCams.map(c => {
                     const { best } = extractPrices(c._raw ?? {});
                     return (
-                      <EquipmentCard
-                        key={c.id}
-                        selected={compareIds.cameras.includes(c.id)}
-                        onToggle={() => {
-                          toggleCompare("cameras", c.id);
-                          setRigPicks(p => ({ ...p, camera: p.camera === c.id ? null : c.id }));
-                        }}
-                        imageUrl={c.image_url}
-                        title={`${c.brand} ${c.model}`}
-                        bestPrice={best}
+                      <EquipmentCard key={c.id} selected={compareIds.cameras.includes(c.id)}
+                        onToggle={() => { toggleCompare("cameras", c.id); setRigPicks(p => ({ ...p, camera: p.camera === c.id ? null : c.id })); }}
+                        imageUrl={c.image_url} title={`${c.brand} ${c.model}`} bestPrice={best}
                         specs={[
                           c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : null,
                           c.pixel_size_um ? `${c.pixel_size_um}µm` : null,
-                          c.sensor_name,
-                          c.is_color !== null ? (c.is_color ? "Color" : "Mono") : null,
+                          c.sensor_name, c.is_color !== null ? (c.is_color ? "Color" : "Mono") : null,
                           c.qe_percent ? `QE ${c.qe_percent}%` : null,
                           c.read_noise_e ? `${c.read_noise_e}e⁻` : null,
                         ]}
-                        affiliateAmazon={c.url_amazon}
-                        affiliateAstro={c.url_astroshop}
-                        manufacturerUrl={c.manufacturer_url}
+                        affiliateAmazon={c.url_amazon} affiliateAstro={c.url_astroshop} manufacturerUrl={c.manufacturer_url}
                       />
                     );
                   })}
@@ -376,27 +478,17 @@ const RigBuilder = () => {
                   {filteredMounts.map(m => {
                     const { best } = extractPrices(m._raw ?? {});
                     return (
-                      <EquipmentCard
-                        key={m.id}
-                        selected={compareIds.mounts.includes(m.id)}
-                        onToggle={() => {
-                          toggleCompare("mounts", m.id);
-                          setRigPicks(p => ({ ...p, mount: p.mount === m.id ? null : m.id }));
-                        }}
-                        imageUrl={m.image_url}
-                        title={`${m.brand} ${m.model}`}
-                        bestPrice={best}
+                      <EquipmentCard key={m.id} selected={compareIds.mounts.includes(m.id)}
+                        onToggle={() => { toggleCompare("mounts", m.id); setRigPicks(p => ({ ...p, mount: p.mount === m.id ? null : m.id })); }}
+                        imageUrl={m.image_url} title={`${m.brand} ${m.model}`} bestPrice={best}
                         specs={[
                           m.payload_kg ? `Payload: ${m.payload_kg}kg` : null,
                           m.mount_weight_kg ? `Weight: ${m.mount_weight_kg}kg` : null,
-                          m.mount_type,
-                          m.is_goto ? "GoTo" : null,
+                          m.mount_type, m.is_goto ? "GoTo" : null,
                           m.periodic_error_arcsec ? `PE ±${m.periodic_error_arcsec}″` : null,
                           m.connectivity,
                         ]}
-                        affiliateAmazon={m.url_amazon}
-                        affiliateAstro={m.url_astroshop}
-                        manufacturerUrl={m.manufacturer_url}
+                        affiliateAmazon={m.url_amazon} affiliateAstro={m.url_astroshop} manufacturerUrl={m.manufacturer_url}
                       />
                     );
                   })}
@@ -436,20 +528,11 @@ const RigBuilder = () => {
                   {filteredFilts.map(f => {
                     const { best } = extractPrices(f._raw ?? {});
                     return (
-                      <EquipmentCard
-                        key={f.id}
-                        selected={compareIds.filters.includes(f.id)}
-                        onToggle={() => {
-                          toggleCompare("filters", f.id);
-                          setRigPicks(p => ({ ...p, filter: p.filter === f.id ? null : f.id }));
-                        }}
-                        imageUrl={f.image_url}
-                        title={`${f.brand} ${f.model}`}
-                        bestPrice={best}
+                      <EquipmentCard key={f.id} selected={compareIds.filters.includes(f.id)}
+                        onToggle={() => { toggleCompare("filters", f.id); setRigPicks(p => ({ ...p, filter: p.filter === f.id ? null : f.id })); }}
+                        imageUrl={f.image_url} title={`${f.brand} ${f.model}`} bestPrice={best}
                         specs={[f.type, f.size, f.thickness_mm ? `${f.thickness_mm}mm thick` : null]}
-                        affiliateAmazon={f.url_amazon}
-                        affiliateAstro={f.url_astroshop}
-                        manufacturerUrl={f.manufacturer_url}
+                        affiliateAmazon={f.url_amazon} affiliateAstro={f.url_astroshop} manufacturerUrl={f.manufacturer_url}
                       />
                     );
                   })}
@@ -483,31 +566,22 @@ const RigBuilder = () => {
                     const { best } = extractPrices(a._raw ?? {});
                     const isInRig = rigPicks.accessories.includes(a.id);
                     return (
-                      <EquipmentCard
-                        key={a.id}
-                        selected={compareIds.accessories.includes(a.id)}
+                      <EquipmentCard key={a.id} selected={compareIds.accessories.includes(a.id)}
                         onToggle={() => {
                           toggleCompare("accessories", a.id);
                           setRigPicks(p => ({
                             ...p,
-                            accessories: isInRig
-                              ? p.accessories.filter(id => id !== a.id)
-                              : [...p.accessories, a.id],
+                            accessories: isInRig ? p.accessories.filter(id => id !== a.id) : [...p.accessories, a.id],
                           }));
                         }}
-                        imageUrl={a.image_url}
-                        title={`${a.brand} ${a.model}`}
-                        bestPrice={best}
+                        imageUrl={a.image_url} title={`${a.brand} ${a.model}`} bestPrice={best}
                         specs={[
-                          a.category,
-                          a.backfocus_contribution_mm ? `BF +${a.backfocus_contribution_mm}mm` : null,
+                          a.category, a.backfocus_contribution_mm ? `BF +${a.backfocus_contribution_mm}mm` : null,
                           a.weight_g ? `${a.weight_g}g` : null,
                           a.input_connection ? `In: ${a.input_connection}` : null,
                           a.output_thread ? `Out: ${a.output_thread}` : null,
                         ]}
-                        affiliateAmazon={a.url_amazon}
-                        affiliateAstro={a.url_astroshop}
-                        manufacturerUrl={a.manufacturer_url}
+                        affiliateAmazon={a.url_amazon} affiliateAstro={a.url_astroshop} manufacturerUrl={a.manufacturer_url}
                       />
                     );
                   })}

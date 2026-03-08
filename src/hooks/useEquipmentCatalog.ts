@@ -167,6 +167,7 @@ export function useCameras() {
       if (error) throw error;
       return ((data ?? []) as any[]).map(mapCamera) as AstroCamera[];
     },
+    staleTime: 1000 * 60 * 30,
   });
 }
 
@@ -186,6 +187,7 @@ export function useTelescopes() {
         _raw: r,
       })) as AstroTelescope[];
     },
+    staleTime: 1000 * 60 * 30,
   });
 }
 
@@ -205,6 +207,7 @@ export function useMounts() {
         _raw: r,
       })) as AstroMount[];
     },
+    staleTime: 1000 * 60 * 30,
   });
 }
 
@@ -224,6 +227,7 @@ export function useFilters() {
         _raw: r,
       })) as AstroFilter[];
     },
+    staleTime: 1000 * 60 * 30,
   });
 }
 
@@ -245,6 +249,7 @@ export function useAccessories() {
         _raw: r,
       })) as AstroAccessory[];
     },
+    staleTime: 1000 * 60 * 30,
   });
 }
 

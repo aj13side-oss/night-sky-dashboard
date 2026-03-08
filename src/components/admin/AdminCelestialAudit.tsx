@@ -225,7 +225,22 @@ export default function AdminCelestialAudit() {
     return filteredAll;
   }, [filteredAll, needsClientFilter, page]);
 
-  // Grid columns count for row selection
+  // Stagger image loading to prevent browser connection saturation
+  const [visibleCount, setVisibleCount] = useState(0);
+  useEffect(() => {
+    setVisibleCount(0);
+    if (displayed.length === 0) return;
+    // Reveal in batches of 20 every 100ms
+    const timer = setInterval(() => {
+      setVisibleCount(prev => {
+        const next = prev + 20;
+        if (next >= displayed.length) { clearInterval(timer); return displayed.length; }
+        return next;
+      });
+    }, 80);
+    return () => clearInterval(timer);
+  }, [displayed]);
+
   const getGridCols = useCallback(() => {
     if (!gridRef.current || !gridRef.current.firstElementChild) return 10;
     const gridWidth = gridRef.current.offsetWidth;

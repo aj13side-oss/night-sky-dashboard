@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown } from "lucide-react";
+import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,6 +38,7 @@ export default function AdminCelestialAudit() {
   const [replacing, setReplacing] = useState<string | null>(null);
   const [newUrl, setNewUrl] = useState("");
   const [healthMap, setHealthMap] = useState<Record<string, ImageHealth>>({});
+  const [brokenSet, setBrokenSet] = useState<Set<string>>(new Set());
   const [scanning, setScanning] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -144,6 +145,16 @@ export default function AdminCelestialAudit() {
     setScanning(false);
   }, [data]);
 
+  // Track broken images via onError
+  const markBroken = useCallback((id: string) => {
+    setBrokenSet(prev => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  }, []);
+
   // Apply client-side filtering
   const filteredAll = useMemo(() => {
     if (!data?.items) return [];
@@ -156,7 +167,7 @@ export default function AdminCelestialAudit() {
         if (filterStatus === "ok") return s === "ok";
         if (filterStatus === "unchecked") return !s || s === "unchecked";
         if (filterStatus === "heavy") return healthMap[item.id]?.status === "heavy";
-        if (filterStatus === "broken") return healthMap[item.id]?.status === "broken";
+        if (filterStatus === "broken") return brokenSet.has(item.id) || healthMap[item.id]?.status === "broken";
         return true;
       });
     }
@@ -172,7 +183,7 @@ export default function AdminCelestialAudit() {
       list = [...list].sort((a: any, b: any) => statusOrder(a.id) - statusOrder(b.id));
     }
     return list;
-  }, [data, filterStatus, audit, healthMap, sortBy]);
+  }, [data, filterStatus, audit, healthMap, sortBy, brokenSet]);
 
   // When client-side filtering, paginate the filtered results; otherwise use server results directly
   const totalPages = needsClientFilter
@@ -186,8 +197,39 @@ export default function AdminCelestialAudit() {
     return filteredAll;
   }, [filteredAll, needsClientFilter, page]);
 
+  // Grid columns count for row selection
+  const getGridCols = useCallback(() => {
+    if (!gridRef.current || !gridRef.current.firstElementChild) return 10;
+    const gridWidth = gridRef.current.offsetWidth;
+    const cardWidth = (gridRef.current.firstElementChild as HTMLElement).offsetWidth;
+    return Math.max(1, Math.round(gridWidth / cardWidth));
+  }, []);
+
+  const selectAll = useCallback(() => {
+    setSelected(new Set(displayed.map((i: any) => i.id)));
+  }, [displayed]);
+
+  const selectRow = useCallback((startIdx: number) => {
+    const cols = getGridCols();
+    const rowStart = Math.floor(startIdx / cols) * cols;
+    const rowEnd = Math.min(rowStart + cols, displayed.length);
+    setSelected(prev => {
+      const next = new Set(prev);
+      for (let i = rowStart; i < rowEnd; i++) next.add(displayed[i].id);
+      return next;
+    });
+  }, [displayed, getGridCols]);
+
+  const selectBroken = useCallback(() => {
+    const broken = displayed.filter((i: any) => brokenSet.has(i.id) || healthMap[i.id]?.status === "broken");
+    setSelected(new Set(broken.map((i: any) => i.id)));
+    toast.success(`${broken.length} images cassées sélectionnées`);
+  }, [displayed, brokenSet, healthMap]);
+
   const healthBadge = (id: string) => {
     const h = healthMap[id];
+    const isBroken = brokenSet.has(id);
+    if (isBroken && !h) return <Badge variant="destructive" className="text-[7px] px-1 py-0">Cassée</Badge>;
     if (!h) return null;
     if (h.status === "broken") return <Badge variant="destructive" className="text-[7px] px-1 py-0">Cassée</Badge>;
     if (h.status === "heavy") return <Badge className="text-[7px] px-1 py-0 bg-amber-500/20 text-amber-400 border-amber-500/50">{h.sizeKB}KB</Badge>;

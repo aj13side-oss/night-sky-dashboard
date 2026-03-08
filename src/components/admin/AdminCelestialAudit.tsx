@@ -392,8 +392,8 @@ export default function AdminCelestialAudit() {
     // Cancel any in-progress fetch when page changes
     wikiFetchRef.current = false;
     const timeout = setTimeout(() => {
-      const hasItemsWithoutImage = displayed.some((i: any) => !i.forced_image_url && !wikiImages[i.id]);
-      if (hasItemsWithoutImage) {
+      const hasItemsNeedingWiki = displayed.some((i: any) => !wikiImages[i.id] && (!i.forced_image_url || brokenSet.has(i.id)));
+      if (hasItemsNeedingWiki) {
         fetchWikiForDisplayed();
       }
     }, 500); // Small delay to let the page settle

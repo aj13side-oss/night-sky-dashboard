@@ -1,11 +1,20 @@
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Scale, Globe, ShoppingCart, ExternalLink } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Scale, Globe, ShoppingCart, ExternalLink, Tag } from "lucide-react";
+import { extractPrices } from "@/hooks/useEquipmentCatalog";
 
-interface CompareTableProps<T extends { id: string }> {
+interface CompareColumn<T> {
+  label: string;
+  render: (item: T) => string;
+  /** "higher" means green highlight on max, "lower" on min */
+  bestDirection?: "higher" | "lower";
+}
+
+interface CompareTableProps<T extends { id: string; _raw?: Record<string, any> }> {
   items: T[];
-  columns: { label: string; render: (item: T) => string }[];
+  columns: CompareColumn<T>[];
   getName: (item: T) => string;
   getImage?: (item: T) => string | null;
   getAffiliates: (item: T) => { amazon: string | null; astro: string | null; manufacturer?: string | null };
@@ -20,7 +29,24 @@ function thumb400(url: string): string {
   return url;
 }
 
-export function CompareTable<T extends { id: string }>({ items, columns, getName, getImage, getAffiliates }: CompareTableProps<T>) {
+function parseNum(s: string): number | null {
+  const n = parseFloat(s.replace(/[^0-9.\-]/g, ""));
+  return isNaN(n) ? null : n;
+}
+
+export function CompareTable<T extends { id: string; _raw?: Record<string, any> }>({ items, columns, getName, getImage, getAffiliates }: CompareTableProps<T>) {
+  // Pre-compute best indices for highlight
+  const bestIndices: Record<number, number> = {};
+  columns.forEach((col, ci) => {
+    if (!col.bestDirection) return;
+    const vals = items.map(item => parseNum(col.render(item)));
+    const valid = vals.filter((v): v is number => v !== null);
+    if (!valid.length) return;
+    const target = col.bestDirection === "higher" ? Math.max(...valid) : Math.min(...valid);
+    const idx = vals.findIndex(v => v === target);
+    if (idx >= 0) bestIndices[ci] = idx;
+  });
+
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
       <Card className="border-primary/20 bg-primary/5">
@@ -63,14 +89,61 @@ export function CompareTable<T extends { id: string }>({ items, columns, getName
                 </TableRow>
               )}
 
-              {columns.map(col => (
+              {/* Price row */}
+              <TableRow>
+                <TableCell className="font-medium text-muted-foreground text-xs">
+                  <div className="flex items-center gap-1"><Tag className="w-3 h-3" /> Best Price</div>
+                </TableCell>
+                {items.map(item => {
+                  const { best, retailers } = extractPrices(item._raw ?? {});
+                  return (
+                    <TableCell key={item.id} className="text-center">
+                      {best ? (
+                        <div className="space-y-1">
+                          <span className="font-bold text-primary text-sm">{best.price.toLocaleString("fr-FR")}€</span>
+                          <div className="text-[9px] text-muted-foreground">{best.label}</div>
+                          {retailers.length > 1 && (
+                            <details className="text-left">
+                              <summary className="text-[9px] text-muted-foreground cursor-pointer hover:text-foreground">
+                                {retailers.length} retailers
+                              </summary>
+                              <div className="mt-1 space-y-0.5">
+                                {retailers.map(r => (
+                                  <div key={r.key} className="text-[9px] flex justify-between gap-2">
+                                    <span className="text-muted-foreground">{r.label}</span>
+                                    {r.url ? (
+                                      <a href={r.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-mono">
+                                        {r.price!.toLocaleString("fr-FR")}€
+                                      </a>
+                                    ) : (
+                                      <span className="font-mono">{r.price!.toLocaleString("fr-FR")}€</span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </details>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">—</span>
+                      )}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+
+              {columns.map((col, ci) => (
                 <TableRow key={col.label}>
                   <TableCell className="font-medium text-muted-foreground text-xs">{col.label}</TableCell>
-                  {items.map(item => (
-                    <TableCell key={item.id} className="text-center font-mono text-sm">
-                      {col.render(item)}
-                    </TableCell>
-                  ))}
+                  {items.map((item, ii) => {
+                    const isBest = bestIndices[ci] === ii;
+                    return (
+                      <TableCell key={item.id} className={`text-center font-mono text-sm ${isBest ? "text-primary font-bold" : ""}`}>
+                        {col.render(item)}
+                        {isBest && <span className="ml-1 text-[9px]">★</span>}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))}
 

@@ -2,15 +2,9 @@ import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import AppNav from "@/components/AppNav";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import { Telescope, Camera, Filter, Anchor, X, Scale, Wrench, Search, Sparkles } from "lucide-react";
+import { Telescope, Camera, Filter, Anchor, X, Scale, Wrench, Sparkles } from "lucide-react";
 import {
   useCameras, useTelescopes, useMounts, useFilters, useAccessories, useRigPresets, extractPrices,
   type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter, type AstroAccessory, type RigPreset,
@@ -21,6 +15,8 @@ import { CompareTable } from "@/components/rigbuilder/CompareTable";
 import { RangeFilter } from "@/components/rigbuilder/RangeFilter";
 import { RigSummary } from "@/components/rigbuilder/RigSummary";
 import { ChipFilter, ToggleFilter } from "@/components/rigbuilder/ChipFilter";
+import { SearchSortBar } from "@/components/rigbuilder/SearchSortBar";
+import { EquipmentTab } from "@/components/rigbuilder/EquipmentTab";
 
 type Category = "telescopes" | "cameras" | "mounts" | "filters" | "accessories";
 
@@ -49,6 +45,36 @@ function sortItems<T extends { brand: string; model: string; _raw?: Record<strin
   });
 }
 
+// Sort options per tab
+const sortOptions: Record<Category, { value: string; label: string }[]> = {
+  telescopes: [
+    { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
+    { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
+    { value: "focal_asc", label: "Focal ↑" }, { value: "focal_desc", label: "Focal ↓" },
+    { value: "aperture_asc", label: "Ouverture ↑" }, { value: "weight_asc", label: "Poids ↑" },
+  ],
+  cameras: [
+    { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
+    { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
+    { value: "pixel_asc", label: "Pixel ↑" }, { value: "sensor_asc", label: "Capteur ↑" },
+    { value: "qe_desc", label: "QE ↓" }, { value: "weight_asc", label: "Poids ↑" },
+  ],
+  mounts: [
+    { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
+    { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
+    { value: "payload_asc", label: "Charge ↑" }, { value: "payload_desc", label: "Charge ↓" },
+    { value: "weight_asc", label: "Poids ↑" },
+  ],
+  filters: [
+    { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
+    { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
+  ],
+  accessories: [
+    { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
+    { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
+  ],
+};
+
 const RigBuilder = () => {
   const { data: cameras, isLoading: loadingCams } = useCameras();
   const { data: telescopes, isLoading: loadingScopes } = useTelescopes();
@@ -72,7 +98,7 @@ const RigBuilder = () => {
     telescope: null, camera: null, mount: null, filter: null, accessories: [],
   });
 
-  // --- Filter bounds ---
+  // --- Filter state ---
   const scopeBoundsFL = useMemo(() => bounds(telescopes?.map(t => t.focal_length_mm) ?? []), [telescopes]);
   const scopeBoundsAp = useMemo(() => bounds(telescopes?.map(t => t.aperture_mm) ?? []), [telescopes]);
   const [scopeFL, setScopeFL] = useState<[number, number] | null>(null);
@@ -116,7 +142,7 @@ const RigBuilder = () => {
 
   const q = searchQuery.toLowerCase().trim();
 
-  // --- Apply filters + search + sort ---
+  // --- Filtered & sorted data ---
   const filteredScopes = useMemo(() => {
     if (!telescopes) return [];
     const fl = scopeFL ?? scopeBoundsFL;
@@ -242,41 +268,13 @@ const RigBuilder = () => {
   const pickedFilter = filters?.find(f => f.id === rigPicks.filter) ?? null;
   const pickedAccessories = accessories?.filter(a => rigPicks.accessories.includes(a.id)) ?? [];
 
-  // Sort options per tab
-  const sortOptions: Record<Category, { value: string; label: string }[]> = {
-    telescopes: [
-      { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
-      { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
-      { value: "focal_asc", label: "Focal ↑" }, { value: "focal_desc", label: "Focal ↓" },
-      { value: "aperture_asc", label: "Ouverture ↑" }, { value: "weight_asc", label: "Poids ↑" },
-    ],
-    cameras: [
-      { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
-      { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
-      { value: "pixel_asc", label: "Pixel ↑" }, { value: "sensor_asc", label: "Capteur ↑" },
-      { value: "qe_desc", label: "QE ↓" }, { value: "weight_asc", label: "Poids ↑" },
-    ],
-    mounts: [
-      { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
-      { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
-      { value: "payload_asc", label: "Charge ↑" }, { value: "payload_desc", label: "Charge ↓" },
-      { value: "weight_asc", label: "Poids ↑" },
-    ],
-    filters: [
-      { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
-      { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
-    ],
-    accessories: [
-      { value: "brand", label: "Marque A→Z" }, { value: "name", label: "Nom A→Z" },
-      { value: "price_asc", label: "Prix ↑" }, { value: "price_desc", label: "Prix ↓" },
-    ],
-  };
-
-  const currentCount = tab === "telescopes" ? filteredScopes.length
-    : tab === "cameras" ? filteredCams.length
-    : tab === "mounts" ? filteredMounts.length
-    : tab === "filters" ? filteredFilts.length
-    : filteredAccessories.length;
+  const searchBar = (
+    <SearchSortBar
+      searchQuery={searchQuery} onSearchChange={setSearchQuery}
+      sortBy={sortBy} onSortChange={setSortBy}
+      sortOptions={sortOptions[tab]}
+    />
+  );
 
   return (
     <div className="min-h-screen bg-background star-field">
@@ -289,7 +287,7 @@ const RigBuilder = () => {
             Rig Builder
           </h1>
           <p className="text-muted-foreground mt-1">
-            Compare astrophotography gear side-by-side. Select up to 4 items to compare, or pick one per category to see rig performance.
+            Comparez votre matériel d'astrophoto. Sélectionnez jusqu'à 4 éléments pour comparer, ou choisissez un par catégorie pour voir la performance du setup.
           </p>
         </motion.div>
 
@@ -312,16 +310,16 @@ const RigBuilder = () => {
         <Tabs value={tab} onValueChange={(v) => { setTab(v as Category); setSearchQuery(""); setSortBy("brand"); }}>
           <TabsList className="grid grid-cols-5 w-full max-w-2xl">
             <TabsTrigger value="telescopes" className="gap-1.5">
-              <Telescope className="w-3.5 h-3.5" /> Optics
+              <Telescope className="w-3.5 h-3.5" /> Optiques
             </TabsTrigger>
             <TabsTrigger value="cameras" className="gap-1.5">
-              <Camera className="w-3.5 h-3.5" /> Cameras
+              <Camera className="w-3.5 h-3.5" /> Caméras
             </TabsTrigger>
             <TabsTrigger value="mounts" className="gap-1.5">
-              <Anchor className="w-3.5 h-3.5" /> Mounts
+              <Anchor className="w-3.5 h-3.5" /> Montures
             </TabsTrigger>
             <TabsTrigger value="filters" className="gap-1.5">
-              <Filter className="w-3.5 h-3.5" /> Filters
+              <Filter className="w-3.5 h-3.5" /> Filtres
             </TabsTrigger>
             <TabsTrigger value="accessories" className="gap-1.5">
               <Wrench className="w-3.5 h-3.5" /> Acc.
@@ -332,337 +330,274 @@ const RigBuilder = () => {
           {compareCount > 0 && (
             <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
               className="flex items-center gap-3 mt-4 p-3 rounded-lg border border-primary/30 bg-primary/5">
-              <span className="text-sm font-medium text-foreground">{compareCount} selected</span>
+              <span className="text-sm font-medium text-foreground">{compareCount} sélectionné{compareCount > 1 ? "s" : ""}</span>
               <Button size="sm" variant="outline" onClick={() => clearCompare(tab)} className="gap-1">
-                <X className="w-3 h-3" /> Clear
+                <X className="w-3 h-3" /> Effacer
               </Button>
             </motion.div>
           )}
 
-          {/* Search + Sort bar */}
-          <div className="flex items-center gap-3 mt-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Rechercher par nom, marque..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 bg-secondary/30 border-border/50"
-              />
-              {searchQuery && (
-                <button onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[160px] bg-secondary/30 border-border/50">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {sortOptions[tab].map(o => (
-                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Result count */}
-          <p className="text-xs text-muted-foreground mt-2">
-            {currentCount} résultat{currentCount > 1 ? "s" : ""}
-            {searchQuery && ` pour "${searchQuery}"`}
-          </p>
-
           {/* ==================== TELESCOPES ==================== */}
           <TabsContent value="telescopes">
-            {loadingScopes ? <LoadingSkeleton /> : (
-              <>
-                <Card className="border-border/50 mt-4 p-4 space-y-4">
+            <EquipmentTab loading={loadingScopes} searchBar={searchBar} resultCount={filteredScopes.length} searchQuery={searchQuery}
+              filters={
+                <>
                   <div className="grid sm:grid-cols-2 gap-4">
-                    <RangeFilter label="Focal Length" unit="mm" min={scopeBoundsFL[0]} max={scopeBoundsFL[1]}
+                    <RangeFilter label="Focale" unit="mm" min={scopeBoundsFL[0]} max={scopeBoundsFL[1]}
                       value={scopeFL ?? scopeBoundsFL} onChange={setScopeFL} step={10} />
-                    <RangeFilter label="Aperture" unit="mm" min={scopeBoundsAp[0]} max={scopeBoundsAp[1]}
+                    <RangeFilter label="Ouverture" unit="mm" min={scopeBoundsAp[0]} max={scopeBoundsAp[1]}
                       value={scopeAp ?? scopeBoundsAp} onChange={setScopeAp} step={5} />
                   </div>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <ChipFilter label="Type" options={scopeTypes} selected={scopeType} onChange={setScopeType} />
-                    <ChipFilter label="Brand" options={scopeBrands} selected={scopeBrand} onChange={setScopeBrand} />
+                    <ChipFilter label="Marque" options={scopeBrands} selected={scopeBrand} onChange={setScopeBrand} />
                   </div>
-                </Card>
-                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
-                  {filteredScopes.map(t => {
-                    const { best } = extractPrices(t._raw ?? {});
-                    return (
-                      <EquipmentCard key={t.id} selected={compareIds.telescopes.includes(t.id)}
-                        onToggle={() => { toggleCompare("telescopes", t.id); setRigPicks(p => ({ ...p, telescope: p.telescope === t.id ? null : t.id })); }}
-                        imageUrl={t.image_url} title={`${t.brand} ${t.model}`} bestPrice={best}
-                        specs={[
-                          t.focal_length_mm ? `${t.focal_length_mm}mm` : null,
-                          t.aperture_mm ? `⌀${t.aperture_mm}mm` : null,
-                          t.focal_length_mm && t.aperture_mm ? `f/${(t.focal_length_mm / t.aperture_mm).toFixed(1)}` : null,
-                          t.type, t.weight_kg ? `${t.weight_kg}kg` : null,
-                          t.image_circle_mm ? `IC ${t.image_circle_mm}mm` : null,
-                        ]}
-                        affiliateAmazon={t.url_amazon} affiliateAstro={t.url_astroshop_de} manufacturerUrl={t.url_manufacturer}
-                      />
-                    );
-                  })}
-                </div>
-                {compareIds.telescopes.length >= 2 && (
-                  <CompareTable
-                    items={telescopes?.filter(t => compareIds.telescopes.includes(t.id)) ?? []}
-                    getImage={t => t.image_url}
-                    columns={[
-                      { label: "Focal Length", render: t => t.focal_length_mm ? `${t.focal_length_mm}mm` : "—" },
-                      { label: "Aperture", render: t => t.aperture_mm ? `${t.aperture_mm}mm` : "—", bestDirection: "higher" },
-                      { label: "f/D", render: t => t.focal_length_mm && t.aperture_mm ? `f/${(t.focal_length_mm / t.aperture_mm).toFixed(1)}` : "—", bestDirection: "lower" },
-                      { label: "Type", render: t => t.type ?? "—" },
-                      { label: "Weight", render: t => t.weight_kg ? `${t.weight_kg}kg` : "—", bestDirection: "lower" },
-                      { label: "Image Circle", render: t => t.image_circle_mm ? `${t.image_circle_mm}mm` : "—", bestDirection: "higher" },
-                      { label: "Backfocus", render: t => t.required_backfocus_mm ? `${t.required_backfocus_mm}mm` : "—" },
+                </>
+              }
+              compareTable={compareIds.telescopes.length >= 2 ? (
+                <CompareTable
+                  items={telescopes?.filter(t => compareIds.telescopes.includes(t.id)) ?? []}
+                  getImage={t => t.image_url}
+                  columns={[
+                    { label: "Focale", render: t => t.focal_length_mm ? `${t.focal_length_mm}mm` : "—" },
+                    { label: "Ouverture", render: t => t.aperture_mm ? `${t.aperture_mm}mm` : "—", bestDirection: "higher" },
+                    { label: "f/D", render: t => t.focal_length_mm && t.aperture_mm ? `f/${(t.focal_length_mm / t.aperture_mm).toFixed(1)}` : "—", bestDirection: "lower" },
+                    { label: "Type", render: t => t.type ?? "—" },
+                    { label: "Poids", render: t => t.weight_kg ? `${t.weight_kg}kg` : "—", bestDirection: "lower" },
+                    { label: "Cercle image", render: t => t.image_circle_mm ? `${t.image_circle_mm}mm` : "—", bestDirection: "higher" },
+                    { label: "Backfocus", render: t => t.required_backfocus_mm ? `${t.required_backfocus_mm}mm` : "—" },
+                  ]}
+                  getName={t => `${t.brand} ${t.model}`}
+                  getAffiliates={t => ({ amazon: t.url_amazon, astro: t.url_astroshop_de, manufacturer: t.url_manufacturer })}
+                />
+              ) : undefined}
+            >
+              {filteredScopes.map(t => {
+                const { best } = extractPrices(t._raw ?? {});
+                return (
+                  <EquipmentCard key={t.id} selected={compareIds.telescopes.includes(t.id)}
+                    onToggle={() => { toggleCompare("telescopes", t.id); setRigPicks(p => ({ ...p, telescope: p.telescope === t.id ? null : t.id })); }}
+                    imageUrl={t.image_url} title={`${t.brand} ${t.model}`} bestPrice={best}
+                    specs={[
+                      t.focal_length_mm ? `${t.focal_length_mm}mm` : null,
+                      t.aperture_mm ? `⌀${t.aperture_mm}mm` : null,
+                      t.focal_length_mm && t.aperture_mm ? `f/${(t.focal_length_mm / t.aperture_mm).toFixed(1)}` : null,
+                      t.type, t.weight_kg ? `${t.weight_kg}kg` : null,
+                      t.image_circle_mm ? `IC ${t.image_circle_mm}mm` : null,
                     ]}
-                    getName={t => `${t.brand} ${t.model}`}
-                    getAffiliates={t => ({ amazon: t.url_amazon, astro: t.url_astroshop_de, manufacturer: t.url_manufacturer })}
+                    affiliateAmazon={t.url_amazon} affiliateAstro={t.url_astroshop_de} manufacturerUrl={t.url_manufacturer}
                   />
-                )}
-              </>
-            )}
+                );
+              })}
+            </EquipmentTab>
           </TabsContent>
 
           {/* ==================== CAMERAS ==================== */}
           <TabsContent value="cameras">
-            {loadingCams ? <LoadingSkeleton /> : (
-              <>
-                <Card className="border-border/50 mt-4 p-4 space-y-4">
+            <EquipmentTab loading={loadingCams} searchBar={searchBar} resultCount={filteredCams.length} searchQuery={searchQuery}
+              filters={
+                <>
                   <div className="grid sm:grid-cols-2 gap-4">
-                    <RangeFilter label="Sensor Width" unit="mm" min={camBoundsSW[0]} max={camBoundsSW[1]}
+                    <RangeFilter label="Largeur capteur" unit="mm" min={camBoundsSW[0]} max={camBoundsSW[1]}
                       value={camSW ?? camBoundsSW} onChange={setCamSW} step={0.5} />
-                    <RangeFilter label="Pixel Size" unit="µm" min={camBoundsPx[0]} max={camBoundsPx[1]}
+                    <RangeFilter label="Taille pixel" unit="µm" min={camBoundsPx[0]} max={camBoundsPx[1]}
                       value={camPx ?? camBoundsPx} onChange={setCamPx} step={0.1} />
                   </div>
                   <div className="grid sm:grid-cols-3 gap-4">
-                    <ChipFilter label="Sensor" options={camSensors} selected={camSensor ? camSensors.find(s => s.startsWith(camSensor)) ?? null : null} onChange={(v) => setCamSensor(v ? v.replace(/ \(\d+\)$/, "") : null)} />
-                    <ToggleFilter label="Type" value={camColor} onChange={setCamColor} labelYes="Color" labelNo="Mono" />
-                    <ToggleFilter label="Cooling" value={camCooling} onChange={setCamCooling} labelYes="Cooled" labelNo="Uncooled" />
+                    <ChipFilter label="Capteur" options={camSensors} selected={camSensor ? camSensors.find(s => s.startsWith(camSensor)) ?? null : null} onChange={(v) => setCamSensor(v ? v.replace(/ \(\d+\)$/, "") : null)} />
+                    <ToggleFilter label="Type" value={camColor} onChange={setCamColor} labelYes="Couleur" labelNo="Mono" />
+                    <ToggleFilter label="Refroidissement" value={camCooling} onChange={setCamCooling} labelYes="Refroidi" labelNo="Non refroidi" />
                   </div>
-                </Card>
-                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
-                  {filteredCams.map(c => {
-                    const { best } = extractPrices(c._raw ?? {});
-                    return (
-                      <EquipmentCard key={c.id} selected={compareIds.cameras.includes(c.id)}
-                        onToggle={() => { toggleCompare("cameras", c.id); setRigPicks(p => ({ ...p, camera: p.camera === c.id ? null : c.id })); }}
-                        imageUrl={c.image_url} title={`${c.brand} ${c.model}`} bestPrice={best}
-                        specs={[
-                          c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : null,
-                          c.pixel_size_um ? `${c.pixel_size_um}µm` : null,
-                          c.sensor_name, c.is_color !== null ? (c.is_color ? "Color" : "Mono") : null,
-                          c.qe_percent ? `QE ${c.qe_percent}%` : null,
-                          c.read_noise_e ? `${c.read_noise_e}e⁻` : null,
-                        ]}
-                        affiliateAmazon={c.url_amazon} affiliateAstro={c.url_astroshop_de} manufacturerUrl={c.url_manufacturer}
-                      />
-                    );
-                  })}
-                </div>
-                {compareIds.cameras.length >= 2 && (
-                  <CompareTable
-                    items={cameras?.filter(c => compareIds.cameras.includes(c.id)) ?? []}
-                    getImage={c => c.image_url}
-                    columns={[
-                      { label: "Sensor", render: c => c.sensor_name ?? "—" },
-                      { label: "Size", render: c => c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : "—" },
-                      { label: "Resolution", render: c => c.resolution_x && c.resolution_y ? `${c.resolution_x}×${c.resolution_y}` : "—" },
-                      { label: "Pixel Size", render: c => c.pixel_size_um ? `${c.pixel_size_um}µm` : "—" },
-                      { label: "Type", render: c => c.is_color !== null ? (c.is_color ? "Color (OSC)" : "Mono") : "—" },
-                      { label: "QE", render: c => c.qe_percent ? `${c.qe_percent}%` : "—", bestDirection: "higher" },
-                      { label: "Read Noise", render: c => c.read_noise_e ? `${c.read_noise_e}e⁻` : "—", bestDirection: "lower" },
-                      { label: "Full Well", render: c => c.full_well_e ? `${c.full_well_e.toLocaleString()}e⁻` : "—", bestDirection: "higher" },
-                      { label: "ADC", render: c => c.adc_bits ? `${c.adc_bits}-bit` : "—", bestDirection: "higher" },
-                      { label: "Cooling", render: c => c.cooling_delta_c ? `ΔT ${c.cooling_delta_c}°C` : "—" },
-                      { label: "Weight", render: c => c.weight_kg ? `${c.weight_kg.toFixed(2)}kg` : "—", bestDirection: "lower" },
-                      { label: "Interface", render: c => c.interface_type ?? "—" },
-                      { label: "Backfocus", render: c => c.internal_backfocus_mm ? `${c.internal_backfocus_mm}mm` : "—" },
+                </>
+              }
+              compareTable={compareIds.cameras.length >= 2 ? (
+                <CompareTable
+                  items={cameras?.filter(c => compareIds.cameras.includes(c.id)) ?? []}
+                  getImage={c => c.image_url}
+                  columns={[
+                    { label: "Capteur", render: c => c.sensor_name ?? "—" },
+                    { label: "Taille", render: c => c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : "—" },
+                    { label: "Résolution", render: c => c.resolution_x && c.resolution_y ? `${c.resolution_x}×${c.resolution_y}` : "—" },
+                    { label: "Taille pixel", render: c => c.pixel_size_um ? `${c.pixel_size_um}µm` : "—" },
+                    { label: "Type", render: c => c.is_color !== null ? (c.is_color ? "Couleur (OSC)" : "Mono") : "—" },
+                    { label: "QE", render: c => c.qe_percent ? `${c.qe_percent}%` : "—", bestDirection: "higher" },
+                    { label: "Bruit lecture", render: c => c.read_noise_e ? `${c.read_noise_e}e⁻` : "—", bestDirection: "lower" },
+                    { label: "Full Well", render: c => c.full_well_e ? `${c.full_well_e.toLocaleString()}e⁻` : "—", bestDirection: "higher" },
+                    { label: "ADC", render: c => c.adc_bits ? `${c.adc_bits}-bit` : "—", bestDirection: "higher" },
+                    { label: "Refroidissement", render: c => c.cooling_delta_c ? `ΔT ${c.cooling_delta_c}°C` : "—" },
+                    { label: "Poids", render: c => c.weight_kg ? `${c.weight_kg.toFixed(2)}kg` : "—", bestDirection: "lower" },
+                    { label: "Interface", render: c => c.interface_type ?? "—" },
+                    { label: "Backfocus", render: c => c.internal_backfocus_mm ? `${c.internal_backfocus_mm}mm` : "—" },
+                  ]}
+                  getName={c => `${c.brand} ${c.model}`}
+                  getAffiliates={c => ({ amazon: c.url_amazon, astro: c.url_astroshop_de, manufacturer: c.url_manufacturer })}
+                />
+              ) : undefined}
+            >
+              {filteredCams.map(c => {
+                const { best } = extractPrices(c._raw ?? {});
+                return (
+                  <EquipmentCard key={c.id} selected={compareIds.cameras.includes(c.id)}
+                    onToggle={() => { toggleCompare("cameras", c.id); setRigPicks(p => ({ ...p, camera: p.camera === c.id ? null : c.id })); }}
+                    imageUrl={c.image_url} title={`${c.brand} ${c.model}`} bestPrice={best}
+                    specs={[
+                      c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : null,
+                      c.pixel_size_um ? `${c.pixel_size_um}µm` : null,
+                      c.sensor_name, c.is_color !== null ? (c.is_color ? "Couleur" : "Mono") : null,
+                      c.qe_percent ? `QE ${c.qe_percent}%` : null,
+                      c.read_noise_e ? `${c.read_noise_e}e⁻` : null,
                     ]}
-                    getName={c => `${c.brand} ${c.model}`}
-                    getAffiliates={c => ({ amazon: c.url_amazon, astro: c.url_astroshop_de, manufacturer: c.url_manufacturer })}
+                    affiliateAmazon={c.url_amazon} affiliateAstro={c.url_astroshop_de} manufacturerUrl={c.url_manufacturer}
                   />
-                )}
-              </>
-            )}
+                );
+              })}
+            </EquipmentTab>
           </TabsContent>
 
           {/* ==================== MOUNTS ==================== */}
           <TabsContent value="mounts">
-            {loadingMounts ? <LoadingSkeleton /> : (
-              <>
-                <Card className="border-border/50 mt-4 p-4 space-y-4">
+            <EquipmentTab loading={loadingMounts} searchBar={searchBar} resultCount={filteredMounts.length} searchQuery={searchQuery}
+              filters={
+                <>
                   <div className="grid sm:grid-cols-2 gap-4">
-                    <RangeFilter label="Payload Capacity" unit="kg" min={mntBoundsPayload[0]} max={mntBoundsPayload[1]}
+                    <RangeFilter label="Charge utile" unit="kg" min={mntBoundsPayload[0]} max={mntBoundsPayload[1]}
                       value={mntPayload ?? mntBoundsPayload} onChange={setMntPayload} step={1} />
-                    <RangeFilter label="Mount Weight" unit="kg" min={mntBoundsWeight[0]} max={mntBoundsWeight[1]}
+                    <RangeFilter label="Poids monture" unit="kg" min={mntBoundsWeight[0]} max={mntBoundsWeight[1]}
                       value={mntWeight ?? mntBoundsWeight} onChange={setMntWeight} step={0.5} />
                   </div>
                   <div className="grid sm:grid-cols-3 gap-4">
                     <ChipFilter label="Type" options={mntTypes} selected={mntType} onChange={setMntType} />
                     <ToggleFilter label="GoTo" value={mntGoto} onChange={setMntGoto} />
-                    <ChipFilter label="Brand" options={mntBrands} selected={mntBrand} onChange={setMntBrand} />
+                    <ChipFilter label="Marque" options={mntBrands} selected={mntBrand} onChange={setMntBrand} />
                   </div>
-                </Card>
-                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
-                  {filteredMounts.map(m => {
-                    const { best } = extractPrices(m._raw ?? {});
-                    return (
-                      <EquipmentCard key={m.id} selected={compareIds.mounts.includes(m.id)}
-                        onToggle={() => { toggleCompare("mounts", m.id); setRigPicks(p => ({ ...p, mount: p.mount === m.id ? null : m.id })); }}
-                        imageUrl={m.image_url} title={`${m.brand} ${m.model}`} bestPrice={best}
-                        specs={[
-                          m.payload_kg ? `Payload: ${m.payload_kg}kg` : null,
-                          m.mount_weight_kg ? `Weight: ${m.mount_weight_kg}kg` : null,
-                          m.mount_type, m.is_goto ? "GoTo" : null,
-                          m.periodic_error_arcsec ? `PE ±${m.periodic_error_arcsec}″` : null,
-                          m.connectivity,
-                        ]}
-                        affiliateAmazon={m.url_amazon} affiliateAstro={m.url_astroshop_de} manufacturerUrl={m.url_manufacturer}
-                      />
-                    );
-                  })}
-                </div>
-                {compareIds.mounts.length >= 2 && (
-                  <CompareTable
-                    items={mounts?.filter(m => compareIds.mounts.includes(m.id)) ?? []}
-                    getImage={m => m.image_url}
-                    columns={[
-                      { label: "Payload", render: m => m.payload_kg ? `${m.payload_kg}kg` : "—", bestDirection: "higher" },
-                      { label: "Weight", render: m => m.mount_weight_kg ? `${m.mount_weight_kg}kg` : "—", bestDirection: "lower" },
-                      { label: "Type", render: m => m.mount_type ?? "—" },
-                      { label: "GoTo", render: m => m.is_goto != null ? (m.is_goto ? "Yes" : "No") : "—" },
-                      { label: "Periodic Error", render: m => m.periodic_error_arcsec ? `±${m.periodic_error_arcsec}″` : "—", bestDirection: "lower" },
-                      { label: "Connectivity", render: m => m.connectivity ?? "—" },
-                      { label: "ASCOM/INDI", render: m => m.ascom_indi ?? "—" },
+                </>
+              }
+              compareTable={compareIds.mounts.length >= 2 ? (
+                <CompareTable
+                  items={mounts?.filter(m => compareIds.mounts.includes(m.id)) ?? []}
+                  getImage={m => m.image_url}
+                  columns={[
+                    { label: "Charge", render: m => m.payload_kg ? `${m.payload_kg}kg` : "—", bestDirection: "higher" },
+                    { label: "Poids", render: m => m.mount_weight_kg ? `${m.mount_weight_kg}kg` : "—", bestDirection: "lower" },
+                    { label: "Type", render: m => m.mount_type ?? "—" },
+                    { label: "GoTo", render: m => m.is_goto != null ? (m.is_goto ? "Oui" : "Non") : "—" },
+                    { label: "Erreur périodique", render: m => m.periodic_error_arcsec ? `±${m.periodic_error_arcsec}″` : "—", bestDirection: "lower" },
+                    { label: "Connectivité", render: m => m.connectivity ?? "—" },
+                    { label: "ASCOM/INDI", render: m => m.ascom_indi ?? "—" },
+                  ]}
+                  getName={m => `${m.brand} ${m.model}`}
+                  getAffiliates={m => ({ amazon: m.url_amazon, astro: m.url_astroshop_de, manufacturer: m.url_manufacturer })}
+                />
+              ) : undefined}
+            >
+              {filteredMounts.map(m => {
+                const { best } = extractPrices(m._raw ?? {});
+                return (
+                  <EquipmentCard key={m.id} selected={compareIds.mounts.includes(m.id)}
+                    onToggle={() => { toggleCompare("mounts", m.id); setRigPicks(p => ({ ...p, mount: p.mount === m.id ? null : m.id })); }}
+                    imageUrl={m.image_url} title={`${m.brand} ${m.model}`} bestPrice={best}
+                    specs={[
+                      m.payload_kg ? `Charge: ${m.payload_kg}kg` : null,
+                      m.mount_weight_kg ? `Poids: ${m.mount_weight_kg}kg` : null,
+                      m.mount_type, m.is_goto ? "GoTo" : null,
+                      m.periodic_error_arcsec ? `PE ±${m.periodic_error_arcsec}″` : null,
+                      m.connectivity,
                     ]}
-                    getName={m => `${m.brand} ${m.model}`}
-                    getAffiliates={m => ({ amazon: m.url_amazon, astro: m.url_astroshop_de, manufacturer: m.url_manufacturer })}
+                    affiliateAmazon={m.url_amazon} affiliateAstro={m.url_astroshop_de} manufacturerUrl={m.url_manufacturer}
                   />
-                )}
-              </>
-            )}
+                );
+              })}
+            </EquipmentTab>
           </TabsContent>
 
           {/* ==================== FILTERS ==================== */}
           <TabsContent value="filters">
-            {loadingFilters ? <LoadingSkeleton /> : (
-              <>
-                <Card className="border-border/50 mt-4 p-4 space-y-4">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <ChipFilter label="Type" options={filterTypes} selected={filterType} onChange={setFilterType} />
-                    <ChipFilter label="Size" options={filterSizes} selected={filterSize} onChange={setFilterSize} />
-                  </div>
-                </Card>
-                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
-                  {filteredFilts.map(f => {
-                    const { best } = extractPrices(f._raw ?? {});
-                    return (
-                      <EquipmentCard key={f.id} selected={compareIds.filters.includes(f.id)}
-                        onToggle={() => { toggleCompare("filters", f.id); setRigPicks(p => ({ ...p, filter: p.filter === f.id ? null : f.id })); }}
-                        imageUrl={f.image_url} title={`${f.brand} ${f.model}`} bestPrice={best}
-                        specs={[f.type, f.size, f.thickness_mm ? `${f.thickness_mm}mm thick` : null]}
-                        affiliateAmazon={f.url_amazon} affiliateAstro={f.url_astroshop_de} manufacturerUrl={f.url_manufacturer}
-                      />
-                    );
-                  })}
+            <EquipmentTab loading={loadingFilters} searchBar={searchBar} resultCount={filteredFilts.length} searchQuery={searchQuery}
+              filters={
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <ChipFilter label="Type" options={filterTypes} selected={filterType} onChange={setFilterType} />
+                  <ChipFilter label="Taille" options={filterSizes} selected={filterSize} onChange={setFilterSize} />
                 </div>
-                {compareIds.filters.length >= 2 && (
-                  <CompareTable
-                    items={filters?.filter(f => compareIds.filters.includes(f.id)) ?? []}
-                    getImage={f => f.image_url}
-                    columns={[
-                      { label: "Type", render: f => f.type ?? "—" },
-                      { label: "Size", render: f => f.size ?? "—" },
-                      { label: "Thickness", render: f => f.thickness_mm ? `${f.thickness_mm}mm` : "—" },
-                    ]}
-                    getName={f => `${f.brand} ${f.model}`}
-                    getAffiliates={f => ({ amazon: f.url_amazon, astro: f.url_astroshop_de, manufacturer: f.url_manufacturer })}
+              }
+              compareTable={compareIds.filters.length >= 2 ? (
+                <CompareTable
+                  items={filters?.filter(f => compareIds.filters.includes(f.id)) ?? []}
+                  getImage={f => f.image_url}
+                  columns={[
+                    { label: "Type", render: f => f.type ?? "—" },
+                    { label: "Taille", render: f => f.size ?? "—" },
+                    { label: "Épaisseur", render: f => f.thickness_mm ? `${f.thickness_mm}mm` : "—" },
+                  ]}
+                  getName={f => `${f.brand} ${f.model}`}
+                  getAffiliates={f => ({ amazon: f.url_amazon, astro: f.url_astroshop_de, manufacturer: f.url_manufacturer })}
+                />
+              ) : undefined}
+            >
+              {filteredFilts.map(f => {
+                const { best } = extractPrices(f._raw ?? {});
+                return (
+                  <EquipmentCard key={f.id} selected={compareIds.filters.includes(f.id)}
+                    onToggle={() => { toggleCompare("filters", f.id); setRigPicks(p => ({ ...p, filter: p.filter === f.id ? null : f.id })); }}
+                    imageUrl={f.image_url} title={`${f.brand} ${f.model}`} bestPrice={best}
+                    specs={[f.type, f.size, f.thickness_mm ? `${f.thickness_mm}mm épais.` : null]}
+                    affiliateAmazon={f.url_amazon} affiliateAstro={f.url_astroshop_de} manufacturerUrl={f.url_manufacturer}
                   />
-                )}
-              </>
-            )}
+                );
+              })}
+            </EquipmentTab>
           </TabsContent>
 
           {/* ==================== ACCESSORIES ==================== */}
           <TabsContent value="accessories">
-            {loadingAccessories ? <LoadingSkeleton /> : (
-              <>
-                <Card className="border-border/50 mt-4 p-4 space-y-4">
-                  <ChipFilter label="Category" options={accTypes} selected={accType} onChange={setAccType} />
-                </Card>
-                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4">
-                  {filteredAccessories.map(a => {
-                    const { best } = extractPrices(a._raw ?? {});
-                    const isInRig = rigPicks.accessories.includes(a.id);
-                    return (
-                      <EquipmentCard key={a.id} selected={compareIds.accessories.includes(a.id)}
-                        onToggle={() => {
-                          toggleCompare("accessories", a.id);
-                          setRigPicks(p => ({
-                            ...p,
-                            accessories: isInRig ? p.accessories.filter(id => id !== a.id) : [...p.accessories, a.id],
-                          }));
-                        }}
-                        imageUrl={a.image_url} title={`${a.brand} ${a.model}`} bestPrice={best}
-                        specs={[
-                          a.category, a.optical_length_mm ? `BF +${a.optical_length_mm}mm` : null,
-                          a.weight_g ? `${a.weight_g}g` : null,
-                          a.input_connection ? `In: ${a.input_connection}` : null,
-                          a.output_connection ? `Out: ${a.output_connection}` : null,
-                        ]}
-                        affiliateAmazon={a.url_amazon} affiliateAstro={a.url_astroshop_de} manufacturerUrl={a.url_manufacturer}
-                      />
-                    );
-                  })}
-                </div>
-                {compareIds.accessories.length >= 2 && (
-                  <CompareTable
-                    items={accessories?.filter(a => compareIds.accessories.includes(a.id)) ?? []}
-                    getImage={a => a.image_url}
-                     columns={[
-                      { label: "Category", render: a => a.category ?? "—" },
-                      { label: "Backfocus", render: a => a.optical_length_mm ? `${a.optical_length_mm}mm` : "—" },
-                      { label: "Weight", render: a => a.weight_g ? `${a.weight_g}g` : "—", bestDirection: "lower" },
-                      { label: "Input", render: a => a.input_connection ?? "—" },
-                      { label: "Output", render: a => a.output_connection ?? "—" },
+            <EquipmentTab loading={loadingAccessories} searchBar={searchBar} resultCount={filteredAccessories.length} searchQuery={searchQuery}
+              filters={
+                <ChipFilter label="Catégorie" options={accTypes} selected={accType} onChange={setAccType} />
+              }
+              compareTable={compareIds.accessories.length >= 2 ? (
+                <CompareTable
+                  items={accessories?.filter(a => compareIds.accessories.includes(a.id)) ?? []}
+                  getImage={a => a.image_url}
+                  columns={[
+                    { label: "Catégorie", render: a => a.category ?? "—" },
+                    { label: "Backfocus", render: a => a.optical_length_mm ? `${a.optical_length_mm}mm` : "—" },
+                    { label: "Poids", render: a => a.weight_g ? `${a.weight_g}g` : "—", bestDirection: "lower" },
+                    { label: "Entrée", render: a => a.input_connection ?? "—" },
+                    { label: "Sortie", render: a => a.output_connection ?? "—" },
+                  ]}
+                  getName={a => `${a.brand} ${a.model}`}
+                  getAffiliates={a => ({ amazon: a.url_amazon, astro: a.url_astroshop_de, manufacturer: a.url_manufacturer })}
+                />
+              ) : undefined}
+            >
+              {filteredAccessories.map(a => {
+                const { best } = extractPrices(a._raw ?? {});
+                const isInRig = rigPicks.accessories.includes(a.id);
+                return (
+                  <EquipmentCard key={a.id} selected={compareIds.accessories.includes(a.id)}
+                    onToggle={() => {
+                      toggleCompare("accessories", a.id);
+                      setRigPicks(p => ({
+                        ...p,
+                        accessories: isInRig ? p.accessories.filter(id => id !== a.id) : [...p.accessories, a.id],
+                      }));
+                    }}
+                    imageUrl={a.image_url} title={`${a.brand} ${a.model}`} bestPrice={best}
+                    specs={[
+                      a.category, a.optical_length_mm ? `BF +${a.optical_length_mm}mm` : null,
+                      a.weight_g ? `${a.weight_g}g` : null,
+                      a.input_connection ? `In: ${a.input_connection}` : null,
+                      a.output_connection ? `Out: ${a.output_connection}` : null,
                     ]}
-                    getName={a => `${a.brand} ${a.model}`}
-                    getAffiliates={a => ({ amazon: a.url_amazon, astro: a.url_astroshop_de, manufacturer: a.url_manufacturer })}
+                    affiliateAmazon={a.url_amazon} affiliateAstro={a.url_astroshop_de} manufacturerUrl={a.url_manufacturer}
                   />
-                )}
-              </>
-            )}
+                );
+              })}
+            </EquipmentTab>
           </TabsContent>
         </Tabs>
       </main>
     </div>
   );
 };
-
-function LoadingSkeleton() {
-  return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-4">
-      {[1, 2, 3].map(i => (
-        <Card key={i} className="border-border/50">
-          <CardContent className="p-4 space-y-3">
-            <Skeleton className="h-5 w-3/4" />
-            <Skeleton className="h-32 w-full" />
-            <div className="flex gap-2">
-              <Skeleton className="h-5 w-16" />
-              <Skeleton className="h-5 w-20" />
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
-}
 
 export default RigBuilder;

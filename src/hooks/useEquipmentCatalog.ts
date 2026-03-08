@@ -264,13 +264,19 @@ export function useAccessories() {
 
 // Compatibility rules
 export interface CompatibilityRule {
-  id: string;
+  id: number;
   rule_key: string;
-  label: string;
-  description: string | null;
-  min_value: number | null;
-  max_value: number | null;
-  unit: string | null;
+  rule_category: string;
+  description_fr: string;
+  message_fr: string;
+  message_en: string;
+  severity: string;
+  min_value: number;
+  max_value: number;
+  unit: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export function useCompatibilityRules() {

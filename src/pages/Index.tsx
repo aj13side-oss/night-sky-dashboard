@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { ObservationProvider, useObservation } from "@/contexts/ObservationContext";
 import AppNav from "@/components/AppNav";
 import ObservationToolbar from "@/components/ObservationToolbar";

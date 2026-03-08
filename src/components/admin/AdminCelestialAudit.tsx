@@ -9,7 +9,26 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChipFilter } from "@/components/rigbuilder/ChipFilter";
-import { thumbUrl } from "@/lib/utils";
+import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus, type ImageHealth } from "@/hooks/useImageAudit";
+import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
+import AuditBatchBar from "./AuditBatchBar";
+
+/** Build Wikimedia thumbnail URL directly from a full-res commons URL */
+function buildWikimediaThumbUrl(url: string, width: number): string {
+  try {
+    const u = new URL(url);
+    if (!u.hostname.includes("wikimedia.org") && !u.hostname.includes("wikipedia.org")) return url;
+    if (u.pathname.includes("/thumb/")) {
+      return url.replace(/\/\d+px-([^/]+)$/, `/${width}px-$1`);
+    }
+    const match = u.pathname.match(/\/wikipedia\/commons\/([\da-f]\/[\da-f]{2}\/(.+))$/i);
+    if (!match) return url;
+    const [, pathPart, fileName] = match;
+    return `https://upload.wikimedia.org/wikipedia/commons/thumb/${pathPart}/${width}px-${fileName}`;
+  } catch {
+    return url;
+  }
+}
 import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus, type ImageHealth } from "@/hooks/useImageAudit";
 import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
 import AuditBatchBar from "./AuditBatchBar";

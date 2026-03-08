@@ -91,7 +91,7 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
                   setImgError(true);
                 }
               }}
-              className={`w-full h-full object-cover transition-opacity duration-500 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+              className={`w-full h-full object-contain transition-opacity duration-500 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
             />
           )}
           {(!imgLoaded || wikiLoading) && (

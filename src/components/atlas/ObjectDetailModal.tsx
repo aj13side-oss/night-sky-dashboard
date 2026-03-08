@@ -194,10 +194,17 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
                         title="Ouvrir sur Wikimedia Commons"
                       >
                         <img
-                          src={wikiImage!.url}
+                          src={useDetailFallback && wikiImage!.fallbackUrl ? wikiImage!.fallbackUrl : wikiImage!.url}
                           alt={`${obj.catalog_id} ${obj.common_name ?? ""}`}
                           className="w-full h-auto hover:opacity-90 transition-opacity"
-                          onError={() => { setImageFailed(true); setActiveTab("aladin"); }}
+                          onError={() => {
+                            if (!useDetailFallback && wikiImage?.fallbackUrl) {
+                              setUseDetailFallback(true);
+                            } else {
+                              setImageFailed(true);
+                              setActiveTab("aladin");
+                            }
+                          }}
                           loading="eager"
                         />
                       </a>

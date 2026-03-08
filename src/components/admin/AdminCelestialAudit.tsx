@@ -813,10 +813,13 @@ export default function AdminCelestialAudit() {
                   <p className="text-[9px] font-bold text-foreground truncate">{item.catalog_id}</p>
                   {item.common_name && <p className="text-[8px] text-muted-foreground truncate">{item.common_name}</p>}
                   <div className="flex gap-0.5">
-                    <button onClick={() => setStatus(item.id, "ok")} className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "ok" ? "bg-green-500/20 border-green-500 text-green-400" : "border-border/50 text-muted-foreground hover:border-green-500/50"}`}>
+                    <button onClick={() => setStatus(item.id, "ok")} title="OK" className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "ok" ? "bg-green-500/20 border-green-500 text-green-400" : "border-border/50 text-muted-foreground hover:border-green-500/50"}`}>
                       <Check className="w-2.5 h-2.5 mx-auto" />
                     </button>
-                    <button onClick={() => setStatus(item.id, "flagged")} className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "flagged" ? "bg-red-500/20 border-red-500 text-red-400" : "border-border/50 text-muted-foreground hover:border-red-500/50"}`}>
+                    <button onClick={() => setStatus(item.id, "needs_image")} title="Image à trouver" className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "needs_image" ? "bg-amber-500/20 border-amber-500 text-amber-400" : "border-border/50 text-muted-foreground hover:border-amber-500/50"}`}>
+                      <Eye className="w-2.5 h-2.5 mx-auto" />
+                    </button>
+                    <button onClick={() => setStatus(item.id, "flagged")} title="Signaler" className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "flagged" ? "bg-red-500/20 border-red-500 text-red-400" : "border-border/50 text-muted-foreground hover:border-red-500/50"}`}>
                       <X className="w-2.5 h-2.5 mx-auto" />
                     </button>
                     <button onClick={() => { setReplacing(replacing === item.id ? null : item.id); setNewUrl(""); }} className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${

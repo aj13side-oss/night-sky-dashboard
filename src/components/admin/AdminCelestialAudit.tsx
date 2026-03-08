@@ -483,13 +483,17 @@ export default function AdminCelestialAudit() {
                   </div>
                   {item.forced_image_url ? (
                     <div className={`aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ${brokenSet.has(item.id) ? "ring-1 ring-destructive" : ""}`}>
-                      <img
-                        src={thumbUrl(item.forced_image_url, 100)}
-                        alt={item.catalog_id}
-                        loading="lazy"
-                        className="max-h-full max-w-full object-contain"
-                        onError={() => markBroken(item.id)}
-                      />
+                      {shouldLoadImage ? (
+                        <img
+                          src={thumbUrl(item.forced_image_url, 100)}
+                          alt={item.catalog_id}
+                          loading="lazy"
+                          className="max-h-full max-w-full object-contain"
+                          onError={() => markBroken(item.id)}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-muted/30 animate-pulse" />
+                      )}
                       <div className="absolute top-0.5 right-0.5">{healthBadge(item.id)}</div>
                     </div>
                   ) : (

@@ -696,6 +696,40 @@ export default function AdminCelestialAudit() {
 
             const renderImage = () => {
               const dss2Url = item.ra != null && item.dec != null ? buildDss2ThumbUrl(item.ra, item.dec, item.size_max) : null;
+              const isBrokenDb = brokenSet.has(item.id);
+
+              // If forced_image_url is broken AND wiki found → show wiki directly (don't wait for onError race)
+              if (item.forced_image_url && isBrokenDb && wiki?.status === "found" && wiki.url) {
+                return (
+                  <div className="aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ring-1 ring-primary/30">
+                    {shouldLoadImage ? (
+                      <img
+                        src={wiki.url}
+                        alt={item.catalog_id}
+                        loading="lazy"
+                        className="max-h-full max-w-full object-contain"
+                        onError={() => {
+                          if (dss2Url) {
+                            const img = document.querySelector(`[data-wiki-id="${item.id}"]`) as HTMLImageElement;
+                            if (img) img.src = dss2Url;
+                          }
+                        }}
+                        data-wiki-id={item.id}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted/30 animate-pulse" />
+                    )}
+                    <Badge className="absolute top-0.5 left-0.5 text-[6px] px-0.5 py-0 bg-primary/80 text-primary-foreground border-0">Wiki</Badge>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); validateWikiImage(item.id); }}
+                      title={`Valider · ${wiki.artist || "?"} · ${wiki.license || "?"}`}
+                      className="absolute bottom-0.5 right-0.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded px-1 py-0.5 text-[7px] font-medium flex items-center gap-0.5 transition-colors"
+                    >
+                      <Download className="w-2.5 h-2.5" /> Valider
+                    </button>
+                  </div>
+                );
+              }
 
               const handleImageError = (e: any) => {
                 const img = e.currentTarget;
@@ -705,23 +739,18 @@ export default function AdminCelestialAudit() {
                   img.src = item.forced_image_url;
                   return;
                 }
-                // If forced URL failed, try wiki image if available
-                if ((step === "thumb" || step === "raw") && wiki?.status === "found" && wiki.url) {
-                  img.dataset.step = "wiki";
-                  img.src = wiki.url;
-                  return;
-                }
-                if (step !== "dss2" && dss2Url) {
+                // Mark as broken so React re-renders when wiki arrives
+                markBroken(item.id);
+                if (dss2Url && step !== "dss2") {
                   img.dataset.step = "dss2";
                   img.src = dss2Url;
                   return;
                 }
-                markBroken(item.id);
               };
 
               if (item.forced_image_url) {
                 return (
-                  <div className={`aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ${brokenSet.has(item.id) ? "ring-1 ring-destructive" : ""}`}>
+                  <div className={`aspect-square rounded bg-secondary/20 flex items-center justify-center overflow-hidden relative ${isBrokenDb ? "ring-1 ring-destructive" : ""}`}>
                     {shouldLoadImage ? (
                       <img
                         src={buildWikimediaThumbUrl(item.forced_image_url, 200)}

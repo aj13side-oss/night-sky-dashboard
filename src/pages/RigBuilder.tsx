@@ -29,14 +29,18 @@ const RigBuilder = () => {
   const { data: telescopes, isLoading: loadingScopes } = useTelescopes();
   const { data: mounts, isLoading: loadingMounts } = useMounts();
   const { data: filters, isLoading: loadingFilters } = useFilters();
+  const { data: accessories, isLoading: loadingAccessories } = useAccessories();
 
   const [tab, setTab] = useState<Category>("telescopes");
   const [compareIds, setCompareIds] = useState<Record<Category, string[]>>({
-    telescopes: [], cameras: [], mounts: [], filters: [],
+    telescopes: [], cameras: [], mounts: [], filters: [], accessories: [],
   });
 
-  const [rigPicks, setRigPicks] = useState<{ telescope: string | null; camera: string | null; mount: string | null; filter: string | null }>({
-    telescope: null, camera: null, mount: null, filter: null,
+  const [rigPicks, setRigPicks] = useState<{
+    telescope: string | null; camera: string | null; mount: string | null;
+    filter: string | null; accessories: string[];
+  }>({
+    telescope: null, camera: null, mount: null, filter: null, accessories: [],
   });
 
   // --- Filter bounds ---

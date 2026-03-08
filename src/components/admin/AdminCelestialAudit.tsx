@@ -351,6 +351,7 @@ export default function AdminCelestialAudit() {
         </Button>
         <span className="text-xs text-muted-foreground">
           {needsClientFilter ? `${filteredAll.length} filtrés / ${data?.total ?? 0}` : `${data?.total ?? 0} objets`} · Page {page + 1}/{totalPages || 1}
+          {brokenSet.size > 0 && <span className="text-destructive ml-1">· {brokenSet.size} cassées détectées</span>}
         </span>
       </div>
 

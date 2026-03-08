@@ -138,7 +138,17 @@ async function fetchObjectImage(
           pageUrl: meta.filePageUrl ?? null,
         };
       }
-      // File doesn't exist on Commons — fall through to Wikipedia search
+      // Thumbnail API failed — try the raw URL directly (file may still load)
+      return {
+        url: forcedImageUrl,
+        artist: "Wikimedia Commons",
+        date: null,
+        license: null,
+        licenseUrl: null,
+        filePageUrl: null,
+        source: "forced",
+        pageUrl: null,
+      };
     }
   }
 

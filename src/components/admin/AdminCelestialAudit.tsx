@@ -671,7 +671,7 @@ export default function AdminCelestialAudit() {
             const renderImage = () => {
               const dss2Url = item.ra != null && item.dec != null ? buildDss2ThumbUrl(item.ra, item.dec, item.size_max) : null;
 
-              const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+              const handleImageError = (e: any) => {
                 const img = e.currentTarget;
                 const step = img.dataset.step || "thumb";
                 if (step === "thumb" && item.forced_image_url && img.src !== item.forced_image_url) {

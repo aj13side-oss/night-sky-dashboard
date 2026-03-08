@@ -75,15 +75,22 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
       }`}
     >
       {/* Thumbnail with badges */}
-      {(!imgError && (wikiLoading || thumbUrl)) && (
+      {(!imgError && (wikiLoading || displayUrl)) && (
         <div className="relative w-full h-28 bg-muted/30 overflow-hidden">
-          {thumbUrl && (
+          {displayUrl && (
             <img
-              src={thumbUrl}
+              src={displayUrl}
               alt={`${obj.catalog_id}`}
               loading="lazy"
               onLoad={() => setImgLoaded(true)}
-              onError={() => setImgError(true)}
+              onError={() => {
+                if (!useFallback && wikiImage?.fallbackUrl) {
+                  setUseFallback(true);
+                  setImgLoaded(false);
+                } else {
+                  setImgError(true);
+                }
+              }}
               className={`w-full h-full object-cover transition-opacity duration-500 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
             />
           )}

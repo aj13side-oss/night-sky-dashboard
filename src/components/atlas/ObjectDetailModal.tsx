@@ -113,7 +113,7 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
             {/* Left: Title + Info */}
             <div className="flex-1 min-w-0 space-y-3">
               <div>
-                <h2 className="text-xl font-bold text-foreground">{obj.catalog_id}</h2>
+                <h2 className="text-xl font-bold text-foreground">{formatCatalogId(obj)}</h2>
                 {obj.common_name && (
                   <p className="text-primary text-sm">{obj.common_name}</p>
                 )}

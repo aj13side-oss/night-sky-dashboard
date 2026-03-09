@@ -163,7 +163,7 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
         <div className="flex items-start justify-between gap-2 mb-3">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-foreground truncate">
-              {typeEmoji[obj.obj_type] ?? "🔭"} {obj.catalog_id}
+              {typeEmoji[obj.obj_type] ?? "🔭"} {formatCatalogId(obj)}
             </p>
             {obj.common_name && (
               <p className="text-xs text-primary truncate mt-0.5">{obj.common_name}</p>

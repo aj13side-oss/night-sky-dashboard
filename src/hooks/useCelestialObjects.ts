@@ -52,6 +52,21 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
 
     let results = (fuzzyData ?? []) as CelestialObject[];
 
+    // Also search scientific_notation (not covered by the RPC)
+    const termLower = term.toLowerCase();
+    if (results.length === 0 || !results.some(r => r.scientific_notation?.toLowerCase().includes(termLower))) {
+      const { data: sciData } = await supabase
+        .from("celestial_objects")
+        .select("*")
+        .ilike("scientific_notation", `%${term}%`)
+        .limit(50);
+      if (sciData && sciData.length > 0) {
+        const existingIds = new Set(results.map(r => r.id));
+        const newItems = (sciData as CelestialObject[]).filter(r => !existingIds.has(r.id));
+        results = [...newItems, ...results];
+      }
+    }
+
     // Apply client-side filters on fuzzy results
     if (filters.objTypes.length > 0) {
       results = results.filter((o) => filters.objTypes.includes(o.obj_type));

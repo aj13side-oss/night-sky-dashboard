@@ -80,7 +80,7 @@ export default function AdminCelestialAudit() {
   const [objType, setObjType] = useState<string | null>(null);
   const [constellation, setConstellation] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<"catalog_id" | "common_name" | "magnitude" | "status">("catalog_id");
+  const [sortBy, setSortBy] = useState<"catalog_id" | "common_name" | "magnitude" | "photo_score" | "status">("catalog_id");
   const [filterStatus, setFilterStatus] = useState("all");
   const [catalogPrefix, setCatalogPrefix] = useState("all");
   const needsClientFilter = filterStatus !== "all" || catalogPrefix === "other";
@@ -120,10 +120,11 @@ export default function AdminCelestialAudit() {
       const buildQuery = () => {
         let q = (supabase as any)
           .from("celestial_objects")
-          .select("id, catalog_id, common_name, obj_type, constellation, forced_image_url, magnitude, image_search_query, ra, dec, size_max", { count: "exact" });
+          .select("id, catalog_id, common_name, obj_type, constellation, forced_image_url, magnitude, photo_score, image_search_query, ra, dec, size_max", { count: "exact" });
 
         if (sortBy === "common_name") q = q.order("common_name", { ascending: true, nullsFirst: false });
         else if (sortBy === "magnitude") q = q.order("magnitude", { ascending: true, nullsFirst: false });
+        else if (sortBy === "photo_score") q = q.order("photo_score", { ascending: false, nullsFirst: false });
         else q = q.order("catalog_id");
 
         // Always exclude stars
@@ -587,6 +588,7 @@ export default function AdminCelestialAudit() {
             <SelectItem value="catalog_id">Tri : Catalogue (A→Z)</SelectItem>
             <SelectItem value="common_name">Tri : Nom commun (A→Z)</SelectItem>
             <SelectItem value="magnitude">Tri : Magnitude</SelectItem>
+            <SelectItem value="photo_score">Tri : Note photo (↓)</SelectItem>
             <SelectItem value="status">Tri : Statut vérification</SelectItem>
           </SelectContent>
         </Select>

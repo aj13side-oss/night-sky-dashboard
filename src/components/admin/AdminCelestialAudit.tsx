@@ -124,6 +124,7 @@ export default function AdminCelestialAudit() {
 
         if (sortBy === "common_name") q = q.order("common_name", { ascending: true, nullsFirst: false });
         else if (sortBy === "magnitude") q = q.order("magnitude", { ascending: true, nullsFirst: false });
+        else if (sortBy === "photo_score") q = q.order("photo_score", { ascending: false, nullsFirst: false });
         else q = q.order("catalog_id");
 
         // Always exclude stars

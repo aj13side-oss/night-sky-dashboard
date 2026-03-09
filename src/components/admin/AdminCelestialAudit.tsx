@@ -80,7 +80,7 @@ export default function AdminCelestialAudit() {
   const [objType, setObjType] = useState<string | null>(null);
   const [constellation, setConstellation] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<"catalog_id" | "common_name" | "magnitude" | "status">("catalog_id");
+  const [sortBy, setSortBy] = useState<"catalog_id" | "common_name" | "magnitude" | "photo_score" | "status">("catalog_id");
   const [filterStatus, setFilterStatus] = useState("all");
   const [catalogPrefix, setCatalogPrefix] = useState("all");
   const needsClientFilter = filterStatus !== "all" || catalogPrefix === "other";

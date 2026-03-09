@@ -12,6 +12,7 @@ import { ChipFilter } from "@/components/rigbuilder/ChipFilter";
 import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus, type ImageHealth } from "@/hooks/useImageAudit";
 import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
 import AuditBatchBar from "./AuditBatchBar";
+import { formatCatalogId } from "@/lib/format-catalog";
 
 /** Build Wikimedia thumbnail URL directly from a full-res commons URL */
 function buildWikimediaThumbUrl(url: string, width: number): string {

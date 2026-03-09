@@ -45,16 +45,28 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
   // Use fuzzy search RPC when there's a search term
   if (filters.search.trim()) {
     const term = filters.search.trim();
+    let results: CelestialObject[] = [];
+
+    // Try fuzzy RPC first, fall back to ilike if unavailable
     const { data: fuzzyData, error: fuzzyError } = await supabase
       .rpc("fuzzy_search_celestial", { search_term: term, similarity_threshold: 0.15 });
 
-    if (fuzzyError) throw fuzzyError;
+    if (!fuzzyError && fuzzyData) {
+      results = fuzzyData as CelestialObject[];
+    } else {
+      // Fallback: standard ilike search across catalog_id, common_name, scientific_notation
+      const { data: fallbackData } = await supabase
+        .from("celestial_objects")
+        .select("*")
+        .or(`catalog_id.ilike.%${term}%,common_name.ilike.%${term}%,scientific_notation.ilike.%${term}%`)
+        .order("photo_score", { ascending: false, nullsFirst: false })
+        .limit(200);
+      results = (fallbackData ?? []) as CelestialObject[];
+    }
 
-    let results = (fuzzyData ?? []) as CelestialObject[];
-
-    // Also search scientific_notation (not covered by the RPC)
+    // Also search scientific_notation if not already covered
     const termLower = term.toLowerCase();
-    if (results.length === 0 || !results.some(r => r.scientific_notation?.toLowerCase().includes(termLower))) {
+    if (!results.some(r => r.scientific_notation?.toLowerCase().includes(termLower) || r.catalog_id?.toLowerCase().includes(termLower))) {
       const { data: sciData } = await supabase
         .from("celestial_objects")
         .select("*")

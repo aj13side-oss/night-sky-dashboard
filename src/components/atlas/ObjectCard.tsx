@@ -5,6 +5,7 @@ import { computeDynamicScore, getSeasonEmoji, getSeasonLabel } from "@/lib/dynam
 import { motion } from "framer-motion";
 import { Ruler, Eye, Crown, Award, Sun, Mountain } from "lucide-react";
 import { useState } from "react";
+import { formatCatalogId } from "@/lib/format-catalog";
 
 interface Props {
   obj: CelestialObject;

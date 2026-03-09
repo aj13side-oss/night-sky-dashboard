@@ -15,6 +15,7 @@ import ExposureGuideModal from "./ExposureGuideModal";
 import AladinLiteViewer from "./AladinLiteViewer";
 import NightPlanner from "./NightPlanner";
 import SetupAssistant from "./SetupAssistant";
+import { formatCatalogId } from "@/lib/format-catalog";
 
 interface Props {
   obj: CelestialObject | null;

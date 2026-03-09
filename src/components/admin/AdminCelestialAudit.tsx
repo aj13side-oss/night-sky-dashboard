@@ -509,7 +509,7 @@ export default function AdminCelestialAudit() {
   const cmdItems: AuditableItem[] = useMemo(() =>
     (data?.items ?? []).map((i: any) => ({
       id: i.id,
-      label: `${i.catalog_id} ${i.common_name || ""}`.trim(),
+      label: `${formatCatalogId(i)} ${i.common_name || ""}`.trim(),
       sublabel: `${i.obj_type || ""} · ${i.constellation || ""}`,
       hasImage: !!i.forced_image_url,
       status: audit[i.id],

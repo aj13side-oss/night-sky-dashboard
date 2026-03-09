@@ -588,6 +588,7 @@ export default function AdminCelestialAudit() {
             <SelectItem value="catalog_id">Tri : Catalogue (A→Z)</SelectItem>
             <SelectItem value="common_name">Tri : Nom commun (A→Z)</SelectItem>
             <SelectItem value="magnitude">Tri : Magnitude</SelectItem>
+            <SelectItem value="photo_score">Tri : Note photo (↓)</SelectItem>
             <SelectItem value="status">Tri : Statut vérification</SelectItem>
           </SelectContent>
         </Select>

@@ -21,6 +21,7 @@ export interface CelestialObject {
   ideal_resolution: string | null;
   image_search_query: string | null;
   forced_image_url: string | null;
+  scientific_notation: string | null;
 }
 
 export interface CelestialFilters {

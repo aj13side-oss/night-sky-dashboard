@@ -12,6 +12,7 @@ import { ChipFilter } from "@/components/rigbuilder/ChipFilter";
 import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus, type ImageHealth } from "@/hooks/useImageAudit";
 import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
 import AuditBatchBar from "./AuditBatchBar";
+import { formatCatalogId } from "@/lib/format-catalog";
 
 /** Build Wikimedia thumbnail URL directly from a full-res commons URL */
 function buildWikimediaThumbUrl(url: string, width: number): string {
@@ -120,7 +121,7 @@ export default function AdminCelestialAudit() {
       const buildQuery = () => {
         let q = (supabase as any)
           .from("celestial_objects")
-          .select("id, catalog_id, common_name, obj_type, constellation, forced_image_url, magnitude, photo_score, image_search_query, ra, dec, size_max", { count: "exact" });
+          .select("id, catalog_id, common_name, scientific_notation, obj_type, constellation, forced_image_url, magnitude, photo_score, image_search_query, ra, dec, size_max", { count: "exact" });
 
         if (sortBy === "common_name") q = q.order("common_name", { ascending: true, nullsFirst: false });
         else if (sortBy === "magnitude") q = q.order("magnitude", { ascending: true, nullsFirst: false });
@@ -132,7 +133,7 @@ export default function AdminCelestialAudit() {
         if (objType) q = q.eq("obj_type", objType);
         if (constellation) q = q.eq("constellation", constellation);
         if (search.trim()) {
-          q = q.or(`catalog_id.ilike.%${search.trim()}%,common_name.ilike.%${search.trim()}%`);
+          q = q.or(`catalog_id.ilike.%${search.trim()}%,common_name.ilike.%${search.trim()}%,scientific_notation.ilike.%${search.trim()}%`);
         }
         // Server-side catalog prefix filter
         if (catalogPrefix !== "all" && catalogPrefix !== "other") {
@@ -508,7 +509,7 @@ export default function AdminCelestialAudit() {
   const cmdItems: AuditableItem[] = useMemo(() =>
     (data?.items ?? []).map((i: any) => ({
       id: i.id,
-      label: `${i.catalog_id} ${i.common_name || ""}`.trim(),
+      label: `${formatCatalogId(i)} ${i.common_name || ""}`.trim(),
       sublabel: `${i.obj_type || ""} · ${i.constellation || ""}`,
       hasImage: !!i.forced_image_url,
       status: audit[i.id],
@@ -853,7 +854,7 @@ export default function AdminCelestialAudit() {
                     </button>
                   </div>
                   {renderImage()}
-                  <p className="text-[9px] font-bold text-foreground truncate">{item.catalog_id}</p>
+                  <p className="text-[9px] font-bold text-foreground truncate">{formatCatalogId(item)}</p>
                   {item.common_name && <p className="text-[8px] text-muted-foreground truncate">{item.common_name}</p>}
                   <div className="flex gap-0.5">
                     <button onClick={() => setStatus(item.id, "ok")} title="OK" className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "ok" ? "bg-green-500/20 border-green-500 text-green-400" : "border-border/50 text-muted-foreground hover:border-green-500/50"}`}>

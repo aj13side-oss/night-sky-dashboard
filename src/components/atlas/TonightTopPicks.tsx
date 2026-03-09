@@ -5,6 +5,7 @@ import { getSeasonEmoji, getSeasonLabel, getCurrentSeason } from "@/lib/dynamic-
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
 import { motion } from "framer-motion";
 import { Sparkles, TrendingUp, Sun, Mountain } from "lucide-react";
+import { formatCatalogId } from "@/lib/format-catalog";
 
 interface Props {
   lat: number;
@@ -87,7 +88,7 @@ const TonightTopPicks = ({ lat, lng, onSelect }: Props) => {
               {/* Content */}
               <div className="relative p-4 pt-12 space-y-2">
                 <p className="text-sm font-bold text-foreground truncate">
-                  {obj.catalog_id}
+                  {formatCatalogId(obj)}
                 </p>
                 {obj.common_name && (
                   <p className="text-xs text-primary truncate">{obj.common_name}</p>

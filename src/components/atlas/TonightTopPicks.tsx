@@ -5,6 +5,7 @@ import { getSeasonEmoji, getSeasonLabel, getCurrentSeason } from "@/lib/dynamic-
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
 import { motion } from "framer-motion";
 import { Sparkles, TrendingUp, Sun, Mountain } from "lucide-react";
+import { formatCatalogId } from "@/lib/format-catalog";
 
 interface Props {
   lat: number;

@@ -61,7 +61,7 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
       const { data: fallbackData } = await supabase
         .from("celestial_objects")
         .select("*")
-        .or(`catalog_id.ilike.%${term}%,common_name.ilike.%${term}%,scientific_notation.ilike.%${term}%`)
+        .or(`catalog_id.ilike.%${term}%,common_name.ilike.%${term}%,scientific_notation.ilike.%${term}%,search_aliases.ilike.%${term}%,relation_note.ilike.%${term}%`)
         .order("photo_score", { ascending: false, nullsFirst: false })
         .limit(200);
       results = (fallbackData ?? []) as CelestialObject[];

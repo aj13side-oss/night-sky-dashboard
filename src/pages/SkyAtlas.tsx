@@ -138,6 +138,7 @@ const SkyAtlas = () => {
         obj={selected}
         open={!!selected}
         onClose={() => setSelected(null)}
+        onSelect={(obj) => setSelected(obj)}
         lat={userPos.lat}
         lng={userPos.lng}
         focalLength={equipment.focalLength}

@@ -121,7 +121,7 @@ export default function AdminCelestialAudit() {
       const buildQuery = () => {
         let q = (supabase as any)
           .from("celestial_objects")
-          .select("id, catalog_id, common_name, scientific_notation, obj_type, constellation, forced_image_url, magnitude, photo_score, image_search_query, ra, dec, size_max", { count: "exact" });
+          .select("id, catalog_id, common_name, scientific_notation, obj_type, constellation, forced_image_url, magnitude, photo_score, image_search_query, ra, dec, size_max, parent_id, relation_note, search_aliases", { count: "exact" });
 
         if (sortBy === "common_name") q = q.order("common_name", { ascending: true, nullsFirst: false });
         else if (sortBy === "magnitude") q = q.order("magnitude", { ascending: true, nullsFirst: false });
@@ -133,7 +133,7 @@ export default function AdminCelestialAudit() {
         if (objType) q = q.eq("obj_type", objType);
         if (constellation) q = q.eq("constellation", constellation);
         if (search.trim()) {
-          q = q.or(`catalog_id.ilike.%${search.trim()}%,common_name.ilike.%${search.trim()}%,scientific_notation.ilike.%${search.trim()}%`);
+          q = q.or(`catalog_id.ilike.%${search.trim()}%,common_name.ilike.%${search.trim()}%,scientific_notation.ilike.%${search.trim()}%,search_aliases.ilike.%${search.trim()}%,relation_note.ilike.%${search.trim()}%`);
         }
         // Server-side catalog prefix filter
         if (catalogPrefix !== "all" && catalogPrefix !== "other") {
@@ -856,6 +856,18 @@ export default function AdminCelestialAudit() {
                   {renderImage()}
                   <p className="text-[9px] font-bold text-foreground truncate">{formatCatalogId(item)}</p>
                   {item.common_name && <p className="text-[8px] text-muted-foreground truncate">{item.common_name}</p>}
+                  {item.parent_id && (
+                    <p className="text-[7px] text-primary truncate" title={item.relation_note || undefined}>↗ {
+                      (() => {
+                        const parent = data?.items?.find((p: any) => p.id === item.parent_id);
+                        return parent ? formatCatalogId(parent) : "parent";
+                      })()
+                    }</p>
+                  )}
+                  {(() => {
+                    const childCount = data?.items?.filter((c: any) => c.parent_id === item.id).length ?? 0;
+                    return childCount > 0 ? <p className="text-[7px] text-accent truncate">(+{childCount} associés)</p> : null;
+                  })()}
                   <div className="flex gap-0.5">
                     <button onClick={() => setStatus(item.id, "ok")} title="OK" className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "ok" ? "bg-green-500/20 border-green-500 text-green-400" : "border-border/50 text-muted-foreground hover:border-green-500/50"}`}>
                       <Check className="w-2.5 h-2.5 mx-auto" />

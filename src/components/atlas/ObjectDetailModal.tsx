@@ -8,8 +8,10 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, Globe, Info, ChevronDown, ChevronUp, Telescope } from "lucide-react";
+import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, Globe, Info, ChevronDown, ChevronUp, Telescope, Link as LinkIcon, Paperclip } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import AltitudeChart from "./AltitudeChart";
 import ExposureGuideModal from "./ExposureGuideModal";
 import AladinLiteViewer from "./AladinLiteViewer";
@@ -21,6 +23,7 @@ interface Props {
   obj: CelestialObject | null;
   open: boolean;
   onClose: () => void;
+  onSelect?: (obj: CelestialObject) => void;
   lat: number;
   lng: number;
   focalLength?: number;
@@ -28,7 +31,7 @@ interface Props {
   sensorHeight?: number;
 }
 
-const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0 }: Props) => {
+const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0 }: Props) => {
   const [showExposureInfo, setShowExposureInfo] = useState(false);
   const [showCredits, setShowCredits] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
@@ -55,6 +58,38 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
   }, [obj?.size_max]);
 
   const [activeTab, setActiveTab] = useState("aladin");
+
+  // Fetch parent object if this is a child
+  const { data: parentObj } = useQuery({
+    queryKey: ["celestial-parent", obj?.parent_id],
+    queryFn: async () => {
+      if (!obj?.parent_id) return null;
+      const { data } = await (supabase as any)
+        .from("celestial_objects")
+        .select("id, catalog_id, common_name, scientific_notation, obj_type")
+        .eq("id", obj.parent_id)
+        .single();
+      return data as { id: string; catalog_id: string; common_name: string | null; scientific_notation: string | null; obj_type: string } | null;
+    },
+    enabled: !!obj?.parent_id,
+    staleTime: Infinity,
+  });
+
+  // Fetch children if this object is a parent
+  const { data: children } = useQuery({
+    queryKey: ["celestial-children", obj?.id],
+    queryFn: async () => {
+      if (!obj?.id) return [];
+      const { data } = await (supabase as any)
+        .from("celestial_objects")
+        .select("id, catalog_id, common_name, scientific_notation, obj_type, relation_note")
+        .eq("parent_id", obj.id)
+        .order("catalog_id");
+      return (data ?? []) as { id: string; catalog_id: string; common_name: string | null; scientific_notation: string | null; obj_type: string; relation_note: string | null }[];
+    },
+    enabled: !!obj?.id,
+    staleTime: Infinity,
+  });
 
   // Reset imageFailed when object changes
   useEffect(() => { setImageFailed(false); }, [obj?.catalog_id]);
@@ -279,6 +314,53 @@ const ObjectDetailModal = ({ obj, open, onClose, lat, lng, focalLength = 0, sens
               </Tabs>
             </div>
           </div>
+
+          {/* Parent link (if child) */}
+          {obj.parent_id && parentObj && (
+            <button
+              onClick={() => onSelect?.({ ...parentObj, ra: null, dec: null, magnitude: null, surf_brightness: null, size_max: null, photo_score: null, exposure_guide_fast: null, exposure_guide_deep: null, best_months: null, recommended_filter: null, moon_tolerance: null, ideal_resolution: null, image_search_query: null, forced_image_url: null, constellation: null, parent_id: null, relation_note: null, search_aliases: null } as CelestialObject)}
+              className="flex items-start gap-3 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors text-left w-full"
+            >
+              <LinkIcon className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">Fait partie de</p>
+                <p className="text-sm font-semibold text-foreground">{formatCatalogId(parentObj)}</p>
+                {parentObj.common_name && <p className="text-xs text-primary">{parentObj.common_name}</p>}
+                {obj.relation_note && <p className="text-xs text-muted-foreground mt-1 italic">"{obj.relation_note}"</p>}
+              </div>
+            </button>
+          )}
+
+          {/* Children list (if parent) */}
+          {children && children.length > 0 && (
+            <div className="p-4 rounded-xl bg-secondary/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <Paperclip className="w-4 h-4 text-primary" />
+                <span className="text-sm font-semibold text-foreground">Objets associés</span>
+                <Badge variant="secondary" className="text-[10px]">{children.length}</Badge>
+              </div>
+              <div className="space-y-1.5">
+                {children.map((child) => (
+                  <button
+                    key={child.id}
+                    onClick={() => {
+                      // Navigate to child - we need full object data
+                      onSelect?.({ ...child, ra: null, dec: null, magnitude: null, surf_brightness: null, size_max: null, photo_score: null, exposure_guide_fast: null, exposure_guide_deep: null, best_months: null, recommended_filter: null, moon_tolerance: null, ideal_resolution: null, image_search_query: null, forced_image_url: null, constellation: null, parent_id: obj.id, relation_note: child.relation_note, search_aliases: null } as CelestialObject);
+                    }}
+                    className="w-full text-left p-2 rounded-lg hover:bg-secondary/40 transition-colors"
+                  >
+                    <p className="text-xs font-semibold text-foreground">
+                      {formatCatalogId(child)}
+                      {child.common_name && <span className="text-primary font-normal ml-1.5">— {child.common_name}</span>}
+                    </p>
+                    {child.relation_note && (
+                      <p className="text-[10px] text-muted-foreground mt-0.5 italic">{child.relation_note}</p>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Capture Guide - full width below */}
           {((obj.exposure_guide_fast ?? 0) > 0 || (obj.exposure_guide_deep ?? 0) > 0) && (

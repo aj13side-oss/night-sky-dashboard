@@ -3,7 +3,7 @@ import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { computeDynamicScore, getSeasonEmoji, getSeasonLabel } from "@/lib/dynamic-score";
 import { motion } from "framer-motion";
-import { Ruler, Eye, Crown, Award, Sun, Mountain } from "lucide-react";
+import { Ruler, Eye, Crown, Award, Sun, Mountain, Link } from "lucide-react";
 import { useState } from "react";
 import { formatCatalogId } from "@/lib/format-catalog";
 

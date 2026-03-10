@@ -64,12 +64,12 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
     queryKey: ["celestial-parent", obj?.parent_id],
     queryFn: async () => {
       if (!obj?.parent_id) return null;
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("celestial_objects")
-        .select("*")
+        .select("id, catalog_id, common_name, scientific_notation, obj_type")
         .eq("id", obj.parent_id)
         .single();
-      return data as CelestialObject | null;
+      return data as { id: string; catalog_id: string; common_name: string | null; scientific_notation: string | null; obj_type: string } | null;
     },
     enabled: !!obj?.parent_id,
     staleTime: Infinity,
@@ -80,12 +80,12 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
     queryKey: ["celestial-children", obj?.id],
     queryFn: async () => {
       if (!obj?.id) return [];
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("celestial_objects")
-        .select("*")
+        .select("id, catalog_id, common_name, scientific_notation, obj_type, relation_note")
         .eq("parent_id", obj.id)
         .order("catalog_id");
-      return (data ?? []) as CelestialObject[];
+      return (data ?? []) as { id: string; catalog_id: string; common_name: string | null; scientific_notation: string | null; obj_type: string; relation_note: string | null }[];
     },
     enabled: !!obj?.id,
     staleTime: Infinity,

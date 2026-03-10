@@ -59,6 +59,38 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
 
   const [activeTab, setActiveTab] = useState("aladin");
 
+  // Fetch parent object if this is a child
+  const { data: parentObj } = useQuery({
+    queryKey: ["celestial-parent", obj?.parent_id],
+    queryFn: async () => {
+      if (!obj?.parent_id) return null;
+      const { data } = await supabase
+        .from("celestial_objects")
+        .select("*")
+        .eq("id", obj.parent_id)
+        .single();
+      return data as CelestialObject | null;
+    },
+    enabled: !!obj?.parent_id,
+    staleTime: Infinity,
+  });
+
+  // Fetch children if this object is a parent
+  const { data: children } = useQuery({
+    queryKey: ["celestial-children", obj?.id],
+    queryFn: async () => {
+      if (!obj?.id) return [];
+      const { data } = await supabase
+        .from("celestial_objects")
+        .select("*")
+        .eq("parent_id", obj.id)
+        .order("catalog_id");
+      return (data ?? []) as CelestialObject[];
+    },
+    enabled: !!obj?.id,
+    staleTime: Infinity,
+  });
+
   // Reset imageFailed when object changes
   useEffect(() => { setImageFailed(false); }, [obj?.catalog_id]);
 

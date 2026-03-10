@@ -315,6 +315,53 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
             </div>
           </div>
 
+          {/* Parent link (if child) */}
+          {obj.parent_id && parentObj && (
+            <button
+              onClick={() => onSelect?.({ ...parentObj, ra: null, dec: null, magnitude: null, surf_brightness: null, size_max: null, photo_score: null, exposure_guide_fast: null, exposure_guide_deep: null, best_months: null, recommended_filter: null, moon_tolerance: null, ideal_resolution: null, image_search_query: null, forced_image_url: null, constellation: null, parent_id: null, relation_note: null, search_aliases: null } as CelestialObject)}
+              className="flex items-start gap-3 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors text-left w-full"
+            >
+              <LinkIcon className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">Fait partie de</p>
+                <p className="text-sm font-semibold text-foreground">{formatCatalogId(parentObj)}</p>
+                {parentObj.common_name && <p className="text-xs text-primary">{parentObj.common_name}</p>}
+                {obj.relation_note && <p className="text-xs text-muted-foreground mt-1 italic">"{obj.relation_note}"</p>}
+              </div>
+            </button>
+          )}
+
+          {/* Children list (if parent) */}
+          {children && children.length > 0 && (
+            <div className="p-4 rounded-xl bg-secondary/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <Paperclip className="w-4 h-4 text-primary" />
+                <span className="text-sm font-semibold text-foreground">Objets associés</span>
+                <Badge variant="secondary" className="text-[10px]">{children.length}</Badge>
+              </div>
+              <div className="space-y-1.5">
+                {children.map((child) => (
+                  <button
+                    key={child.id}
+                    onClick={() => {
+                      // Navigate to child - we need full object data
+                      onSelect?.({ ...child, ra: null, dec: null, magnitude: null, surf_brightness: null, size_max: null, photo_score: null, exposure_guide_fast: null, exposure_guide_deep: null, best_months: null, recommended_filter: null, moon_tolerance: null, ideal_resolution: null, image_search_query: null, forced_image_url: null, constellation: null, parent_id: obj.id, relation_note: child.relation_note, search_aliases: null } as CelestialObject);
+                    }}
+                    className="w-full text-left p-2 rounded-lg hover:bg-secondary/40 transition-colors"
+                  >
+                    <p className="text-xs font-semibold text-foreground">
+                      {formatCatalogId(child)}
+                      {child.common_name && <span className="text-primary font-normal ml-1.5">— {child.common_name}</span>}
+                    </p>
+                    {child.relation_note && (
+                      <p className="text-[10px] text-muted-foreground mt-0.5 italic">{child.relation_note}</p>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Capture Guide - full width below */}
           {((obj.exposure_guide_fast ?? 0) > 0 || (obj.exposure_guide_deep ?? 0) > 0) && (
             <div className="p-4 rounded-xl bg-secondary/30 space-y-3">

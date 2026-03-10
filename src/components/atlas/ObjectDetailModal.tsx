@@ -23,6 +23,7 @@ interface Props {
   obj: CelestialObject | null;
   open: boolean;
   onClose: () => void;
+  onSelect?: (obj: CelestialObject) => void;
   lat: number;
   lng: number;
   focalLength?: number;

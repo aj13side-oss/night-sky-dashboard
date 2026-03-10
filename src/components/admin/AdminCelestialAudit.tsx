@@ -121,7 +121,7 @@ export default function AdminCelestialAudit() {
       const buildQuery = () => {
         let q = (supabase as any)
           .from("celestial_objects")
-          .select("id, catalog_id, common_name, scientific_notation, obj_type, constellation, forced_image_url, magnitude, photo_score, image_search_query, ra, dec, size_max", { count: "exact" });
+          .select("id, catalog_id, common_name, scientific_notation, obj_type, constellation, forced_image_url, magnitude, photo_score, image_search_query, ra, dec, size_max, parent_id, relation_note, search_aliases", { count: "exact" });
 
         if (sortBy === "common_name") q = q.order("common_name", { ascending: true, nullsFirst: false });
         else if (sortBy === "magnitude") q = q.order("magnitude", { ascending: true, nullsFirst: false });

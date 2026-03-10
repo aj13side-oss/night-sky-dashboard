@@ -133,7 +133,7 @@ export default function AdminCelestialAudit() {
         if (objType) q = q.eq("obj_type", objType);
         if (constellation) q = q.eq("constellation", constellation);
         if (search.trim()) {
-          q = q.or(`catalog_id.ilike.%${search.trim()}%,common_name.ilike.%${search.trim()}%,scientific_notation.ilike.%${search.trim()}%`);
+          q = q.or(`catalog_id.ilike.%${search.trim()}%,common_name.ilike.%${search.trim()}%,scientific_notation.ilike.%${search.trim()}%,search_aliases.ilike.%${search.trim()}%,relation_note.ilike.%${search.trim()}%`);
         }
         // Server-side catalog prefix filter
         if (catalogPrefix !== "all" && catalogPrefix !== "other") {

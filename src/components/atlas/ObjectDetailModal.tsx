@@ -8,8 +8,10 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, Globe, Info, ChevronDown, ChevronUp, Telescope } from "lucide-react";
+import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, Globe, Info, ChevronDown, ChevronUp, Telescope, Link as LinkIcon, Paperclip } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import AltitudeChart from "./AltitudeChart";
 import ExposureGuideModal from "./ExposureGuideModal";
 import AladinLiteViewer from "./AladinLiteViewer";

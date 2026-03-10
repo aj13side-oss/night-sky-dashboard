@@ -168,6 +168,11 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
             {obj.common_name && (
               <p className="text-xs text-primary truncate mt-0.5">{obj.common_name}</p>
             )}
+            {obj.parent_id && (
+              <p className="text-[10px] text-muted-foreground truncate mt-0.5 flex items-center gap-1">
+                <Link className="w-3 h-3" /> Fait partie d'une région
+              </p>
+            )}
           </div>
         </div>
 

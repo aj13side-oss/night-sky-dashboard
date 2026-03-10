@@ -856,6 +856,18 @@ export default function AdminCelestialAudit() {
                   {renderImage()}
                   <p className="text-[9px] font-bold text-foreground truncate">{formatCatalogId(item)}</p>
                   {item.common_name && <p className="text-[8px] text-muted-foreground truncate">{item.common_name}</p>}
+                  {item.parent_id && (
+                    <p className="text-[7px] text-primary truncate" title={item.relation_note || undefined}>↗ {
+                      (() => {
+                        const parent = data?.items?.find((p: any) => p.id === item.parent_id);
+                        return parent ? formatCatalogId(parent) : "parent";
+                      })()
+                    }</p>
+                  )}
+                  {(() => {
+                    const childCount = data?.items?.filter((c: any) => c.parent_id === item.id).length ?? 0;
+                    return childCount > 0 ? <p className="text-[7px] text-accent truncate">(+{childCount} associés)</p> : null;
+                  })()}
                   <div className="flex gap-0.5">
                     <button onClick={() => setStatus(item.id, "ok")} title="OK" className={`flex-1 py-0.5 rounded text-[8px] border transition-colors ${status === "ok" ? "bg-green-500/20 border-green-500 text-green-400" : "border-border/50 text-muted-foreground hover:border-green-500/50"}`}>
                       <Check className="w-2.5 h-2.5 mx-auto" />

@@ -53,7 +53,10 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
   const [imgError, setImgError] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
 
-  const displayUrl = useFallback && wikiImage?.fallbackUrl ? wikiImage.fallbackUrl : thumbUrl;
+  const searchContext = useMemo(() => getSearchContext(obj, searchQuery), [obj, searchQuery]);
+  const displayUrl = searchContext?.image
+    ? searchContext.image
+    : useFallback && wikiImage?.fallbackUrl ? wikiImage.fallbackUrl : thumbUrl;
 
   const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra, obj.dec, lat, lng);
   const isLegendary = score.total >= 100;

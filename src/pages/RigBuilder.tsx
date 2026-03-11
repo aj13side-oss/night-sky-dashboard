@@ -398,7 +398,7 @@ const RigBuilder = () => {
                       t.image_circle_mm ? `IC ${t.image_circle_mm}mm` : null,
                     ]}
                     affiliateAmazon={t.url_amazon} affiliateAstro={t.url_astroshop_de} manufacturerUrl={t.url_manufacturer}
-                  />
+                    extraRetailers={getFrRetailers(t._raw ?? {})}
                 );
               })}
             </EquipmentTab>

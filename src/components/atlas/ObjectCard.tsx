@@ -2,9 +2,10 @@ import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { computeDynamicScore, getSeasonEmoji, getSeasonLabel } from "@/lib/dynamic-score";
+import { getSearchContext } from "@/lib/search-context";
 import { motion } from "framer-motion";
-import { Ruler, Eye, Crown, Award, Sun, Mountain, Link } from "lucide-react";
-import { useState } from "react";
+import { Ruler, Eye, Crown, Award, Sun, Mountain, Link, Lightbulb } from "lucide-react";
+import { useState, useMemo } from "react";
 import { formatCatalogId } from "@/lib/format-catalog";
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
   index: number;
   lat: number;
   lng: number;
+  searchQuery?: string;
   onClick: () => void;
 }
 

@@ -460,7 +460,7 @@ const RigBuilder = () => {
                       c.read_noise_e ? `${c.read_noise_e}e⁻` : null,
                     ]}
                     affiliateAmazon={c.url_amazon} affiliateAstro={c.url_astroshop_de} manufacturerUrl={c.url_manufacturer}
-                  />
+                    extraRetailers={getFrRetailers(c._raw ?? {})}
                 );
               })}
             </EquipmentTab>

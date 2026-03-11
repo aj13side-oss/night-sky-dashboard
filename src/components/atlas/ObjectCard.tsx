@@ -181,6 +181,15 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
           </div>
         </div>
 
+        {searchContext && (
+          <div className="mb-3 p-2 bg-accent/30 border border-accent/20 rounded-lg">
+            <div className="flex items-start gap-2">
+              <Lightbulb className="w-3.5 h-3.5 text-accent-foreground mt-0.5 shrink-0" />
+              <p className="text-xs text-accent-foreground/80 line-clamp-3">{searchContext.description}</p>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-y-1.5 text-xs text-muted-foreground">
           <span className="truncate">{obj.obj_type}</span>
           <span className="text-right truncate">{obj.constellation ?? "—"}</span>

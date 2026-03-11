@@ -112,6 +112,7 @@ const SkyAtlas = () => {
                 index={i}
                 lat={userPos.lat}
                 lng={userPos.lng}
+                searchQuery={filters.search}
                 onClick={() => setSelected(obj)}
               />
             ))}

@@ -25,6 +25,7 @@ export interface CelestialObject {
   parent_id: string | null;
   relation_note: string | null;
   search_aliases: string | null;
+  alias_details: Record<string, { desc: string; img?: string | null }> | null;
 }
 
 export interface CelestialFilters {

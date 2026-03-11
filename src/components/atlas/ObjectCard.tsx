@@ -2,9 +2,10 @@ import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { computeDynamicScore, getSeasonEmoji, getSeasonLabel } from "@/lib/dynamic-score";
+import { getSearchContext } from "@/lib/search-context";
 import { motion } from "framer-motion";
-import { Ruler, Eye, Crown, Award, Sun, Mountain, Link } from "lucide-react";
-import { useState } from "react";
+import { Ruler, Eye, Crown, Award, Sun, Mountain, Link, Lightbulb } from "lucide-react";
+import { useState, useMemo } from "react";
 import { formatCatalogId } from "@/lib/format-catalog";
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
   index: number;
   lat: number;
   lng: number;
+  searchQuery?: string;
   onClick: () => void;
 }
 
@@ -28,7 +30,7 @@ const typeEmoji: Record<string, string> = {
   Planet: "🪐",
 };
 
-const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
+const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) => {
   const alt =
     obj.ra != null && obj.dec != null
       ? calculateAltitude(obj.ra, obj.dec, lat, lng)
@@ -51,7 +53,10 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
   const [imgError, setImgError] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
 
-  const displayUrl = useFallback && wikiImage?.fallbackUrl ? wikiImage.fallbackUrl : thumbUrl;
+  const searchContext = useMemo(() => getSearchContext(obj, searchQuery), [obj, searchQuery]);
+  const displayUrl = searchContext?.image
+    ? searchContext.image
+    : useFallback && wikiImage?.fallbackUrl ? wikiImage.fallbackUrl : thumbUrl;
 
   const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra, obj.dec, lat, lng);
   const isLegendary = score.total >= 100;
@@ -175,6 +180,15 @@ const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
             )}
           </div>
         </div>
+
+        {searchContext && (
+          <div className="mb-3 p-2 bg-accent/30 border border-accent/20 rounded-lg">
+            <div className="flex items-start gap-2">
+              <Lightbulb className="w-3.5 h-3.5 text-accent-foreground mt-0.5 shrink-0" />
+              <p className="text-xs text-accent-foreground/80 line-clamp-3">{searchContext.description}</p>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-y-1.5 text-xs text-muted-foreground">
           <span className="truncate">{obj.obj_type}</span>

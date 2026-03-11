@@ -9,7 +9,7 @@ import {
   useCameras, useTelescopes, useMounts, useFilters, useAccessories, useRigPresets, extractPrices,
   type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter, type AstroAccessory, type RigPreset,
 } from "@/hooks/useEquipmentCatalog";
-import { EquipmentCard } from "@/components/rigbuilder/EquipmentCard";
+import { EquipmentCard, getFrRetailers } from "@/components/rigbuilder/EquipmentCard";
 import { PresetCards } from "@/components/rigbuilder/PresetCards";
 import { CompareTable } from "@/components/rigbuilder/CompareTable";
 import { RangeFilter } from "@/components/rigbuilder/RangeFilter";
@@ -17,6 +17,7 @@ import { RigSummary } from "@/components/rigbuilder/RigSummary";
 import { ChipFilter, ToggleFilter } from "@/components/rigbuilder/ChipFilter";
 import { SearchSortBar } from "@/components/rigbuilder/SearchSortBar";
 import { EquipmentTab } from "@/components/rigbuilder/EquipmentTab";
+import { UserRigsPanel } from "@/components/rigbuilder/UserRigsPanel";
 
 type Category = "telescopes" | "cameras" | "mounts" | "filters" | "accessories";
 

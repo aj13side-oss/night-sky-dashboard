@@ -294,6 +294,17 @@ const RigBuilder = () => {
 
         <RigSummary telescope={pickedTelescope} camera={pickedCamera} mount={pickedMount} filter={pickedFilter} accessories={pickedAccessories} />
 
+        {/* User saved rigs */}
+        <UserRigsPanel onLoad={(rig) => {
+          setRigPicks({
+            telescope: rig.telescope_id,
+            camera: rig.camera_id,
+            mount: rig.mount_id,
+            filter: rig.filter_ids?.[0] ?? null,
+            accessories: rig.accessory_ids ?? [],
+          });
+        }} />
+
         {presets && presets.length > 0 && (
           <div>
             <button
@@ -304,7 +315,7 @@ const RigBuilder = () => {
               Recommended Configurations ({presets.length})
               <span className={`text-xs transition-transform ${presetsOpen ? "rotate-180" : ""}`}>▼</span>
             </button>
-            {presetsOpen && <PresetCards presets={presets} onLoad={loadPreset} />}
+            {presetsOpen && <PresetCards presets={presets} onLoad={loadPreset} telescopes={telescopes ?? []} cameras={cameras ?? []} mounts={mounts ?? []} />}
           </div>
         )}
 

@@ -601,7 +601,7 @@ const RigBuilder = () => {
                       a.output_connection ? `Out: ${a.output_connection}` : null,
                     ]}
                     affiliateAmazon={a.url_amazon} affiliateAstro={a.url_astroshop_de} manufacturerUrl={a.url_manufacturer}
-                  />
+                    extraRetailers={getFrRetailers(a._raw ?? {})}
                 );
               })}
             </EquipmentTab>

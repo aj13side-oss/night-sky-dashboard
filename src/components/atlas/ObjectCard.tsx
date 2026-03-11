@@ -30,7 +30,7 @@ const typeEmoji: Record<string, string> = {
   Planet: "🪐",
 };
 
-const ObjectCard = ({ obj, index, lat, lng, onClick }: Props) => {
+const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) => {
   const alt =
     obj.ra != null && obj.dec != null
       ? calculateAltitude(obj.ra, obj.dec, lat, lng)

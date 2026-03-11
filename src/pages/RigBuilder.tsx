@@ -558,6 +558,7 @@ const RigBuilder = () => {
                     affiliateAmazon={f.url_amazon} affiliateAstro={f.url_astroshop_de} manufacturerUrl={f.url_manufacturer}
                     extraRetailers={getFrRetailers(f._raw ?? {})}
                   />
+                );
               })}
             </EquipmentTab>
           </TabsContent>

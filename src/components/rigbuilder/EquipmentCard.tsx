@@ -4,6 +4,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ShoppingCart, ExternalLink, Globe, Tag } from "lucide-react";
 import { thumb400 } from "@/lib/utils";
 
+interface RetailerLink {
+  label: string;
+  url: string;
+  flag?: string;
+}
+
 interface EquipmentCardProps {
   selected: boolean;
   onToggle: () => void;
@@ -14,6 +20,7 @@ interface EquipmentCardProps {
   affiliateAstro: string | null;
   manufacturerUrl?: string | null;
   bestPrice?: { price: number; label: string; url: string | null } | null;
+  extraRetailers?: RetailerLink[];
 }
 
 export function EquipmentCard({
@@ -26,9 +33,11 @@ export function EquipmentCard({
   affiliateAstro,
   manufacturerUrl,
   bestPrice,
+  extraRetailers = [],
 }: EquipmentCardProps) {
   const filteredSpecs = specs.filter(Boolean) as string[];
-  const hasLinks = affiliateAmazon || affiliateAstro || manufacturerUrl;
+  const frLinks = extraRetailers.filter(r => r.url);
+  const hasLinks = affiliateAmazon || affiliateAstro || manufacturerUrl || frLinks.length > 0;
 
   return (
     <Card
@@ -43,12 +52,7 @@ export function EquipmentCard({
 
         {imageUrl ? (
           <div className="rounded-md overflow-hidden bg-secondary/20 flex items-center justify-center aspect-square">
-            <img
-              src={thumb400(imageUrl)}
-              alt={title}
-              loading="lazy"
-              className="max-h-full max-w-full object-contain p-1.5"
-            />
+            <img src={thumb400(imageUrl)} alt={title} loading="lazy" className="max-h-full max-w-full object-contain p-1.5" />
           </div>
         ) : (
           <div className="rounded-md bg-secondary/10 flex items-center justify-center aspect-square">
@@ -57,14 +61,10 @@ export function EquipmentCard({
         )}
 
         {bestPrice && (
-          <div
-            className="flex items-center gap-1 text-[10px]"
-            onClick={e => e.stopPropagation()}
-          >
+          <div className="flex items-center gap-1 text-[10px]" onClick={e => e.stopPropagation()}>
             <Tag className="w-3 h-3 text-primary" />
             {bestPrice.url ? (
-              <a href={bestPrice.url} target="_blank" rel="noopener noreferrer"
-                className="text-primary hover:underline font-semibold">
+              <a href={bestPrice.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-semibold">
                 From {bestPrice.price.toLocaleString()}€
               </a>
             ) : (
@@ -84,28 +84,51 @@ export function EquipmentCard({
         </div>
 
         {hasLinks && (
-          <div className="flex flex-wrap gap-2 pt-0.5" onClick={e => e.stopPropagation()}>
-            {manufacturerUrl && (
-              <a href={manufacturerUrl} target="_blank" rel="noopener noreferrer"
-                className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
-                <Globe className="w-2.5 h-2.5" /> Site
-              </a>
-            )}
-            {affiliateAmazon && (
-              <a href={affiliateAmazon} target="_blank" rel="noopener noreferrer"
-                className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
-                <ShoppingCart className="w-2.5 h-2.5" /> Amazon
-              </a>
-            )}
-            {affiliateAstro && (
-              <a href={affiliateAstro} target="_blank" rel="noopener noreferrer"
-                className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
-                <ExternalLink className="w-2.5 h-2.5" /> Shop
-              </a>
+          <div className="space-y-1" onClick={e => e.stopPropagation()}>
+            {/* International */}
+            <div className="flex flex-wrap gap-2">
+              {manufacturerUrl && (
+                <a href={manufacturerUrl} target="_blank" rel="noopener noreferrer"
+                  className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
+                  <Globe className="w-2.5 h-2.5" /> Site
+                </a>
+              )}
+              {affiliateAmazon && (
+                <a href={affiliateAmazon} target="_blank" rel="noopener noreferrer"
+                  className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
+                  <ShoppingCart className="w-2.5 h-2.5" /> Amazon
+                </a>
+              )}
+              {affiliateAstro && (
+                <a href={affiliateAstro} target="_blank" rel="noopener noreferrer"
+                  className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
+                  <ExternalLink className="w-2.5 h-2.5" /> Astroshop
+                </a>
+              )}
+            </div>
+            {/* FR retailers */}
+            {frLinks.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {frLinks.map(r => (
+                  <a key={r.label} href={r.url} target="_blank" rel="noopener noreferrer"
+                    className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
+                    <span className="text-[8px]">🇫🇷</span> {r.label}
+                  </a>
+                ))}
+              </div>
             )}
           </div>
         )}
       </CardContent>
     </Card>
   );
+}
+
+/** Helper to extract FR retailer links from a raw DB row */
+export function getFrRetailers(raw: Record<string, any>): RetailerLink[] {
+  const links: RetailerLink[] = [];
+  if (raw.url_pierro_astro) links.push({ label: "Pierro Astro", url: raw.url_pierro_astro });
+  if (raw.url_astronome_fr) links.push({ label: "Astronome.fr", url: raw.url_astronome_fr });
+  if (raw.url_optique_unterlinden) links.push({ label: "Opt. Unterlinden", url: raw.url_optique_unterlinden });
+  return links;
 }

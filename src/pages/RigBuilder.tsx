@@ -9,7 +9,7 @@ import {
   useCameras, useTelescopes, useMounts, useFilters, useAccessories, useRigPresets, extractPrices,
   type AstroCamera, type AstroTelescope, type AstroMount, type AstroFilter, type AstroAccessory, type RigPreset,
 } from "@/hooks/useEquipmentCatalog";
-import { EquipmentCard } from "@/components/rigbuilder/EquipmentCard";
+import { EquipmentCard, getFrRetailers } from "@/components/rigbuilder/EquipmentCard";
 import { PresetCards } from "@/components/rigbuilder/PresetCards";
 import { CompareTable } from "@/components/rigbuilder/CompareTable";
 import { RangeFilter } from "@/components/rigbuilder/RangeFilter";
@@ -17,6 +17,7 @@ import { RigSummary } from "@/components/rigbuilder/RigSummary";
 import { ChipFilter, ToggleFilter } from "@/components/rigbuilder/ChipFilter";
 import { SearchSortBar } from "@/components/rigbuilder/SearchSortBar";
 import { EquipmentTab } from "@/components/rigbuilder/EquipmentTab";
+import { UserRigsPanel } from "@/components/rigbuilder/UserRigsPanel";
 
 type Category = "telescopes" | "cameras" | "mounts" | "filters" | "accessories";
 
@@ -293,6 +294,17 @@ const RigBuilder = () => {
 
         <RigSummary telescope={pickedTelescope} camera={pickedCamera} mount={pickedMount} filter={pickedFilter} accessories={pickedAccessories} />
 
+        {/* User saved rigs */}
+        <UserRigsPanel onLoad={(rig) => {
+          setRigPicks({
+            telescope: rig.telescope_id,
+            camera: rig.camera_id,
+            mount: rig.mount_id,
+            filter: rig.filter_ids?.[0] ?? null,
+            accessories: rig.accessory_ids ?? [],
+          });
+        }} />
+
         {presets && presets.length > 0 && (
           <div>
             <button
@@ -303,7 +315,7 @@ const RigBuilder = () => {
               Recommended Configurations ({presets.length})
               <span className={`text-xs transition-transform ${presetsOpen ? "rotate-180" : ""}`}>▼</span>
             </button>
-            {presetsOpen && <PresetCards presets={presets} onLoad={loadPreset} />}
+            {presetsOpen && <PresetCards presets={presets} onLoad={loadPreset} telescopes={telescopes ?? []} cameras={cameras ?? []} mounts={mounts ?? []} />}
           </div>
         )}
 
@@ -386,6 +398,7 @@ const RigBuilder = () => {
                       t.image_circle_mm ? `IC ${t.image_circle_mm}mm` : null,
                     ]}
                     affiliateAmazon={t.url_amazon} affiliateAstro={t.url_astroshop_de} manufacturerUrl={t.url_manufacturer}
+                    extraRetailers={getFrRetailers(t._raw ?? {})}
                   />
                 );
               })}
@@ -448,6 +461,7 @@ const RigBuilder = () => {
                       c.read_noise_e ? `${c.read_noise_e}e⁻` : null,
                     ]}
                     affiliateAmazon={c.url_amazon} affiliateAstro={c.url_astroshop_de} manufacturerUrl={c.url_manufacturer}
+                    extraRetailers={getFrRetailers(c._raw ?? {})}
                   />
                 );
               })}
@@ -504,6 +518,7 @@ const RigBuilder = () => {
                       m.connectivity,
                     ]}
                     affiliateAmazon={m.url_amazon} affiliateAstro={m.url_astroshop_de} manufacturerUrl={m.url_manufacturer}
+                    extraRetailers={getFrRetailers(m._raw ?? {})}
                   />
                 );
               })}
@@ -541,6 +556,7 @@ const RigBuilder = () => {
                     imageUrl={f.image_url} title={`${f.brand} ${f.model}`} bestPrice={best}
                     specs={[f.type, f.size, f.thickness_mm ? `${f.thickness_mm}mm thick` : null]}
                     affiliateAmazon={f.url_amazon} affiliateAstro={f.url_astroshop_de} manufacturerUrl={f.url_manufacturer}
+                    extraRetailers={getFrRetailers(f._raw ?? {})}
                   />
                 );
               })}
@@ -589,6 +605,7 @@ const RigBuilder = () => {
                       a.output_connection ? `Out: ${a.output_connection}` : null,
                     ]}
                     affiliateAmazon={a.url_amazon} affiliateAstro={a.url_astroshop_de} manufacturerUrl={a.url_manufacturer}
+                    extraRetailers={getFrRetailers(a._raw ?? {})}
                   />
                 );
               })}

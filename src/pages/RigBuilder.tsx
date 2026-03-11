@@ -555,7 +555,7 @@ const RigBuilder = () => {
                     specs={[f.type, f.size, f.thickness_mm ? `${f.thickness_mm}mm thick` : null]}
                     affiliateAmazon={f.url_amazon} affiliateAstro={f.url_astroshop_de} manufacturerUrl={f.url_manufacturer}
                     extraRetailers={getFrRetailers(f._raw ?? {})}
-                );
+                  />
               })}
             </EquipmentTab>
           </TabsContent>

@@ -66,6 +66,22 @@ const SkyAtlas = () => {
 
   return (
     <div className="min-h-screen bg-background star-field">
+      <SEOHead
+        title="Catalogue de 4 800+ Objets Célestes — Atlas du Ciel"
+        description="Explorez 4 800+ objets célestes : galaxies, nébuleuses, amas d'étoiles, nébuleuses planétaires. Catalogue Messier, NGC, IC, Sharpless complet avec guide d'exposition, score de photogénie, et meilleurs mois d'observation."
+        keywords="catalogue Messier, catalogue NGC, galaxie, nébuleuse, amas ouvert, amas globulaire, nébuleuse planétaire, deep sky objects, nebula, galaxy, star cluster, astrophotography targets"
+        path="/sky-atlas"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Dataset",
+          "name": "AstroDash Celestial Objects Catalog",
+          "description": "Catalogue de 4 800+ objets célestes pour l'astrophotographie avec guides d'exposition, scores de photogénie, et données de planification de session.",
+          "url": "https://astrodash.fr/sky-atlas",
+          "keywords": ["astronomie", "astrophotographie", "Messier", "NGC", "deep sky"],
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "variableMeasured": ["magnitude", "taille angulaire", "score photogénie", "temps exposition"]
+        }}
+      />
       <AppNav />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">

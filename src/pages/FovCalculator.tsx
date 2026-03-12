@@ -1,4 +1,6 @@
 import AppNav from "@/components/AppNav";
+import SEOHead from "@/components/SEOHead";
+import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
 import { getSkyImageUrlWithFov, type SkyImageSurvey } from "@/lib/sky-images";

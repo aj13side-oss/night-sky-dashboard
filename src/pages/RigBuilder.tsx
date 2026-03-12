@@ -635,6 +635,8 @@ const RigBuilder = () => {
           </TabsContent>
         </Tabs>
       </main>
+
+      <Footer />
     </div>
   );
 };

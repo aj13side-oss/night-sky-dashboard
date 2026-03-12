@@ -245,6 +245,8 @@ const LightPollutionMap = () => {
           </>
         )}
       </main>
+
+      {!isFullscreen && <Footer />}
     </div>
   );
 };

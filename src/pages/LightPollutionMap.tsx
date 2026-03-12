@@ -1,4 +1,6 @@
 import AppNav from "@/components/AppNav";
+import SEOHead from "@/components/SEOHead";
+import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -143,6 +145,12 @@ const LightPollutionMap = () => {
 
   return (
     <div className={`min-h-screen bg-background star-field ${isFullscreen ? "overflow-hidden" : ""}`}>
+      <SEOHead
+        title="Carte de Pollution Lumineuse — Sites d'Observation en France"
+        description="Carte interactive de pollution lumineuse. Trouvez les meilleurs sites d'observation en France : échelle de Bortle, réserves de ciel étoilé, parcs naturels. Planifiez vos sorties astrophoto."
+        keywords="pollution lumineuse, carte Bortle, site observation astronomie, ciel étoilé France, réserve ciel noir, dark site, light pollution map, meilleur spot astrophoto"
+        path="/light-pollution"
+      />
       {!isFullscreen && <AppNav />}
 
       <main className={isFullscreen ? "h-screen flex flex-col" : "max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6"}>
@@ -237,6 +245,8 @@ const LightPollutionMap = () => {
           </>
         )}
       </main>
+
+      {!isFullscreen && <Footer />}
     </div>
   );
 };

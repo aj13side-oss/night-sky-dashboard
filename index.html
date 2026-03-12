@@ -1,21 +1,126 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Night Sky Dashboard</title>
-    <meta name="description" content="Your astrophotography planning dashboard">
     
+    <!-- Primary Meta -->
+    <title>AstroDash — Météo Astro, Catalogue Céleste & Matériel Astrophoto</title>
+    <meta name="description" content="Planifiez vos nuits d'astrophotographie : météo astro en temps réel, catalogue de 4 800+ objets célestes, comparateur de matériel (télescopes, caméras, montures), calculateur d'échantillonnage et champ de vue. Gratuit, en français." />
+    
+    <meta name="keywords" content="astrophotographie, météo astro, astronomie, quoi photographier ce soir, cibles astrophoto, éphémérides, phase lune, carte pollution lumineuse, télescope, caméra astro, monture équatoriale, ZWO, Sky-Watcher, nébuleuse, galaxie, amas, Messier, NGC, photographier nébuleuse Orion, setup astrophoto débutant, comparateur matériel astro, calculateur échantillonnage, champ de vue, astrophotography, deep sky, tonight targets, FOV calculator, sampling calculator" />
+    
+    <!-- Alternate languages -->
+    <link rel="alternate" hreflang="fr" href="https://astrodash.fr/" />
+    <link rel="alternate" hreflang="en" href="https://astrodash.fr/" />
+    <link rel="alternate" hreflang="x-default" href="https://astrodash.fr/" />
+    
+    <!-- Canonical -->
+    <link rel="canonical" href="https://astrodash.fr/" />
+    
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AstroDash" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:title" content="AstroDash — Météo Astro, Catalogue Céleste & Matériel Astrophoto" />
+    <meta property="og:description" content="Planifiez vos nuits d'astrophotographie : 4 800+ objets, comparateur matériel, calculateurs, météo astro. Gratuit." />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://astrodash.fr/" />
+
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AstroDash — Planifiez vos nuits d'astrophoto" />
+    <meta name="twitter:description" content="4 800+ objets célestes, comparateur matériel, météo astro, calculateurs. Gratuit." />
+    <meta name="twitter:image" content="/og-image.png" />
     
-    <meta property="og:title" content="Night Sky Dashboard">
-  <meta name="twitter:title" content="Night Sky Dashboard">
-  <meta property="og:description" content="Your astrophotography planning dashboard">
-  <meta name="twitter:description" content="Your astrophotography planning dashboard">
-  <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ef29e776-ecfe-40c5-b156-adbeb793432e/id-preview-148e7499--999ab288-3da9-441e-8883-2fd705ae4d36.lovable.app-1772101386771.png">
-  <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ef29e776-ecfe-40c5-b156-adbeb793432e/id-preview-148e7499--999ab288-3da9-441e-8883-2fd705ae4d36.lovable.app-1772101386771.png">
-</head>
+    <!-- Robots -->
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Theme -->
+    <meta name="theme-color" content="#0a0e1a" />
+    <meta name="color-scheme" content="dark" />
+    
+    <!-- Structured Data: WebApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "AstroDash",
+      "alternateName": ["Night Sky Dashboard", "AstroDash FR"],
+      "description": "Application de planification d'astrophotographie : catalogue de 4 800+ objets célestes, comparateur d'équipement, calculateur d'échantillonnage, météo astro, carte de pollution lumineuse.",
+      "url": "https://astrodash.fr",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Web",
+      "inLanguage": ["fr", "en"],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "featureList": [
+        "Catalogue de 4 800+ objets célestes (Messier, NGC, IC, Sharpless)",
+        "Météo astro en temps réel (seeing, couverture nuageuse, transparence)",
+        "Phase de la lune et éphémérides",
+        "Comparateur de matériel astrophoto (télescopes, caméras, montures, filtres)",
+        "Calculateur d'échantillonnage et de champ de vue",
+        "Carte de pollution lumineuse",
+        "Guide d'exposition par objet",
+        "Rig Builder avec diagnostic de compatibilité",
+        "Planificateur de session (altitude, visibilité)"
+      ],
+      "author": {
+        "@type": "Person",
+        "name": "Cosmic Frame"
+      },
+      "keywords": "astrophotographie, astronomie, météo astro, télescope, caméra astro, nébuleuse, galaxie, Messier, NGC, deep sky, astrophotography"
+    }
+    </script>
+
+    <!-- Structured Data: FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Quoi photographier ce soir en astrophotographie ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "AstroDash analyse les conditions en temps réel (météo, phase lunaire, position des objets) pour recommander les meilleures cibles d'astrophoto ce soir depuis votre position. Consultez le dashboard pour voir les objets visibles classés par score de photogénie."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Quel matériel pour débuter en astrophotographie ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Pour débuter, un setup classique comprend un télescope Newton 150/750 (Sky-Watcher), une monture équatoriale motorisée (HEQ5 ou EQM-35), et une caméra astro (ZWO ASI533MC Pro). Budget : 1 500 à 3 000€. Utilisez le Rig Builder d'AstroDash pour vérifier la compatibilité de votre setup."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Comment calculer l'échantillonnage en astrophoto ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "L'échantillonnage se calcule avec la formule : (taille pixel en µm / focale en mm) × 206.265. Le sweet spot pour le ciel profond est 1 à 2 arcsec/pixel. Le calculateur d'AstroDash affiche instantanément l'échantillonnage, le champ de vue et la compatibilité seeing."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Où trouver la météo astro en France ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "AstroDash fournit la météo astro en temps réel pour n'importe quelle position en France : couverture nuageuse heure par heure, transparence atmosphérique, seeing, humidité, et horaires astronomiques (crépuscule, lever/coucher de lune)."
+          }
+        }
+      ]
+    }
+    </script>
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

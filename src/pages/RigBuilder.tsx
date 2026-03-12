@@ -1,6 +1,8 @@
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import AppNav from "@/components/AppNav";
+import SEOHead from "@/components/SEOHead";
+import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -279,6 +281,26 @@ const RigBuilder = () => {
 
   return (
     <div className="min-h-screen bg-background star-field">
+      <SEOHead
+        title="Comparateur Matériel Astrophoto — Télescopes, Caméras, Montures"
+        description="Comparez 360+ équipements d'astrophotographie : télescopes (Sky-Watcher, Takahashi, Askar), caméras astro (ZWO, QHY, Player One), montures (HEQ5, EQM-35, AM5). Calculez la compatibilité, l'échantillonnage et le champ de vue."
+        keywords="comparateur télescope, comparateur caméra astro, matériel astrophotographie, ZWO ASI2600, Sky-Watcher 150/750, HEQ5 Pro, AM5, setup astrophoto, rig builder, telescope comparison"
+        path="/rig-builder"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "AstroDash Rig Builder",
+          "description": "Comparateur et simulateur de setup astrophotographique.",
+          "url": "https://astrodash.fr/rig-builder",
+          "applicationCategory": "UtilitiesApplication",
+          "featureList": [
+            "Comparaison de 360+ télescopes, caméras et montures",
+            "Calcul d'échantillonnage et champ de vue",
+            "Diagnostic de compatibilité (payload, backfocus, vignetage)",
+            "Liens vers revendeurs (Pierro Astro, Astroshop, Amazon, Astronome.fr)"
+          ]
+        }}
+      />
       <AppNav />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
@@ -613,6 +635,8 @@ const RigBuilder = () => {
           </TabsContent>
         </Tabs>
       </main>
+
+      <Footer />
     </div>
   );
 };

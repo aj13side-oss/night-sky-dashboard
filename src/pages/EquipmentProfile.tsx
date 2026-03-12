@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import AppNav from "@/components/AppNav";
+import SEOHead from "@/components/SEOHead";
+import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -104,6 +106,12 @@ const EquipmentProfile = () => {
 
   return (
     <div className="min-h-screen bg-background star-field">
+      <SEOHead
+        title="Profil Équipement — Sauvegardez votre Setup Astrophoto"
+        description="Enregistrez votre télescope, caméra et monture pour des recommandations personnalisées : échantillonnage, champ de vue, cibles adaptées à votre setup."
+        keywords="profil équipement astrophoto, setup astrophotographie, configuration télescope caméra, sauvegarde matériel astro"
+        path="/equipment"
+      />
       <AppNav />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
@@ -285,6 +293,8 @@ const EquipmentProfile = () => {
 
         <ToolSuggestions />
       </main>
+
+      <Footer />
     </div>
   );
 };

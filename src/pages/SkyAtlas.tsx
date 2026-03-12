@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import AppNav from "@/components/AppNav";
+import SEOHead from "@/components/SEOHead";
+import Footer from "@/components/Footer";
 import AtlasFilters from "@/components/atlas/AtlasFilters";
 import ObjectCard from "@/components/atlas/ObjectCard";
 import ObjectDetailModal from "@/components/atlas/ObjectDetailModal";

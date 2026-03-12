@@ -56,88 +56,10 @@ export type Database = {
           weight_g: number | null
         }
         Insert: {
-          aperture_mm?: number | null
-          brand: string
-          category: string
-          clear_aperture_mm?: number | null
-          compatible_telescopes?: string[] | null
-          created_at?: string | null
-          filter_size?: string | null
-          filter_slots?: number | null
-          focal_length_mm?: number | null
-          focuser_travel_mm?: number | null
-          id?: number
-          image_url?: string | null
-          input_connection?: string | null
-          is_motorized?: boolean | null
-          last_price_update?: string | null
-          magnification_factor?: number | null
-          model: string
-          notes?: string | null
-          optical_length_mm?: number | null
-          output_connection?: string | null
-          price_agena?: number | null
-          price_amazon?: number | null
-          price_astronome_fr?: number | null
-          price_astroshop_de?: number | null
-          price_high_point_scientific?: number | null
-          price_optique_unterlinden?: number | null
-          price_pierro_astro?: number | null
-          price_univers_astro?: number | null
-          required_backfocus_mm?: number | null
-          updated_at?: string | null
-          url_agena?: string | null
-          url_amazon?: string | null
-          url_astronome_fr?: string | null
-          url_astroshop_de?: string | null
-          url_high_point_scientific?: string | null
-          url_manufacturer?: string | null
-          url_optique_unterlinden?: string | null
-          url_pierro_astro?: string | null
-          url_univers_astro?: string | null
-          weight_g?: number | null
+          [key: string]: any
         }
         Update: {
-          aperture_mm?: number | null
-          brand?: string
-          category?: string
-          clear_aperture_mm?: number | null
-          compatible_telescopes?: string[] | null
-          created_at?: string | null
-          filter_size?: string | null
-          filter_slots?: number | null
-          focal_length_mm?: number | null
-          focuser_travel_mm?: number | null
-          id?: number
-          image_url?: string | null
-          input_connection?: string | null
-          is_motorized?: boolean | null
-          last_price_update?: string | null
-          magnification_factor?: number | null
-          model?: string
-          notes?: string | null
-          optical_length_mm?: number | null
-          output_connection?: string | null
-          price_agena?: number | null
-          price_amazon?: number | null
-          price_astronome_fr?: number | null
-          price_astroshop_de?: number | null
-          price_high_point_scientific?: number | null
-          price_optique_unterlinden?: number | null
-          price_pierro_astro?: number | null
-          price_univers_astro?: number | null
-          required_backfocus_mm?: number | null
-          updated_at?: string | null
-          url_agena?: string | null
-          url_amazon?: string | null
-          url_astronome_fr?: string | null
-          url_astroshop_de?: string | null
-          url_high_point_scientific?: string | null
-          url_manufacturer?: string | null
-          url_optique_unterlinden?: string | null
-          url_pierro_astro?: string | null
-          url_univers_astro?: string | null
-          weight_g?: number | null
+          [key: string]: any
         }
         Relationships: []
       }
@@ -181,80 +103,10 @@ export type Database = {
           weight_g: number | null
         }
         Insert: {
-          adc_bits?: number | null
-          brand: string
-          cooling_delta_c?: number | null
-          full_well_e?: number | null
-          id?: string
-          image_url?: string | null
-          interface_usb?: string | null
-          internal_backfocus_mm?: number | null
-          is_color?: boolean | null
-          last_price_update?: string | null
-          model: string
-          pixel_size_um?: number | null
-          price_agena?: number | null
-          price_amazon?: number | null
-          price_astronome_fr?: number | null
-          price_astroshop_de?: number | null
-          price_high_point_scientific?: number | null
-          price_optique_unterlinden?: number | null
-          price_pierro_astro?: number | null
-          price_univers_astro?: number | null
-          qe_percent?: number | null
-          read_noise_e?: number | null
-          resolution_mp?: number | null
-          sensor_height_mm?: number | null
-          sensor_name?: string | null
-          sensor_width_mm?: number | null
-          url_agena?: string | null
-          url_amazon?: string | null
-          url_astronome_fr?: string | null
-          url_astroshop_de?: string | null
-          url_high_point_scientific?: string | null
-          url_manufacturer?: string | null
-          url_optique_unterlinden?: string | null
-          url_pierro_astro?: string | null
-          url_univers_astro?: string | null
-          weight_g?: number | null
+          [key: string]: any
         }
         Update: {
-          adc_bits?: number | null
-          brand?: string
-          cooling_delta_c?: number | null
-          full_well_e?: number | null
-          id?: string
-          image_url?: string | null
-          interface_usb?: string | null
-          internal_backfocus_mm?: number | null
-          is_color?: boolean | null
-          last_price_update?: string | null
-          model?: string
-          pixel_size_um?: number | null
-          price_agena?: number | null
-          price_amazon?: number | null
-          price_astronome_fr?: number | null
-          price_astroshop_de?: number | null
-          price_high_point_scientific?: number | null
-          price_optique_unterlinden?: number | null
-          price_pierro_astro?: number | null
-          price_univers_astro?: number | null
-          qe_percent?: number | null
-          read_noise_e?: number | null
-          resolution_mp?: number | null
-          sensor_height_mm?: number | null
-          sensor_name?: string | null
-          sensor_width_mm?: number | null
-          url_agena?: string | null
-          url_amazon?: string | null
-          url_astronome_fr?: string | null
-          url_astroshop_de?: string | null
-          url_high_point_scientific?: string | null
-          url_manufacturer?: string | null
-          url_optique_unterlinden?: string | null
-          url_pierro_astro?: string | null
-          url_univers_astro?: string | null
-          weight_g?: number | null
+          [key: string]: any
         }
         Relationships: []
       }
@@ -290,64 +142,10 @@ export type Database = {
           url_univers_astro: string | null
         }
         Insert: {
-          bandwidth_nm?: number | null
-          brand: string
-          id?: string
-          image_url?: string | null
-          last_price_update?: string | null
-          model: string
-          price_agena?: number | null
-          price_amazon?: number | null
-          price_astronome_fr?: number | null
-          price_astroshop_de?: number | null
-          price_high_point_scientific?: number | null
-          price_optique_unterlinden?: number | null
-          price_pierro_astro?: number | null
-          price_univers_astro?: number | null
-          size?: string | null
-          target_sensor?: string | null
-          thickness_mm?: number | null
-          transmission_percent?: number | null
-          type?: string | null
-          url_agena?: string | null
-          url_amazon?: string | null
-          url_astronome_fr?: string | null
-          url_astroshop_de?: string | null
-          url_high_point_scientific?: string | null
-          url_manufacturer?: string | null
-          url_optique_unterlinden?: string | null
-          url_pierro_astro?: string | null
-          url_univers_astro?: string | null
+          [key: string]: any
         }
         Update: {
-          bandwidth_nm?: number | null
-          brand?: string
-          id?: string
-          image_url?: string | null
-          last_price_update?: string | null
-          model?: string
-          price_agena?: number | null
-          price_amazon?: number | null
-          price_astronome_fr?: number | null
-          price_astroshop_de?: number | null
-          price_high_point_scientific?: number | null
-          price_optique_unterlinden?: number | null
-          price_pierro_astro?: number | null
-          price_univers_astro?: number | null
-          size?: string | null
-          target_sensor?: string | null
-          thickness_mm?: number | null
-          transmission_percent?: number | null
-          type?: string | null
-          url_agena?: string | null
-          url_amazon?: string | null
-          url_astronome_fr?: string | null
-          url_astroshop_de?: string | null
-          url_high_point_scientific?: string | null
-          url_manufacturer?: string | null
-          url_optique_unterlinden?: string | null
-          url_pierro_astro?: string | null
-          url_univers_astro?: string | null
+          [key: string]: any
         }
         Relationships: []
       }
@@ -385,68 +183,10 @@ export type Database = {
           url_univers_astro: string | null
         }
         Insert: {
-          ascom_indi?: boolean | null
-          brand: string
-          connectivity?: string | null
-          id?: string
-          image_url?: string | null
-          is_goto?: boolean | null
-          last_price_update?: string | null
-          model: string
-          mount_type?: string | null
-          mount_weight_kg?: number | null
-          payload_kg?: number | null
-          periodic_error_arcsec?: number | null
-          power_required?: string | null
-          price_agena?: number | null
-          price_amazon?: number | null
-          price_astronome_fr?: number | null
-          price_astroshop_de?: number | null
-          price_high_point_scientific?: number | null
-          price_optique_unterlinden?: number | null
-          price_pierro_astro?: number | null
-          price_univers_astro?: number | null
-          url_agena?: string | null
-          url_amazon?: string | null
-          url_astronome_fr?: string | null
-          url_astroshop_de?: string | null
-          url_high_point_scientific?: string | null
-          url_manufacturer?: string | null
-          url_optique_unterlinden?: string | null
-          url_pierro_astro?: string | null
-          url_univers_astro?: string | null
+          [key: string]: any
         }
         Update: {
-          ascom_indi?: boolean | null
-          brand?: string
-          connectivity?: string | null
-          id?: string
-          image_url?: string | null
-          is_goto?: boolean | null
-          last_price_update?: string | null
-          model?: string
-          mount_type?: string | null
-          mount_weight_kg?: number | null
-          payload_kg?: number | null
-          periodic_error_arcsec?: number | null
-          power_required?: string | null
-          price_agena?: number | null
-          price_amazon?: number | null
-          price_astronome_fr?: number | null
-          price_astroshop_de?: number | null
-          price_high_point_scientific?: number | null
-          price_optique_unterlinden?: number | null
-          price_pierro_astro?: number | null
-          price_univers_astro?: number | null
-          url_agena?: string | null
-          url_amazon?: string | null
-          url_astronome_fr?: string | null
-          url_astroshop_de?: string | null
-          url_high_point_scientific?: string | null
-          url_manufacturer?: string | null
-          url_optique_unterlinden?: string | null
-          url_pierro_astro?: string | null
-          url_univers_astro?: string | null
+          [key: string]: any
         }
         Relationships: []
       }
@@ -486,77 +226,16 @@ export type Database = {
           weight_kg: number | null
         }
         Insert: {
-          aperture_mm?: number | null
-          brand: string
-          dovetail_type?: string | null
-          f_ratio?: number | null
-          focal_length_mm?: number | null
-          focuser_size_inch?: number | null
-          id?: string
-          image_circle_mm?: number | null
-          image_url?: string | null
-          last_price_update?: string | null
-          model: string
-          output_thread?: string | null
-          price_agena?: number | null
-          price_amazon?: number | null
-          price_astronome_fr?: number | null
-          price_astroshop_de?: number | null
-          price_high_point_scientific?: number | null
-          price_optique_unterlinden?: number | null
-          price_pierro_astro?: number | null
-          price_univers_astro?: number | null
-          required_backfocus_mm?: number | null
-          type?: string | null
-          url_agena?: string | null
-          url_amazon?: string | null
-          url_astronome_fr?: string | null
-          url_astroshop_de?: string | null
-          url_high_point_scientific?: string | null
-          url_manufacturer?: string | null
-          url_optique_unterlinden?: string | null
-          url_pierro_astro?: string | null
-          url_univers_astro?: string | null
-          weight_kg?: number | null
+          [key: string]: any
         }
         Update: {
-          aperture_mm?: number | null
-          brand?: string
-          dovetail_type?: string | null
-          f_ratio?: number | null
-          focal_length_mm?: number | null
-          focuser_size_inch?: number | null
-          id?: string
-          image_circle_mm?: number | null
-          image_url?: string | null
-          last_price_update?: string | null
-          model?: string
-          output_thread?: string | null
-          price_agena?: number | null
-          price_amazon?: number | null
-          price_astronome_fr?: number | null
-          price_astroshop_de?: number | null
-          price_high_point_scientific?: number | null
-          price_optique_unterlinden?: number | null
-          price_pierro_astro?: number | null
-          price_univers_astro?: number | null
-          required_backfocus_mm?: number | null
-          type?: string | null
-          url_agena?: string | null
-          url_amazon?: string | null
-          url_astronome_fr?: string | null
-          url_astroshop_de?: string | null
-          url_high_point_scientific?: string | null
-          url_manufacturer?: string | null
-          url_optique_unterlinden?: string | null
-          url_pierro_astro?: string | null
-          url_univers_astro?: string | null
-          weight_kg?: number | null
+          [key: string]: any
         }
         Relationships: []
       }
       celestial_objects: {
         Row: {
+          alias_details: Json | null
           best_months: string | null
           catalog_id: string
           common_name: string | null
@@ -571,53 +250,46 @@ export type Database = {
           magnitude: number | null
           moon_tolerance: number | null
           obj_type: string | null
+          parent_id: string | null
           photo_score: number | null
           ra: number | null
           recommended_filter: string | null
+          relation_note: string | null
+          scientific_notation: string | null
+          search_aliases: string | null
           size_max: number | null
           surf_brightness: number | null
         }
         Insert: {
-          best_months?: string | null
-          catalog_id: string
-          common_name?: string | null
-          constellation?: string | null
-          dec?: number | null
-          exposure_guide_deep?: number | null
-          exposure_guide_fast?: number | null
-          forced_image_url?: string | null
-          id?: string
-          ideal_resolution?: string | null
-          image_search_query?: string | null
-          magnitude?: number | null
-          moon_tolerance?: number | null
-          obj_type?: string | null
-          photo_score?: number | null
-          ra?: number | null
-          recommended_filter?: string | null
-          size_max?: number | null
-          surf_brightness?: number | null
+          [key: string]: any
         }
         Update: {
-          best_months?: string | null
-          catalog_id?: string
-          common_name?: string | null
-          constellation?: string | null
-          dec?: number | null
-          exposure_guide_deep?: number | null
-          exposure_guide_fast?: number | null
-          forced_image_url?: string | null
-          id?: string
-          ideal_resolution?: string | null
-          image_search_query?: string | null
-          magnitude?: number | null
-          moon_tolerance?: number | null
-          obj_type?: string | null
-          photo_score?: number | null
-          ra?: number | null
-          recommended_filter?: string | null
-          size_max?: number | null
-          surf_brightness?: number | null
+          [key: string]: any
+        }
+        Relationships: [
+          {
+            foreignKeyName: "celestial_objects_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "celestial_objects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      image_audit_log: {
+        Row: {
+          checked_at: string | null
+          id: string
+          notes: string | null
+          status: string
+          target_id: string
+          target_table: string
+        }
+        Insert: {
+          [key: string]: any
+        }
+        Update: {
+          [key: string]: any
         }
         Relationships: []
       }
@@ -633,24 +305,10 @@ export type Database = {
           triggered_by: string | null
         }
         Insert: {
-          completed_at?: string | null
-          details?: Json | null
-          id?: number
-          started_at?: string | null
-          status?: string | null
-          total_failed?: number | null
-          total_updated?: number | null
-          triggered_by?: string | null
+          [key: string]: any
         }
         Update: {
-          completed_at?: string | null
-          details?: Json | null
-          id?: number
-          started_at?: string | null
-          status?: string | null
-          total_failed?: number | null
-          total_updated?: number | null
-          triggered_by?: string | null
+          [key: string]: any
         }
         Relationships: []
       }
@@ -667,26 +325,10 @@ export type Database = {
           username: string | null
         }
         Insert: {
-          equipment_focal_length?: number | null
-          experience_level?: string | null
-          id: string
-          latitude?: number | null
-          longitude?: number | null
-          pixel_size?: number | null
-          sensor_height?: number | null
-          sensor_width?: number | null
-          username?: string | null
+          [key: string]: any
         }
         Update: {
-          equipment_focal_length?: number | null
-          experience_level?: string | null
-          id?: string
-          latitude?: number | null
-          longitude?: number | null
-          pixel_size?: number | null
-          sensor_height?: number | null
-          sensor_width?: number | null
-          username?: string | null
+          [key: string]: any
         }
         Relationships: []
       }
@@ -707,34 +349,10 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          created_at?: string | null
-          description_fr?: string | null
-          id?: number
-          is_active?: boolean | null
-          max_value?: number | null
-          message_en: string
-          message_fr: string
-          min_value?: number | null
-          rule_category: string
-          rule_key: string
-          severity: string
-          unit?: string | null
-          updated_at?: string | null
+          [key: string]: any
         }
         Update: {
-          created_at?: string | null
-          description_fr?: string | null
-          id?: number
-          is_active?: boolean | null
-          max_value?: number | null
-          message_en?: string
-          message_fr?: string
-          min_value?: number | null
-          rule_category?: string
-          rule_key?: string
-          severity?: string
-          unit?: string | null
-          updated_at?: string | null
+          [key: string]: any
         }
         Relationships: []
       }
@@ -759,42 +377,10 @@ export type Database = {
           use_case: string
         }
         Insert: {
-          accessory_ids?: string[] | null
-          budget_max_eur?: number | null
-          budget_min_eur?: number | null
-          camera_id?: string | null
-          created_at?: string | null
-          description_en?: string | null
-          description_fr: string
-          difficulty_level?: number | null
-          id?: string
-          is_featured?: boolean | null
-          mount_id?: string | null
-          name: string
-          slug: string
-          sort_order?: number | null
-          telescope_id?: string | null
-          updated_at?: string | null
-          use_case: string
+          [key: string]: any
         }
         Update: {
-          accessory_ids?: string[] | null
-          budget_max_eur?: number | null
-          budget_min_eur?: number | null
-          camera_id?: string | null
-          created_at?: string | null
-          description_en?: string | null
-          description_fr?: string
-          difficulty_level?: number | null
-          id?: string
-          is_featured?: boolean | null
-          mount_id?: string | null
-          name?: string
-          slug?: string
-          sort_order?: number | null
-          telescope_id?: string | null
-          updated_at?: string | null
-          use_case?: string
+          [key: string]: any
         }
         Relationships: []
       }
@@ -807,18 +393,10 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
-          created_at?: string | null
-          id?: string
-          notes?: string | null
-          object_id?: string | null
-          user_id?: string | null
+          [key: string]: any
         }
         Update: {
-          created_at?: string | null
-          id?: string
-          notes?: string | null
-          object_id?: string | null
-          user_id?: string | null
+          [key: string]: any
         }
         Relationships: []
       }
@@ -839,87 +417,30 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          accessory_ids?: string[] | null
-          cached_calculations?: Json | null
-          camera_id?: string | null
-          created_at?: string | null
-          filter_ids?: string[] | null
-          id?: string
-          is_current?: boolean | null
-          mount_id?: string | null
-          name?: string
-          notes?: string | null
-          telescope_id?: string | null
-          updated_at?: string | null
-          user_id: string
+          [key: string]: any
         }
         Update: {
-          accessory_ids?: string[] | null
-          cached_calculations?: Json | null
-          camera_id?: string | null
-          created_at?: string | null
-          filter_ids?: string[] | null
-          id?: string
-          is_current?: boolean | null
-          mount_id?: string | null
-          name?: string
-          notes?: string | null
-          telescope_id?: string | null
-          updated_at?: string | null
-          user_id?: string
+          [key: string]: any
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          [key: string]: any
+        }
+        Update: {
+          [key: string]: any
         }
         Relationships: []
       }
     }
     Views: {
-      rig_camera_specs: {
-        Row: {
-          brand: string | null
-          cooling_delta_c: number | null
-          full_well_e: number | null
-          id: string | null
-          is_color: boolean | null
-          model: string | null
-          pixel_size_um: number | null
-          qe_percent: number | null
-          read_noise_e: number | null
-          resolution_mp: number | null
-          sensor_area_mm2: number | null
-          sensor_diagonal_mm: number | null
-          sensor_height_mm: number | null
-          sensor_name: string | null
-          sensor_width_mm: number | null
-          weight_g: number | null
-        }
-        Relationships: []
-      }
-      rig_telescope_specs: {
-        Row: {
-          aperture_mm: number | null
-          brand: string | null
-          dawes_limit_arcsec: number | null
-          f_ratio: number | null
-          focal_length_mm: number | null
-          id: string | null
-          image_circle_mm: number | null
-          model: string | null
-          required_backfocus_mm: number | null
-          type: string | null
-          weight_kg: number | null
-        }
-        Relationships: []
-      }
-      top_photo_targets: {
-        Row: {
-          catalog_id: string | null
-          common_name: string | null
-          constellation: string | null
-          magnitude: number | null
-          obj_type: string | null
-          photo_score: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       calculate_rig_compatibility: {
@@ -934,6 +455,7 @@ export type Database = {
       fuzzy_search_celestial: {
         Args: { search_term: string; similarity_threshold?: number }
         Returns: {
+          alias_details: Json | null
           best_months: string | null
           catalog_id: string
           common_name: string | null
@@ -948,18 +470,29 @@ export type Database = {
           magnitude: number | null
           moon_tolerance: number | null
           obj_type: string | null
+          parent_id: string | null
           photo_score: number | null
           ra: number | null
           recommended_filter: string | null
+          relation_note: string | null
+          scientific_notation: string | null
+          search_aliases: string | null
           size_max: number | null
           surf_brightness: number | null
         }[]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
       }
       trigger_image_fetch: { Args: never; Returns: undefined }
       trigger_price_scrape: { Args: never; Returns: undefined }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -967,25 +500,23 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
-
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof DatabaseWithoutInternals },
+    | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof Database
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof Database
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -1003,16 +534,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof Database
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof Database
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -1028,16 +559,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof Database
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof Database
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -1053,39 +584,24 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
+    | { schema: keyof Database },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof Database
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof Database
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
-
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

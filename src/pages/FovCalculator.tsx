@@ -258,6 +258,8 @@ const FovCalculator = () => {
 
         <ToolSuggestions />
       </main>
+
+      <Footer />
     </div>
   );
 };

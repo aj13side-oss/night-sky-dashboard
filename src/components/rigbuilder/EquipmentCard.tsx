@@ -52,7 +52,7 @@ export function EquipmentCard({
 
         {imageUrl ? (
           <div className="rounded-md overflow-hidden bg-secondary/20 flex items-center justify-center aspect-square">
-            <img src={thumb400(imageUrl)} alt={title} loading="lazy" className="max-h-full max-w-full object-contain p-1.5" />
+            <img src={thumb400(imageUrl)} alt={`${title} — matériel astrophotographie`} loading="lazy" className="max-h-full max-w-full object-contain p-1.5" />
           </div>
         ) : (
           <div className="rounded-md bg-secondary/10 flex items-center justify-center aspect-square">

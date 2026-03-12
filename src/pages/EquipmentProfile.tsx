@@ -293,6 +293,8 @@ const EquipmentProfile = () => {
 
         <ToolSuggestions />
       </main>
+
+      <Footer />
     </div>
   );
 };

@@ -153,6 +153,8 @@ const SkyAtlas = () => {
         <ToolSuggestions />
       </main>
 
+      <Footer />
+
       <ObjectDetailModal
         obj={selected}
         open={!!selected}

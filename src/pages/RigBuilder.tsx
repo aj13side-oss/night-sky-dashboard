@@ -1,6 +1,8 @@
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import AppNav from "@/components/AppNav";
+import SEOHead from "@/components/SEOHead";
+import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

@@ -14,29 +14,29 @@ const ZONES = [
 
 const SEEING_CONDITIONS = [
   { seeing: 1.0, label: '1.0″ (excellent)' },
-  { seeing: 2.0, label: '2.0″ (bon)' },
-  { seeing: 3.0, label: '3.0″ (moyen)' },
-  { seeing: 4.0, label: '4.0″ (mauvais)' },
+  { seeing: 2.0, label: '2.0″ (good)' },
+  { seeing: 3.0, label: '3.0″ (average)' },
+  { seeing: 4.0, label: '4.0″ (poor)' },
 ];
 
 function getSeeingStatus(sampling: number, seeing: number): { status: "ok" | "warning"; note: string } {
   const nyquistLow = seeing / 3;
   const nyquistHigh = seeing / 2;
   if (sampling >= nyquistLow && sampling <= nyquistHigh) {
-    return { status: "ok", note: "Résolution maximale exploitée" };
+    return { status: "ok", note: "Maximum resolution achieved" };
   }
   if (sampling < nyquistLow) {
-    return { status: "warning", note: "Sur-échantillonné — le seeing sera le facteur limitant" };
+    return { status: "warning", note: "Oversampled — seeing will be the limiting factor" };
   }
-  return { status: "warning", note: "Sous-échantillonné — résolution limitée par le seeing" };
+  return { status: "warning", note: "Undersampled — resolution limited by seeing" };
 }
 
 function getSamplingDescription(sampling: number): string {
-  if (sampling < 0.5) return `${sampling.toFixed(2)}″/px — Planétaire / sur-échantillonné pour le ciel profond`;
-  if (sampling < 1.0) return `${sampling.toFixed(2)}″/px — Sur-échantillonné, sensible au seeing`;
-  if (sampling < 2.0) return `${sampling.toFixed(2)}″/px — Idéal pour le ciel profond sous seeing moyen (2-3″)`;
-  if (sampling < 3.0) return `${sampling.toFixed(2)}″/px — Sous-échantillonné, risque de pixelisation`;
-  return `${sampling.toFixed(2)}″/px — Très large champ, étoiles pixelisées`;
+  if (sampling < 0.5) return `${sampling.toFixed(2)}″/px — Planetary / oversampled for deep sky`;
+  if (sampling < 1.0) return `${sampling.toFixed(2)}″/px — Oversampled, sensitive to seeing`;
+  if (sampling < 2.0) return `${sampling.toFixed(2)}″/px — Ideal for deep sky under average seeing (2-3″)`;
+  if (sampling < 3.0) return `${sampling.toFixed(2)}″/px — Undersampled, risk of pixelation`;
+  return `${sampling.toFixed(2)}″/px — Very wide field, pixelated stars`;
 }
 
 export function SamplingGauge({ sampling }: SamplingGaugeProps) {
@@ -87,7 +87,7 @@ export function SamplingGauge({ sampling }: SamplingGaugeProps) {
 
       {/* Seeing comparison table */}
       <div className="space-y-1.5">
-        <h4 className="text-xs font-medium text-foreground">Conditions de seeing</h4>
+        <h4 className="text-xs font-medium text-foreground">Seeing Conditions</h4>
         <div className="grid grid-cols-1 gap-1">
           {relevantSeeing.map(s => (
             <div key={s.seeing} className="flex items-center gap-2 text-xs px-2 py-1 rounded bg-muted/30">

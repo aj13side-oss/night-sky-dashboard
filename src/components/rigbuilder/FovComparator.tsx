@@ -6,10 +6,10 @@ interface FovComparatorProps {
 }
 
 const TARGETS = [
-  { name: "Lune", w: 31, h: 31, shape: "circle" as const },
+  { name: "Moon", w: 31, h: 31, shape: "circle" as const },
   { name: "M31 Andromeda", w: 178, h: 63, shape: "ellipse" as const },
   { name: "M42 Orion", w: 85, h: 60, shape: "ellipse" as const },
-  { name: "M45 Pléiades", w: 110, h: 110, shape: "circle" as const },
+  { name: "M45 Pleiades", w: 110, h: 110, shape: "circle" as const },
   { name: "NGC 7000", w: 120, h: 100, shape: "ellipse" as const },
   { name: "M81", w: 26, h: 14, shape: "ellipse" as const },
   { name: "M1 Crab", w: 7, h: 5, shape: "ellipse" as const },
@@ -31,9 +31,9 @@ const FIT_COLORS: Record<Fit, string> = {
 };
 
 const FIT_LABELS: Record<Fit, string> = {
-  full: "✓ Rentre",
-  partial: "~ Partiel",
-  none: "✗ Trop grand",
+  full: "✓ Fits",
+  partial: "~ Partial",
+  none: "✗ Too large",
 };
 
 export function FovComparator({ fovWArcmin, fovHArcmin }: FovComparatorProps) {
@@ -53,7 +53,7 @@ export function FovComparator({ fovWArcmin, fovHArcmin }: FovComparatorProps) {
   return (
     <div className="space-y-3">
       <h4 className="text-xs font-medium text-foreground">
-        Votre champ capture… ({fovWArcmin.toFixed(0)}' × {fovHArcmin.toFixed(0)}')
+        Your field captures… ({fovWArcmin.toFixed(0)}' × {fovHArcmin.toFixed(0)}')
       </h4>
 
       {/* SVG visual */}

@@ -241,7 +241,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block cursor-pointer"
-                        title="Ouvrir sur Wikimedia Commons"
+                        title="Open on Wikimedia Commons"
                       >
                         <img
                           src={useDetailFallback && wikiImage!.fallbackUrl ? wikiImage!.fallbackUrl : wikiImage!.url}

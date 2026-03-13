@@ -18,9 +18,9 @@ const DashboardContent = () => {
   return (
     <div className="min-h-screen bg-background star-field">
       <SEOHead
-        title="Météo Astro ce soir & Planificateur d'Astrophotographie"
-        description="Consultez la météo astro en temps réel, les éphémérides, la phase de la lune, et découvrez les meilleures cibles à photographier ce soir. Planifiez vos sessions d'astrophotographie depuis votre position."
-        keywords="météo astro, astrophotographie ce soir, quoi photographier cette nuit, phase lune, éphémérides astronomie, cibles deep sky, conditions observation, seeing, couverture nuageuse astro"
+        title="Astro Weather Tonight & Astrophotography Planner"
+        description="Check real-time astro weather, ephemerides, moon phase, and discover the best targets to photograph tonight. Plan your astrophotography sessions from your location."
+        keywords="astro weather, astrophotography tonight, what to photograph tonight, moon phase, astronomy ephemerides, deep sky targets, observation conditions, seeing, cloud cover, météo astro, astrophotographie"
         path="/"
       />
       <AppNav />

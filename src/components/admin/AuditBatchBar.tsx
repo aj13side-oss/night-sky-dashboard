@@ -22,7 +22,7 @@ export default function AuditBatchBar({ count, onOk, onFlag, onNeedsImage, onGoo
         </Button>
         {onNeedsImage && (
           <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-amber-500/50 text-amber-400 hover:bg-amber-500/10" onClick={onNeedsImage}>
-            <Eye className="w-3 h-3" /> À trouver
+            <Eye className="w-3 h-3" /> Needs image
           </Button>
         )}
         <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-red-500/50 text-red-400 hover:bg-red-500/10" onClick={onFlag}>

@@ -87,7 +87,7 @@ const FovCalculator = () => {
   const effectiveFL = focalLength * barlow;
 
   useEffect(() => {
-    localStorage.setItem("astrodash_equipment", JSON.stringify({
+    localStorage.setItem("cosmicframe_equipment", JSON.stringify({
       focalLength: effectiveFL,
       sensorWidth: sensorW,
       sensorHeight: sensorH,

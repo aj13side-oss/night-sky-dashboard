@@ -125,7 +125,7 @@ const LightPollutionMap = () => {
           setLng(pos.coords.longitude);
           mapRef.current?.setView([pos.coords.latitude, pos.coords.longitude], 10);
         },
-        () => alert("Géolocalisation refusée ou indisponible")
+        () => alert("Geolocation denied or unavailable")
       );
     }
   };

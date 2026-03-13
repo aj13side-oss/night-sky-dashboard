@@ -86,7 +86,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
           {displayUrl && (
             <img
               src={displayUrl}
-              alt={`${obj.common_name ?? obj.catalog_id} — ${obj.obj_type}${obj.constellation ? ` dans ${obj.constellation}` : ''}`}
+              alt={`${obj.common_name ?? obj.catalog_id} — ${obj.obj_type}${obj.constellation ? ` in ${obj.constellation}` : ''}`}
               loading={index < 3 ? "eager" : "lazy"}
               onLoad={() => setImgLoaded(true)}
               onError={() => {

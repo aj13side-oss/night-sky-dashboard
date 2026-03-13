@@ -15,7 +15,7 @@ export default function AuditBatchBar({ count, onOk, onFlag, onNeedsImage, onGoo
 
   return (
     <div className="sticky top-0 z-20 flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 border border-primary/30 backdrop-blur-sm">
-      <span className="text-xs font-medium text-primary">{count} sélectionné{count > 1 ? "s" : ""}</span>
+      <span className="text-xs font-medium text-primary">{count} selected</span>
       <div className="flex gap-1 ml-auto">
         <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-green-500/50 text-green-400 hover:bg-green-500/10" onClick={onOk}>
           <Check className="w-3 h-3" /> OK

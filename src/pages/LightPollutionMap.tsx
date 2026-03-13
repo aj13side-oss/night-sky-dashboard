@@ -80,7 +80,7 @@ const LightPollutionMap = () => {
 
     // User marker
     const marker = L.marker([lat, lng]).addTo(map);
-    marker.bindPopup(`<b>Votre position</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
+    marker.bindPopup(`<b>Your position</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
     markerRef.current = marker;
 
     // Click handler

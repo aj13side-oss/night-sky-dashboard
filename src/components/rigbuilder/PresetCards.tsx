@@ -103,7 +103,7 @@ export function PresetCards({ presets, onLoad, telescopes, cameras, mounts }: Pr
             )}
 
             <p className="text-[11px] text-muted-foreground line-clamp-2 flex-1 leading-tight">
-              {p.description_fr}
+              {(p as any).description_en || p.description_fr}
             </p>
 
             <Button
@@ -112,7 +112,7 @@ export function PresetCards({ presets, onLoad, telescopes, cameras, mounts }: Pr
               className="w-full h-7 text-xs border-primary/30 hover:bg-primary/10"
               onClick={() => onLoad(p)}
             >
-              Charger ce setup
+              Load this setup
             </Button>
           </div>
         );

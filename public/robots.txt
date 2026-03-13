@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/login
 
-Sitemap: https://astrodash.fr/sitemap.xml
+Sitemap: https://cosmicframe.app/sitemap.xml

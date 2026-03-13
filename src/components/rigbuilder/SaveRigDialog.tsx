@@ -25,7 +25,7 @@ export function SaveRigDialog({
   telescopeId, cameraId, mountId, filterIds, accessoryIds,
   cachedCalculations,
 }: SaveRigDialogProps) {
-  const [name, setName] = useState("Mon Setup");
+  const [name, setName] = useState("My Setup");
   const [notes, setNotes] = useState("");
   const [isCurrent, setIsCurrent] = useState(false);
   const { userId } = useCurrentUser();
@@ -33,7 +33,7 @@ export function SaveRigDialog({
 
   const handleSave = () => {
     if (!userId) {
-      toast.error("Connectez-vous pour sauvegarder un setup");
+      toast.error("Sign in to save a setup");
       return;
     }
     saveRig.mutate({
@@ -48,13 +48,13 @@ export function SaveRigDialog({
       cached_calculations: cachedCalculations,
     }, {
       onSuccess: () => {
-        toast.success("Setup sauvegardé !");
+        toast.success("Setup saved!");
         onOpenChange(false);
-        setName("Mon Setup");
+        setName("My Setup");
         setNotes("");
         setIsCurrent(false);
       },
-      onError: (e) => toast.error(`Erreur: ${e.message}`),
+      onError: (e) => toast.error(`Error: ${e.message}`),
     });
   };
 
@@ -63,13 +63,13 @@ export function SaveRigDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Sauvegarder le setup</DialogTitle>
+            <DialogTitle>Save Setup</DialogTitle>
             <DialogDescription>
-              Connectez-vous pour sauvegarder vos configurations d'équipement.
+              Sign in to save your equipment configurations.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => onOpenChange(false)}>Fermer</Button>
+            <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -81,27 +81,27 @@ export function SaveRigDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Save className="w-4 h-4" /> Sauvegarder le setup
+            <Save className="w-4 h-4" /> Save Setup
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-2">
           <div className="space-y-2">
-            <Label htmlFor="rig-name">Nom du setup</Label>
-            <Input id="rig-name" value={name} onChange={e => setName(e.target.value)} placeholder="Mon setup deep sky" />
+            <Label htmlFor="rig-name">Setup Name</Label>
+            <Input id="rig-name" value={name} onChange={e => setName(e.target.value)} placeholder="My deep sky setup" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="rig-notes">Notes (optionnel)</Label>
-            <Textarea id="rig-notes" value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes sur ce setup..." rows={2} />
+            <Label htmlFor="rig-notes">Notes (optional)</Label>
+            <Textarea id="rig-notes" value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes about this setup..." rows={2} />
           </div>
           <div className="flex items-center gap-2">
             <Checkbox id="rig-current" checked={isCurrent} onCheckedChange={c => setIsCurrent(!!c)} />
-            <Label htmlFor="rig-current" className="text-sm">Définir comme setup principal</Label>
+            <Label htmlFor="rig-current" className="text-sm">Set as primary setup</Label>
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Annuler</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button onClick={handleSave} disabled={!name.trim() || saveRig.isPending}>
-            {saveRig.isPending ? "Sauvegarde..." : "Sauvegarder"}
+            {saveRig.isPending ? "Saving..." : "Save"}
           </Button>
         </DialogFooter>
       </DialogContent>

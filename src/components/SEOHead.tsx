@@ -19,8 +19,8 @@ export default function SEOHead({
   image = "/og-image.png",
   jsonLd,
 }: SEOHeadProps) {
-  const fullTitle = `${title} — AstroDash`;
-  const url = `https://astrodash.fr${path}`;
+  const fullTitle = `${title} — Cosmic Frame`;
+  const url = `https://cosmicframe.app${path}`;
 
   return (
     <Helmet>

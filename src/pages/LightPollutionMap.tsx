@@ -80,7 +80,7 @@ const LightPollutionMap = () => {
 
     // User marker
     const marker = L.marker([lat, lng]).addTo(map);
-    marker.bindPopup(`<b>Votre position</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
+    marker.bindPopup(`<b>Your position</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
     markerRef.current = marker;
 
     // Click handler
@@ -102,7 +102,7 @@ const LightPollutionMap = () => {
     if (!mapRef.current || !markerRef.current) return;
     mapRef.current.setView([lat, lng], mapRef.current.getZoom());
     markerRef.current.setLatLng([lat, lng]);
-    markerRef.current.setPopupContent(`<b>Votre position</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
+    markerRef.current.setPopupContent(`<b>Your position</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
   }, [lat, lng]);
 
   // Update overlay opacity
@@ -125,7 +125,7 @@ const LightPollutionMap = () => {
           setLng(pos.coords.longitude);
           mapRef.current?.setView([pos.coords.latitude, pos.coords.longitude], 10);
         },
-        () => alert("Géolocalisation refusée ou indisponible")
+        () => alert("Geolocation denied or unavailable")
       );
     }
   };
@@ -146,9 +146,9 @@ const LightPollutionMap = () => {
   return (
     <div className={`min-h-screen bg-background star-field ${isFullscreen ? "overflow-hidden" : ""}`}>
       <SEOHead
-        title="Carte de Pollution Lumineuse — Sites d'Observation en France"
-        description="Carte interactive de pollution lumineuse. Trouvez les meilleurs sites d'observation en France : échelle de Bortle, réserves de ciel étoilé, parcs naturels. Planifiez vos sorties astrophoto."
-        keywords="pollution lumineuse, carte Bortle, site observation astronomie, ciel étoilé France, réserve ciel noir, dark site, light pollution map, meilleur spot astrophoto"
+        title="Light Pollution Map — Find Dark Skies"
+        description="Interactive light pollution map. Find the best observation sites: Bortle scale, dark sky reserves, natural parks. Plan your astrophotography outings."
+        keywords="light pollution, Bortle map, astronomy observation site, dark sky, light pollution map, best astrophoto spot"
         path="/light-pollution"
       />
       {!isFullscreen && <AppNav />}

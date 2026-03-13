@@ -28,7 +28,7 @@ interface EquipmentData {
   cameraId?: string;
 }
 
-const STORAGE_KEY = "astrodash_equipment";
+const STORAGE_KEY = "cosmicframe_equipment";
 
 const EquipmentProfile = () => {
   const { data: dbTelescopes } = useTelescopes();
@@ -44,7 +44,7 @@ const EquipmentProfile = () => {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("astrodash_equipment");
       if (raw) {
         const parsed = JSON.parse(raw);
         setEquipment(prev => ({ ...prev, ...parsed }));
@@ -107,9 +107,9 @@ const EquipmentProfile = () => {
   return (
     <div className="min-h-screen bg-background star-field">
       <SEOHead
-        title="Profil Équipement — Sauvegardez votre Setup Astrophoto"
-        description="Enregistrez votre télescope, caméra et monture pour des recommandations personnalisées : échantillonnage, champ de vue, cibles adaptées à votre setup."
-        keywords="profil équipement astrophoto, setup astrophotographie, configuration télescope caméra, sauvegarde matériel astro"
+        title="My Astrophotography Gear Profile"
+        description="Save your telescope, camera and mount for personalized recommendations: sampling, field of view, targets suited to your setup."
+        keywords="astrophoto equipment profile, astrophotography setup, telescope camera configuration, gear profile"
         path="/equipment"
       />
       <AppNav />
@@ -118,7 +118,7 @@ const EquipmentProfile = () => {
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground flex items-center gap-3">
             <Telescope className="w-8 h-8 text-primary" /> Equipment Profile
           </h1>
-          <p className="text-muted-foreground mt-1">Save your gear for personalized recommendations across AstroDash.</p>
+          <p className="text-muted-foreground mt-1">Save your gear for personalized recommendations across Cosmic Frame.</p>
         </motion.div>
 
         {/* Telescope Section */}

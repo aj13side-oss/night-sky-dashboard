@@ -8,7 +8,7 @@ interface CompatibilityScoreProps {
 export function CompatibilityScore({ errors, warnings }: CompatibilityScoreProps) {
   const score = Math.max(0, Math.min(100, 100 - errors * 25 - warnings * 10));
   const color = score >= 80 ? "hsl(142 71% 45%)" : score >= 50 ? "hsl(var(--accent))" : "hsl(var(--destructive))";
-  const label = score >= 80 ? "Bon setup" : score >= 50 ? "Acceptable" : "Problèmes détectés";
+  const label = score >= 80 ? "Good setup" : score >= 50 ? "Acceptable" : "Issues detected";
 
   const radius = 28;
   const circumference = 2 * Math.PI * radius;

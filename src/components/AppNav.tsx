@@ -28,7 +28,7 @@ const AppNav = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
           <Telescope className="w-6 h-6 text-primary" />
-          <span className="text-xl font-bold text-gradient-gold">AstroDash</span>
+          <span className="text-xl font-bold text-gradient-gold">Cosmic Frame</span>
         </Link>
 
         <nav className="flex items-center gap-1">

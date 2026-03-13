@@ -24,7 +24,7 @@ export function UserRigsPanel({ onLoad }: UserRigsPanelProps) {
       <CollapsibleTrigger asChild>
         <button className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors mb-2">
           <HardDrive className="w-4 h-4 text-primary" />
-          Mes Setups
+          My Setups
           <Badge variant="secondary" className="text-[9px] px-1.5 py-0">{rigs.length}</Badge>
           <ChevronDown className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`} />
         </button>
@@ -42,7 +42,7 @@ export function UserRigsPanel({ onLoad }: UserRigsPanelProps) {
                   <span className="font-semibold text-sm text-foreground truncate">{rig.name}</span>
                   {rig.is_current && (
                     <Badge variant="secondary" className="text-[9px] px-1.5 py-0 gap-0.5 shrink-0">
-                      <Star className="w-2.5 h-2.5" /> Principal
+                      <Star className="w-2.5 h-2.5" /> Primary
                     </Badge>
                   )}
                 </div>
@@ -69,9 +69,9 @@ export function UserRigsPanel({ onLoad }: UserRigsPanelProps) {
                         filter_ids: rig.filter_ids,
                         accessory_ids: rig.accessory_ids,
                       });
-                      toast.success(`Setup "${rig.name}" chargé`);
+                      toast.success(`Setup "${rig.name}" loaded`);
                     }}>
-                    <Upload className="w-3 h-3" /> Charger
+                    <Upload className="w-3 h-3" /> Load
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -81,20 +81,20 @@ export function UserRigsPanel({ onLoad }: UserRigsPanelProps) {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer ce setup ?</AlertDialogTitle>
+                        <AlertDialogTitle>Delete this setup?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Le setup "{rig.name}" sera supprimé définitivement.
+                          The setup "{rig.name}" will be permanently deleted.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={() => {
                           deleteRig.mutate(rig.id, {
-                            onSuccess: () => toast.success("Setup supprimé"),
-                            onError: (e) => toast.error(`Erreur: ${e.message}`),
+                            onSuccess: () => toast.success("Setup deleted"),
+                            onError: (e) => toast.error(`Error: ${e.message}`),
                           });
                         }}>
-                          Supprimer
+                          Delete
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

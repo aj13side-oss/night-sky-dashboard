@@ -144,14 +144,14 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
     <>
       {obj && (
         <Helmet>
-          <title>{`${formatCatalogId(obj)}${obj.common_name ? ` — ${obj.common_name}` : ''} — AstroDash Atlas`}</title>
-          <meta name="description" content={`${obj.obj_type} dans ${obj.constellation ?? 'le ciel'}. ${obj.magnitude ? `Magnitude ${obj.magnitude}.` : ''} ${obj.size_max ? `Taille ${obj.size_max} arcmin.` : ''} ${obj.photo_score ? `Score photo: ${obj.photo_score}/10.` : ''} Guide d'exposition et conditions d'observation sur AstroDash.`} />
+          <title>{`${formatCatalogId(obj)}${obj.common_name ? ` — ${obj.common_name}` : ''} — Cosmic Frame Atlas`}</title>
+          <meta name="description" content={`${obj.obj_type} in ${obj.constellation ?? 'the sky'}. ${obj.magnitude ? `Magnitude ${obj.magnitude}.` : ''} ${obj.size_max ? `Size ${obj.size_max} arcmin.` : ''} ${obj.photo_score ? `Photo score: ${obj.photo_score}/10.` : ''} Exposure guide and observation conditions on Cosmic Frame.`} />
           <script type="application/ld+json">{JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Thing",
             "name": `${obj.common_name ?? obj.catalog_id} (${obj.catalog_id})`,
             "description": `${obj.obj_type} — ${obj.constellation ?? ''} — magnitude ${obj.magnitude ?? 'N/A'}`,
-            "url": `https://astrodash.fr/sky-atlas#${obj.catalog_id.replace(/\s+/g, '')}`
+            "url": `https://cosmicframe.app/sky-atlas#${obj.catalog_id.replace(/\s+/g, '')}`
           })}</script>
         </Helmet>
       )}
@@ -241,7 +241,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block cursor-pointer"
-                        title="Ouvrir sur Wikimedia Commons"
+                        title="Open on Wikimedia Commons"
                       >
                         <img
                           src={useDetailFallback && wikiImage!.fallbackUrl ? wikiImage!.fallbackUrl : wikiImage!.url}
@@ -337,7 +337,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
             >
               <LinkIcon className="w-4 h-4 text-primary mt-0.5 shrink-0" />
               <div className="min-w-0">
-                <p className="text-xs text-muted-foreground">Fait partie de</p>
+                <p className="text-xs text-muted-foreground">Part of</p>
                 <p className="text-sm font-semibold text-foreground">{formatCatalogId(parentObj)}</p>
                 {parentObj.common_name && <p className="text-xs text-primary">{parentObj.common_name}</p>}
                 {obj.relation_note && <p className="text-xs text-muted-foreground mt-1 italic">"{obj.relation_note}"</p>}
@@ -350,7 +350,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
             <div className="p-4 rounded-xl bg-secondary/30 space-y-2">
               <div className="flex items-center gap-2">
                 <Paperclip className="w-4 h-4 text-primary" />
-                <span className="text-sm font-semibold text-foreground">Objets associés</span>
+                <span className="text-sm font-semibold text-foreground">Related Objects</span>
                 <Badge variant="secondary" className="text-[10px]">{children.length}</Badge>
               </div>
               <div className="space-y-1.5">

@@ -45,9 +45,9 @@ export default function AuditCommandPalette({ open, onOpenChange, items, onActio
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="p-0 max-w-lg overflow-hidden">
         <Command shouldFilter={false}>
-          <CommandInput placeholder="Rechercher un produit ou objet…" value={search} onValueChange={setSearch} />
+          <CommandInput placeholder="Search product or object…" value={search} onValueChange={setSearch} />
           <CommandList>
-            <CommandEmpty>Aucun résultat</CommandEmpty>
+            <CommandEmpty>No results</CommandEmpty>
             <CommandGroup>
               {filtered.map(item => (
                 <CommandItem
@@ -58,7 +58,7 @@ export default function AuditCommandPalette({ open, onOpenChange, items, onActio
                 >
                   <div className="flex items-center gap-2 w-full">
                     <span className="text-sm font-medium truncate flex-1">{item.label}</span>
-                    {!item.hasImage && <Badge variant="outline" className="text-[9px] border-orange-500/50 text-orange-400">Sans image</Badge>}
+                    {!item.hasImage && <Badge variant="outline" className="text-[9px] border-orange-500/50 text-orange-400">No image</Badge>}
                     {item.status === "ok" && <Badge className="text-[9px] bg-green-500/20 text-green-400 border-green-500/50">✓</Badge>}
                     {item.status === "flagged" && <Badge variant="destructive" className="text-[9px]">⚠</Badge>}
                   </div>
@@ -75,7 +75,7 @@ export default function AuditCommandPalette({ open, onOpenChange, items, onActio
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); fire("replace", item.id); }}
                         className="px-2 py-0.5 rounded text-xs border border-primary/50 text-primary hover:bg-primary/20 transition-colors">
-                        <RefreshCw className="w-3 h-3 inline mr-1" />Remplacer
+                        <RefreshCw className="w-3 h-3 inline mr-1" />Replace
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); fire("google", item.id); }}
                         className="px-2 py-0.5 rounded text-xs border border-blue-500/50 text-blue-400 hover:bg-blue-500/20 transition-colors">
@@ -83,7 +83,7 @@ export default function AuditCommandPalette({ open, onOpenChange, items, onActio
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); fire("focus", item.id); }}
                         className="px-2 py-0.5 rounded text-xs border border-border text-muted-foreground hover:bg-muted transition-colors">
-                        <Eye className="w-3 h-3 inline mr-1" />Voir
+                        <Eye className="w-3 h-3 inline mr-1" />View
                       </button>
                     </div>
                   )}
@@ -93,9 +93,9 @@ export default function AuditCommandPalette({ open, onOpenChange, items, onActio
           </CommandList>
         </Command>
         <div className="px-3 py-1.5 border-t border-border bg-muted/30 text-[10px] text-muted-foreground flex gap-3">
-          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">↑↓</kbd> naviguer</span>
+          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">↑↓</kbd> navigate</span>
           <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">Enter</kbd> actions</span>
-          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">Esc</kbd> fermer</span>
+          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">Esc</kbd> close</span>
         </div>
       </DialogContent>
     </Dialog>

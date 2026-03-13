@@ -58,15 +58,13 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
       const minOk = ruleOver?.max_value ?? 0.6;
       const maxOk = ruleUnder?.min_value ?? 2.5;
       let status: CheckStatus = "ok";
-      let msg = ruleOver?.message_fr && ruleUnder?.message_fr
-        ? "Échantillonnage optimal pour le ciel profond"
-        : "Optimal for most seeing conditions";
+      let msg = "Optimal sampling for deep sky";
       if (sampling < minOk) {
         status = "warning";
-        msg = ruleOver?.message_fr ?? "Sur-échantillonné — sensible au seeing";
+        msg = "Oversampled — sensitive to seeing";
       } else if (sampling > maxOk) {
         status = "warning";
-        msg = ruleUnder?.message_fr ?? "Sous-échantillonné — risque de pixelisation";
+        msg = "Undersampled — risk of pixelation";
       }
       checks.push({ key: "sampling", label: "Sampling", value: `${sampling.toFixed(2)}″/px`, status, msg });
     }
@@ -77,33 +75,33 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
       checks.push({
         key: "fratio", label: "f/ratio", value: `f/${fRatio.toFixed(1)}`,
         status: "ok",
-        msg: fRatio < 4 ? "Très rapide — poses courtes" : fRatio < 6 ? "Rapide" : fRatio < 10 ? "Modéré" : "Lent — poses longues nécessaires",
+        msg: fRatio < 4 ? "Very fast — short exposures" : fRatio < 6 ? "Fast" : fRatio < 10 ? "Moderate" : "Slow — long exposures needed",
       });
     }
 
     // 3. Field of view
     if (fovWArcmin > 0 && fovHArcmin > 0) {
       checks.push({
-        key: "fov", label: "Champ de vue", value: `${fovWArcmin.toFixed(0)}' × ${fovHArcmin.toFixed(0)}'`,
-        status: "ok", msg: "en minutes d'arc",
+        key: "fov", label: "Field of View", value: `${fovWArcmin.toFixed(0)}' × ${fovHArcmin.toFixed(0)}'`,
+        status: "ok", msg: "in arcminutes",
       });
     }
 
     // 4. Dawes limit
     if (dawes > 0) {
       const effectiveRes = sampling > 0 ? Math.max(sampling, dawes) : dawes;
-      let msg = `Limite de Dawes: ${dawes.toFixed(2)}″`;
+      let msg = `Dawes Limit: ${dawes.toFixed(2)}″`;
       if (sampling > 0) {
         if (sampling > dawes * 2) {
-          msg = "Résolution limitée par l'échantillonnage, pas par l'optique";
+          msg = "Resolution limited by sampling, not optics";
         } else if (sampling < dawes * 0.5) {
-          msg = "Résolution limitée par l'optique — sur-échantillonné";
+          msg = "Resolution limited by optics — oversampled";
         } else {
-          msg = "Bon équilibre optique/échantillonnage";
+          msg = "Good optics/sampling balance";
         }
       }
       checks.push({
-        key: "dawes", label: "Résolution", value: `${effectiveRes.toFixed(2)}″`,
+        key: "dawes", label: "Resolution", value: `${effectiveRes.toFixed(2)}″`,
         status: "ok", msg,
       });
     }
@@ -117,17 +115,15 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
       const warnT = rule?.min_value ?? 0.85;
       const errT = rule?.max_value ?? 1.0;
       let status: CheckStatus = "ok";
-      let msg = rule?.message_fr
-        ? `Diagonale capteur ${diag.toFixed(1)}mm dans le cercle image ${ic}mm`
-        : `Sensor diagonal ${diag.toFixed(1)}mm within image circle ${ic}mm`;
+      let msg = `Sensor diagonal ${diag.toFixed(1)}mm within image circle ${ic}mm`;
       if (ratio > errT) {
         status = "error";
-        msg = rule?.message_fr ?? `Diagonale capteur (${diag.toFixed(1)}mm) dépasse le cercle image (${ic}mm) — vignetage sévère`;
+        msg = `Sensor diagonal (${diag.toFixed(1)}mm) exceeds image circle (${ic}mm) — severe vignetting`;
       } else if (ratio > warnT) {
         status = "warning";
-        msg = `Diagonale capteur (${diag.toFixed(1)}mm) proche de la limite (${ic}mm) — vignetage possible`;
+        msg = `Sensor diagonal (${diag.toFixed(1)}mm) close to limit (${ic}mm) — possible vignetting`;
       }
-      checks.push({ key: "vignetting", label: "Vignetage", value: `${(ratio * 100).toFixed(0)}%`, status, msg });
+      checks.push({ key: "vignetting", label: "Vignetting", value: `${(ratio * 100).toFixed(0)}%`, status, msg });
     }
 
     // 6. Payload
@@ -141,15 +137,15 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
       const warnT = rule?.min_value ?? 0.50;
       const errT = rule?.max_value ?? 0.65;
       let status: CheckStatus = "ok";
-      let msg = `${totalPayload.toFixed(1)}kg / ${mount.payload_kg}kg — dans les limites`;
+      let msg = `${totalPayload.toFixed(1)}kg / ${mount.payload_kg}kg — within limits`;
       if (ratio > errT) {
         status = "error";
-        msg = rule?.message_fr ?? `Charge ${totalPayload.toFixed(1)}kg dépasse la limite sûre — instabilité de suivi`;
+        msg = `Payload ${totalPayload.toFixed(1)}kg exceeds safe limit — tracking instability`;
       } else if (ratio > warnT) {
         status = "warning";
-        msg = `Charge ${totalPayload.toFixed(1)}kg à ${(ratio * 100).toFixed(0)}% de la capacité — proche de la limite`;
+        msg = `Payload ${totalPayload.toFixed(1)}kg at ${(ratio * 100).toFixed(0)}% capacity — close to limit`;
       }
-      checks.push({ key: "payload", label: "Charge", value: `${totalPayload.toFixed(1)} / ${mount.payload_kg}kg`, status, msg });
+      checks.push({ key: "payload", label: "Payload", value: `${totalPayload.toFixed(1)} / ${mount.payload_kg}kg`, status, msg });
     }
 
     // 7. Backfocus
@@ -164,38 +160,38 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
       const warnT = rule?.max_value ?? 5;
       let status: CheckStatus = "ok";
 
-      const trainParts: string[] = [`Caméra ${camBF}mm`];
-      if (filterCorr > 0) trainParts.push(`Filtre ${filterCorr.toFixed(1)}mm`);
+      const trainParts: string[] = [`Camera ${camBF}mm`];
+      if (filterCorr > 0) trainParts.push(`Filter ${filterCorr.toFixed(1)}mm`);
       accessories.forEach(a => {
         if (a.optical_length_mm) trainParts.push(`${a.brand} ${a.model} ${a.optical_length_mm}mm`);
       });
       const trainDetail = trainParts.join(" + ");
 
-      let msg = `Train: ${trainDetail} = ${trainBF.toFixed(1)}mm → entretoise de ${spacer.toFixed(1)}mm`;
+      let msg = `Train: ${trainDetail} = ${trainBF.toFixed(1)}mm → spacer needed: ${spacer.toFixed(1)}mm`;
       if (Math.abs(spacer) > warnT) {
         status = "warning";
         msg = spacer < 0
-          ? `Train optique (${trainBF.toFixed(1)}mm) dépasse le backfocus requis (${reqBF}mm) de ${Math.abs(spacer).toFixed(1)}mm`
-          : `Entretoise de ${spacer.toFixed(1)}mm nécessaire — ${trainDetail}`;
+          ? `Optical train (${trainBF.toFixed(1)}mm) exceeds required backfocus (${reqBF}mm) by ${Math.abs(spacer).toFixed(1)}mm`
+          : `${spacer.toFixed(1)}mm spacer needed — ${trainDetail}`;
       }
-      checks.push({ key: "backfocus", label: "Train optique (BF)", value: `${spacer.toFixed(1)}mm`, status, msg });
+      checks.push({ key: "backfocus", label: "Optical Train (BF)", value: `${spacer.toFixed(1)}mm`, status, msg });
     }
 
     // 8. Additional specs
     if (camera?.interface_type || camera?.interface_usb) {
-      checks.push({ key: "cam_port", label: "Port caméra", value: camera.interface_usb ?? camera.interface_type ?? "", status: "ok", msg: "" });
+      checks.push({ key: "cam_port", label: "Camera Port", value: camera.interface_usb ?? camera.interface_type ?? "", status: "ok", msg: "" });
     }
     if (mount?.connectivity) {
-      checks.push({ key: "mnt_port", label: "Port monture", value: mount.connectivity, status: "ok", msg: "" });
+      checks.push({ key: "mnt_port", label: "Mount Port", value: mount.connectivity, status: "ok", msg: "" });
     }
     if (camera?.qe_percent) {
-      checks.push({ key: "qe", label: "Efficacité quantique", value: `${camera.qe_percent}%`, status: "ok", msg: camera.qe_percent >= 80 ? "Excellent" : camera.qe_percent >= 60 ? "Bon" : "Moyen" });
+      checks.push({ key: "qe", label: "Quantum Efficiency", value: `${camera.qe_percent}%`, status: "ok", msg: camera.qe_percent >= 80 ? "Excellent" : camera.qe_percent >= 60 ? "Good" : "Average" });
     }
     if (camera?.read_noise_e) {
-      checks.push({ key: "readnoise", label: "Bruit de lecture", value: `${camera.read_noise_e}e⁻`, status: "ok", msg: camera.read_noise_e <= 1.5 ? "Très bas" : camera.read_noise_e <= 3 ? "Bas" : "Modéré" });
+      checks.push({ key: "readnoise", label: "Read Noise", value: `${camera.read_noise_e}e⁻`, status: "ok", msg: camera.read_noise_e <= 1.5 ? "Very low" : camera.read_noise_e <= 3 ? "Low" : "Moderate" });
     }
     if (mount?.periodic_error_arcsec) {
-      checks.push({ key: "pe", label: "Erreur périodique", value: `±${mount.periodic_error_arcsec}″`, status: "ok", msg: mount.periodic_error_arcsec <= 5 ? "Excellent" : mount.periodic_error_arcsec <= 15 ? "Bon" : "Autoguidage recommandé" });
+      checks.push({ key: "pe", label: "Periodic Error", value: `±${mount.periodic_error_arcsec}″`, status: "ok", msg: mount.periodic_error_arcsec <= 5 ? "Excellent" : mount.periodic_error_arcsec <= 15 ? "Good" : "Autoguiding recommended" });
     }
 
     return checks;
@@ -241,7 +237,7 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <CardTitle className="text-lg flex items-center gap-2">
-              <Cpu className="w-5 h-5 text-primary" /> Performance du setup
+              <Cpu className="w-5 h-5 text-primary" /> Setup Performance
             </CardTitle>
             <div className="flex items-center gap-2 flex-wrap">
               {totalPrice && (
@@ -254,7 +250,7 @@ export function RigSummary({ telescope, camera, mount, filter, accessories = [] 
               <CompatibilityScore errors={errors.length} warnings={warnings.length} />
               <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-primary/30 hover:bg-primary/10"
                 onClick={() => setSaveOpen(true)}>
-                <Save className="w-3 h-3" /> Sauvegarder
+                <Save className="w-3 h-3" /> Save
               </Button>
             </div>
           </div>

@@ -83,7 +83,7 @@ export default function AuditCommandPalette({ open, onOpenChange, items, onActio
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); fire("focus", item.id); }}
                         className="px-2 py-0.5 rounded text-xs border border-border text-muted-foreground hover:bg-muted transition-colors">
-                        <Eye className="w-3 h-3 inline mr-1" />Voir
+                        <Eye className="w-3 h-3 inline mr-1" />View
                       </button>
                     </div>
                   )}

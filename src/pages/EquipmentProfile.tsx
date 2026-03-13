@@ -44,7 +44,7 @@ const EquipmentProfile = () => {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("astrodash_equipment");
       if (raw) {
         const parsed = JSON.parse(raw);
         setEquipment(prev => ({ ...prev, ...parsed }));

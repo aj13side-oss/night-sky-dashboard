@@ -58,7 +58,7 @@ export default function AuditCommandPalette({ open, onOpenChange, items, onActio
                 >
                   <div className="flex items-center gap-2 w-full">
                     <span className="text-sm font-medium truncate flex-1">{item.label}</span>
-                    {!item.hasImage && <Badge variant="outline" className="text-[9px] border-orange-500/50 text-orange-400">Sans image</Badge>}
+                    {!item.hasImage && <Badge variant="outline" className="text-[9px] border-orange-500/50 text-orange-400">No image</Badge>}
                     {item.status === "ok" && <Badge className="text-[9px] bg-green-500/20 text-green-400 border-green-500/50">✓</Badge>}
                     {item.status === "flagged" && <Badge variant="destructive" className="text-[9px]">⚠</Badge>}
                   </div>

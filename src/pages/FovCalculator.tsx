@@ -112,9 +112,9 @@ const FovCalculator = () => {
   return (
     <div className="min-h-screen bg-background star-field">
       <SEOHead
-        title="Calculateur de Champ de Vue (FOV) & Échantillonnage"
-        description="Calculez le champ de vue et l'échantillonnage de votre setup astrophoto. Simulez le cadrage sur n'importe quel objet céleste. Compatible tous télescopes et caméras astro."
-        keywords="calculateur champ de vue, FOV calculator, échantillonnage astrophoto, arcsec pixel, cadrage nébuleuse, simulateur astrophotographie, field of view"
+        title="Field of View & Sampling Calculator"
+        description="Calculate the field of view and sampling of your astrophotography setup. Simulate framing on any celestial object. Compatible with all telescopes and astro cameras."
+        keywords="field of view calculator, FOV calculator, astrophoto sampling, arcsec pixel, nebula framing, astrophotography simulator"
         path="/fov-calculator"
       />
       <AppNav />

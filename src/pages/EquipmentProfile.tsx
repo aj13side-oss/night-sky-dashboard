@@ -118,7 +118,7 @@ const EquipmentProfile = () => {
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground flex items-center gap-3">
             <Telescope className="w-8 h-8 text-primary" /> Equipment Profile
           </h1>
-          <p className="text-muted-foreground mt-1">Save your gear for personalized recommendations across AstroDash.</p>
+          <p className="text-muted-foreground mt-1">Save your gear for personalized recommendations across Cosmic Frame.</p>
         </motion.div>
 
         {/* Telescope Section */}

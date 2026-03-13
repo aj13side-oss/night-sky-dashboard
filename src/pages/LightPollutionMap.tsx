@@ -146,9 +146,9 @@ const LightPollutionMap = () => {
   return (
     <div className={`min-h-screen bg-background star-field ${isFullscreen ? "overflow-hidden" : ""}`}>
       <SEOHead
-        title="Carte de Pollution Lumineuse — Sites d'Observation en France"
-        description="Carte interactive de pollution lumineuse. Trouvez les meilleurs sites d'observation en France : échelle de Bortle, réserves de ciel étoilé, parcs naturels. Planifiez vos sorties astrophoto."
-        keywords="pollution lumineuse, carte Bortle, site observation astronomie, ciel étoilé France, réserve ciel noir, dark site, light pollution map, meilleur spot astrophoto"
+        title="Light Pollution Map — Find Dark Skies"
+        description="Interactive light pollution map. Find the best observation sites: Bortle scale, dark sky reserves, natural parks. Plan your astrophotography outings."
+        keywords="light pollution, Bortle map, astronomy observation site, dark sky, light pollution map, best astrophoto spot"
         path="/light-pollution"
       />
       {!isFullscreen && <AppNav />}

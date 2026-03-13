@@ -63,7 +63,7 @@ const Admin = () => {
             <ShieldCheck className="w-8 h-8 text-primary" />
             <div>
               <h1 className="text-3xl font-bold text-foreground">Admin Panel</h1>
-              <p className="text-sm text-muted-foreground">AstroDash content management</p>
+              <p className="text-sm text-muted-foreground">Cosmic Frame content management</p>
             </div>
           </div>
           <Button variant="outline" size="sm" onClick={handleLogout} className="gap-1.5">

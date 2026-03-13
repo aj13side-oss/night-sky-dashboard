@@ -59,92 +59,92 @@ const DashboardContent = () => {
         <section className="space-y-6 pt-8 border-t border-border/20">
           <div>
             <h2 className="text-lg font-semibold text-foreground/80">
-              Votre assistant d'astrophotographie complet
+              Your complete astrophotography assistant
             </h2>
             <p className="text-sm text-muted-foreground mt-2 leading-relaxed max-w-3xl">
-              AstroDash est un outil gratuit de planification d'astrophotographie.
-              Consultez la météo astro en temps réel (couverture nuageuse, seeing, transparence, humidité),
-              les éphémérides astronomiques (lever/coucher du soleil, crépuscule astronomique,
-              phase de la lune), et découvrez les meilleures cibles à photographier ce soir
-              depuis votre position.
+              Cosmic Frame is a free astrophotography planning tool.
+              Check real-time astro weather (cloud cover, seeing, transparency, humidity),
+              astronomical ephemerides (sunrise/sunset, astronomical twilight,
+              moon phase), and discover the best targets to photograph tonight
+              from your location.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <article>
-              <h3 className="text-sm font-medium text-foreground/70">📡 Catalogue céleste</h3>
+              <h3 className="text-sm font-medium text-foreground/70">📡 Sky Catalog</h3>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Plus de 4 800 objets du ciel profond : galaxies, nébuleuses à émission,
-                nébuleuses planétaires, amas ouverts, amas globulaires, nébuleuses sombres,
-                rémanents de supernova. Catalogues Messier (110 objets), NGC, IC, Sharpless, Abell complets.
+                Over 4,800 deep sky objects: galaxies, emission nebulae,
+                planetary nebulae, open clusters, globular clusters, dark nebulae,
+                supernova remnants. Complete Messier (110 objects), NGC, IC, Sharpless, Abell catalogs.
               </p>
             </article>
             <article>
-              <h3 className="text-sm font-medium text-foreground/70">🔭 Matériel astrophoto</h3>
+              <h3 className="text-sm font-medium text-foreground/70">🔭 Astrophotography Gear</h3>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Comparez plus de 360 équipements : télescopes (Newton, réfracteur, Schmidt-Cassegrain),
-                caméras astro (ZWO, QHY, Player One, Moravian), montures équatoriales
-                (Sky-Watcher HEQ5, EQM-35, ZWO AM5, iOptron), filtres et accessoires.
-                Prix et liens vers Pierro Astro, Astroshop, Astronome.fr, Amazon.
+                Compare 360+ equipment: telescopes (Newton, refractor, Schmidt-Cassegrain),
+                astro cameras (ZWO, QHY, Player One, Moravian), equatorial mounts
+                (Sky-Watcher HEQ5, EQM-35, ZWO AM5, iOptron), filters and accessories.
+                Prices and links to Pierro Astro, Astroshop, Astronome.fr, Amazon.
               </p>
             </article>
             <article>
-              <h3 className="text-sm font-medium text-foreground/70">⚙️ Calculateurs</h3>
+              <h3 className="text-sm font-medium text-foreground/70">⚙️ Calculators</h3>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Calculez l'échantillonnage (arcsec/pixel), le champ de vue (FOV),
-                la compatibilité capteur/cercle d'image, le rapport charge/monture,
-                le backfocus du train optique. Vérifiez si votre setup est adapté
-                aux conditions de seeing locales.
+                Calculate sampling (arcsec/pixel), field of view (FOV),
+                sensor vs image circle compatibility, payload/mount ratio,
+                optical train backfocus. Check if your setup is suited
+                to local seeing conditions.
               </p>
             </article>
             <article>
-              <h3 className="text-sm font-medium text-foreground/70">🌙 Météo & éphémérides</h3>
+              <h3 className="text-sm font-medium text-foreground/70">🌙 Weather & Ephemerides</h3>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Prévisions météo astronomiques heure par heure, phase lunaire précise,
-                horaires de crépuscule astronomique, lever et coucher de lune.
-                Identifiez les fenêtres d'observation optimales pour votre nuit d'imagerie.
+                Hourly astronomical weather forecasts, precise moon phase,
+                astronomical twilight times, moonrise and moonset.
+                Identify optimal observation windows for your imaging night.
               </p>
             </article>
             <article>
-              <h3 className="text-sm font-medium text-foreground/70">🗺️ Pollution lumineuse</h3>
+              <h3 className="text-sm font-medium text-foreground/70">🗺️ Light Pollution</h3>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Carte interactive de pollution lumineuse. Trouvez les meilleurs sites
-                d'observation en France : zones Bortle 1 à 4, réserves de ciel étoilé,
-                parcs naturels. Idéal pour planifier vos sorties astrophoto.
+                Interactive light pollution map. Find the best observation sites:
+                Bortle 1–4 zones, dark sky reserves, natural parks.
+                Ideal for planning your astrophoto outings.
               </p>
             </article>
             <article>
-              <h3 className="text-sm font-medium text-foreground/70">📸 Guide d'exposition</h3>
+              <h3 className="text-sm font-medium text-foreground/70">📸 Exposure Guide</h3>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Chaque objet céleste dispose d'un guide d'exposition : temps de pose rapide et deep,
-                filtre recommandé (L-Pro, Ha, OIII, SII), tolérance lunaire,
-                meilleurs mois d'observation, et score de photogénie.
+                Each celestial object has an exposure guide: fast and deep integration times,
+                recommended filter (L-Pro, Ha, OIII, SII), moon tolerance,
+                best months for observation, and photogenicity score.
               </p>
             </article>
           </div>
 
           <div className="space-y-3 text-xs text-muted-foreground/70 leading-relaxed">
             <div>
-              <h3 className="text-sm font-medium text-foreground/60 mb-1">Marques et revendeurs référencés</h3>
+              <h3 className="text-sm font-medium text-foreground/60 mb-1">Featured brands and retailers</h3>
               <p>
-                Télescopes : Sky-Watcher, Takahashi, William Optics, Askar, Celestron, Meade, Explore Scientific, SharpStar, TS-Optics, Samyang, Sigma, Orion, SVBONY, GSO.
-                Caméras astro : ZWO (ASI2600MC Pro, ASI533MC Pro, ASI585MC, ASI294MC Pro), QHY (QHY268M, QHY600M), Player One (Poseidon, Uranus, Ares), Moravian, Altair, ToupTek, Rising Cam.
-                Montures : Sky-Watcher (HEQ5, EQM-35, EQ6-R), ZWO (AM3, AM5), iOptron (CEM26, CEM40, GEM45), Takahashi, Losmandy, 10Micron, Pegasus Astro, Rainbow Astro, Avalon.
-                Filtres : Optolong, ZWO, Baader, Astronomik, IDAS, Antlia, Chroma, STC.
-                Revendeurs : Pierro Astro, Astroshop, Astronome.fr, Optique Unterlinden, Amazon.
+                Telescopes: Sky-Watcher, Takahashi, William Optics, Askar, Celestron, Meade, Explore Scientific, SharpStar, TS-Optics, Samyang, Sigma, Orion, SVBONY, GSO.
+                Astro cameras: ZWO (ASI2600MC Pro, ASI533MC Pro, ASI585MC, ASI294MC Pro), QHY (QHY268M, QHY600M), Player One (Poseidon, Uranus, Ares), Moravian, Altair, ToupTek, Rising Cam.
+                Mounts: Sky-Watcher (HEQ5, EQM-35, EQ6-R), ZWO (AM3, AM5), iOptron (CEM26, CEM40, GEM45), Takahashi, Losmandy, 10Micron, Pegasus Astro, Rainbow Astro, Avalon.
+                Filters: Optolong, ZWO, Baader, Astronomik, IDAS, Antlia, Chroma, STC.
+                Retailers: Pierro Astro, Astroshop, Astronome.fr, Optique Unterlinden, Amazon.
               </p>
             </div>
             <div>
-              <h3 className="text-sm font-medium text-foreground/60 mb-1">Types d'objets dans le catalogue</h3>
+              <h3 className="text-sm font-medium text-foreground/60 mb-1">Object types in the catalog</h3>
               <p>
-                Galaxies spirales et elliptiques (3 300+), nébuleuses à émission (260+), amas ouverts (480+),
-                amas globulaires (179), nébuleuses sombres et nuages moléculaires (155+),
-                amas de galaxies (144), nébuleuses planétaires (140), nébuleuses par réflexion,
-                rémanents de supernova, associations stellaires.
-                Objets célèbres : Nébuleuse d'Orion (M42), Galaxie d'Andromède (M31), Pléiades (M45),
-                Nébuleuse de l'Aigle (M16, Piliers de la Création), Nébuleuse du Voile (NGC 6960/6992),
-                Nébuleuse North America (NGC 7000), Nébuleuse de la Rosette (NGC 2244),
-                Nébuleuse de la Lagune (M8), Nébuleuse du Crabe (M1), Nébuleuse de la Carène (NGC 3372).
+                Spiral and elliptical galaxies (3,300+), emission nebulae (260+), open clusters (480+),
+                globular clusters (179), dark nebulae and molecular clouds (155+),
+                galaxy clusters (144), planetary nebulae (140), reflection nebulae,
+                supernova remnants, stellar associations.
+                Famous objects: Orion Nebula (M42), Andromeda Galaxy (M31), Pleiades (M45),
+                Eagle Nebula (M16, Pillars of Creation), Veil Nebula (NGC 6960/6992),
+                North America Nebula (NGC 7000), Rosette Nebula (NGC 2244),
+                Lagoon Nebula (M8), Crab Nebula (M1), Carina Nebula (NGC 3372).
               </p>
             </div>
           </div>

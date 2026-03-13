@@ -67,19 +67,19 @@ const SkyAtlas = () => {
   return (
     <div className="min-h-screen bg-background star-field">
       <SEOHead
-        title="Catalogue de 4 800+ Objets Célestes — Atlas du Ciel"
-        description="Explorez 4 800+ objets célestes : galaxies, nébuleuses, amas d'étoiles, nébuleuses planétaires. Catalogue Messier, NGC, IC, Sharpless complet avec guide d'exposition, score de photogénie, et meilleurs mois d'observation."
-        keywords="catalogue Messier, catalogue NGC, galaxie, nébuleuse, amas ouvert, amas globulaire, nébuleuse planétaire, deep sky objects, nebula, galaxy, star cluster, astrophotography targets"
+        title="4,800+ Deep Sky Objects Catalog — Sky Atlas"
+        description="Explore 4,800+ celestial objects: galaxies, nebulae, star clusters, planetary nebulae. Complete Messier, NGC, IC, Sharpless catalog with exposure guide, photogenicity score, and best observation months."
+        keywords="Messier catalog, NGC catalog, galaxy, nebula, open cluster, globular cluster, planetary nebula, deep sky objects, astrophotography targets, star cluster"
         path="/sky-atlas"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Dataset",
-          "name": "AstroDash Celestial Objects Catalog",
-          "description": "Catalogue de 4 800+ objets célestes pour l'astrophotographie avec guides d'exposition, scores de photogénie, et données de planification de session.",
-          "url": "https://astrodash.fr/sky-atlas",
-          "keywords": ["astronomie", "astrophotographie", "Messier", "NGC", "deep sky"],
+          "name": "Cosmic Frame Celestial Objects Catalog",
+          "description": "Catalog of 4,800+ deep sky objects for astrophotography with exposure guides, photogenicity scores, and session planning data.",
+          "url": "https://cosmicframe.app/sky-atlas",
+          "keywords": ["astronomy", "astrophotography", "Messier", "NGC", "deep sky"],
           "license": "https://creativecommons.org/licenses/by/4.0/",
-          "variableMeasured": ["magnitude", "taille angulaire", "score photogénie", "temps exposition"]
+          "variableMeasured": ["magnitude", "angular size", "photogenicity score", "exposure time"]
         }}
       />
       <AppNav />

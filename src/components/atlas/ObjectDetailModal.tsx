@@ -144,14 +144,14 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
     <>
       {obj && (
         <Helmet>
-          <title>{`${formatCatalogId(obj)}${obj.common_name ? ` — ${obj.common_name}` : ''} — AstroDash Atlas`}</title>
-          <meta name="description" content={`${obj.obj_type} dans ${obj.constellation ?? 'le ciel'}. ${obj.magnitude ? `Magnitude ${obj.magnitude}.` : ''} ${obj.size_max ? `Taille ${obj.size_max} arcmin.` : ''} ${obj.photo_score ? `Score photo: ${obj.photo_score}/10.` : ''} Guide d'exposition et conditions d'observation sur AstroDash.`} />
+          <title>{`${formatCatalogId(obj)}${obj.common_name ? ` — ${obj.common_name}` : ''} — Cosmic Frame Atlas`}</title>
+          <meta name="description" content={`${obj.obj_type} in ${obj.constellation ?? 'the sky'}. ${obj.magnitude ? `Magnitude ${obj.magnitude}.` : ''} ${obj.size_max ? `Size ${obj.size_max} arcmin.` : ''} ${obj.photo_score ? `Photo score: ${obj.photo_score}/10.` : ''} Exposure guide and observation conditions on Cosmic Frame.`} />
           <script type="application/ld+json">{JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Thing",
             "name": `${obj.common_name ?? obj.catalog_id} (${obj.catalog_id})`,
             "description": `${obj.obj_type} — ${obj.constellation ?? ''} — magnitude ${obj.magnitude ?? 'N/A'}`,
-            "url": `https://astrodash.fr/sky-atlas#${obj.catalog_id.replace(/\s+/g, '')}`
+            "url": `https://cosmicframe.app/sky-atlas#${obj.catalog_id.replace(/\s+/g, '')}`
           })}</script>
         </Helmet>
       )}

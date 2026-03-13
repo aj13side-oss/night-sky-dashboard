@@ -102,7 +102,7 @@ const LightPollutionMap = () => {
     if (!mapRef.current || !markerRef.current) return;
     mapRef.current.setView([lat, lng], mapRef.current.getZoom());
     markerRef.current.setLatLng([lat, lng]);
-    markerRef.current.setPopupContent(`<b>Votre position</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
+    markerRef.current.setPopupContent(`<b>Your position</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
   }, [lat, lng]);
 
   // Update overlay opacity

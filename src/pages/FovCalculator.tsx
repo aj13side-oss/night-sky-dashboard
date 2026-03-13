@@ -33,7 +33,7 @@ const FovCalculator = () => {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("astrodash_equipment");
+      const raw = localStorage.getItem("cosmicframe_equipment") || localStorage.getItem("astrodash_equipment");
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed.telescopeId) setTelescopeId(parsed.telescopeId);

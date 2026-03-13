@@ -55,7 +55,7 @@ const SkyAtlas = () => {
 
     // Load equipment from localStorage
     try {
-      const saved = localStorage.getItem("astrodash_equipment");
+      const saved = localStorage.getItem("cosmicframe_equipment") || localStorage.getItem("astrodash_equipment");
       if (saved) setEquipment(JSON.parse(saved));
     } catch {}
   }, []);

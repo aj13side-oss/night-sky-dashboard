@@ -75,7 +75,7 @@ export default function AuditCommandPalette({ open, onOpenChange, items, onActio
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); fire("replace", item.id); }}
                         className="px-2 py-0.5 rounded text-xs border border-primary/50 text-primary hover:bg-primary/20 transition-colors">
-                        <RefreshCw className="w-3 h-3 inline mr-1" />Remplacer
+                        <RefreshCw className="w-3 h-3 inline mr-1" />Replace
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); fire("google", item.id); }}
                         className="px-2 py-0.5 rounded text-xs border border-blue-500/50 text-blue-400 hover:bg-blue-500/20 transition-colors">

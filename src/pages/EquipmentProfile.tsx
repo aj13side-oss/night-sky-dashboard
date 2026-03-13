@@ -28,7 +28,7 @@ interface EquipmentData {
   cameraId?: string;
 }
 
-const STORAGE_KEY = "astrodash_equipment";
+const STORAGE_KEY = "cosmicframe_equipment";
 
 const EquipmentProfile = () => {
   const { data: dbTelescopes } = useTelescopes();

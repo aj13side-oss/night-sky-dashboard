@@ -32,7 +32,7 @@ export default function AuditBatchBar({ count, onOk, onFlag, onNeedsImage, onGoo
           <Search className="w-3 h-3" /> Google
         </Button>
         <Button size="sm" variant="ghost" className="h-7 text-xs gap-1 text-muted-foreground" onClick={onClear}>
-          <XCircle className="w-3 h-3" /> Effacer
+          <XCircle className="w-3 h-3" /> Clear
         </Button>
       </div>
     </div>

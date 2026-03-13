@@ -93,9 +93,9 @@ export default function AuditCommandPalette({ open, onOpenChange, items, onActio
           </CommandList>
         </Command>
         <div className="px-3 py-1.5 border-t border-border bg-muted/30 text-[10px] text-muted-foreground flex gap-3">
-          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">↑↓</kbd> naviguer</span>
+          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">↑↓</kbd> navigate</span>
           <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">Enter</kbd> actions</span>
-          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">Esc</kbd> fermer</span>
+          <span><kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">Esc</kbd> close</span>
         </div>
       </DialogContent>
     </Dialog>

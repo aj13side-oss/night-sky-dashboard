@@ -45,9 +45,9 @@ export default function AuditCommandPalette({ open, onOpenChange, items, onActio
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="p-0 max-w-lg overflow-hidden">
         <Command shouldFilter={false}>
-          <CommandInput placeholder="Rechercher un produit ou objet…" value={search} onValueChange={setSearch} />
+          <CommandInput placeholder="Search product or object…" value={search} onValueChange={setSearch} />
           <CommandList>
-            <CommandEmpty>Aucun résultat</CommandEmpty>
+            <CommandEmpty>No results</CommandEmpty>
             <CommandGroup>
               {filtered.map(item => (
                 <CommandItem

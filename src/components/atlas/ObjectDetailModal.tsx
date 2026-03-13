@@ -337,7 +337,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
             >
               <LinkIcon className="w-4 h-4 text-primary mt-0.5 shrink-0" />
               <div className="min-w-0">
-                <p className="text-xs text-muted-foreground">Fait partie de</p>
+                <p className="text-xs text-muted-foreground">Part of</p>
                 <p className="text-sm font-semibold text-foreground">{formatCatalogId(parentObj)}</p>
                 {parentObj.common_name && <p className="text-xs text-primary">{parentObj.common_name}</p>}
                 {obj.relation_note && <p className="text-xs text-muted-foreground mt-1 italic">"{obj.relation_note}"</p>}

@@ -175,7 +175,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
             )}
             {obj.parent_id && (
               <p className="text-[10px] text-muted-foreground truncate mt-0.5 flex items-center gap-1">
-                <Link className="w-3 h-3" /> Fait partie d'une région
+                <Link className="w-3 h-3" /> Part of a larger region
               </p>
             )}
           </div>

@@ -476,7 +476,7 @@ const HeatmapTable = ({ title, color, error, columns, rows }: HeatmapTableProps)
     </div>
 
     {rows.length === 0 ? (
-      <div className="text-[11px] text-muted-foreground text-center py-6">Pas de données nocturnes</div>
+      <div className="text-[11px] text-muted-foreground text-center py-6">No nighttime data</div>
     ) : (
       <div className="overflow-x-auto">
         <table className="w-full border-collapse" style={{ fontSize: "11px" }}>

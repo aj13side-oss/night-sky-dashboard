@@ -1,15 +1,17 @@
 import { Link, useLocation } from "react-router-dom";
-import { Telescope, Map, Crosshair, Home, Eclipse, EyeOff, Eye, Settings, Scale } from "lucide-react";
+import { Telescope, Map, Crosshair, Home, Eclipse, Settings, Scale, EyeOff, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
 const navItems = [
-  { to: "/", label: "Dashboard", icon: Home },
-  { to: "/sky-atlas", label: "Atlas", icon: Map },
-  { to: "/fov-calculator", label: "FOV", icon: Crosshair },
-  { to: "/light-pollution", label: "Dark Sky", icon: Eclipse },
-  { to: "/equipment", label: "Gear", icon: Settings },
-  { to: "/rig-builder", label: "Rig Builder", icon: Scale },
+  // Session planning
+  { to: "/", label: "Dashboard", icon: Home, group: "plan" },
+  { to: "/sky-atlas", label: "Atlas", icon: Map, group: "plan" },
+  { to: "/fov-calculator", label: "FOV", icon: Crosshair, group: "plan" },
+  // Reference tools
+  { to: "/light-pollution", label: "Light Pollution", icon: Eclipse, group: "tools" },
+  { to: "/rig-builder", label: "Rig Builder", icon: Scale, group: "tools" },
+  { to: "/equipment", label: "Gear", icon: Settings, group: "tools" },
 ];
 
 const AppNav = () => {
@@ -32,20 +34,24 @@ const AppNav = () => {
         </Link>
 
         <nav className="flex items-center gap-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors",
-                pathname === item.to
-                  ? "bg-primary/15 text-primary font-medium"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+          {navItems.map((item, i) => (
+            <span key={item.to} className="flex items-center">
+              {i > 0 && navItems[i - 1].group !== item.group && (
+                <span className="w-px h-4 bg-border/40 mx-1.5 hidden sm:block" />
               )}
-            >
-              <item.icon className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{item.label}</span>
-            </Link>
+              <Link
+                to={item.to}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors",
+                  pathname === item.to
+                    ? "bg-primary/15 text-primary font-medium"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                )}
+              >
+                <item.icon className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{item.label}</span>
+              </Link>
+            </span>
           ))}
 
           <button

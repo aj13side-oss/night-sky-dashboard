@@ -7,8 +7,10 @@ import ObservationToolbar from "@/components/ObservationToolbar";
 import MoonPhaseCard from "@/components/MoonPhaseCard";
 import SunTimesCard from "@/components/SunTimesCard";
 import HourlyWeatherCard from "@/components/HourlyWeatherCard";
-import CelestialCatalog from "@/components/CelestialCatalog";
 import EphemeridesCard from "@/components/EphemeridesCard";
+import PlanetsTonight from "@/components/dashboard/PlanetsTonight";
+import DeepSkyTonight from "@/components/dashboard/DeepSkyTonight";
+import SpecialEvents from "@/components/dashboard/SpecialEvents";
 import ToolSuggestions from "@/components/ToolSuggestions";
 import { motion } from "framer-motion";
 
@@ -48,10 +50,20 @@ const DashboardContent = () => {
 
         <HourlyWeatherCard />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <EphemeridesCard />
-          <CelestialCatalog />
+        {/* 3-card layout: Planets | Deep Sky (wider) | Special Events */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-3">
+            <PlanetsTonight />
+          </div>
+          <div className="lg:col-span-6">
+            <DeepSkyTonight />
+          </div>
+          <div className="lg:col-span-3">
+            <SpecialEvents />
+          </div>
         </div>
+
+        <EphemeridesCard />
 
         <ToolSuggestions />
 
@@ -85,7 +97,6 @@ const DashboardContent = () => {
                 Compare 360+ equipment: telescopes (Newton, refractor, Schmidt-Cassegrain),
                 astro cameras (ZWO, QHY, Player One, Moravian), equatorial mounts
                 (Sky-Watcher HEQ5, EQM-35, ZWO AM5, iOptron), filters and accessories.
-                Prices and links to Pierro Astro, Astroshop, Astronome.fr, Amazon.
               </p>
             </article>
             <article>
@@ -93,8 +104,7 @@ const DashboardContent = () => {
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                 Calculate sampling (arcsec/pixel), field of view (FOV),
                 sensor vs image circle compatibility, payload/mount ratio,
-                optical train backfocus. Check if your setup is suited
-                to local seeing conditions.
+                optical train backfocus.
               </p>
             </article>
             <article>
@@ -102,7 +112,6 @@ const DashboardContent = () => {
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                 Hourly astronomical weather forecasts, precise moon phase,
                 astronomical twilight times, moonrise and moonset.
-                Identify optimal observation windows for your imaging night.
               </p>
             </article>
             <article>
@@ -110,7 +119,6 @@ const DashboardContent = () => {
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                 Interactive light pollution map. Find the best observation sites:
                 Bortle 1–4 zones, dark sky reserves, natural parks.
-                Ideal for planning your astrophoto outings.
               </p>
             </article>
             <article>
@@ -131,7 +139,6 @@ const DashboardContent = () => {
                 Astro cameras: ZWO (ASI2600MC Pro, ASI533MC Pro, ASI585MC, ASI294MC Pro), QHY (QHY268M, QHY600M), Player One (Poseidon, Uranus, Ares), Moravian, Altair, ToupTek, Rising Cam.
                 Mounts: Sky-Watcher (HEQ5, EQM-35, EQ6-R), ZWO (AM3, AM5), iOptron (CEM26, CEM40, GEM45), Takahashi, Losmandy, 10Micron, Pegasus Astro, Rainbow Astro, Avalon.
                 Filters: Optolong, ZWO, Baader, Astronomik, IDAS, Antlia, Chroma, STC.
-                Retailers: Pierro Astro, Astroshop, Astronome.fr, Optique Unterlinden, Amazon.
               </p>
             </div>
             <div>

@@ -1,12 +1,15 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
+import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { computeDynamicScore, getSeasonEmoji, getSeasonLabel } from "@/lib/dynamic-score";
 import { getSearchContext } from "@/lib/search-context";
 import { motion } from "framer-motion";
-import { Ruler, Eye, Crown, Award, Sun, Mountain, Link, Lightbulb } from "lucide-react";
+import { Ruler, Eye, Crown, Award, Sun, Mountain, Link, Lightbulb, Crosshair, BookOpen } from "lucide-react";
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { formatCatalogId } from "@/lib/format-catalog";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   obj: CelestialObject;
@@ -31,11 +34,17 @@ const typeEmoji: Record<string, string> = {
 };
 
 const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) => {
+  const navigate = useNavigate();
   const alt =
     obj.ra != null && obj.dec != null
       ? calculateAltitude(obj.ra, obj.dec, lat, lng)
       : null;
   const vis = alt != null ? getVisibilityLabel(alt) : null;
+
+  const rs = useMemo(() => {
+    if (obj.ra == null || obj.dec == null) return null;
+    return getObjectRiseSetTransit(obj.ra, obj.dec, lat, lng, new Date());
+  }, [obj.ra, obj.dec, lat, lng]);
 
   const { data: wikiImage, isLoading: wikiLoading } = useObjectImage(
     obj.catalog_id,
@@ -63,7 +72,6 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
   const isPrime = score.total >= 85 && score.total < 100;
   const season = getSeasonLabel(obj.best_months);
 
-  // Dynamic score color
   const scoreColor = score.isHighAltitude
     ? "text-green-400"
     : score.isSeasonal
@@ -80,7 +88,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
         isLegendary ? "ring-1 ring-yellow-500/40 hover:ring-yellow-500/60" : isPrime ? "ring-1 ring-slate-300/20 hover:ring-slate-300/40" : "hover:border-primary/30"
       }`}
     >
-      {/* Thumbnail with badges */}
+      {/* Thumbnail — object-cover to fill frame */}
       {(!imgError && (wikiLoading || displayUrl)) && (
         <div className="relative w-full h-28 bg-muted/30 overflow-hidden">
           {displayUrl && (
@@ -97,7 +105,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
                   setImgError(true);
                 }
               }}
-              className={`w-full h-full object-contain transition-opacity duration-500 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+              className={`w-full h-full object-cover transition-opacity duration-500 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
             />
           )}
           {(!imgLoaded || wikiLoading) && (
@@ -106,7 +114,6 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
             </div>
           )}
 
-          {/* Tier badge */}
           {isLegendary && (
             <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/90 text-yellow-950 text-[10px] font-bold uppercase tracking-wider shadow-lg">
               <Crown className="w-3 h-3" /> Legendary
@@ -118,7 +125,6 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
             </div>
           )}
 
-          {/* Season badge */}
           {season && (
             <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-background/70 backdrop-blur-sm text-[10px] text-foreground font-medium">
               {getSeasonEmoji(season)} {season}
@@ -208,12 +214,50 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
           )}
         </div>
 
+        {/* Rise/Set times */}
+        {rs && !rs.neverRises && (
+          <div className="mt-2 text-[10px] text-muted-foreground font-mono">
+            {rs.isCircumpolar ? (
+              <span>Up all night</span>
+            ) : (
+              <span>
+                {rs.riseTime && `↑ ${formatTimeShort(rs.riseTime)}`}
+                {rs.riseTime && rs.setTime && " · "}
+                {rs.setTime && `↓ ${formatTimeShort(rs.setTime)}`}
+              </span>
+            )}
+          </div>
+        )}
+
         {vis && alt != null && (
-          <div className="mt-3 pt-2 border-t border-border/30 flex items-center justify-between text-xs">
+          <div className="mt-2 pt-2 border-t border-border/30 flex items-center justify-between text-xs">
             <span className={`font-medium ${vis.color}`}>{vis.label}</span>
             <span className="text-muted-foreground font-mono">{alt.toFixed(1)}° alt</span>
           </div>
         )}
+
+        {/* Action buttons */}
+        <div className="mt-2 pt-2 border-t border-border/30 flex gap-1.5">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex-1 text-[10px] h-7 gap-1 text-muted-foreground hover:text-foreground"
+            onClick={(e) => { e.stopPropagation(); onClick(); }}
+          >
+            <BookOpen className="w-3 h-3" /> More
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex-1 text-[10px] h-7 gap-1 text-muted-foreground hover:text-primary"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`);
+            }}
+          >
+            <Crosshair className="w-3 h-3" /> Frame
+          </Button>
+        </div>
       </div>
     </motion.div>
   );

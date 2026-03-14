@@ -35,13 +35,11 @@ const Footer = () => (
       </div>
 
       <div>
-        <h4 className="font-semibold text-foreground/80 mb-2">Partner Retailers</h4>
-        <p>
-          Pierro Astro, Astroshop.de, Astronome.fr,
-          Optique Unterlinden, Amazon.
+        <p className="text-[10px] text-muted-foreground/50">
+          Links to third-party stores are provided for convenience. We are not affiliated with any retailer.
         </p>
         <p className="mt-4 text-muted-foreground/60">
-          © {new Date().getFullYear()} Cosmic Frame — by Cosmic Frame
+          © {new Date().getFullYear()} Cosmic Frame
         </p>
       </div>
     </div>

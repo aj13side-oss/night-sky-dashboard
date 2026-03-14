@@ -8,10 +8,12 @@ import {
   DialogContent,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, Globe, Info, ChevronDown, ChevronUp, Telescope, Link as LinkIcon, Paperclip } from "lucide-react";
+import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, Globe, Info, ChevronDown, ChevronUp, Telescope, Link as LinkIcon, Paperclip, Crosshair, Scale } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AltitudeChart from "./AltitudeChart";
 import ExposureGuideModal from "./ExposureGuideModal";
@@ -33,6 +35,7 @@ interface Props {
 }
 
 const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0 }: Props) => {
+  const navigate = useNavigate();
   const [showExposureInfo, setShowExposureInfo] = useState(false);
   const [showCredits, setShowCredits] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
@@ -438,25 +441,26 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
 
           {/* Altitude Chart */}
           {obj.ra != null && obj.dec != null && (
-            <div className="space-y-2">
-              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Altitude over 24h
-              </h4>
-              <AltitudeChart ra={obj.ra} dec={obj.dec} lat={lat} lng={lng} />
-            </div>
+            <AltitudeChart ra={obj.ra} dec={obj.dec} lat={lat} lng={lng} />
           )}
 
-          {/* Link to FOV Calculator */}
-          {obj.size_max != null && obj.size_max > 0 && (
-            <a
-              href="/fov-calculator"
-              className="flex items-center gap-2 p-3 rounded-xl bg-secondary/30 text-sm text-muted-foreground hover:text-primary hover:bg-secondary/50 transition-colors"
-            >
-              <Ruler className="w-4 h-4" />
-              <span>Simulate framing in FOV Calculator</span>
-              <ExternalLink className="w-3 h-3 ml-auto" />
-            </a>
-          )}
+          {/* FOV Calculator link — prominent */}
+          <Button
+            variant="outline"
+            className="w-full gap-2 border-primary/30 hover:bg-primary/10"
+            onClick={() => navigate(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`)}
+          >
+            <Crosshair className="w-4 h-4" /> Frame this object in FOV Calculator
+          </Button>
+
+          {/* Rig Builder link */}
+          <Button
+            variant="outline"
+            className="w-full gap-2"
+            onClick={() => navigate('/rig-builder')}
+          >
+            <Scale className="w-4 h-4" /> Compare equipment in Rig Builder
+          </Button>
         </DialogContent>
       </Dialog>
 

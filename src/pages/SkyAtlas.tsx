@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
@@ -12,6 +12,7 @@ import {
   CelestialObject,
   PAGE_SIZE,
 } from "@/hooks/useCelestialObjects";
+import { calculateAltitude } from "@/lib/visibility";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";
@@ -36,8 +37,9 @@ const SkyAtlas = () => {
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<CelestialObject | null>(null);
   const [userPos, setUserPos] = useState({ lat: 48.8566, lng: 2.3522 });
+  const [visibleTonight, setVisibleTonight] = useState(false);
+  const [filterMode, setFilterMode] = useState("all"); // "all" | "rgb" | "narrowband"
 
-  // Equipment settings from localStorage (synced with FOV page)
   const [equipment, setEquipment] = useState({
     focalLength: 0,
     sensorWidth: 0,
@@ -52,8 +54,6 @@ const SkyAtlas = () => {
       (pos) => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       () => {}
     );
-
-    // Load equipment from localStorage
     try {
       const saved = localStorage.getItem("cosmicframe_equipment") || localStorage.getItem("astrodash_equipment");
       if (saved) setEquipment(JSON.parse(saved));
@@ -61,6 +61,34 @@ const SkyAtlas = () => {
   }, []);
 
   useEffect(() => setPage(0), [filters]);
+
+  // Client-side filters: visible tonight + filter mode
+  const filteredData = useMemo(() => {
+    if (!data?.data) return [];
+    let results = data.data;
+
+    if (visibleTonight) {
+      results = results.filter((obj) => {
+        if (obj.ra == null || obj.dec == null) return false;
+        const alt = calculateAltitude(obj.ra, obj.dec, userPos.lat, userPos.lng);
+        return alt > 0;
+      });
+    }
+
+    if (filterMode === "rgb") {
+      results = results.filter((obj) => {
+        const f = obj.recommended_filter?.toLowerCase() ?? "";
+        return !f || f.includes("l-pro") || f.includes("uv") || f.includes("ir") || f.includes("broadband");
+      });
+    } else if (filterMode === "narrowband") {
+      results = results.filter((obj) => {
+        const f = obj.recommended_filter?.toLowerCase() ?? "";
+        return f.includes("ha") || f.includes("oiii") || f.includes("sii") || f.includes("narrowband") || f.includes("dual");
+      });
+    }
+
+    return results;
+  }, [data?.data, visibleTonight, filterMode, userPos.lat, userPos.lng]);
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 
@@ -96,7 +124,6 @@ const SkyAtlas = () => {
           </p>
         </motion.div>
 
-        {/* Tonight's Top Picks */}
         <TonightTopPicks lat={userPos.lat} lng={userPos.lng} onSelect={setSelected} />
 
         <AtlasFilters
@@ -107,7 +134,11 @@ const SkyAtlas = () => {
           })}
           types={types}
           constellations={constellations}
-          totalCount={data?.count ?? 0}
+          totalCount={visibleTonight || filterMode !== "all" ? filteredData.length : (data?.count ?? 0)}
+          visibleTonightEnabled={visibleTonight}
+          onToggleVisibleTonight={() => setVisibleTonight((v) => !v)}
+          filterMode={filterMode}
+          onFilterModeChange={setFilterMode}
         />
 
         {isLoading ? (
@@ -116,14 +147,14 @@ const SkyAtlas = () => {
               <div key={i} className="glass-card rounded-2xl p-4 h-40 animate-pulse" />
             ))}
           </div>
-        ) : data?.data.length === 0 ? (
+        ) : filteredData.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">
             <Telescope className="w-10 h-10 mx-auto mb-3 opacity-40" />
             <p>No objects match your filters</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {data?.data.map((obj, i) => (
+            {filteredData.map((obj, i) => (
               <ObjectCard
                 key={obj.id}
                 obj={obj}
@@ -137,7 +168,7 @@ const SkyAtlas = () => {
           </div>
         )}
 
-        {totalPages > 1 && (
+        {!visibleTonight && filterMode === "all" && totalPages > 1 && (
           <div className="flex items-center justify-center gap-4 pt-4">
             <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)} className="gap-1">
               <ChevronLeft className="w-4 h-4" /> Prev

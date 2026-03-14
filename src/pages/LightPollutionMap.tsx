@@ -12,6 +12,7 @@ import "leaflet/dist/leaflet.css";
 import BortleInfoPanel from "@/components/lightpollution/BortleInfoPanel";
 import DarkSitesFinder from "@/components/lightpollution/DarkSitesFinder";
 import CitySearch from "@/components/lightpollution/CitySearch";
+import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
 import ToolSuggestions from "@/components/ToolSuggestions";
 import { DarkSite } from "@/lib/dark-sites";
 
@@ -47,7 +48,6 @@ const LightPollutionMap = () => {
   const markerRef = useRef<L.Marker | null>(null);
   const overlayRef = useRef<L.TileLayer | null>(null);
 
-  // Initialize Leaflet map directly (bypassing react-leaflet entirely)
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
@@ -57,14 +57,11 @@ const LightPollutionMap = () => {
       zoomControl: true,
     });
 
-    // Base layer with LOCAL language names (OpenStreetMap uses native names)
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxZoom: 19,
     }).addTo(map);
 
-    // Light pollution overlay - D. Lorenz Light Pollution Atlas 2024
-    // Uses 1024px tiles with underscore naming convention
     const overlay = L.tileLayer(
       "https://djlorenz.github.io/astronomy/image_tiles/tiles2024/tile_{z}_{x}_{y}.png",
       {
@@ -78,12 +75,10 @@ const LightPollutionMap = () => {
     overlay.addTo(map);
     overlayRef.current = overlay;
 
-    // User marker
     const marker = L.marker([lat, lng]).addTo(map);
     marker.bindPopup(`<b>Your position</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
     markerRef.current = marker;
 
-    // Click handler
     map.on("click", (e: L.LeafletMouseEvent) => {
       setClickedPoint({ lat: e.latlng.lat, lng: e.latlng.lng, bortle: 5 });
     });
@@ -97,7 +92,6 @@ const LightPollutionMap = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Update map center & marker when lat/lng change
   useEffect(() => {
     if (!mapRef.current || !markerRef.current) return;
     mapRef.current.setView([lat, lng], mapRef.current.getZoom());
@@ -105,12 +99,10 @@ const LightPollutionMap = () => {
     markerRef.current.setPopupContent(`<b>Your position</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
   }, [lat, lng]);
 
-  // Update overlay opacity
   useEffect(() => {
     overlayRef.current?.setOpacity(overlayOpacity[0]);
   }, [overlayOpacity]);
 
-  // Invalidate map size on fullscreen toggle
   useEffect(() => {
     setTimeout(() => {
       mapRef.current?.invalidateSize();
@@ -184,7 +176,6 @@ const LightPollutionMap = () => {
           </>
         )}
 
-        {/* Map */}
         <div
           className={`relative ${isFullscreen ? "flex-1" : "glass-card rounded-2xl overflow-hidden"}`}
           style={!isFullscreen ? { height: "calc(100vh - 420px)", minHeight: "400px" } : undefined}
@@ -213,18 +204,18 @@ const LightPollutionMap = () => {
 
         {!isFullscreen && (
           <>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
               <DarkSitesFinder userLat={lat} userLng={lng} onSelectSite={handleSelectDarkSite} />
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+              <ImagingImpactCard selectedBortle={clickedPoint?.bortle} />
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
+              transition={{ delay: 0.2 }}
               className="glass-card rounded-2xl p-6 space-y-3"
             >
               <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Bortle Scale</h3>

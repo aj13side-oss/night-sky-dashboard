@@ -3,10 +3,10 @@ import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { getSkyImageUrlWithFov, type SkyImageSurvey } from "@/lib/sky-images";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
 import ToolSuggestions from "@/components/ToolSuggestions";
 import TargetObjectPicker, { type TargetObject } from "@/components/fov/TargetObjectPicker";
 import ExposureCalculator from "@/components/fov/ExposureCalculator";
@@ -18,6 +18,7 @@ import {
 const DEFAULT_TARGET: TargetObject = { name: "M31 — Andromeda", sizeArcmin: 178, exposureFast: 30, exposureDeep: 120, ra: 10.6847, dec: 41.2687 };
 
 const FovCalculator = () => {
+  const [searchParams] = useSearchParams();
   const { data: dbTelescopes } = useTelescopes();
   const { data: dbCameras } = useCameras();
 
@@ -30,6 +31,17 @@ const FovCalculator = () => {
   const [barlow, setBarlow] = useState(1);
   const [selectedObject, setSelectedObject] = useState<TargetObject>(DEFAULT_TARGET);
   const [survey, setSurvey] = useState<SkyImageSurvey>("mellinger");
+  const [telescopeSearch, setTelescopeSearch] = useState("");
+  const [cameraSearch, setCameraSearch] = useState("");
+
+  // Handle deep link ?target=M%2042
+  useEffect(() => {
+    const target = searchParams.get("target");
+    if (target) {
+      // The TargetObjectPicker will handle loading from the catalog_id
+      setSelectedObject({ ...DEFAULT_TARGET, name: target });
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     try {
@@ -109,6 +121,43 @@ const FovCalculator = () => {
   const objFractionW = obj ? obj.sizeArcmin / fov.wArcmin : 0;
   const objFractionH = obj ? obj.sizeArcmin / fov.hArcmin : 0;
 
+  // Aladin FOV: show the object at a reasonable zoom, not the sensor FOV
+  const aladinFovDeg = useMemo(() => {
+    if (obj && obj.sizeArcmin > 0) {
+      return Math.min(5.0, Math.max(0.05, (obj.sizeArcmin * 2) / 60));
+    }
+    return fov.w > 0 ? fov.w : 1.0;
+  }, [obj, fov.w]);
+
+  // Sampling quality — updated thresholds
+  const samplingLabel = useMemo(() => {
+    const r = fov.resolution;
+    if (r < 0.5) return { text: "Oversampled (planetary zone)", ok: false };
+    if (r < 1.0) return { text: "Slightly oversampled", ok: false };
+    if (r < 2.5) return { text: "Optimal for deep sky", ok: true };
+    if (r < 3.5) return { text: "Undersampled", ok: false };
+    return { text: "Very wide field", ok: false };
+  }, [fov.resolution]);
+
+  // Filtered telescope/camera lists
+  const filteredTelescopes = useMemo(() => {
+    if (!dbTelescopes) return [];
+    if (!telescopeSearch.trim()) return dbTelescopes;
+    const q = telescopeSearch.toLowerCase();
+    return dbTelescopes.filter(t =>
+      `${t.brand} ${t.model}`.toLowerCase().includes(q)
+    );
+  }, [dbTelescopes, telescopeSearch]);
+
+  const filteredCameras = useMemo(() => {
+    if (!dbCameras) return [];
+    if (!cameraSearch.trim()) return dbCameras;
+    const q = cameraSearch.toLowerCase();
+    return dbCameras.filter(c =>
+      `${c.brand} ${c.model}`.toLowerCase().includes(q)
+    );
+  }, [dbCameras, cameraSearch]);
+
   return (
     <div className="min-h-screen bg-background star-field">
       <SEOHead
@@ -135,8 +184,17 @@ const FovCalculator = () => {
               <Select value={telescopeId} onValueChange={handleTelescopeChange}>
                 <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Choose a telescope..." /></SelectTrigger>
                 <SelectContent>
+                  <div className="p-2 sticky top-0 bg-popover">
+                    <Input
+                      placeholder="Search telescopes..."
+                      value={telescopeSearch}
+                      onChange={(e) => setTelescopeSearch(e.target.value)}
+                      className="h-8 text-xs bg-secondary/50"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
                   <SelectItem value="custom">✏️ Custom</SelectItem>
-                  {dbTelescopes?.map(t => (
+                  {filteredTelescopes.map(t => (
                     <SelectItem key={t.id} value={t.id}>
                       {t.brand} {t.model} ({t.focal_length_mm}mm{t.f_ratio ? ` f/${t.f_ratio}` : ""})
                     </SelectItem>
@@ -161,8 +219,17 @@ const FovCalculator = () => {
               <Select value={cameraId} onValueChange={handleCameraChange}>
                 <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Choose a camera..." /></SelectTrigger>
                 <SelectContent>
+                  <div className="p-2 sticky top-0 bg-popover">
+                    <Input
+                      placeholder="Search cameras..."
+                      value={cameraSearch}
+                      onChange={(e) => setCameraSearch(e.target.value)}
+                      className="h-8 text-xs bg-secondary/50"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
                   <SelectItem value="custom">✏️ Custom</SelectItem>
-                  {dbCameras?.map(c => (
+                  {filteredCameras.map(c => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.brand} {c.model} ({c.pixel_size_um}µm)
                     </SelectItem>
@@ -198,8 +265,8 @@ const FovCalculator = () => {
                 <ResultItem label="Effective Focal Length" value={`${effectiveFL} mm`} />
                 <ResultItem label="Sampling" value={`${fov.resolution.toFixed(2)} "/px`} />
                 <ResultItem label="Sampling Quality"
-                  value={fov.resolution < 0.5 ? "Oversampled" : fov.resolution < 1.5 ? "Optimal" : fov.resolution < 3 ? "Undersampled" : "Very wide"}
-                  highlight={fov.resolution >= 0.5 && fov.resolution < 1.5} />
+                  value={samplingLabel.text}
+                  highlight={samplingLabel.ok} />
                 {obj && <ResultItem label={`Framing ${obj.name}`} value={`${(objFractionW * 100).toFixed(0)}% of width`} />}
               </div>
             </div>
@@ -222,15 +289,26 @@ const FovCalculator = () => {
                 style={{ paddingBottom: `${(fov.h / Math.max(fov.w, 0.01)) * 100}%`, minHeight: 200 }}>
                 {obj?.ra != null && obj?.dec != null && fov.w > 0 ? (
                   <img key={`${obj.ra}-${obj.dec}-${survey}`}
-                    src={getSkyImageUrlWithFov(obj.ra, obj.dec, fov.w, fov.h, survey)}
+                    src={getSkyImageUrlWithFov(obj.ra, obj.dec, aladinFovDeg, aladinFovDeg * (fov.h / Math.max(fov.w, 0.01)), survey)}
                     alt={obj.name} className="absolute inset-0 w-full h-full object-cover"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                 ) : (
                   <div className="absolute inset-0 bg-muted/30" />
                 )}
-                <div className="absolute inset-0 border-2 border-primary/50 rounded-lg" />
-                <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/40" />
-                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/40" />
+                {/* Sensor frame overlay */}
+                {obj && fov.w > 0 && aladinFovDeg > 0 && (
+                  <div
+                    className="absolute border-2 border-primary/60 rounded"
+                    style={{
+                      width: `${Math.min((fov.w / aladinFovDeg) * 100, 100)}%`,
+                      height: `${Math.min((fov.h / (aladinFovDeg * (fov.h / Math.max(fov.w, 0.01)))) * 100, 100)}%`,
+                      left: `${50 - Math.min((fov.w / aladinFovDeg) * 50, 50)}%`,
+                      top: `${50 - Math.min((fov.h / (aladinFovDeg * (fov.h / Math.max(fov.w, 0.01)))) * 50, 50)}%`,
+                    }}
+                  />
+                )}
+                <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/30" />
+                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/30" />
                 {obj && objFractionW > 0 && (
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"
                     style={{ width: `${Math.min(objFractionW * 100, 200)}%`, paddingBottom: `${Math.min(objFractionH * 100, 200)}%` }} />
@@ -250,10 +328,6 @@ const FovCalculator = () => {
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <ExposureCalculator target={selectedObject} />
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-          <ImagingImpactCard />
         </motion.div>
 
         <ToolSuggestions />

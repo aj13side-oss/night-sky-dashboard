@@ -4,7 +4,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, X, Trophy, Star } from "lucide-react";
+import { Search, X, Trophy, Star, Moon, Camera } from "lucide-react";
+import { useState } from "react";
 
 interface Props {
   filters: CelestialFilters;
@@ -12,9 +13,13 @@ interface Props {
   types: string[];
   constellations: string[];
   totalCount: number;
+  visibleTonightEnabled?: boolean;
+  onToggleVisibleTonight?: () => void;
+  filterMode?: string;
+  onFilterModeChange?: (mode: string) => void;
 }
 
-const AtlasFilters = ({ filters, onChange, types, constellations, totalCount }: Props) => {
+const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange }: Props) => {
   const isTop50 = filters.limitResults === 50;
 
   const toggleType = (t: string) => {
@@ -56,6 +61,44 @@ const AtlasFilters = ({ filters, onChange, types, constellations, totalCount }: 
           Top 50 Essentials
           {isTop50 && <X className="w-3 h-3 ml-1" />}
         </Button>
+
+        {onToggleVisibleTonight && (
+          <Button
+            variant={visibleTonightEnabled ? "default" : "outline"}
+            size="sm"
+            onClick={onToggleVisibleTonight}
+            className={`gap-1.5 text-xs ${visibleTonightEnabled ? "bg-primary text-primary-foreground" : ""}`}
+          >
+            <Moon className="w-3.5 h-3.5" />
+            🌙 Visible Tonight
+            {visibleTonightEnabled && <X className="w-3 h-3 ml-1" />}
+          </Button>
+        )}
+
+        {onFilterModeChange && (
+          <>
+            <Button
+              variant={filterMode === "rgb" ? "default" : "outline"}
+              size="sm"
+              onClick={() => onFilterModeChange(filterMode === "rgb" ? "all" : "rgb")}
+              className={`gap-1.5 text-xs ${filterMode === "rgb" ? "bg-primary text-primary-foreground" : ""}`}
+            >
+              <Camera className="w-3.5 h-3.5" />
+              RGB/Broadband
+              {filterMode === "rgb" && <X className="w-3 h-3 ml-1" />}
+            </Button>
+            <Button
+              variant={filterMode === "narrowband" ? "default" : "outline"}
+              size="sm"
+              onClick={() => onFilterModeChange(filterMode === "narrowband" ? "all" : "narrowband")}
+              className={`gap-1.5 text-xs ${filterMode === "narrowband" ? "bg-primary text-primary-foreground" : ""}`}
+            >
+              <Camera className="w-3.5 h-3.5" />
+              Narrowband (SHO)
+              {filterMode === "narrowband" && <X className="w-3 h-3 ml-1" />}
+            </Button>
+          </>
+        )}
       </div>
 
       <div className="relative">

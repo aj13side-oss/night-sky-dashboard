@@ -287,7 +287,10 @@ const HourlyWeatherCard = () => {
       if (!res.ok) throw new Error("Weather fetch failed");
       return res.json();
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 
   const openMeteoNight = data ? filterNightHours(data.openMeteo, dateStr) : [];

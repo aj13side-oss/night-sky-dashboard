@@ -161,48 +161,62 @@ function computeGlobalScore(
   mn: MetNorwayHour[],
   ms: MeteoSourceHour[]
 ): number | null {
-  const scores: number[] = [];
-
+  // Cloud score (0-100, 100 = clear)
   const cloudValues: number[] = [];
   om.forEach((h) => cloudValues.push(clamp(h.clouds)));
   mn.forEach((h) => { if (h.clouds != null) cloudValues.push(clamp(h.clouds)); });
   ms.forEach((h) => { if (h.clouds != null) cloudValues.push(clamp(h.clouds)); });
   st.forEach((h) => cloudValues.push(clamp(h.clouds)));
+  const cloudScore = cloudValues.length > 0
+    ? Math.max(0, 100 - cloudValues.reduce((a, b) => a + b, 0) / cloudValues.length)
+    : null;
 
-  if (cloudValues.length > 0) {
-    const avgClouds = cloudValues.reduce((a, b) => a + b, 0) / cloudValues.length;
-    scores.push(Math.max(0, 100 - avgClouds));
-  }
-
+  // Seeing score
   const seeingMap: Record<string, number> = { Excellent: 100, Good: 75, Average: 50, Poor: 25 };
   const seeingScores = st.map((h) => seeingMap[h.seeing] ?? 50);
-  if (seeingScores.length > 0) {
-    scores.push(seeingScores.reduce((a, b) => a + b, 0) / seeingScores.length);
-  }
+  const seeingScore = seeingScores.length > 0
+    ? seeingScores.reduce((a, b) => a + b, 0) / seeingScores.length
+    : null;
 
+  // Transparency score
   const transpScores = st.map((h) => seeingMap[h.transparency] ?? 50);
-  if (transpScores.length > 0) {
-    scores.push(transpScores.reduce((a, b) => a + b, 0) / transpScores.length);
-  }
+  const transpScore = transpScores.length > 0
+    ? transpScores.reduce((a, b) => a + b, 0) / transpScores.length
+    : null;
 
+  // Wind score (0-100, 100 = calm)
   const windValues: number[] = [];
   om.forEach((h) => windValues.push(h.wind));
   mn.forEach((h) => { if (h.wind != null) windValues.push(h.wind); });
-  if (windValues.length > 0) {
-    const avgWind = windValues.reduce((a, b) => a + b, 0) / windValues.length;
-    scores.push(clamp(100 - (avgWind / 30) * 100));
-  }
+  const windScore = windValues.length > 0
+    ? clamp(100 - (windValues.reduce((a, b) => a + b, 0) / windValues.length / 30) * 100)
+    : null;
 
+  // Humidity score — only penalize above 85%
   const humValues: number[] = [];
   om.forEach((h) => humValues.push(h.humidity));
   mn.forEach((h) => { if (h.humidity != null) humValues.push(h.humidity); });
-  if (humValues.length > 0) {
-    const avgHum = humValues.reduce((a, b) => a + b, 0) / humValues.length;
-    scores.push(clamp(100 - avgHum));
-  }
+  const humidityScore = humValues.length > 0
+    ? (() => {
+        const avg = humValues.reduce((a, b) => a + b, 0) / humValues.length;
+        return avg < 85 ? 100 : Math.max(0, 100 - (avg - 85) * 6.67);
+      })()
+    : null;
 
-  if (scores.length === 0) return null;
-  return Math.round(clamp(scores.reduce((a, b) => a + b, 0) / scores.length));
+  // Weighted score
+  const weights = [
+    { score: cloudScore, weight: 0.35 },
+    { score: seeingScore, weight: 0.20 },
+    { score: transpScore, weight: 0.20 },
+    { score: windScore, weight: 0.15 },
+    { score: humidityScore, weight: 0.10 },
+  ].filter((w) => w.score !== null) as { score: number; weight: number }[];
+
+  if (weights.length === 0) return null;
+
+  const totalWeight = weights.reduce((a, w) => a + w.weight, 0);
+  const weighted = weights.reduce((a, w) => a + w.score * (w.weight / totalWeight), 0);
+  return Math.round(clamp(weighted));
 }
 
 function scoreColor(score: number): string {

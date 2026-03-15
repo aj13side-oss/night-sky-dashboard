@@ -120,10 +120,9 @@ const FovCalculator = () => {
   const objFractionH = obj ? obj.sizeArcmin / fov.hArcmin : 0;
 
   const aladinFovDeg = useMemo(() => {
-    if (obj && obj.sizeArcmin > 0) {
-      return Math.min(5.0, Math.max(0.05, (obj.sizeArcmin * 2) / 60));
-    }
-    return fov.w > 0 ? fov.w : 1.0;
+    const sensorFov = fov.w > 0 ? fov.w : 1.0;
+    const objFov = obj && obj.sizeArcmin > 0 ? (obj.sizeArcmin * 1.5) / 60 : 0;
+    return Math.min(8.0, Math.max(0.1, Math.max(sensorFov, objFov) * 1.2));
   }, [obj, fov.w]);
 
   const samplingLabel = useMemo(() => {
@@ -300,17 +299,20 @@ const FovCalculator = () => {
                         <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/30" />
                         <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/30" />
                         <div
-                          className="absolute border-2 border-primary/60 rounded"
+                          className="absolute border-2 border-primary rounded"
                           style={{
-                            width: `${Math.min((fov.w / aladinFovDeg) * 100, 100)}%`,
-                            height: `${Math.min((fov.h / aladinFovDeg) * 100, 100)}%`,
-                            left: `${50 - Math.min((fov.w / aladinFovDeg) * 50, 50)}%`,
-                            top: `${50 - Math.min((fov.h / aladinFovDeg) * 50, 50)}%`,
+                            width: `${Math.min((fov.w / aladinFovDeg) * 100, 98)}%`,
+                            height: `${Math.min((fov.h / aladinFovDeg) * 100, 98)}%`,
+                            left: `${50 - Math.min((fov.w / aladinFovDeg) * 50, 49)}%`,
+                            top: `${50 - Math.min((fov.h / aladinFovDeg) * 50, 49)}%`,
                           }}
                         />
                         {objFractionW > 0 && (
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"
-                            style={{ width: `${Math.min(objFractionW * (fov.w / aladinFovDeg) * 100, 200)}%`, paddingBottom: `${Math.min(objFractionH * (fov.h / aladinFovDeg) * 100, 200)}%` }} />
+                            style={{ 
+                              width: `${Math.max(2, Math.min(objFractionW * (fov.w / aladinFovDeg) * 100, 200))}%`, 
+                              paddingBottom: `${Math.max(2, Math.min(objFractionH * (fov.h / aladinFovDeg) * 100, 200))}%`,
+                            }} />
                         )}
                       </div>
                     )}
@@ -327,6 +329,16 @@ const FovCalculator = () => {
                   <div className="absolute top-2 left-2 text-[10px] font-mono text-white/90 drop-shadow-md bg-black/40 px-1.5 py-0.5 rounded z-20">
                     {obj.name}: {obj.sizeArcmin}'
                   </div>
+                )}
+              </div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground mt-2 px-1">
+                <span className="font-mono">
+                  Sensor: {fov.wArcmin.toFixed(0)}' × {fov.hArcmin.toFixed(0)}'
+                </span>
+                {obj && (
+                  <span className="font-mono">
+                    {obj.name}: {obj.sizeArcmin}' ({objFractionW > 1 ? "overflows frame" : `${(objFractionW * 100).toFixed(0)}% of width`})
+                  </span>
                 )}
               </div>
             </div>

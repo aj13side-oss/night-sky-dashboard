@@ -56,7 +56,6 @@ const PlannerContent = () => {
   const { location, date } = useObservation();
   const navigate = useNavigate();
   const { userId } = useCurrentUser();
-  const { favorites } = useFavorites();
   const [plan, setPlan] = useState<SessionPlan>(loadPlan);
   const [search, setSearch] = useState("");
 

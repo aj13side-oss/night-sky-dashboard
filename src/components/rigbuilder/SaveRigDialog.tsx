@@ -63,14 +63,13 @@ export function SaveRigDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Save Setup</DialogTitle>
+            <DialogTitle>Sign In Required</DialogTitle>
             <DialogDescription>
-              Sign in to save your equipment configurations.
+              Saving equipment configurations is not available. Only admins can sign in.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
-            <Button onClick={() => { onOpenChange(false); openAuthModal(); }}>Sign In</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

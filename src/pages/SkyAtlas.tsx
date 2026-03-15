@@ -138,14 +138,11 @@ const SkyAtlas = () => {
           })}
           types={types}
           constellations={constellations}
-          totalCount={visibleTonight || filterMode !== "all" || showFavorites ? filteredData.length : (data?.count ?? 0)}
+          totalCount={visibleTonight || filterMode !== "all" ? filteredData.length : (data?.count ?? 0)}
           visibleTonightEnabled={visibleTonight}
           onToggleVisibleTonight={() => setVisibleTonight((v) => !v)}
           filterMode={filterMode}
           onFilterModeChange={setFilterMode}
-          favoritesEnabled={showFavorites}
-          onToggleFavorites={() => setShowFavorites((v) => !v)}
-          isLoggedIn={!!userId}
         />
 
         {isLoading ? (

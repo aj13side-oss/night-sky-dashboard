@@ -212,7 +212,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
                         🖼️ Photo
                       </TabsTrigger>
                     )}
-                    {obj.ra != null && obj.dec != null && (
+                    {obj.ra_deg != null && obj.dec_deg != null && (
                       <TabsTrigger value="aladin" className="px-2 py-0.5 text-[10px] data-[state=active]:text-primary">
                         🔭 Map
                       </TabsTrigger>

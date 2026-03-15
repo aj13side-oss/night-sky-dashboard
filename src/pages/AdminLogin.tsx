@@ -17,19 +17,6 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
 
-    if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: window.location.origin + "/admin" },
-      });
-      setLoading(false);
-      if (error) { toast.error(error.message); return; }
-      toast.success("Account created! Check your email to confirm, then log in.");
-      setMode("login");
-      return;
-    }
-
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) { toast.error(error.message); return; }

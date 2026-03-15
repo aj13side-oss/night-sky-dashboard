@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Scale, Globe, ShoppingCart, ExternalLink, Tag } from "lucide-react";
 import { extractPrices } from "@/hooks/useEquipmentCatalog";
+import { getFrRetailers } from "./EquipmentCard";
 import { thumb400 } from "@/lib/utils";
 
 interface CompareColumn<T> {

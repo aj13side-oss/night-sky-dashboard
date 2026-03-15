@@ -4,12 +4,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
-
-const SOLAR_SYSTEM: TargetObject[] = [
-  { name: "Jupiter", sizeArcmin: 0.7, exposureFast: null, exposureDeep: null, ra: null, dec: null },
-  { name: "Saturn", sizeArcmin: 0.3, exposureFast: null, exposureDeep: null, ra: null, dec: null },
-  { name: "Moon", sizeArcmin: 31, exposureFast: null, exposureDeep: null, ra: null, dec: null },
-];
+import { useSolarSystemObjects } from "@/hooks/useSolarSystemObjects";
 
 export interface TargetObject {
   name: string;
@@ -18,6 +13,8 @@ export interface TargetObject {
   exposureDeep: number | null;
   ra: number | null;
   dec: number | null;
+  imageUrl?: string | null;
+  isSolarSystem?: boolean;
 }
 
 interface Props {
@@ -46,6 +43,7 @@ async function searchCatalog(term: string) {
 const TargetObjectPicker = ({ value, onChange }: Props) => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+  const { data: solarObjects = [] } = useSolarSystemObjects();
 
   const { data: results = [] } = useQuery({
     queryKey: ["fov-target-search", search],
@@ -54,12 +52,28 @@ const TargetObjectPicker = ({ value, onChange }: Props) => {
     staleTime: 30_000,
   });
 
+  const solarTargets: TargetObject[] = useMemo(() =>
+    solarObjects.map(obj => ({
+      name: obj.name,
+      sizeArcmin: (obj.max_apparent_size_arcsec ?? 0) / 60,
+      exposureFast: null,
+      exposureDeep: null,
+      ra: null,
+      dec: null,
+      imageUrl: obj.image_url,
+      isSolarSystem: true,
+    })),
+  [solarObjects]);
+
   const solarMatches = useMemo(() => {
-    if (!search) return SOLAR_SYSTEM;
-    return SOLAR_SYSTEM.filter((s) =>
-      s.name.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [search]);
+    if (!search) return solarTargets;
+    const term = search.toLowerCase();
+    return solarTargets.filter(s => {
+      const obj = solarObjects.find(o => o.name === s.name);
+      return s.name.toLowerCase().includes(term) ||
+        (obj?.search_aliases?.toLowerCase().includes(term) ?? false);
+    });
+  }, [search, solarTargets, solarObjects]);
 
   const allResults = [...solarMatches, ...results];
 
@@ -69,7 +83,7 @@ const TargetObjectPicker = ({ value, onChange }: Props) => {
       <div className="relative">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
         <Input
-          placeholder="Search catalog (M31, NGC 7000, Orion…)"
+          placeholder="Search catalog (M31, NGC 7000, Jupiter…)"
           value={open ? search : value?.name ?? ""}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -81,7 +95,8 @@ const TargetObjectPicker = ({ value, onChange }: Props) => {
       </div>
       {value && !open && (
         <p className="text-[10px] text-muted-foreground">
-          Size: {value.sizeArcmin}' arcmin
+          Size: {value.sizeArcmin >= 1 ? `${value.sizeArcmin.toFixed(1)}' arcmin` : `${(value.sizeArcmin * 60).toFixed(1)}" arcsec`}
+          {value.isSolarSystem && " · Solar System"}
         </p>
       )}
       {open && (
@@ -89,23 +104,29 @@ const TargetObjectPicker = ({ value, onChange }: Props) => {
           {allResults.length === 0 && search.length >= 2 && (
             <p className="text-xs text-muted-foreground p-3 text-center">No results</p>
           )}
-          {allResults.map((obj, i) => (
-            <button
-              key={`${obj.name}-${i}`}
-              className="w-full text-left px-3 py-2 text-sm hover:bg-accent/20 flex justify-between items-center"
-              onMouseDown={(e) => {
-                e.preventDefault();
-                onChange(obj);
-                setSearch("");
-                setOpen(false);
-              }}
-            >
-              <span className="truncate">{obj.name}</span>
-              <span className="text-[10px] text-muted-foreground ml-2 shrink-0">
-                {obj.sizeArcmin}'
-              </span>
-            </button>
-          ))}
+          {allResults.map((obj, i) => {
+            const solarObj = solarObjects.find(o => o.name === obj.name);
+            return (
+              <button
+                key={`${obj.name}-${i}`}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-accent/20 flex items-center gap-2"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  onChange(obj);
+                  setSearch("");
+                  setOpen(false);
+                }}
+              >
+                {solarObj?.color_hex && (
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0 border border-border/50" style={{ backgroundColor: solarObj.color_hex }} />
+                )}
+                <span className="truncate flex-1">{obj.name}</span>
+                <span className="text-[10px] text-muted-foreground ml-2 shrink-0">
+                  {obj.sizeArcmin >= 1 ? `${obj.sizeArcmin.toFixed(0)}'` : `${(obj.sizeArcmin * 60).toFixed(1)}"`}
+                </span>
+              </button>
+            );
+          })}
           {search.length < 2 && (
             <p className="text-[10px] text-muted-foreground p-2 text-center">
               Type at least 2 characters to search

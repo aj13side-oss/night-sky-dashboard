@@ -9,11 +9,13 @@ import { Label } from "@/components/ui/label";
 import { getSkyImageUrlWithFov, type SkyImageSurvey } from "@/lib/sky-images";
 
 import TargetObjectPicker, { type TargetObject } from "@/components/fov/TargetObjectPicker";
+import { useSolarSystemObjects } from "@/hooks/useSolarSystemObjects";
 
 import { useCameras, useTelescopes } from "@/hooks/useEquipmentCatalog";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { AlertTriangle } from "lucide-react";
 
 const DEFAULT_TARGET: TargetObject = { name: "M31 — Andromeda", sizeArcmin: 178, exposureFast: 30, exposureDeep: 120, ra: 10.6847, dec: 41.2687 };
 
@@ -21,6 +23,7 @@ const FovCalculator = () => {
   const [searchParams] = useSearchParams();
   const { data: dbTelescopes } = useTelescopes();
   const { data: dbCameras } = useCameras();
+  const { data: solarObjects = [] } = useSolarSystemObjects();
 
   const [telescopeId, setTelescopeId] = useState<string>("custom");
   const [cameraId, setCameraId] = useState<string>("custom");
@@ -163,11 +166,16 @@ const FovCalculator = () => {
   useEffect(() => {
     setImgLoaded(false);
     setImgError(false);
-  }, [obj?.ra, obj?.dec, survey, aladinFovDeg]);
+  }, [obj?.ra, obj?.dec, obj?.imageUrl, survey, aladinFovDeg]);
 
   const skyImageUrl = obj?.ra != null && obj?.dec != null && fov.w > 0
     ? getSkyImageUrlWithFov(obj.ra, obj.dec, aladinFovDeg, aladinFovDeg * (fov.h / Math.max(fov.w, 0.001)), survey)
     : null;
+
+  const isSolar = obj?.isSolarSystem === true;
+  const solarObj = isSolar ? solarObjects.find(s => s.name === obj?.name) : null;
+
+  const hasImage = isSolar ? !!obj?.imageUrl : (obj?.ra != null && obj?.dec != null);
 
   return (
     <div className="min-h-screen bg-background star-field">
@@ -285,65 +293,84 @@ const FovCalculator = () => {
             <div className="glass-card rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">FOV Preview</h3>
-                <div className="flex rounded-md border border-border overflow-hidden text-[10px]">
-                  <button onClick={() => setSurvey("dss2")}
-                    className={`px-2.5 py-1 transition-colors ${survey === "dss2" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
-                    📷 Photo
-                  </button>
-                  <button onClick={() => setSurvey("mellinger")}
-                    className={`px-2.5 py-1 transition-colors border-l border-border ${survey === "mellinger" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
-                    🔬 Scientific
-                  </button>
-                </div>
+                {!isSolar && (
+                  <div className="flex rounded-md border border-border overflow-hidden text-[10px]">
+                    <button onClick={() => setSurvey("dss2")}
+                      className={`px-2.5 py-1 transition-colors ${survey === "dss2" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
+                      📷 Photo
+                    </button>
+                    <button onClick={() => setSurvey("mellinger")}
+                      className={`px-2.5 py-1 transition-colors border-l border-border ${survey === "mellinger" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
+                      🔬 Scientific
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="relative rounded-xl border border-border overflow-hidden bg-black max-w-[800px] mx-auto">
-                {obj?.ra != null && obj?.dec != null ? (
+                {hasImage ? (
                   <div className="relative w-full" style={{ paddingBottom: `${imageAspect * 100}%` }}>
                     {!imgLoaded && !imgError && (
                       <div className="absolute inset-0 flex items-center justify-center z-10">
                         <div className="h-6 w-6 border-2 border-primary/40 border-t-primary rounded-full animate-spin" />
-                        <span className="text-xs text-muted-foreground ml-2">Loading sky view...</span>
+                        <span className="text-xs text-muted-foreground ml-2">Loading {isSolar ? "image" : "sky view"}...</span>
                       </div>
                     )}
                     {imgError && (
                       <div className="absolute inset-0 flex items-center justify-center z-10">
-                        <span className="text-xs text-muted-foreground">Failed to load sky image. Try switching to Scientific view.</span>
+                        <span className="text-xs text-muted-foreground">
+                          {isSolar ? "Failed to load reference image." : "Failed to load sky image. Try switching to Scientific view."}
+                        </span>
                       </div>
                     )}
-                    <img
-                      key={`${obj.ra}-${obj.dec}-${survey}-${aladinFovDeg}`}
-                      src={getSkyImageUrlWithFov(obj.ra, obj.dec, aladinFovDeg, aladinFovDeg * (fov.h / Math.max(fov.w, 0.01)), survey)}
-                      alt={`Sky view centered on ${obj.name}`}
-                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
-                      loading="eager"
-                      onLoad={() => setImgLoaded(true)}
-                      onError={() => setImgError(true)}
-                    />
+
+                    {isSolar ? (
+                      <img
+                        key={`solar-${obj?.name}`}
+                        src={obj?.imageUrl ?? ""}
+                        alt={`${obj?.name} reference image`}
+                        className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                        loading="eager"
+                        onLoad={() => setImgLoaded(true)}
+                        onError={() => setImgError(true)}
+                      />
+                    ) : (
+                      <img
+                        key={`${obj?.ra}-${obj?.dec}-${survey}-${aladinFovDeg}`}
+                        src={getSkyImageUrlWithFov(obj!.ra!, obj!.dec!, aladinFovDeg, aladinFovDeg * (fov.h / Math.max(fov.w, 0.01)), survey)}
+                        alt={`Sky view centered on ${obj?.name}`}
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                        loading="eager"
+                        onLoad={() => setImgLoaded(true)}
+                        onError={() => setImgError(true)}
+                      />
+                    )}
 
                     {/* Sensor FOV overlay */}
-                    {imgLoaded && aladinFovDeg > 0 && (
+                    {imgLoaded && (
                       <div className="absolute inset-0 pointer-events-none z-10">
                         <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/30" />
                         <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/30" />
-                        <div
-                          className="absolute border-2 border-primary/60 rounded"
-                          style={{
-                            width: `${Math.min((fov.w / aladinFovDeg) * 100, 98)}%`,
-                            height: `${Math.min((fov.h / aladinFovDeg) * 100, 98)}%`,
-                            left: `${50 - Math.min((fov.w / aladinFovDeg) * 50, 49)}%`,
-                            top: `${50 - Math.min((fov.h / aladinFovDeg) * 50, 49)}%`,
-                          }}
-                        />
-                        {objFractionW > 0 && (
+
+                        {!isSolar && aladinFovDeg > 0 && (
+                          <div
+                            className="absolute border-2 border-primary/60 rounded"
+                            style={{
+                              width: `${Math.min((fov.w / aladinFovDeg) * 100, 98)}%`,
+                              height: `${Math.min((fov.h / aladinFovDeg) * 100, 98)}%`,
+                              left: `${50 - Math.min((fov.w / aladinFovDeg) * 50, 49)}%`,
+                              top: `${50 - Math.min((fov.h / aladinFovDeg) * 50, 49)}%`,
+                            }}
+                          />
+                        )}
+
+                        {objFractionW > 0 && !isSolar && (
                           <>
-                            {/* Object circle indicator */}
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"
                               style={{
                                 width: `${Math.max(3, Math.min(objFractionW * (fov.w / aladinFovDeg) * 100, 200))}%`,
                                 paddingBottom: `${Math.max(3, Math.min(objFractionH * (fov.h / aladinFovDeg) * 100, 200))}%`,
                               }} />
-                            {/* Pulsing dot for tiny objects so user can locate them */}
                             {objFractionW < 0.1 && (
                               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-accent/80 animate-pulse shadow-[0_0_8px_2px_hsl(var(--accent)/0.5)]" />
                             )}
@@ -352,8 +379,8 @@ const FovCalculator = () => {
                       </div>
                     )}
 
-                    {/* Object detail inset for small objects */}
-                    {imgLoaded && obj && objFractionW < 0.25 && objFractionW > 0 && obj.ra != null && obj.dec != null && (
+                    {/* Object detail inset for small deep sky objects */}
+                    {imgLoaded && obj && !isSolar && objFractionW < 0.25 && objFractionW > 0 && obj.ra != null && obj.dec != null && (
                       <div className="absolute bottom-3 right-3 w-44 h-44 rounded-lg border-2 border-accent/60 overflow-hidden shadow-lg z-20 bg-black">
                         <img
                           src={getSkyImageUrlWithFov(obj.ra, obj.dec, (obj.sizeArcmin * 5) / 60, (obj.sizeArcmin * 5) / 60, "dss2")}
@@ -367,7 +394,6 @@ const FovCalculator = () => {
                         <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-[9px] text-accent text-center py-0.5 font-mono">
                           🔍 {obj.name} — {obj.sizeArcmin}' closeup
                         </div>
-                        {/* Connector line from inset to center */}
                         <div className="absolute -top-1 -left-1 w-2 h-2 border-l-2 border-t-2 border-accent/50" />
                       </div>
                     )}
@@ -376,7 +402,7 @@ const FovCalculator = () => {
                     {imgLoaded && (
                       <>
                         <div className="absolute top-2 left-2 bg-black/70 text-[10px] text-foreground font-mono px-2 py-1 rounded z-10">
-                          {obj.name}: {obj.sizeArcmin}'
+                          {obj?.name}: {obj?.sizeArcmin != null && obj.sizeArcmin >= 1 ? `${obj.sizeArcmin.toFixed(1)}'` : `${((obj?.sizeArcmin ?? 0) * 60).toFixed(1)}"`}
                         </div>
                         <div className="absolute bottom-2 left-2 bg-black/70 text-[10px] text-muted-foreground font-mono px-2 py-1 rounded z-10">
                           {fov.wArcmin.toFixed(0)}' × {fov.hArcmin.toFixed(0)}' sensor
@@ -386,17 +412,44 @@ const FovCalculator = () => {
                   </div>
                 ) : (
                   <div className="flex items-center justify-center" style={{ minHeight: 400 }}>
-                    <span className="text-muted-foreground text-sm">Select equipment and a target to preview framing</span>
+                    <span className="text-muted-foreground text-sm">
+                      {obj ? `No sky image available for ${obj.name}` : "Select equipment and a target to preview framing"}
+                    </span>
                   </div>
                 )}
               </div>
+
+              {/* Solar system imaging tips */}
+              {isSolar && solarObj && imgLoaded && (
+                <div className="space-y-2 bg-secondary/30 rounded-lg p-3 text-xs">
+                  {solarObj.danger_warning && (
+                    <div className="flex items-center gap-1.5 text-destructive font-medium">
+                      <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                      {solarObj.danger_warning}
+                    </div>
+                  )}
+                  {solarObj.recommended_technique && (
+                    <p className="text-muted-foreground"><span className="text-foreground font-medium">Technique:</span> {solarObj.recommended_technique}</p>
+                  )}
+                  {solarObj.recommended_filters && (
+                    <p className="text-muted-foreground"><span className="text-foreground font-medium">Filters:</span> {solarObj.recommended_filters}</p>
+                  )}
+                  {solarObj.capture_gain_note && (
+                    <p className="text-muted-foreground"><span className="text-foreground font-medium">Capture:</span> {solarObj.capture_gain_note}</p>
+                  )}
+                  {solarObj.recommended_focal_mm && (
+                    <p className="text-muted-foreground"><span className="text-foreground font-medium">Recommended focal:</span> {solarObj.recommended_focal_mm}mm</p>
+                  )}
+                </div>
+              )}
+
               <div className="flex items-center justify-between text-xs text-muted-foreground mt-2 px-1">
                 <span className="font-mono">
                   Sensor: {fov.wArcmin.toFixed(0)}' × {fov.hArcmin.toFixed(0)}'
                 </span>
                 {obj && (
                   <span className="font-mono">
-                    {obj.name}: {obj.sizeArcmin}' →
+                    {obj.name}: {obj.sizeArcmin >= 1 ? `${obj.sizeArcmin.toFixed(1)}'` : `${(obj.sizeArcmin * 60).toFixed(1)}"`} →
                     {objFractionW > 1
                       ? ` overflows frame (${(objFractionW * 100).toFixed(0)}% — need mosaic)`
                       : objFractionW > 0.5

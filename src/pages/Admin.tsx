@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AppNav from "@/components/AppNav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, ImageIcon, Star, DollarSign, Link, Layers, Terminal, ShieldCheck, LogOut, Database, Activity, Search as SearchIcon, Wrench } from "lucide-react";
+import { BarChart3, ImageIcon, Star, DollarSign, Link, Layers, Terminal, ShieldCheck, LogOut, Database, Activity, Search as SearchIcon, Wrench, Globe2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminStats from "@/components/admin/AdminStats";
 import AdminImageAudit from "@/components/admin/AdminImageAudit";

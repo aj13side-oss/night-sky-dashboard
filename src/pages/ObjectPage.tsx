@@ -251,8 +251,8 @@ const ObjectPage = () => {
         <SetupAssistant obj={obj} userFocalLength={0} />
 
         {/* Altitude Chart */}
-        {obj.ra != null && obj.dec != null && (
-          <AltitudeChart ra={obj.ra} dec={obj.dec} lat={pos.lat} lng={pos.lng} />
+        {obj.ra_deg != null && obj.dec_deg != null && (
+          <AltitudeChart ra={obj.ra_deg} dec={obj.dec_deg} lat={pos.lat} lng={pos.lng} />
         )}
 
         {/* Action buttons */}

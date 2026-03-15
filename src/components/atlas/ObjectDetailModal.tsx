@@ -104,7 +104,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
   useEffect(() => {
     if (!imgLoading) {
       // Low photo_score objects default to Aladin for better context
-      if ((obj?.photo_score ?? 0) <= 3 && obj?.ra != null) {
+      if ((obj?.photo_score ?? 0) <= 3 && obj?.ra_deg != null) {
         setActiveTab("aladin");
       } else if (wikiImage?.url) {
         setActiveTab("photo");

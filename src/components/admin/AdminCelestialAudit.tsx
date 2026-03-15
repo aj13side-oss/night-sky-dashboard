@@ -910,6 +910,7 @@ export default function AdminCelestialAudit() {
                     <button onClick={(e) => { e.stopPropagation(); setDeleteObj(item); }} title="Delete" className="flex-1 py-0.5 rounded text-[8px] border border-border/50 text-muted-foreground hover:border-destructive/50 hover:text-destructive transition-colors">
                       <Trash2 className="w-2.5 h-2.5 mx-auto" />
                     </button>
+                  </div>
                   {replacing === item.id && (
                     <div className="space-y-0.5">
                       <div className="flex gap-0.5">

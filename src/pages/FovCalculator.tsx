@@ -451,6 +451,36 @@ const FovCalculator = () => {
                 )}
               </div>
 
+              {/* Legend */}
+              {imgLoaded && obj && (
+                <div className="flex items-center gap-4 mt-2 px-1 text-[10px] text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <span className="inline-block w-4 h-3 border border-primary/60 rounded-sm" />
+                    Sensor FOV
+                  </span>
+                  {!isSolar && objFractionW > 0 && (
+                    <span className="flex items-center gap-1.5">
+                      <span className="inline-block w-3 h-3 rounded-full border border-accent/70" />
+                      Object size
+                    </span>
+                  )}
+                  <span className="flex items-center gap-1.5">
+                    <span className="inline-block w-3 h-0 border-t border-primary/30" />
+                    Center
+                  </span>
+                </div>
+              )}
+
+              {/* Image credits for solar system */}
+              {isSolar && solarObj && imgLoaded && solarObj.image_credit && (
+                <div className="text-[9px] text-muted-foreground/60 mt-1 px-1">
+                  📷 {solarObj.image_credit} · {solarObj.image_license}
+                  {solarObj.image_source_url && (
+                    <> · <a href={solarObj.image_source_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-muted-foreground">Source</a></>
+                  )}
+                </div>
+              )}
+
               {/* Solar system imaging tips */}
               {isSolar && solarObj?.danger_warning && (
                 <div className="mt-2 p-3 rounded-lg bg-destructive/20 border border-destructive/50 text-xs text-destructive font-semibold flex items-center gap-1.5">

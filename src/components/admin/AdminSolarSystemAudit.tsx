@@ -71,13 +71,18 @@ export default function AdminSolarSystemAudit() {
               <CardContent className="p-4 space-y-3">
                 <div className="flex gap-3">
                   {obj.image_url ? (
-                    <img
-                      src={obj.image_url}
-                      alt={obj.name}
-                      className="w-24 h-24 object-cover rounded-lg shrink-0 bg-black"
-                      onLoad={() => { if (!status) checkImage(obj.image_url!, obj.id); }}
-                      onError={() => setImgStatus(prev => ({ ...prev, [obj.id]: "broken" }))}
-                    />
+                    <div>
+                      <img
+                        src={obj.image_url}
+                        alt={obj.name}
+                        className="w-24 h-24 object-cover rounded-lg shrink-0 bg-black"
+                        onLoad={() => { if (!status) checkImage(obj.image_url!, obj.id); }}
+                        onError={() => setImgStatus(prev => ({ ...prev, [obj.id]: "broken" }))}
+                      />
+                      {obj.image_credit && (
+                        <p className="text-[9px] text-muted-foreground mt-1">📷 {obj.image_credit} · {obj.image_license}</p>
+                      )}
+                    </div>
                   ) : (
                     <div className="w-24 h-24 rounded-lg bg-muted/20 flex items-center justify-center shrink-0">
                       <span className="text-muted-foreground text-xs">No image</span>

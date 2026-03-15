@@ -30,9 +30,7 @@ const ObjectPage = () => {
   const navigate = useNavigate();
   const decodedId = decodeURIComponent(catalogId ?? "");
   const { userId } = useCurrentUser();
-  const { isFavorite, toggleFavorite } = useFavorites();
   const { isInList, addObject, removeObject } = useTonightList();
-  const { openAuthModal } = useAuthModal();
   const [showExposureInfo, setShowExposureInfo] = useState(false);
 
   // Geolocation

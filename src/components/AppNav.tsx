@@ -33,10 +33,7 @@ const AppNav = () => {
         </Link>
 
         {/* Mobile hamburger */}
-        <div className="sm:hidden flex items-center gap-2">
-          {!authLoading && !userId && (
-            <button onClick={openAuthModal} className="text-xs text-muted-foreground hover:text-foreground">Sign In</button>
-          )}
+        <div className="sm:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <button className="p-2 text-muted-foreground hover:text-foreground">
@@ -52,23 +49,10 @@ const AppNav = () => {
                     )}>
                     <item.icon className="w-4 h-4" />
                     {item.label}
-                    {item.to === "/sky-atlas" && favCount > 0 && <Badge className="text-[8px] px-1 py-0 ml-auto">{favCount}</Badge>}
                   </Link>
                 ))}
               </nav>
               <div className="px-3 pt-6 space-y-1">
-                {userId && (
-                  <>
-                    <Link to="/sky-atlas?favorites=true" onClick={() => setOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50">
-                      <Heart className="w-4 h-4" /> My Favorites
-                    </Link>
-                    <button onClick={() => { handleSignOut(); setOpen(false); }}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 w-full">
-                      <LogOut className="w-4 h-4" /> Sign Out
-                    </button>
-                  </>
-                )}
                 <button onClick={() => setNightVision((v) => !v)}
                   className={cn("flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors w-full",
                     nightVision ? "bg-red-900/30 text-red-400" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"

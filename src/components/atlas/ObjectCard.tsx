@@ -37,10 +37,7 @@ const typeEmoji: Record<string, string> = {
 
 const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) => {
   const navigate = useNavigate();
-  const { userId } = useCurrentUser();
-  const { isFavorite, toggleFavorite } = useFavorites();
   const { isInList, addObject, removeObject } = useTonightList();
-  const { openAuthModal } = useAuthModal();
   const alt =
     obj.ra != null && obj.dec != null
       ? calculateAltitude(obj.ra, obj.dec, lat, lng)

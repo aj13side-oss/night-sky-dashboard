@@ -123,9 +123,9 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
 
   // ESASky URL (new sky.esa.int)
   const esaSkyUrl = useMemo(() => {
-    if (!obj || obj.ra == null || obj.dec == null) return null;
+    if (!obj || obj.ra_deg == null || obj.dec_deg == null) return null;
     const fov = calculateFov(obj.size_max);
-    return `https://sky.esa.int/?target=${obj.ra}%20${obj.dec}&hips=DSS2%20color&fov=${fov}&reticle=true`;
+    return `https://sky.esa.int/?target=${obj.ra_deg}%20${obj.dec_deg}&hips=DSS2%20color&fov=${fov}&reticle=true`;
   }, [obj]);
 
 

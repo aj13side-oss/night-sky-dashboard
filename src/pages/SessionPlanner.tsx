@@ -168,8 +168,8 @@ const PlannerContent = () => {
     const lines = plan.targets.map((t, i) => {
       const obj = queueObjects.find((o) => o.catalog_id === t.catalog_id);
       if (!obj) return `${i + 1}. ${t.catalog_id}`;
-      const rs = obj.ra != null && obj.dec != null
-        ? getObjectRiseSetTransit(obj.ra, obj.dec, location.lat, location.lng, date)
+      const rs = obj.ra_deg != null && obj.dec_deg != null
+        ? getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, location.lat, location.lng, date)
         : null;
       const window = rs?.bestWindowStart && rs?.bestWindowEnd
         ? `${formatTimeShort(rs.bestWindowStart)} - ${formatTimeShort(rs.bestWindowEnd)}`

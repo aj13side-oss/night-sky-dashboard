@@ -1,15 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { Telescope, Map, Crosshair, Home, Eclipse, Settings, Scale, EyeOff, Eye, Menu, LogIn, User, LogOut, Heart, Wrench, ClipboardList } from "lucide-react";
+import { Telescope, Map, Crosshair, Home, Eclipse, Settings, Scale, EyeOff, Eye, Menu, ClipboardList } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { useCurrentUser } from "@/hooks/useUserRigs";
-import { useFavorites } from "@/hooks/useFavorites";
-import { useAuthModal } from "@/contexts/AuthModalContext";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: Home, group: "plan" },

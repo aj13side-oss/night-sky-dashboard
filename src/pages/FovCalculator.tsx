@@ -295,22 +295,37 @@ const FovCalculator = () => {
                 </div>
               </div>
 
-              <div className="relative rounded-xl border border-border overflow-hidden" style={{ minHeight: 400 }}>
-                {skyImageUrl ? (
+              <div className="relative rounded-xl border border-border overflow-hidden bg-black" style={{ minHeight: 400 }}>
+                {obj?.ra != null && obj?.dec != null ? (
                   <>
+                    {!imgLoaded && !imgError && (
+                      <div className="absolute inset-0 flex items-center justify-center z-10">
+                        <div className="h-6 w-6 border-2 border-primary/40 border-t-primary rounded-full animate-spin" />
+                        <span className="text-xs text-muted-foreground ml-2">Loading sky view...</span>
+                      </div>
+                    )}
+                    {imgError && (
+                      <div className="absolute inset-0 flex items-center justify-center z-10">
+                        <span className="text-xs text-muted-foreground">Failed to load sky image. Try switching to Scientific view.</span>
+                      </div>
+                    )}
                     <img
-                      src={skyImageUrl}
-                      alt={`Sky view of ${obj?.name ?? "target"}`}
-                      className="w-full h-[400px] object-contain bg-black"
+                      key={`${obj.ra}-${obj.dec}-${survey}-${aladinFovDeg}`}
+                      src={getSkyImageUrlWithFov(obj.ra, obj.dec, aladinFovDeg, aladinFovDeg * (fov.h / Math.max(fov.w, 0.01)), survey)}
+                      alt={`Sky view centered on ${obj.name}`}
+                      className={`w-full h-[400px] object-contain transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
                       loading="eager"
+                      onLoad={() => setImgLoaded(true)}
+                      onError={() => setImgError(true)}
                     />
+
                     {/* Sensor FOV overlay */}
-                    {aladinFovDeg > 0 && (
+                    {imgLoaded && aladinFovDeg > 0 && (
                       <div className="absolute inset-0 pointer-events-none z-10">
                         <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/30" />
                         <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/30" />
                         <div
-                          className="absolute border-2 border-primary rounded"
+                          className="absolute border-2 border-primary/60 rounded"
                           style={{
                             width: `${Math.min((fov.w / aladinFovDeg) * 100, 98)}%`,
                             height: `${Math.min((fov.h / aladinFovDeg) * 100, 98)}%`,
@@ -320,25 +335,44 @@ const FovCalculator = () => {
                         />
                         {objFractionW > 0 && (
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"
-                            style={{ 
-                              width: `${Math.max(2, Math.min(objFractionW * (fov.w / aladinFovDeg) * 100, 200))}%`, 
-                              paddingBottom: `${Math.max(2, Math.min(objFractionH * (fov.h / aladinFovDeg) * 100, 200))}%`,
+                            style={{
+                              width: `${Math.max(3, Math.min(objFractionW * (fov.w / aladinFovDeg) * 100, 200))}%`,
+                              paddingBottom: `${Math.max(3, Math.min(objFractionH * (fov.h / aladinFovDeg) * 100, 200))}%`,
                             }} />
                         )}
                       </div>
                     )}
+
+                    {/* Object detail inset for small objects */}
+                    {imgLoaded && obj && objFractionW < 0.25 && objFractionW > 0 && obj.ra != null && obj.dec != null && (
+                      <div className="absolute bottom-3 right-3 w-36 h-36 rounded-lg border-2 border-accent/60 overflow-hidden shadow-lg z-20 bg-black">
+                        <img
+                          src={getSkyImageUrlWithFov(obj.ra, obj.dec, (obj.sizeArcmin * 3) / 60, (obj.sizeArcmin * 3) / 60, "dss2")}
+                          alt={`Closeup of ${obj.name}`}
+                          className="w-full h-full object-cover"
+                          loading="eager"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-[8px] text-accent text-center py-0.5 font-mono">
+                          🔍 {obj.sizeArcmin}' closeup
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Labels */}
+                    {imgLoaded && (
+                      <>
+                        <div className="absolute top-2 left-2 bg-black/70 text-[10px] text-foreground font-mono px-2 py-1 rounded z-10">
+                          {obj.name}: {obj.sizeArcmin}'
+                        </div>
+                        <div className="absolute bottom-2 left-2 bg-black/70 text-[10px] text-muted-foreground font-mono px-2 py-1 rounded z-10">
+                          {fov.wArcmin.toFixed(0)}' × {fov.hArcmin.toFixed(0)}' sensor
+                        </div>
+                      </>
+                    )}
                   </>
                 ) : (
-                  <div className="w-full h-[400px] bg-muted/30 flex items-center justify-center text-muted-foreground text-sm">
+                  <div className="flex items-center justify-center h-[400px] text-muted-foreground text-sm">
                     Select equipment and a target to preview framing
-                  </div>
-                )}
-                <div className="absolute bottom-2 left-2 text-[10px] font-mono text-white/80 drop-shadow-md bg-black/40 px-1.5 py-0.5 rounded z-20">
-                  {fov.w.toFixed(2)}° × {fov.h.toFixed(2)}°
-                </div>
-                {obj && (
-                  <div className="absolute top-2 left-2 text-[10px] font-mono text-white/90 drop-shadow-md bg-black/40 px-1.5 py-0.5 rounded z-20">
-                    {obj.name}: {obj.sizeArcmin}'
                   </div>
                 )}
               </div>
@@ -348,7 +382,14 @@ const FovCalculator = () => {
                 </span>
                 {obj && (
                   <span className="font-mono">
-                    {obj.name}: {obj.sizeArcmin}' ({objFractionW > 1 ? "overflows frame" : `${(objFractionW * 100).toFixed(0)}% of width`})
+                    {obj.name}: {obj.sizeArcmin}' →
+                    {objFractionW > 1
+                      ? ` overflows frame (${(objFractionW * 100).toFixed(0)}% — need mosaic)`
+                      : objFractionW > 0.5
+                      ? ` good framing (${(objFractionW * 100).toFixed(0)}%)`
+                      : objFractionW > 0.15
+                      ? ` fits with room (${(objFractionW * 100).toFixed(0)}%)`
+                      : ` very small in frame (${(objFractionW * 100).toFixed(0)}%)`}
                   </span>
                 )}
               </div>

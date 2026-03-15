@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ToolSuggestions from "@/components/ToolSuggestions";
 import TargetObjectPicker, { type TargetObject } from "@/components/fov/TargetObjectPicker";
-import ExposureCalculator from "@/components/fov/ExposureCalculator";
+
 import { useCameras, useTelescopes } from "@/hooks/useEquipmentCatalog";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,

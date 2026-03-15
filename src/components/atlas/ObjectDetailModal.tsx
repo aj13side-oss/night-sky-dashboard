@@ -108,7 +108,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
         setActiveTab("aladin");
       } else if (wikiImage?.url) {
         setActiveTab("photo");
-      } else if (obj?.ra != null) {
+      } else if (obj?.ra_deg != null) {
         setActiveTab("aladin");
       }
     }

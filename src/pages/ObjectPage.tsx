@@ -168,9 +168,9 @@ const ObjectPage = () => {
                 <img src={imageUrl} alt={obj.common_name ?? obj.catalog_id} className="w-full max-h-80 object-contain" />
               </div>
             )}
-            {obj.ra != null && obj.dec != null && (
+            {obj.ra_deg != null && obj.dec_deg != null && (
               <div className="rounded-xl overflow-hidden border border-border/30">
-                <AladinLiteViewer ra={obj.ra} dec={obj.dec} fovDeg={aladinFov} />
+                <AladinLiteViewer ra={obj.ra_deg} dec={obj.dec_deg} fovDeg={aladinFov} />
               </div>
             )}
           </div>

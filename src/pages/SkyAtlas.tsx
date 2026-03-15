@@ -71,10 +71,6 @@ const SkyAtlas = () => {
     if (!data?.data) return [];
     let results = data.data;
 
-    if (showFavorites && favorites) {
-      results = results.filter((obj) => favorites.has(obj.id));
-    }
-
     if (visibleTonight) {
       results = results.filter((obj) => {
         if (obj.ra == null || obj.dec == null) return false;
@@ -96,7 +92,7 @@ const SkyAtlas = () => {
     }
 
     return results;
-  }, [data?.data, visibleTonight, filterMode, userPos.lat, userPos.lng, showFavorites, favorites]);
+  }, [data?.data, visibleTonight, filterMode, userPos.lat, userPos.lng]);
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 

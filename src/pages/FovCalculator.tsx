@@ -331,6 +331,16 @@ const FovCalculator = () => {
                   </div>
                 )}
               </div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground mt-2 px-1">
+                <span className="font-mono">
+                  Sensor: {fov.wArcmin.toFixed(0)}' × {fov.hArcmin.toFixed(0)}'
+                </span>
+                {obj && (
+                  <span className="font-mono">
+                    {obj.name}: {obj.sizeArcmin}' ({objFractionW > 1 ? "overflows frame" : `${(objFractionW * 100).toFixed(0)}% of width`})
+                  </span>
+                )}
+              </div>
             </div>
           </motion.div>
         </div>

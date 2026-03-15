@@ -54,7 +54,7 @@ export function getSkyImageUrlWithFov(
   fovH: number,
   survey: SkyImageSurvey = "dss2"
 ): string {
-  const w = 1200;
+  const w = fovW < 0.5 ? 1600 : fovW < 1 ? 1400 : 1200;
   const h = Math.round(w * (fovH / Math.max(fovW, 0.001)));
   const params = new URLSearchParams({
     hips: HIPS_IDS[survey],

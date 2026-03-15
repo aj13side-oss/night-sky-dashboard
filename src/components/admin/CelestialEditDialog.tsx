@@ -90,6 +90,24 @@ export default function CelestialEditDialog({ open, onOpenChange, item }: Props)
     }
     setSaving(true);
 
+    const raValue = form.ra != null ? Number(form.ra) : null;
+    const decValue = form.dec != null ? Number(form.dec) : null;
+
+    // Compute ra_deg, ra_hours, dec_deg, dec_hours based on RA format selection
+    let ra_deg: number | null = null;
+    let ra_hours: number | null = null;
+    if (raValue != null) {
+      if (raFormat === "hours") {
+        ra_hours = raValue;
+        ra_deg = raValue * 15;
+      } else {
+        ra_deg = raValue;
+        ra_hours = raValue / 15;
+      }
+    }
+    const dec_deg = decValue;
+    const dec_hours = decValue != null ? decValue / 15 : null;
+
     const payload: Record<string, any> = {
       catalog_id: form.catalog_id,
       common_name: form.common_name || null,
@@ -97,8 +115,12 @@ export default function CelestialEditDialog({ open, onOpenChange, item }: Props)
       constellation: form.constellation || null,
       scientific_notation: form.scientific_notation || null,
       search_aliases: form.search_aliases || null,
-      ra: form.ra != null ? Number(form.ra) : null,
-      dec: form.dec != null ? Number(form.dec) : null,
+      ra: raValue,
+      dec: decValue,
+      ra_deg,
+      ra_hours,
+      dec_deg,
+      dec_hours,
       size_max: form.size_max != null ? Number(form.size_max) : null,
       magnitude: form.magnitude != null ? Number(form.magnitude) : null,
       surf_brightness: form.surf_brightness != null ? Number(form.surf_brightness) : null,

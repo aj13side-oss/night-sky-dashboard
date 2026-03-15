@@ -334,27 +334,39 @@ const FovCalculator = () => {
                           }}
                         />
                         {objFractionW > 0 && (
-                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"
-                            style={{
-                              width: `${Math.max(3, Math.min(objFractionW * (fov.w / aladinFovDeg) * 100, 200))}%`,
-                              paddingBottom: `${Math.max(3, Math.min(objFractionH * (fov.h / aladinFovDeg) * 100, 200))}%`,
-                            }} />
+                          <>
+                            {/* Object circle indicator */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"
+                              style={{
+                                width: `${Math.max(3, Math.min(objFractionW * (fov.w / aladinFovDeg) * 100, 200))}%`,
+                                paddingBottom: `${Math.max(3, Math.min(objFractionH * (fov.h / aladinFovDeg) * 100, 200))}%`,
+                              }} />
+                            {/* Pulsing dot for tiny objects so user can locate them */}
+                            {objFractionW < 0.1 && (
+                              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-accent/80 animate-pulse shadow-[0_0_8px_2px_hsl(var(--accent)/0.5)]" />
+                            )}
+                          </>
                         )}
                       </div>
                     )}
 
                     {/* Object detail inset for small objects */}
                     {imgLoaded && obj && objFractionW < 0.25 && objFractionW > 0 && obj.ra != null && obj.dec != null && (
-                      <div className="absolute bottom-3 right-3 w-36 h-36 rounded-lg border-2 border-accent/60 overflow-hidden shadow-lg z-20 bg-black">
+                      <div className="absolute bottom-3 right-3 w-44 h-44 rounded-lg border-2 border-accent/60 overflow-hidden shadow-lg z-20 bg-black">
                         <img
-                          src={getSkyImageUrlWithFov(obj.ra, obj.dec, (obj.sizeArcmin * 3) / 60, (obj.sizeArcmin * 3) / 60, "dss2")}
+                          src={getSkyImageUrlWithFov(obj.ra, obj.dec, (obj.sizeArcmin * 5) / 60, (obj.sizeArcmin * 5) / 60, "dss2")}
                           alt={`Closeup of ${obj.name}`}
                           className="w-full h-full object-cover"
                           loading="eager"
                         />
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-[8px] text-accent text-center py-0.5 font-mono">
-                          🔍 {obj.sizeArcmin}' closeup
+                        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                          <div className="rounded-full border border-accent/50" style={{ width: '20%', height: '20%' }} />
                         </div>
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-[9px] text-accent text-center py-0.5 font-mono">
+                          🔍 {obj.name} — {obj.sizeArcmin}' closeup
+                        </div>
+                        {/* Connector line from inset to center */}
+                        <div className="absolute -top-1 -left-1 w-2 h-2 border-l-2 border-t-2 border-accent/50" />
                       </div>
                     )}
 

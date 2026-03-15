@@ -12,7 +12,6 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Telescope, Camera, Save, CheckCircle2, Info } from "lucide-react";
 import { toast } from "sonner";
-import ToolSuggestions from "@/components/ToolSuggestions";
 import { useCameras, useTelescopes } from "@/hooks/useEquipmentCatalog";
 
 interface EquipmentData {

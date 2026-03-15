@@ -5,15 +5,12 @@ import { useObjectImage } from "@/hooks/useObjectImage";
 import { computeDynamicScore, getSeasonEmoji, getSeasonLabel } from "@/lib/dynamic-score";
 import { getSearchContext } from "@/lib/search-context";
 import { motion } from "framer-motion";
-import { Ruler, Eye, Crown, Award, Sun, Mountain, Link, Lightbulb, Crosshair, BookOpen, Heart, ClipboardList } from "lucide-react";
+import { Ruler, Eye, Crown, Award, Sun, Mountain, Link, Lightbulb, Crosshair, BookOpen, ClipboardList } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatCatalogId } from "@/lib/format-catalog";
 import { Button } from "@/components/ui/button";
-import { useFavorites } from "@/hooks/useFavorites";
 import { useTonightList } from "@/hooks/useTonightList";
-import { useCurrentUser } from "@/hooks/useUserRigs";
-import { useAuthModal } from "@/contexts/AuthModalContext";
 import { toast } from "sonner";
 
 interface Props {

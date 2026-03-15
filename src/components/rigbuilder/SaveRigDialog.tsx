@@ -72,6 +72,7 @@ export function SaveRigDialog({
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+            <Button onClick={() => { onOpenChange(false); openAuthModal(); }}>Sign In</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

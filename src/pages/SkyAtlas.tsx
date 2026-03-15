@@ -36,12 +36,16 @@ const defaultFilters: CelestialFilters = {
 };
 
 const SkyAtlas = () => {
+  const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState<CelestialFilters>(defaultFilters);
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<CelestialObject | null>(null);
   const [userPos, setUserPos] = useState({ lat: 48.8566, lng: 2.3522 });
   const [visibleTonight, setVisibleTonight] = useState(false);
-  const [filterMode, setFilterMode] = useState("all"); // "all" | "rgb" | "narrowband"
+  const [filterMode, setFilterMode] = useState("all");
+  const [showFavorites, setShowFavorites] = useState(() => searchParams.get("favorites") === "true");
+  const { userId } = useCurrentUser();
+  const { isFavorite, favorites } = useFavorites();
 
   const [equipment, setEquipment] = useState({
     focalLength: 0,

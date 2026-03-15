@@ -311,9 +311,9 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
                 )}
 
                 {/* Aladin Lite */}
-                {obj.ra != null && obj.dec != null && (
+                {obj.ra_deg != null && obj.dec_deg != null && (
                   <TabsContent value="aladin" className="mt-1.5">
-                    <AladinLiteViewer ra={obj.ra} dec={obj.dec} fovDeg={aladinFov} />
+                    <AladinLiteViewer ra={obj.ra_deg} dec={obj.dec_deg} fovDeg={aladinFov} />
                   </TabsContent>
                 )}
 

@@ -949,6 +949,30 @@ export default function AdminCelestialAudit() {
       </div>
 
       <AuditCommandPalette open={cmdOpen} onOpenChange={setCmdOpen} items={cmdItems} onAction={handleCmdAction} />
+
+      <CelestialEditDialog open={editDialogOpen} onOpenChange={setEditDialogOpen} item={editObj} />
+
+      <AlertDialog open={!!deleteObj} onOpenChange={open => !open && setDeleteObj(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {deleteObj?.catalog_id}?</AlertDialogTitle>
+            <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                const { error } = await (supabase as any).from("celestial_objects").delete().eq("id", deleteObj.id);
+                if (error) { toast.error(error.message); return; }
+                toast.success(`${deleteObj.catalog_id} deleted`);
+                qc.invalidateQueries({ queryKey: ["admin_celestial"] });
+                setDeleteObj(null);
+              }}
+            >Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

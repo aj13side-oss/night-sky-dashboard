@@ -163,6 +163,36 @@ const SkyAtlas = () => {
           onFilterModeChange={setFilterMode}
         />
 
+        {/* Solar system results */}
+        {solarResults.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Solar System</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {solarResults.map(obj => (
+                <div key={obj.id} className="glass-card rounded-2xl p-4 flex items-center gap-3 border border-primary/20">
+                  {obj.image_url && (
+                    <img src={obj.image_url} alt={obj.name} className="w-16 h-16 object-cover rounded-lg bg-black shrink-0" />
+                  )}
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      {obj.color_hex && <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: obj.color_hex }} />}
+                      <h4 className="font-semibold text-sm text-foreground truncate">{obj.name}</h4>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">{obj.type}</p>
+                    {obj.max_apparent_size_arcsec && (
+                      <p className="text-[10px] text-muted-foreground font-mono">
+                        {obj.max_apparent_size_arcsec >= 60
+                          ? `${(obj.max_apparent_size_arcsec / 60).toFixed(1)}'`
+                          : `${obj.max_apparent_size_arcsec.toFixed(1)}"`}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (

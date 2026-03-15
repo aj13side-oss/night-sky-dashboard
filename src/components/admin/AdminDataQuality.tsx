@@ -7,6 +7,7 @@ import { ArrowRight, AlertTriangle } from "lucide-react";
 import { useCameras, useTelescopes, useMounts, useFilters, useAccessories } from "@/hooks/useEquipmentCatalog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Globe2 } from "lucide-react";
 
 const RETAILERS = ["amazon", "pierro_astro", "optique_unterlinden", "agena", "high_point_scientific", "astronome_fr", "astroshop_de", "univers_astro"];
 

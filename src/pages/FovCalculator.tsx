@@ -299,17 +299,20 @@ const FovCalculator = () => {
                         <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/30" />
                         <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/30" />
                         <div
-                          className="absolute border-2 border-primary/60 rounded"
+                          className="absolute border-2 border-primary rounded"
                           style={{
-                            width: `${Math.min((fov.w / aladinFovDeg) * 100, 100)}%`,
-                            height: `${Math.min((fov.h / aladinFovDeg) * 100, 100)}%`,
-                            left: `${50 - Math.min((fov.w / aladinFovDeg) * 50, 50)}%`,
-                            top: `${50 - Math.min((fov.h / aladinFovDeg) * 50, 50)}%`,
+                            width: `${Math.min((fov.w / aladinFovDeg) * 100, 98)}%`,
+                            height: `${Math.min((fov.h / aladinFovDeg) * 100, 98)}%`,
+                            left: `${50 - Math.min((fov.w / aladinFovDeg) * 50, 49)}%`,
+                            top: `${50 - Math.min((fov.h / aladinFovDeg) * 50, 49)}%`,
                           }}
                         />
                         {objFractionW > 0 && (
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"
-                            style={{ width: `${Math.min(objFractionW * (fov.w / aladinFovDeg) * 100, 200)}%`, paddingBottom: `${Math.min(objFractionH * (fov.h / aladinFovDeg) * 100, 200)}%` }} />
+                            style={{ 
+                              width: `${Math.max(2, Math.min(objFractionW * (fov.w / aladinFovDeg) * 100, 200))}%`, 
+                              paddingBottom: `${Math.max(2, Math.min(objFractionH * (fov.h / aladinFovDeg) * 100, 200))}%`,
+                            }} />
                         )}
                       </div>
                     )}

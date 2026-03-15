@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
   ClipboardList, Trash2, X, GripVertical, Search, Sparkles,
-  Heart, Moon, Sun, Copy, ArrowUp, ArrowDown, Check, Loader2,
+  Moon, Sun, Copy, ArrowUp, ArrowDown, Check, Loader2,
 } from "lucide-react";
 
 const STORAGE_KEY = "cosmicframe_session_plan";

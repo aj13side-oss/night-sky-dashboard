@@ -151,10 +151,6 @@ const ObjectPage = () => {
             {obj.common_name && <p className="text-primary text-lg">{obj.common_name}</p>}
           </div>
           <div className="flex gap-2 mt-8">
-            <Button variant="outline" size="sm" onClick={handleFavorite} className={`gap-1 ${isFav ? "text-red-400 border-red-400/30" : ""}`}>
-              <Heart className={`w-4 h-4 ${isFav ? "fill-red-400" : ""}`} />
-              {isFav ? "Saved" : "Save"}
-            </Button>
             <Button variant="outline" size="sm" onClick={handleTonightList} className={`gap-1 ${inList ? "text-primary border-primary/30" : ""}`}>
               <ClipboardList className="w-4 h-4" />
               {inList ? "Listed" : "Tonight"}

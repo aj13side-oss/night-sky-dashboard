@@ -64,9 +64,9 @@ const TonightList = () => {
 };
 
 const TonightListRow = ({ obj, lat, lng, onRemove }: { obj: CelestialObject; lat: number; lng: number; onRemove: () => void }) => {
-  const alt = obj.ra != null && obj.dec != null ? calculateAltitude(obj.ra, obj.dec, lat, lng) : null;
-  const rs = obj.ra != null && obj.dec != null ? getObjectRiseSetTransit(obj.ra, obj.dec, lat, lng, new Date()) : null;
-  const { data: img } = useObjectImage(obj.catalog_id, obj.common_name, obj.ra, obj.dec, obj.size_max, obj.image_search_query, obj.forced_image_url, obj.obj_type);
+  const alt = obj.ra_deg != null && obj.dec_deg != null ? calculateAltitude(obj.ra_deg, obj.dec_deg, lat, lng) : null;
+  const rs = obj.ra_deg != null && obj.dec_deg != null ? getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, lat, lng, new Date()) : null;
+  const { data: img } = useObjectImage(obj.catalog_id, obj.common_name, obj.ra_deg, obj.dec_deg, obj.size_max, obj.image_search_query, obj.forced_image_url, obj.obj_type);
   const [imgErr, setImgErr] = useState(false);
 
   return (

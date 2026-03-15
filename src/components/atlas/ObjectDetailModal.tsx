@@ -46,8 +46,8 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
   const { data: wikiImage, isLoading: imgLoading } = useObjectImage(
     obj?.catalog_id,
     obj?.common_name,
-    obj?.ra,
-    obj?.dec,
+    obj?.ra_deg,
+    obj?.dec_deg,
     obj?.size_max,
     obj?.image_search_query,
     obj?.forced_image_url,

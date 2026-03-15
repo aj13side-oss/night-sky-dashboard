@@ -317,14 +317,14 @@ const QueueItem = ({
   onUpdate: (u: Partial<PlanTarget>) => void;
   onMove: (dir: -1 | 1) => void;
 }) => {
-  const rs = obj?.ra != null && obj?.dec != null
-    ? getObjectRiseSetTransit(obj.ra, obj.dec, lat, lng, new Date())
+  const rs = obj?.ra_deg != null && obj?.dec_deg != null
+    ? getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, lat, lng, new Date())
     : null;
-  const alt = obj?.ra != null && obj?.dec != null
-    ? calculateAltitude(obj.ra, obj.dec, lat, lng)
+  const alt = obj?.ra_deg != null && obj?.dec_deg != null
+    ? calculateAltitude(obj.ra_deg, obj.dec_deg, lat, lng)
     : null;
   const { data: img } = useObjectImage(
-    obj?.catalog_id, obj?.common_name, obj?.ra, obj?.dec,
+    obj?.catalog_id, obj?.common_name, obj?.ra_deg, obj?.dec_deg,
     obj?.size_max, obj?.image_search_query, obj?.forced_image_url, obj?.obj_type
   );
   const [imgErr, setImgErr] = useState(false);

@@ -153,7 +153,9 @@ const FovCalculator = () => {
     );
   }, [dbCameras, cameraSearch]);
 
-  const aladinSurvey = survey === "photo" ? "P/DSS2/color" : "P/Mellinger/color";
+  const skyImageUrl = obj?.ra != null && obj?.dec != null && fov.w > 0
+    ? getSkyImageUrlWithFov(obj.ra, obj.dec, aladinFovDeg, aladinFovDeg * (fov.h / Math.max(fov.w, 0.001)), survey)
+    : null;
 
   return (
     <div className="min-h-screen bg-background star-field">

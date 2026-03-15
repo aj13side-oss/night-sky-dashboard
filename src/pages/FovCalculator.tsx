@@ -137,6 +137,8 @@ const FovCalculator = () => {
     return { text: "Very wide field", ok: false };
   }, [fov.resolution]);
 
+  const imageAspect = fov.h / Math.max(fov.w, 0.001);
+
   const filteredTelescopes = useMemo(() => {
     if (!dbTelescopes) return [];
     if (!telescopeSearch.trim()) return dbTelescopes;

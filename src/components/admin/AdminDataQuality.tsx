@@ -7,6 +7,7 @@ import { ArrowRight, AlertTriangle } from "lucide-react";
 import { useCameras, useTelescopes, useMounts, useFilters, useAccessories } from "@/hooks/useEquipmentCatalog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Globe2 } from "lucide-react";
 
 const RETAILERS = ["amazon", "pierro_astro", "optique_unterlinden", "agena", "high_point_scientific", "astronome_fr", "astroshop_de", "univers_astro"];
 
@@ -43,6 +44,23 @@ export default function AdminDataQuality() {
     staleTime: 1000 * 60 * 5,
   });
 
+  const { data: solarStats } = useQuery({
+    queryKey: ["admin_solar_quality"],
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from("solar_system_objects")
+        .select("id, image_url, search_aliases, recommended_technique")
+        .eq("is_active", true);
+      const items = data ?? [];
+      return {
+        total: items.length,
+        withImage: items.filter((i: any) => !!i.image_url).length,
+        withAliases: items.filter((i: any) => !!i.search_aliases).length,
+        withGuide: items.filter((i: any) => !!i.recommended_technique).length,
+      };
+    },
+    staleTime: 1000 * 60 * 5,
+  });
   const coverage = useMemo(() => {
     const cats = [
       { label: "Cameras", items: cameras ?? [], requiredSpecs: ["pixel_size_um", "sensor_width_mm", "sensor_height_mm"] },
@@ -158,6 +176,34 @@ export default function AdminDataQuality() {
               ].map(s => (
                 <div key={s.label} className="bg-muted/20 rounded p-3 text-center">
                   <p className="text-xl font-bold font-mono text-foreground">{s.value.toLocaleString()}</p>
+                  <p className="text-[10px] text-muted-foreground">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Loading...</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Solar System Objects */}
+      <Card className="border-border/50">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Globe2 className="w-4 h-4" /> Solar System Objects
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {solarStats ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: "Total", value: solarStats.total },
+                { label: "With image", value: solarStats.withImage },
+                { label: "With aliases", value: solarStats.withAliases },
+                { label: "With imaging guide", value: solarStats.withGuide },
+              ].map(s => (
+                <div key={s.label} className="bg-muted/20 rounded p-3 text-center">
+                  <p className="text-xl font-bold font-mono text-foreground">{s.value}</p>
                   <p className="text-[10px] text-muted-foreground">{s.label}</p>
                 </div>
               ))}

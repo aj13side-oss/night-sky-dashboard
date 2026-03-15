@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AppNav from "@/components/AppNav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, ImageIcon, Star, DollarSign, Link, Layers, Terminal, ShieldCheck, LogOut, Database, Activity, Search as SearchIcon, Wrench } from "lucide-react";
+import { BarChart3, ImageIcon, Star, DollarSign, Link, Layers, Terminal, ShieldCheck, LogOut, Database, Activity, Search as SearchIcon, Wrench, Globe2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminStats from "@/components/admin/AdminStats";
 import AdminImageAudit from "@/components/admin/AdminImageAudit";
@@ -16,6 +16,7 @@ import AdminEquipmentCRUD from "@/components/admin/AdminEquipmentCRUD";
 import AdminDataQuality from "@/components/admin/AdminDataQuality";
 import AdminFunctions from "@/components/admin/AdminFunctions";
 import AdminSEO from "@/components/admin/AdminSEO";
+import AdminSolarSystemAudit from "@/components/admin/AdminSolarSystemAudit";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -88,6 +89,7 @@ const Admin = () => {
             <TabsTrigger value="functions" className="gap-1.5 text-xs"><Activity className="w-3.5 h-3.5" /> Functions</TabsTrigger>
             <TabsTrigger value="seo" className="gap-1.5 text-xs"><SearchIcon className="w-3.5 h-3.5" /> SEO</TabsTrigger>
             <TabsTrigger value="logs" className="gap-1.5 text-xs"><Terminal className="w-3.5 h-3.5" /> Logs</TabsTrigger>
+            <TabsTrigger value="solar" className="gap-1.5 text-xs"><Globe2 className="w-3.5 h-3.5" /> Solar System</TabsTrigger>
           </TabsList>
 
           <TabsContent value="stats"><AdminStats /></TabsContent>
@@ -101,6 +103,7 @@ const Admin = () => {
           <TabsContent value="functions"><AdminFunctions /></TabsContent>
           <TabsContent value="seo"><AdminSEO /></TabsContent>
           <TabsContent value="logs"><AdminLogs /></TabsContent>
+          <TabsContent value="solar"><AdminSolarSystemAudit /></TabsContent>
         </Tabs>
       </main>
     </div>

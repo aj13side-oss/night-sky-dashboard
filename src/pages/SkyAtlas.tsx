@@ -18,6 +18,9 @@ import { calculateAltitude } from "@/lib/visibility";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import type { SolarSystemObject } from "@/hooks/useSolarSystemObjects";
 
 import TonightTopPicks from "@/components/atlas/TonightTopPicks";
 
@@ -52,6 +55,21 @@ const SkyAtlas = () => {
 
   const { types, constellations } = useDistinctFilters();
   const { data, isLoading } = useCelestialObjects(filters, page);
+
+  // Solar system search
+  const { data: solarResults = [] } = useQuery({
+    queryKey: ["solar-atlas-search", filters.search],
+    queryFn: async () => {
+      if (!filters.search || filters.search.length < 2) return [];
+      const { data } = await (supabase as any)
+        .from("solar_system_objects")
+        .select("*")
+        .eq("is_active", true)
+        .or(`name.ilike.%${filters.search}%,search_aliases.ilike.%${filters.search}%`);
+      return (data ?? []) as SolarSystemObject[];
+    },
+    enabled: filters.search.length >= 2,
+  });
 
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
@@ -144,6 +162,36 @@ const SkyAtlas = () => {
           filterMode={filterMode}
           onFilterModeChange={setFilterMode}
         />
+
+        {/* Solar system results */}
+        {solarResults.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Solar System</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {solarResults.map(obj => (
+                <div key={obj.id} className="glass-card rounded-2xl p-4 flex items-center gap-3 border border-primary/20">
+                  {obj.image_url && (
+                    <img src={obj.image_url} alt={obj.name} className="w-16 h-16 object-cover rounded-lg bg-black shrink-0" />
+                  )}
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      {obj.color_hex && <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: obj.color_hex }} />}
+                      <h4 className="font-semibold text-sm text-foreground truncate">{obj.name}</h4>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">{obj.type}</p>
+                    {obj.max_apparent_size_arcsec && (
+                      <p className="text-[10px] text-muted-foreground font-mono">
+                        {obj.max_apparent_size_arcsec >= 60
+                          ? `${(obj.max_apparent_size_arcsec / 60).toFixed(1)}'`
+                          : `${obj.max_apparent_size_arcsec.toFixed(1)}"`}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">

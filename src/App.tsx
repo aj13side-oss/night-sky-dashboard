@@ -13,6 +13,7 @@ import EquipmentProfile from "./pages/EquipmentProfile";
 import RigBuilder from "./pages/RigBuilder";
 import LightPollutionMap from "./pages/LightPollutionMap";
 import ObjectPage from "./pages/ObjectPage";
+import SessionPlanner from "./pages/SessionPlanner";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import NotFound from "./pages/NotFound";
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/rig-builder" element={<RigBuilder />} />
               <Route path="/light-pollution" element={<LightPollutionMap />} />
               <Route path="/object/:catalogId" element={<ObjectPage />} />
+              <Route path="/planner" element={<SessionPlanner />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

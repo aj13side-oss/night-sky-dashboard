@@ -82,13 +82,26 @@
   }
 }
 
-/* Night Vision Mode - Global Red Overlay */
+/* Night Vision Mode - Astronomy-friendly red filter */
 html.night-vision {
-  filter: brightness(0.7) sepia(1) saturate(3) hue-rotate(-15deg);
+  filter: sepia(100%) saturate(300%) brightness(70%) hue-rotate(-20deg);
+}
+
+html.night-vision img {
+  filter: grayscale(80%) brightness(60%);
 }
 
 html.night-vision * {
   --primary: 0 70% 50%;
   --accent: 0 60% 45%;
   --ring: 0 70% 50%;
+}
+
+/* Hide scrollbar for quick actions */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

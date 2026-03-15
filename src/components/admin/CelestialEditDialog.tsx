@@ -217,8 +217,22 @@ export default function CelestialEditDialog({ open, onOpenChange, item }: Props)
               <h3 className="text-sm font-semibold text-foreground">Coordinates & Size</h3>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <Label className="text-xs">RA (degrees)</Label>
-                  <Input type="number" step="any" value={form.ra ?? ""} onChange={e => set("ra", e.target.value === "" ? null : Number(e.target.value))} className="mt-1" />
+                  <div className="flex items-center gap-2 mb-1">
+                    <Label className="text-xs">RA</Label>
+                    <div className="flex rounded-md border border-border overflow-hidden text-[10px]">
+                      <button
+                        type="button"
+                        className={`px-2 py-0.5 ${raFormat === "degrees" ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground"}`}
+                        onClick={() => setRaFormat("degrees")}
+                      >Deg</button>
+                      <button
+                        type="button"
+                        className={`px-2 py-0.5 ${raFormat === "hours" ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground"}`}
+                        onClick={() => setRaFormat("hours")}
+                      >Hours</button>
+                    </div>
+                  </div>
+                  <Input type="number" step="any" value={form.ra ?? ""} onChange={e => set("ra", e.target.value === "" ? null : Number(e.target.value))} placeholder={raFormat === "hours" ? "0-24" : "0-360"} />
                 </div>
                 <div>
                   <Label className="text-xs">Dec (degrees)</Label>

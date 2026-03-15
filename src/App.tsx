@@ -4,8 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import { AuthModalProvider } from "@/contexts/AuthModalContext";
-import AuthModal from "@/components/auth/AuthModal";
 import Index from "./pages/Index";
 import SkyAtlas from "./pages/SkyAtlas";
 import FovCalculator from "./pages/FovCalculator";

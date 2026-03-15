@@ -83,15 +83,6 @@ const ObjectPage = () => {
     return m > 0 ? `${h}h ${m}m` : `${h}h`;
   };
 
-  const handleFavorite = () => {
-    if (!userId) {
-      toast("Sign in to save favorites");
-      openAuthModal();
-      return;
-    }
-    if (obj) toggleFavorite.mutate(obj.id);
-  };
-
   const handleTonightList = () => {
     if (!obj) return;
     if (isInList(obj.catalog_id)) {

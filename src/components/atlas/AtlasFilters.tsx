@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, X, Trophy, Star, Moon, Camera } from "lucide-react";
+import { Search, X, Trophy, Star, Moon, Camera, Heart } from "lucide-react";
 import { useState } from "react";
 
 interface Props {

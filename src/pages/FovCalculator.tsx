@@ -6,7 +6,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import AladinLiteViewer from "@/components/atlas/AladinLiteViewer";
+import { getSkyImageUrlWithFov, type SkyImageSurvey } from "@/lib/sky-images";
 
 import TargetObjectPicker, { type TargetObject } from "@/components/fov/TargetObjectPicker";
 
@@ -30,7 +30,7 @@ const FovCalculator = () => {
   const [pixelSize, setPixelSize] = useState(4.63);
   const [barlow, setBarlow] = useState(1);
   const [selectedObject, setSelectedObject] = useState<TargetObject>(DEFAULT_TARGET);
-  const [survey, setSurvey] = useState<"photo" | "scientific">("photo");
+  const [survey, setSurvey] = useState<SkyImageSurvey>("dss2");
   const [telescopeSearch, setTelescopeSearch] = useState("");
   const [cameraSearch, setCameraSearch] = useState("");
 
@@ -153,7 +153,9 @@ const FovCalculator = () => {
     );
   }, [dbCameras, cameraSearch]);
 
-  const aladinSurvey = survey === "photo" ? "P/DSS2/color" : "P/Mellinger/color";
+  const skyImageUrl = obj?.ra != null && obj?.dec != null && fov.w > 0
+    ? getSkyImageUrlWithFov(obj.ra, obj.dec, aladinFovDeg, aladinFovDeg * (fov.h / Math.max(fov.w, 0.001)), survey)
+    : null;
 
   return (
     <div className="min-h-screen bg-background star-field">
@@ -272,34 +274,31 @@ const FovCalculator = () => {
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">FOV Preview</h3>
                 <div className="flex rounded-md border border-border overflow-hidden text-[10px]">
-                  <button onClick={() => setSurvey("photo")}
-                    className={`px-2.5 py-1 transition-colors ${survey === "photo" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
+                  <button onClick={() => setSurvey("dss2")}
+                    className={`px-2.5 py-1 transition-colors ${survey === "dss2" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
                     📷 Photo
                   </button>
-                  <button onClick={() => setSurvey("scientific")}
-                    className={`px-2.5 py-1 transition-colors border-l border-border ${survey === "scientific" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
+                  <button onClick={() => setSurvey("mellinger")}
+                    className={`px-2.5 py-1 transition-colors border-l border-border ${survey === "mellinger" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
                     🔬 Scientific
                   </button>
                 </div>
               </div>
 
               <div className="relative rounded-xl border border-border overflow-hidden" style={{ minHeight: 400 }}>
-                {obj?.ra != null && obj?.dec != null && fov.w > 0 ? (
+                {skyImageUrl ? (
                   <>
-                    <AladinLiteViewer
-                      ra={obj.ra}
-                      dec={obj.dec}
-                      fovDeg={aladinFovDeg}
-                      survey={aladinSurvey}
-                      className="h-[400px]"
+                    <img
+                      src={skyImageUrl}
+                      alt={`Sky view of ${obj?.name ?? "target"}`}
+                      className="w-full h-[400px] object-contain bg-black"
+                      loading="eager"
                     />
                     {/* Sensor FOV overlay */}
                     {aladinFovDeg > 0 && (
                       <div className="absolute inset-0 pointer-events-none z-10">
-                        {/* Crosshair lines */}
                         <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/30" />
                         <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/30" />
-                        {/* Sensor frame */}
                         <div
                           className="absolute border-2 border-primary/60 rounded"
                           style={{
@@ -309,7 +308,6 @@ const FovCalculator = () => {
                             top: `${50 - Math.min((fov.h / aladinFovDeg) * 50, 50)}%`,
                           }}
                         />
-                        {/* Object circle */}
                         {objFractionW > 0 && (
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"
                             style={{ width: `${Math.min(objFractionW * (fov.w / aladinFovDeg) * 100, 200)}%`, paddingBottom: `${Math.min(objFractionH * (fov.h / aladinFovDeg) * 100, 200)}%` }} />
@@ -319,7 +317,7 @@ const FovCalculator = () => {
                   </>
                 ) : (
                   <div className="w-full h-[400px] bg-muted/30 flex items-center justify-center text-muted-foreground text-sm">
-                    Select an object to preview
+                    Select equipment and a target to preview framing
                   </div>
                 )}
                 <div className="absolute bottom-2 left-2 text-[10px] font-mono text-white/80 drop-shadow-md bg-black/40 px-1.5 py-0.5 rounded z-20">

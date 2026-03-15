@@ -176,6 +176,17 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
                 {obj.common_name && (
                   <p className="text-primary text-sm">{obj.common_name}</p>
                 )}
+                {/* Favorite button */}
+                <button
+                  onClick={() => {
+                    if (!userId) { toast("Sign in to save favorites"); openAuthModal(); return; }
+                    toggleFavorite.mutate(obj.id);
+                  }}
+                  className="mt-1 flex items-center gap-1 text-xs text-muted-foreground hover:text-red-400 transition-colors"
+                >
+                  <Heart className={`w-4 h-4 ${isFavorite(obj.id) ? "fill-red-400 text-red-400" : ""}`} />
+                  {isFavorite(obj.id) ? "Saved" : "Save to favorites"}
+                </button>
               </div>
 
               <div className="grid grid-cols-2 gap-2">

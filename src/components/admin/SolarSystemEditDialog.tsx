@@ -192,6 +192,20 @@ export default function SolarSystemEditDialog({ open, onOpenChange, item }: Prop
               {form.image_url && (
                 <img src={form.image_url} alt={form.name} className="w-40 h-40 object-cover rounded-lg border border-border" />
               )}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">Credit</Label>
+                  <Input value={form.image_credit ?? ""} onChange={e => set("image_credit", e.target.value)} className="bg-secondary/50 text-xs" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">License</Label>
+                  <Input value={form.image_license ?? ""} onChange={e => set("image_license", e.target.value)} className="bg-secondary/50 text-xs" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Source URL</Label>
+                  <Input value={form.image_source_url ?? ""} onChange={e => set("image_source_url", e.target.value)} className="bg-secondary/50 text-xs font-mono" />
+                </div>
+              </div>
             </section>
           </div>
         </ScrollArea>

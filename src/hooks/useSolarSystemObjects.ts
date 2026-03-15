@@ -26,6 +26,9 @@ export interface SolarSystemObject {
   color_hex: string | null;
   sort_order: number | null;
   is_active: boolean;
+  image_credit: string | null;
+  image_license: string | null;
+  image_source_url: string | null;
 }
 
 export function useSolarSystemObjects() {

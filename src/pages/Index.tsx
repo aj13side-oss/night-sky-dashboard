@@ -66,8 +66,7 @@ const DashboardContent = () => {
         <TonightList />
 
         <EphemeridesCard />
-
-        
+import TonightList from "@/components/dashboard/TonightList";
 
         {/* SEO Content Section */}
         <section className="space-y-6 pt-8 border-t border-border/20">

@@ -3,8 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3, ImageIcon, Download, Trash2, Eye } from "lucide-react";
+import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3, ImageIcon, Download, Trash2, Eye, Plus, Pencil } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,6 +14,7 @@ import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus
 import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
 import AuditBatchBar from "./AuditBatchBar";
 import { formatCatalogId } from "@/lib/format-catalog";
+import CelestialEditDialog from "./CelestialEditDialog";
 
 /** Build Wikimedia thumbnail URL directly from a full-res commons URL */
 function buildWikimediaThumbUrl(url: string, width: number): string {

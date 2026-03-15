@@ -5,15 +5,12 @@ import { useObjectImage } from "@/hooks/useObjectImage";
 import { computeDynamicScore, getSeasonEmoji, getSeasonLabel } from "@/lib/dynamic-score";
 import { getSearchContext } from "@/lib/search-context";
 import { motion } from "framer-motion";
-import { Ruler, Eye, Crown, Award, Sun, Mountain, Link, Lightbulb, Crosshair, BookOpen, Heart, ClipboardList } from "lucide-react";
+import { Ruler, Eye, Crown, Award, Sun, Mountain, Link, Lightbulb, Crosshair, BookOpen, ClipboardList } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatCatalogId } from "@/lib/format-catalog";
 import { Button } from "@/components/ui/button";
-import { useFavorites } from "@/hooks/useFavorites";
 import { useTonightList } from "@/hooks/useTonightList";
-import { useCurrentUser } from "@/hooks/useUserRigs";
-import { useAuthModal } from "@/contexts/AuthModalContext";
 import { toast } from "sonner";
 
 interface Props {
@@ -40,10 +37,7 @@ const typeEmoji: Record<string, string> = {
 
 const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) => {
   const navigate = useNavigate();
-  const { userId } = useCurrentUser();
-  const { isFavorite, toggleFavorite } = useFavorites();
   const { isInList, addObject, removeObject } = useTonightList();
-  const { openAuthModal } = useAuthModal();
   const alt =
     obj.ra != null && obj.dec != null
       ? calculateAltitude(obj.ra, obj.dec, lat, lng)
@@ -139,18 +133,6 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
               <Award className="w-3 h-3" /> Prime
             </div>
           )}
-
-          {/* Favorite heart */}
-          <button
-            className="absolute top-2 right-2 p-1 rounded-full bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-colors z-10"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!userId) { toast("Sign in to save favorites"); openAuthModal(); return; }
-              toggleFavorite.mutate(obj.id);
-            }}
-          >
-            <Heart className={`w-3.5 h-3.5 ${isFavorite(obj.id) ? "fill-red-400 text-red-400" : "text-white/70"}`} />
-          </button>
 
           {season && (
             <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-background/70 backdrop-blur-sm text-[10px] text-foreground font-medium">

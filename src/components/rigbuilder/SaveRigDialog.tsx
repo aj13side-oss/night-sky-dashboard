@@ -7,7 +7,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Save } from "lucide-react";
 import { useSaveRig, useCurrentUser } from "@/hooks/useUserRigs";
-import { useAuthModal } from "@/contexts/AuthModalContext";
 import { toast } from "sonner";
 
 interface SaveRigDialogProps {
@@ -30,7 +29,6 @@ export function SaveRigDialog({
   const [notes, setNotes] = useState("");
   const [isCurrent, setIsCurrent] = useState(false);
   const { userId } = useCurrentUser();
-  const { openAuthModal } = useAuthModal();
   const saveRig = useSaveRig();
 
   const handleSave = () => {
@@ -65,14 +63,13 @@ export function SaveRigDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Save Setup</DialogTitle>
+            <DialogTitle>Sign In Required</DialogTitle>
             <DialogDescription>
-              Sign in to save your equipment configurations.
+              Saving equipment configurations is not available. Only admins can sign in.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
-            <Button onClick={() => { onOpenChange(false); openAuthModal(); }}>Sign In</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

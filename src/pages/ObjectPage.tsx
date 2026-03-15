@@ -6,10 +6,8 @@ import { useObjectImage } from "@/hooks/useObjectImage";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { formatCatalogId } from "@/lib/format-catalog";
-import { useFavorites } from "@/hooks/useFavorites";
 import { useTonightList } from "@/hooks/useTonightList";
 import { useCurrentUser } from "@/hooks/useUserRigs";
-import { useAuthModal } from "@/contexts/AuthModalContext";
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
@@ -22,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Star, Eye, Ruler, Compass, MapPin, Camera, Clock, HelpCircle,
-  Crosshair, Scale, ArrowLeft, Heart, ClipboardList, Loader2,
+  Crosshair, Scale, ArrowLeft, ClipboardList, Loader2,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
@@ -32,9 +30,7 @@ const ObjectPage = () => {
   const navigate = useNavigate();
   const decodedId = decodeURIComponent(catalogId ?? "");
   const { userId } = useCurrentUser();
-  const { isFavorite, toggleFavorite } = useFavorites();
   const { isInList, addObject, removeObject } = useTonightList();
-  const { openAuthModal } = useAuthModal();
   const [showExposureInfo, setShowExposureInfo] = useState(false);
 
   // Geolocation
@@ -87,15 +83,6 @@ const ObjectPage = () => {
     return m > 0 ? `${h}h ${m}m` : `${h}h`;
   };
 
-  const handleFavorite = () => {
-    if (!userId) {
-      toast("Sign in to save favorites");
-      openAuthModal();
-      return;
-    }
-    if (obj) toggleFavorite.mutate(obj.id);
-  };
-
   const handleTonightList = () => {
     if (!obj) return;
     if (isInList(obj.catalog_id)) {
@@ -134,7 +121,6 @@ const ObjectPage = () => {
     );
   }
 
-  const isFav = isFavorite(obj.id);
   const inList = isInList(obj.catalog_id);
 
   return (
@@ -165,10 +151,6 @@ const ObjectPage = () => {
             {obj.common_name && <p className="text-primary text-lg">{obj.common_name}</p>}
           </div>
           <div className="flex gap-2 mt-8">
-            <Button variant="outline" size="sm" onClick={handleFavorite} className={`gap-1 ${isFav ? "text-red-400 border-red-400/30" : ""}`}>
-              <Heart className={`w-4 h-4 ${isFav ? "fill-red-400" : ""}`} />
-              {isFav ? "Saved" : "Save"}
-            </Button>
             <Button variant="outline" size="sm" onClick={handleTonightList} className={`gap-1 ${inList ? "text-primary border-primary/30" : ""}`}>
               <ClipboardList className="w-4 h-4" />
               {inList ? "Listed" : "Tonight"}

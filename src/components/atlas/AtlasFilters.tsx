@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, X, Trophy, Star, Moon, Camera, Heart } from "lucide-react";
+import { Search, X, Trophy, Star, Moon, Camera } from "lucide-react";
 import { useState } from "react";
 
 interface Props {
@@ -17,12 +17,9 @@ interface Props {
   onToggleVisibleTonight?: () => void;
   filterMode?: string;
   onFilterModeChange?: (mode: string) => void;
-  favoritesEnabled?: boolean;
-  onToggleFavorites?: () => void;
-  isLoggedIn?: boolean;
 }
 
-const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, favoritesEnabled, onToggleFavorites, isLoggedIn }: Props) => {
+const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange }: Props) => {
   const isTop50 = filters.limitResults === 50;
 
   const toggleType = (t: string) => {
@@ -101,19 +98,6 @@ const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, vi
               {filterMode === "narrowband" && <X className="w-3 h-3 ml-1" />}
             </Button>
           </>
-        )}
-
-        {isLoggedIn && onToggleFavorites && (
-          <Button
-            variant={favoritesEnabled ? "default" : "outline"}
-            size="sm"
-            onClick={onToggleFavorites}
-            className={`gap-1.5 text-xs ${favoritesEnabled ? "bg-primary text-primary-foreground" : ""}`}
-          >
-            <Heart className="w-3.5 h-3.5" />
-            ♥ Favorites
-            {favoritesEnabled && <X className="w-3 h-3 ml-1" />}
-          </Button>
         )}
       </div>
 

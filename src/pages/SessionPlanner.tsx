@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { ObservationProvider, useObservation } from "@/contexts/ObservationContext";
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useObjectImage } from "@/hooks/useObjectImage";
-import { useFavorites } from "@/hooks/useFavorites";
 import { useCurrentUser } from "@/hooks/useUserRigs";
 import { calculateAltitude } from "@/lib/visibility";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
@@ -20,7 +19,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
   ClipboardList, Trash2, X, GripVertical, Search, Sparkles,
-  Heart, Moon, Sun, Copy, ArrowUp, ArrowDown, Check, Loader2,
+  Moon, Sun, Copy, ArrowUp, ArrowDown, Check, Loader2, Star,
 } from "lucide-react";
 
 const STORAGE_KEY = "cosmicframe_session_plan";
@@ -57,7 +56,6 @@ const PlannerContent = () => {
   const { location, date } = useObservation();
   const navigate = useNavigate();
   const { userId } = useCurrentUser();
-  const { favorites } = useFavorites();
   const [plan, setPlan] = useState<SessionPlan>(loadPlan);
   const [search, setSearch] = useState("");
 
@@ -162,9 +160,7 @@ const PlannerContent = () => {
   };
 
   const addFromFavorites = () => {
-    if (!favorites?.size) { toast("No favorites saved"); return; }
-    // We'd need to fetch favorite object IDs → catalog_ids. For now just toast.
-    toast("Coming soon — add from favorites");
+    toast("Favorites have been removed from the app");
   };
 
   const copyPlan = () => {
@@ -296,7 +292,7 @@ const PlannerContent = () => {
               </Button>
               {userId && (
                 <Button variant="outline" size="sm" className="gap-2 text-xs w-full" onClick={addFromFavorites}>
-                  <Heart className="w-3.5 h-3.5" /> Add from Favorites
+                  <Star className="w-3.5 h-3.5" /> Add from Favorites
                 </Button>
               )}
             </div>

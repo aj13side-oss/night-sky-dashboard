@@ -10,11 +10,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, Globe, Info, ChevronDown, ChevronUp, Telescope, Link as LinkIcon, Paperclip, Crosshair, Scale, Heart } from "lucide-react";
+import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, Globe, Info, ChevronDown, ChevronUp, Telescope, Link as LinkIcon, Paperclip, Crosshair, Scale } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
-import { useFavorites } from "@/hooks/useFavorites";
-import { useCurrentUser } from "@/hooks/useUserRigs";
-import { useAuthModal } from "@/contexts/AuthModalContext";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -40,9 +37,6 @@ interface Props {
 
 const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0 }: Props) => {
   const navigate = useNavigate();
-  const { userId } = useCurrentUser();
-  const { isFavorite, toggleFavorite } = useFavorites();
-  const { openAuthModal } = useAuthModal();
   const [showExposureInfo, setShowExposureInfo] = useState(false);
   const [showCredits, setShowCredits] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
@@ -176,17 +170,6 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
                 {obj.common_name && (
                   <p className="text-primary text-sm">{obj.common_name}</p>
                 )}
-                {/* Favorite button */}
-                <button
-                  onClick={() => {
-                    if (!userId) { toast("Sign in to save favorites"); openAuthModal(); return; }
-                    toggleFavorite.mutate(obj.id);
-                  }}
-                  className="mt-1 flex items-center gap-1 text-xs text-muted-foreground hover:text-red-400 transition-colors"
-                >
-                  <Heart className={`w-4 h-4 ${isFavorite(obj.id) ? "fill-red-400 text-red-400" : ""}`} />
-                  {isFavorite(obj.id) ? "Saved" : "Save to favorites"}
-                </button>
               </div>
 
               <div className="grid grid-cols-2 gap-2">

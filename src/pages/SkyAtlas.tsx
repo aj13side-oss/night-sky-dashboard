@@ -16,7 +16,7 @@ import { calculateAltitude } from "@/lib/visibility";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";
-import ToolSuggestions from "@/components/ToolSuggestions";
+
 import TonightTopPicks from "@/components/atlas/TonightTopPicks";
 
 const DEFAULT_EXCLUDE_TYPES = ["Star", "Double Star"];
@@ -142,7 +142,7 @@ const SkyAtlas = () => {
         />
 
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="glass-card rounded-2xl p-4 h-40 animate-pulse" />
             ))}
@@ -153,7 +153,7 @@ const SkyAtlas = () => {
             <p>No objects match your filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {filteredData.map((obj, i) => (
               <ObjectCard
                 key={obj.id}
@@ -181,7 +181,7 @@ const SkyAtlas = () => {
             </Button>
           </div>
         )}
-        <ToolSuggestions />
+        
       </main>
 
       <Footer />

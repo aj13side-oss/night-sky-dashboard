@@ -95,7 +95,7 @@ const DeepSkyTonight = () => {
         ))}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 max-h-[500px] overflow-y-auto">
         {filtered.map((item, i) => (
           <DeepSkyRow
             key={item.obj.id}
@@ -156,7 +156,7 @@ const DeepSkyRow = ({
       onClick={onClick}
       className="flex items-center gap-3 p-2.5 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
     >
-      <div className="w-10 h-10 rounded-lg bg-muted/40 border border-border/30 overflow-hidden shrink-0">
+      <div className="w-10 h-10 rounded-lg bg-muted/40 border border-border/30 overflow-hidden shrink-0 flex-none">
         {thumbUrl && !imgError ? (
           <img
             src={thumbUrl}

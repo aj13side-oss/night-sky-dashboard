@@ -114,6 +114,12 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
             </div>
           )}
 
+          {!obj.forced_image_url && imgLoaded && !imgError && (
+            <span className="absolute bottom-1 right-1 text-[8px] font-mono text-white/50 bg-black/40 px-1 rounded">
+              DSS
+            </span>
+          )}
+
           {isLegendary && (
             <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/90 text-yellow-950 text-[10px] font-bold uppercase tracking-wider shadow-lg">
               <Crown className="w-3 h-3" /> Legendary

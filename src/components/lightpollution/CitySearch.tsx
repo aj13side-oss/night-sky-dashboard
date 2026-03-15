@@ -30,23 +30,36 @@ const CitySearch = ({ onSelectCity }: Props) => {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const [noResults, setNoResults] = useState(false);
+
   const handleSearch = async () => {
     if (!query.trim()) return;
     setIsLoading(true);
+    setNoResults(false);
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`,
-        { headers: { "Accept-Language": "en,fr" } }
+        { headers: { "Accept-Language": "en,fr", "User-Agent": "CosmicFrame/1.0 (cosmicframe.app)" } }
       );
       const data: SearchResult[] = await res.json();
       setResults(data);
       setShowDropdown(data.length > 0);
+      setNoResults(data.length === 0);
     } catch {
       setResults([]);
+      setNoResults(true);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Debounced search on input change
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (query.trim().length >= 3) handleSearch();
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [query]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleSearch();
@@ -85,6 +98,9 @@ const CitySearch = ({ onSelectCity }: Props) => {
             </button>
           ))}
         </div>
+      )}
+      {noResults && !isLoading && query.trim() && (
+        <p className="text-xs text-muted-foreground mt-1.5">No results found. Try a city name or country.</p>
       )}
     </div>
   );

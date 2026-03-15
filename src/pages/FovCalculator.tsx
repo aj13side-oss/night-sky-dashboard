@@ -7,9 +7,9 @@ import { useSearchParams } from "react-router-dom";
 import { getSkyImageUrlWithFov, type SkyImageSurvey } from "@/lib/sky-images";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import ToolSuggestions from "@/components/ToolSuggestions";
+
 import TargetObjectPicker, { type TargetObject } from "@/components/fov/TargetObjectPicker";
-import ExposureCalculator from "@/components/fov/ExposureCalculator";
+
 import { useCameras, useTelescopes } from "@/hooks/useEquipmentCatalog";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -326,11 +326,6 @@ const FovCalculator = () => {
           </motion.div>
         </div>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <ExposureCalculator target={selectedObject} />
-        </motion.div>
-
-        <ToolSuggestions />
       </main>
 
       <Footer />

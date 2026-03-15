@@ -269,7 +269,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
             variant="ghost"
             size="sm"
             className="flex-1 text-[10px] h-7 gap-1 text-muted-foreground hover:text-foreground"
-            onClick={(e) => { e.stopPropagation(); onClick(); }}
+            onClick={(e) => { e.stopPropagation(); navigate(`/object/${encodeURIComponent(obj.catalog_id)}`); }}
           >
             <BookOpen className="w-3 h-3" /> More
           </Button>
@@ -283,6 +283,23 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
             }}
           >
             <Crosshair className="w-3 h-3" /> Frame
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-[10px] h-7 gap-1 text-muted-foreground hover:text-primary px-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (isInList(obj.catalog_id)) {
+                removeObject(obj.catalog_id);
+                toast("Removed from tonight's list");
+              } else {
+                addObject(obj.catalog_id);
+                toast.success("Added to tonight's list!");
+              }
+            }}
+          >
+            <ClipboardList className={`w-3 h-3 ${isInList(obj.catalog_id) ? "text-primary" : ""}`} />
           </Button>
         </div>
       </div>

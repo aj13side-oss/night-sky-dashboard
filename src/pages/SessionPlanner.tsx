@@ -384,8 +384,8 @@ const QueueItem = ({
 
         <div className="flex gap-3 text-[10px] text-muted-foreground font-mono">
           {alt != null && <span>{alt.toFixed(0)}° alt</span>}
-          {rs?.bestWindow && (
-            <span>Best: {formatTimeShort(rs.bestWindow.start)}–{formatTimeShort(rs.bestWindow.end)}</span>
+          {rs?.bestWindowStart && rs?.bestWindowEnd && (
+            <span>Best: {formatTimeShort(rs.bestWindowStart)}–{formatTimeShort(rs.bestWindowEnd)}</span>
           )}
           {obj?.recommended_filter && <span>Filter: {obj.recommended_filter}</span>}
         </div>

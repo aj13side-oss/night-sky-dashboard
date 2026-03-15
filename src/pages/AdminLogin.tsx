@@ -68,15 +68,9 @@ export default function AdminLogin() {
             />
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              {mode === "login" ? "Log in" : "Create account"}
+              Log in
             </Button>
           </form>
-          <button
-            onClick={() => setMode(mode === "login" ? "signup" : "login")}
-            className="mt-4 text-xs text-muted-foreground hover:text-foreground transition-colors w-full text-center"
-          >
-            {mode === "login" ? "First time? Create account" : "Already have an account? Log in"}
-          </button>
         </CardContent>
       </Card>
     </div>

@@ -30,7 +30,7 @@ const FovCalculator = () => {
   const [pixelSize, setPixelSize] = useState(4.63);
   const [barlow, setBarlow] = useState(1);
   const [selectedObject, setSelectedObject] = useState<TargetObject>(DEFAULT_TARGET);
-  const [survey, setSurvey] = useState<"photo" | "scientific">("photo");
+  const [survey, setSurvey] = useState<SkyImageSurvey>("dss2");
   const [telescopeSearch, setTelescopeSearch] = useState("");
   const [cameraSearch, setCameraSearch] = useState("");
 

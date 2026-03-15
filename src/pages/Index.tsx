@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { ObservationProvider, useObservation } from "@/contexts/ObservationContext";
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
@@ -7,7 +6,6 @@ import ObservationToolbar from "@/components/ObservationToolbar";
 import MoonPhaseCard from "@/components/MoonPhaseCard";
 import SunTimesCard from "@/components/SunTimesCard";
 import HourlyWeatherCard from "@/components/HourlyWeatherCard";
-import EphemeridesCard from "@/components/EphemeridesCard";
 import PlanetsTonight from "@/components/dashboard/PlanetsTonight";
 import DeepSkyTonight from "@/components/dashboard/DeepSkyTonight";
 import SpecialEvents from "@/components/dashboard/SpecialEvents";
@@ -68,9 +66,6 @@ const DashboardContent = () => {
         </div>
 
         <TonightList />
-
-        <EphemeridesCard />
-import TonightList from "@/components/dashboard/TonightList";
 
         {/* SEO Content Section */}
         <section className="space-y-6 pt-8 border-t border-border/20">

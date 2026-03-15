@@ -55,6 +55,7 @@ export default function CelestialEditDialog({ open, onOpenChange, item }: Props)
   const [form, setForm] = useState<Record<string, any>>({});
   const [saving, setSaving] = useState(false);
   const [selectedMonths, setSelectedMonths] = useState<string[]>([]);
+  const [raFormat, setRaFormat] = useState<"degrees" | "hours">("degrees");
   const isNew = !item;
 
   useEffect(() => {
@@ -89,6 +90,24 @@ export default function CelestialEditDialog({ open, onOpenChange, item }: Props)
     }
     setSaving(true);
 
+    const raValue = form.ra != null ? Number(form.ra) : null;
+    const decValue = form.dec != null ? Number(form.dec) : null;
+
+    // Compute ra_deg, ra_hours, dec_deg, dec_hours based on RA format selection
+    let ra_deg: number | null = null;
+    let ra_hours: number | null = null;
+    if (raValue != null) {
+      if (raFormat === "hours") {
+        ra_hours = raValue;
+        ra_deg = raValue * 15;
+      } else {
+        ra_deg = raValue;
+        ra_hours = raValue / 15;
+      }
+    }
+    const dec_deg = decValue;
+    const dec_hours = decValue != null ? decValue / 15 : null;
+
     const payload: Record<string, any> = {
       catalog_id: form.catalog_id,
       common_name: form.common_name || null,
@@ -96,8 +115,12 @@ export default function CelestialEditDialog({ open, onOpenChange, item }: Props)
       constellation: form.constellation || null,
       scientific_notation: form.scientific_notation || null,
       search_aliases: form.search_aliases || null,
-      ra: form.ra != null ? Number(form.ra) : null,
-      dec: form.dec != null ? Number(form.dec) : null,
+      ra: raValue,
+      dec: decValue,
+      ra_deg,
+      ra_hours,
+      dec_deg,
+      dec_hours,
       size_max: form.size_max != null ? Number(form.size_max) : null,
       magnitude: form.magnitude != null ? Number(form.magnitude) : null,
       surf_brightness: form.surf_brightness != null ? Number(form.surf_brightness) : null,
@@ -194,8 +217,22 @@ export default function CelestialEditDialog({ open, onOpenChange, item }: Props)
               <h3 className="text-sm font-semibold text-foreground">Coordinates & Size</h3>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <Label className="text-xs">RA (degrees)</Label>
-                  <Input type="number" step="any" value={form.ra ?? ""} onChange={e => set("ra", e.target.value === "" ? null : Number(e.target.value))} className="mt-1" />
+                  <div className="flex items-center gap-2 mb-1">
+                    <Label className="text-xs">RA</Label>
+                    <div className="flex rounded-md border border-border overflow-hidden text-[10px]">
+                      <button
+                        type="button"
+                        className={`px-2 py-0.5 ${raFormat === "degrees" ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground"}`}
+                        onClick={() => setRaFormat("degrees")}
+                      >Deg</button>
+                      <button
+                        type="button"
+                        className={`px-2 py-0.5 ${raFormat === "hours" ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground"}`}
+                        onClick={() => setRaFormat("hours")}
+                      >Hours</button>
+                    </div>
+                  </div>
+                  <Input type="number" step="any" value={form.ra ?? ""} onChange={e => set("ra", e.target.value === "" ? null : Number(e.target.value))} placeholder={raFormat === "hours" ? "0-24" : "0-360"} />
                 </div>
                 <div>
                   <Label className="text-xs">Dec (degrees)</Label>

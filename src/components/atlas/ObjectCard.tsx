@@ -39,21 +39,21 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
   const navigate = useNavigate();
   const { isInList, addObject, removeObject } = useTonightList();
   const alt =
-    obj.ra != null && obj.dec != null
-      ? calculateAltitude(obj.ra, obj.dec, lat, lng)
+    obj.ra_deg != null && obj.dec_deg != null
+      ? calculateAltitude(obj.ra_deg, obj.dec_deg, lat, lng)
       : null;
   const vis = alt != null ? getVisibilityLabel(alt) : null;
 
   const rs = useMemo(() => {
-    if (obj.ra == null || obj.dec == null) return null;
-    return getObjectRiseSetTransit(obj.ra, obj.dec, lat, lng, new Date());
-  }, [obj.ra, obj.dec, lat, lng]);
+    if (obj.ra_deg == null || obj.dec_deg == null) return null;
+    return getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, lat, lng, new Date());
+  }, [obj.ra_deg, obj.dec_deg, lat, lng]);
 
   const { data: wikiImage, isLoading: wikiLoading } = useObjectImage(
     obj.catalog_id,
     obj.common_name,
-    obj.ra,
-    obj.dec,
+    obj.ra_deg,
+    obj.dec_deg,
     obj.size_max,
     obj.image_search_query,
     obj.forced_image_url,
@@ -70,7 +70,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
     ? searchContext.image
     : useFallback && wikiImage?.fallbackUrl ? wikiImage.fallbackUrl : thumbUrl;
 
-  const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra, obj.dec, lat, lng);
+  const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra_deg, obj.dec_deg, lat, lng);
   const isLegendary = score.total >= 100;
   const isPrime = score.total >= 85 && score.total < 100;
   const season = getSeasonLabel(obj.best_months);

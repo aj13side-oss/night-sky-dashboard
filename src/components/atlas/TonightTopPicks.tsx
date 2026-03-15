@@ -54,8 +54,8 @@ const TonightTopPicks = ({ lat, lng, onSelect }: Props) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {topPicks.map(({ obj, score }, i) => {
-          const thumbUrl = getSkyImageUrl(obj.ra, obj.dec, obj.size_max, 400, 200);
-          const alt = obj.ra != null && obj.dec != null ? calculateAltitude(obj.ra, obj.dec, lat, lng) : null;
+          const thumbUrl = getSkyImageUrl(obj.ra_deg, obj.dec_deg, obj.size_max, 400, 200);
+          const alt = obj.ra_deg != null && obj.dec_deg != null ? calculateAltitude(obj.ra_deg, obj.dec_deg, lat, lng) : null;
           const vis = alt != null ? getVisibilityLabel(alt) : null;
           const season = getSeasonLabel(obj.best_months);
 

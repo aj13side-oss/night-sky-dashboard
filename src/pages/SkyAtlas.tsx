@@ -73,8 +73,8 @@ const SkyAtlas = () => {
 
     if (visibleTonight) {
       results = results.filter((obj) => {
-        if (obj.ra == null || obj.dec == null) return false;
-        const alt = calculateAltitude(obj.ra, obj.dec, userPos.lat, userPos.lng);
+        if (obj.ra_deg == null || obj.dec_deg == null) return false;
+        const alt = calculateAltitude(obj.ra_deg, obj.dec_deg, userPos.lat, userPos.lng);
         return alt > 0;
       });
     }

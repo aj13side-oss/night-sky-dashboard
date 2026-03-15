@@ -6,6 +6,7 @@ import { useObjectImage } from "@/hooks/useObjectImage";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { formatCatalogId } from "@/lib/format-catalog";
+import { formatRA, formatDec } from "@/lib/format-coords";
 import { useTonightList } from "@/hooks/useTonightList";
 import { useCurrentUser } from "@/hooks/useUserRigs";
 import AppNav from "@/components/AppNav";
@@ -57,16 +58,16 @@ const ObjectPage = () => {
   });
 
   const { data: wikiImage } = useObjectImage(
-    obj?.catalog_id, obj?.common_name, obj?.ra, obj?.dec,
+    obj?.catalog_id, obj?.common_name, obj?.ra_deg, obj?.dec_deg,
     obj?.size_max, obj?.image_search_query, obj?.forced_image_url, obj?.obj_type, 1500
   );
 
-  const alt = obj?.ra != null && obj?.dec != null ? calculateAltitude(obj.ra, obj.dec, pos.lat, pos.lng) : null;
+  const alt = obj?.ra_deg != null && obj?.dec_deg != null ? calculateAltitude(obj.ra_deg, obj.dec_deg, pos.lat, pos.lng) : null;
   const vis = alt != null ? getVisibilityLabel(alt) : null;
   const rs = useMemo(() => {
-    if (!obj?.ra || !obj?.dec) return null;
-    return getObjectRiseSetTransit(obj.ra, obj.dec, pos.lat, pos.lng, new Date());
-  }, [obj?.ra, obj?.dec, pos.lat, pos.lng]);
+    if (!obj?.ra_deg || !obj?.dec_deg) return null;
+    return getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, pos.lat, pos.lng, new Date());
+  }, [obj?.ra_deg, obj?.dec_deg, pos.lat, pos.lng]);
 
   const aladinFov = useMemo(() => {
     if (!obj?.size_max || obj.size_max <= 0) return 1.0;
@@ -167,9 +168,9 @@ const ObjectPage = () => {
                 <img src={imageUrl} alt={obj.common_name ?? obj.catalog_id} className="w-full max-h-80 object-contain" />
               </div>
             )}
-            {obj.ra != null && obj.dec != null && (
+            {obj.ra_deg != null && obj.dec_deg != null && (
               <div className="rounded-xl overflow-hidden border border-border/30">
-                <AladinLiteViewer ra={obj.ra} dec={obj.dec} fovDeg={aladinFov} />
+                <AladinLiteViewer ra={obj.ra_deg} dec={obj.dec_deg} fovDeg={aladinFov} />
               </div>
             )}
           </div>
@@ -187,8 +188,8 @@ const ObjectPage = () => {
 
             {/* Coordinates */}
             <div className="flex flex-wrap gap-1.5">
-              {obj.ra != null && <Badge variant="secondary" className="font-mono text-[10px]">RA {obj.ra.toFixed(4)}°</Badge>}
-              {obj.dec != null && <Badge variant="secondary" className="font-mono text-[10px]">Dec {obj.dec.toFixed(4)}°</Badge>}
+              {obj.ra_hours != null && <Badge variant="secondary" className="font-mono text-[10px]">RA {formatRA(obj.ra_hours)}</Badge>}
+              {obj.dec_deg != null && <Badge variant="secondary" className="font-mono text-[10px]">Dec {formatDec(obj.dec_deg)}</Badge>}
             </div>
 
             {/* Visibility */}
@@ -244,14 +245,14 @@ const ObjectPage = () => {
         </div>
 
         {/* Night Planner */}
-        <NightPlanner targetRa={obj.ra} targetDec={obj.dec} />
+        <NightPlanner targetRa={obj.ra_deg} targetDec={obj.dec_deg} />
 
         {/* Setup Assistant */}
         <SetupAssistant obj={obj} userFocalLength={0} />
 
         {/* Altitude Chart */}
-        {obj.ra != null && obj.dec != null && (
-          <AltitudeChart ra={obj.ra} dec={obj.dec} lat={pos.lat} lng={pos.lng} />
+        {obj.ra_deg != null && obj.dec_deg != null && (
+          <AltitudeChart ra={obj.ra_deg} dec={obj.dec_deg} lat={pos.lat} lng={pos.lng} />
         )}
 
         {/* Action buttons */}

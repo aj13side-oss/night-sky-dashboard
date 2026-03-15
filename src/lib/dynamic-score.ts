@@ -37,6 +37,11 @@ export interface DynamicScore {
   isHighAltitude: boolean;
 }
 
+/**
+ * Compute dynamic score for a celestial object.
+ * @param ra - RA in degrees (0-360). Callers must pass ra_deg from CelestialObject.
+ * @param dec - Dec in degrees. Callers must pass dec_deg from CelestialObject.
+ */
 export function computeDynamicScore(
   photoScore: number | null,
   bestMonths: string | null,

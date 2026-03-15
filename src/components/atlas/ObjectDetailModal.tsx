@@ -3,6 +3,7 @@ import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
 import { calculateFov } from "@/lib/sky-images";
+import { formatRA, formatDec } from "@/lib/format-coords";
 import {
   Dialog,
   DialogContent,
@@ -45,8 +46,8 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
   const { data: wikiImage, isLoading: imgLoading } = useObjectImage(
     obj?.catalog_id,
     obj?.common_name,
-    obj?.ra,
-    obj?.dec,
+    obj?.ra_deg,
+    obj?.dec_deg,
     obj?.size_max,
     obj?.image_search_query,
     obj?.forced_image_url,
@@ -103,36 +104,36 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
   useEffect(() => {
     if (!imgLoading) {
       // Low photo_score objects default to Aladin for better context
-      if ((obj?.photo_score ?? 0) <= 3 && obj?.ra != null) {
+      if ((obj?.photo_score ?? 0) <= 3 && obj?.ra_deg != null) {
         setActiveTab("aladin");
       } else if (wikiImage?.url) {
         setActiveTab("photo");
-      } else if (obj?.ra != null) {
+      } else if (obj?.ra_deg != null) {
         setActiveTab("aladin");
       }
     }
-  }, [imgLoading, wikiImage?.url, obj?.ra, obj?.photo_score]);
+  }, [imgLoading, wikiImage?.url, obj?.ra_deg, obj?.photo_score]);
 
   // Stellarium URL
   const stellariumUrl = useMemo(() => {
-    if (!obj || obj.ra == null || obj.dec == null) return null;
+    if (!obj || obj.ra_deg == null || obj.dec_deg == null) return null;
     const id = obj.catalog_id.replace(/\s+/g, "");
-    return `https://stellarium-web.org/skysource/${id}?ra=${obj.ra}&dec=${obj.dec}`;
+    return `https://stellarium-web.org/skysource/${id}?ra=${obj.ra_deg}&dec=${obj.dec_deg}`;
   }, [obj]);
 
   // ESASky URL (new sky.esa.int)
   const esaSkyUrl = useMemo(() => {
-    if (!obj || obj.ra == null || obj.dec == null) return null;
+    if (!obj || obj.ra_deg == null || obj.dec_deg == null) return null;
     const fov = calculateFov(obj.size_max);
-    return `https://sky.esa.int/?target=${obj.ra}%20${obj.dec}&hips=DSS2%20color&fov=${fov}&reticle=true`;
+    return `https://sky.esa.int/?target=${obj.ra_deg}%20${obj.dec_deg}&hips=DSS2%20color&fov=${fov}&reticle=true`;
   }, [obj]);
 
 
   if (!obj) return null;
 
   const alt =
-    obj.ra != null && obj.dec != null
-      ? calculateAltitude(obj.ra, obj.dec, lat, lng)
+    obj.ra_deg != null && obj.dec_deg != null
+      ? calculateAltitude(obj.ra_deg, obj.dec_deg, lat, lng)
       : null;
   const vis = alt != null ? getVisibilityLabel(alt) : null;
 
@@ -183,11 +184,11 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
 
               {/* Coordinates */}
               <div className="flex flex-wrap gap-1.5">
-                {obj.ra != null && (
-                  <Badge variant="secondary" className="font-mono text-[10px]">RA {obj.ra.toFixed(4)}°</Badge>
+                {obj.ra_hours != null && (
+                  <Badge variant="secondary" className="font-mono text-[10px]">RA {formatRA(obj.ra_hours)}</Badge>
                 )}
-                {obj.dec != null && (
-                  <Badge variant="secondary" className="font-mono text-[10px]">Dec {obj.dec.toFixed(4)}°</Badge>
+                {obj.dec_deg != null && (
+                  <Badge variant="secondary" className="font-mono text-[10px]">Dec {formatDec(obj.dec_deg)}</Badge>
                 )}
               </div>
 
@@ -211,7 +212,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
                         🖼️ Photo
                       </TabsTrigger>
                     )}
-                    {obj.ra != null && obj.dec != null && (
+                    {obj.ra_deg != null && obj.dec_deg != null && (
                       <TabsTrigger value="aladin" className="px-2 py-0.5 text-[10px] data-[state=active]:text-primary">
                         🔭 Map
                       </TabsTrigger>
@@ -310,9 +311,9 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
                 )}
 
                 {/* Aladin Lite */}
-                {obj.ra != null && obj.dec != null && (
+                {obj.ra_deg != null && obj.dec_deg != null && (
                   <TabsContent value="aladin" className="mt-1.5">
-                    <AladinLiteViewer ra={obj.ra} dec={obj.dec} fovDeg={aladinFov} />
+                    <AladinLiteViewer ra={obj.ra_deg} dec={obj.dec_deg} fovDeg={aladinFov} />
                   </TabsContent>
                 )}
 
@@ -425,7 +426,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
             </div>
           )}
           {/* Night Planner */}
-          <NightPlanner targetRa={obj.ra} targetDec={obj.dec} />
+          <NightPlanner targetRa={obj.ra_deg} targetDec={obj.dec_deg} />
 
           {/* Setup Assistant */}
           <SetupAssistant obj={obj} userFocalLength={focalLength} />
@@ -441,8 +442,8 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
           )}
 
           {/* Altitude Chart */}
-          {obj.ra != null && obj.dec != null && (
-            <AltitudeChart ra={obj.ra} dec={obj.dec} lat={lat} lng={lng} />
+          {obj.ra_deg != null && obj.dec_deg != null && (
+            <AltitudeChart ra={obj.ra_deg} dec={obj.dec_deg} lat={lat} lng={lng} />
           )}
 
           {/* FOV Calculator link — prominent */}

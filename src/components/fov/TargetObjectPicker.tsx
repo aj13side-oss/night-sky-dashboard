@@ -38,8 +38,8 @@ async function searchCatalog(term: string) {
       sizeArcmin: o.size_max as number,
       exposureFast: o.exposure_guide_fast ?? null,
       exposureDeep: o.exposure_guide_deep ?? null,
-      ra: o.ra ?? null,
-      dec: o.dec ?? null,
+      ra: o.ra_deg ?? null,
+      dec: o.dec_deg ?? null,
     }));
 }
 

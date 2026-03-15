@@ -25,8 +25,8 @@ const DeepSkyTonight = () => {
         .from("celestial_objects")
         .select("*")
         .gte("photo_score", 5)
-        .not("ra", "is", null)
-        .not("dec", "is", null)
+        .not("ra_deg", "is", null)
+        .not("dec_deg", "is", null)
         .order("photo_score", { ascending: false })
         .limit(200);
       return (data ?? []) as CelestialObject[];
@@ -39,8 +39,8 @@ const DeepSkyTonight = () => {
     const now = date;
     return objects
       .map((obj) => {
-        const alt = calculateAltitude(obj.ra!, obj.dec!, location.lat, location.lng, now);
-        const rs = getObjectRiseSetTransit(obj.ra!, obj.dec!, location.lat, location.lng, now);
+        const alt = calculateAltitude(obj.ra_deg!, obj.dec_deg!, location.lat, location.lng, now);
+        const rs = getObjectRiseSetTransit(obj.ra_deg!, obj.dec_deg!, location.lat, location.lng, now);
         return { obj, alt, rs };
       })
       .filter((item) => !item.rs.neverRises)
@@ -137,8 +137,8 @@ const DeepSkyRow = ({
   const { data: img } = useObjectImage(
     obj.catalog_id,
     obj.common_name,
-    obj.ra,
-    obj.dec,
+    obj.ra_deg,
+    obj.dec_deg,
     obj.size_max,
     obj.image_search_query,
     obj.forced_image_url,

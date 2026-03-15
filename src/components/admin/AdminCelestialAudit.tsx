@@ -614,6 +614,9 @@ export default function AdminCelestialAudit() {
         <Button size="sm" variant="outline" onClick={resetAllAudit} className="gap-1 text-xs border-destructive/50 text-destructive hover:bg-destructive/10">
           <Trash2 className="w-3 h-3" /> Reset validations
         </Button>
+        <Button size="sm" onClick={() => { setEditObj(null); setEditDialogOpen(true); }} className="gap-1 text-xs">
+          <Plus className="w-3 h-3" /> New Object
+        </Button>
         <span className="text-xs text-muted-foreground">
           {needsClientFilter ? `${filteredAll.length} filtrés / ${data?.total ?? 0}` : `${data?.total ?? 0} objets`} · Page {page + 1}/{totalPages || 1}
           {brokenSet.size > 0 && <span className="text-destructive ml-1">· {brokenSet.size} cassées détectées</span>}

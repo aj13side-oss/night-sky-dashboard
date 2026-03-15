@@ -7,7 +7,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Save } from "lucide-react";
 import { useSaveRig, useCurrentUser } from "@/hooks/useUserRigs";
-import { useAuthModal } from "@/contexts/AuthModalContext";
 import { toast } from "sonner";
 
 interface SaveRigDialogProps {

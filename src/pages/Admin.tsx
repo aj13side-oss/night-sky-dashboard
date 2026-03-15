@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AppNav from "@/components/AppNav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, ImageIcon, Star, DollarSign, Link, Layers, Terminal, ShieldCheck, LogOut } from "lucide-react";
+import { BarChart3, ImageIcon, Star, DollarSign, Link, Layers, Terminal, ShieldCheck, LogOut, Database, Activity, Search as SearchIcon, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminStats from "@/components/admin/AdminStats";
 import AdminImageAudit from "@/components/admin/AdminImageAudit";
@@ -12,6 +12,10 @@ import AdminPrices from "@/components/admin/AdminPrices";
 import AdminUrls from "@/components/admin/AdminUrls";
 import AdminPresets from "@/components/admin/AdminPresets";
 import AdminLogs from "@/components/admin/AdminLogs";
+import AdminEquipmentCRUD from "@/components/admin/AdminEquipmentCRUD";
+import AdminDataQuality from "@/components/admin/AdminDataQuality";
+import AdminFunctions from "@/components/admin/AdminFunctions";
+import AdminSEO from "@/components/admin/AdminSEO";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -74,20 +78,28 @@ const Admin = () => {
         <Tabs defaultValue="stats">
           <TabsList className="flex flex-wrap h-auto gap-1">
             <TabsTrigger value="stats" className="gap-1.5 text-xs"><BarChart3 className="w-3.5 h-3.5" /> Stats</TabsTrigger>
+            <TabsTrigger value="equipment" className="gap-1.5 text-xs"><Wrench className="w-3.5 h-3.5" /> Equipment</TabsTrigger>
             <TabsTrigger value="images" className="gap-1.5 text-xs"><ImageIcon className="w-3.5 h-3.5" /> Equip. Images</TabsTrigger>
-            <TabsTrigger value="celestial" className="gap-1.5 text-xs"><Star className="w-3.5 h-3.5" /> Celestial Images</TabsTrigger>
+            <TabsTrigger value="celestial" className="gap-1.5 text-xs"><Star className="w-3.5 h-3.5" /> Celestial</TabsTrigger>
             <TabsTrigger value="prices" className="gap-1.5 text-xs"><DollarSign className="w-3.5 h-3.5" /> Prices</TabsTrigger>
             <TabsTrigger value="urls" className="gap-1.5 text-xs"><Link className="w-3.5 h-3.5" /> URLs</TabsTrigger>
             <TabsTrigger value="presets" className="gap-1.5 text-xs"><Layers className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+            <TabsTrigger value="quality" className="gap-1.5 text-xs"><Database className="w-3.5 h-3.5" /> Quality</TabsTrigger>
+            <TabsTrigger value="functions" className="gap-1.5 text-xs"><Activity className="w-3.5 h-3.5" /> Functions</TabsTrigger>
+            <TabsTrigger value="seo" className="gap-1.5 text-xs"><SearchIcon className="w-3.5 h-3.5" /> SEO</TabsTrigger>
             <TabsTrigger value="logs" className="gap-1.5 text-xs"><Terminal className="w-3.5 h-3.5" /> Logs</TabsTrigger>
           </TabsList>
 
           <TabsContent value="stats"><AdminStats /></TabsContent>
+          <TabsContent value="equipment"><AdminEquipmentCRUD /></TabsContent>
           <TabsContent value="images"><AdminImageAudit /></TabsContent>
           <TabsContent value="celestial"><AdminCelestialAudit /></TabsContent>
           <TabsContent value="prices"><AdminPrices /></TabsContent>
           <TabsContent value="urls"><AdminUrls /></TabsContent>
           <TabsContent value="presets"><AdminPresets /></TabsContent>
+          <TabsContent value="quality"><AdminDataQuality /></TabsContent>
+          <TabsContent value="functions"><AdminFunctions /></TabsContent>
+          <TabsContent value="seo"><AdminSEO /></TabsContent>
           <TabsContent value="logs"><AdminLogs /></TabsContent>
         </Tabs>
       </main>

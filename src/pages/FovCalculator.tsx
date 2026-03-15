@@ -325,15 +325,40 @@ const FovCalculator = () => {
                     )}
 
                     {isSolar ? (
-                      <img
-                        key={`solar-${obj?.name}`}
-                        src={obj?.imageUrl ?? ""}
-                        alt={`${obj?.name} reference image`}
-                        className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
-                        loading="eager"
-                        onLoad={() => setImgLoaded(true)}
-                        onError={() => setImgError(true)}
-                      />
+                      <>
+                        {/* Black space background */}
+                        <div className="absolute inset-0 bg-black" />
+                        {/* Planet image scaled to true angular size */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <img
+                            key={`solar-${obj?.name}`}
+                            src={obj?.imageUrl ?? ""}
+                            alt={`${obj?.name} reference image`}
+                            className={`object-contain transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                            style={{
+                              width: `${Math.max(5, objFractionW * 100)}%`,
+                              height: `${Math.max(5, objFractionH * 100)}%`,
+                            }}
+                            loading="eager"
+                            onLoad={() => setImgLoaded(true)}
+                            onError={() => setImgError(true)}
+                          />
+                        </div>
+                        {/* Detail inset for solar system objects */}
+                        {imgLoaded && obj?.imageUrl && (
+                          <div className="absolute bottom-3 right-3 w-36 h-36 rounded-lg border-2 border-accent/60 overflow-hidden shadow-lg z-20 bg-black">
+                            <img
+                              src={obj.imageUrl}
+                              alt={`${obj.name} detail`}
+                              className="w-full h-full object-contain p-2"
+                              loading="eager"
+                            />
+                            <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-[8px] text-accent text-center py-0.5 font-mono">
+                              🔍 {obj.name} — {obj.sizeArcmin >= 1 ? `${obj.sizeArcmin.toFixed(1)}'` : `${(obj.sizeArcmin * 60).toFixed(1)}"`}
+                            </div>
+                          </div>
+                        )}
+                      </>
                     ) : (
                       <img
                         key={`${obj?.ra}-${obj?.dec}-${survey}-${aladinFovDeg}`}
@@ -420,14 +445,15 @@ const FovCalculator = () => {
               </div>
 
               {/* Solar system imaging tips */}
+              {isSolar && solarObj?.danger_warning && (
+                <div className="mt-2 p-3 rounded-lg bg-destructive/20 border border-destructive/50 text-xs text-destructive font-semibold flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                  {solarObj.danger_warning}
+                </div>
+              )}
+
               {isSolar && solarObj && imgLoaded && (
                 <div className="space-y-2 bg-secondary/30 rounded-lg p-3 text-xs">
-                  {solarObj.danger_warning && (
-                    <div className="flex items-center gap-1.5 text-destructive font-medium">
-                      <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                      {solarObj.danger_warning}
-                    </div>
-                  )}
                   {solarObj.recommended_technique && (
                     <p className="text-muted-foreground"><span className="text-foreground font-medium">Technique:</span> {solarObj.recommended_technique}</p>
                   )}

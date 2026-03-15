@@ -70,7 +70,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) 
     ? searchContext.image
     : useFallback && wikiImage?.fallbackUrl ? wikiImage.fallbackUrl : thumbUrl;
 
-  const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra, obj.dec, lat, lng);
+  const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra_deg, obj.dec_deg, lat, lng);
   const isLegendary = score.total >= 100;
   const isPrime = score.total >= 85 && score.total < 100;
   const season = getSeasonLabel(obj.best_months);

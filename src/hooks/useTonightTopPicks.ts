@@ -28,7 +28,7 @@ export function useTonightTopPicks(lat: number, lng: number, count = 3) {
     return candidates
       .map((obj) => ({
         obj,
-        score: computeDynamicScore(obj.photo_score, obj.best_months, obj.ra, obj.dec, lat, lng),
+        score: computeDynamicScore(obj.photo_score, obj.best_months, obj.ra_deg, obj.dec_deg, lat, lng),
       }))
       .sort((a, b) => b.score.total - a.score.total)
       .slice(0, count);

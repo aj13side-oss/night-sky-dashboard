@@ -25,8 +25,8 @@ const DeepSkyTonight = () => {
         .from("celestial_objects")
         .select("*")
         .gte("photo_score", 5)
-        .not("ra", "is", null)
-        .not("dec", "is", null)
+        .not("ra_deg", "is", null)
+        .not("dec_deg", "is", null)
         .order("photo_score", { ascending: false })
         .limit(200);
       return (data ?? []) as CelestialObject[];

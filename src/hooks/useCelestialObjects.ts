@@ -9,6 +9,10 @@ export interface CelestialObject {
   constellation: string | null;
   ra: number | null;
   dec: number | null;
+  ra_deg: number | null;
+  ra_hours: number | null;
+  dec_deg: number | null;
+  dec_hours: number | null;
   magnitude: number | null;
   surf_brightness: number | null;
   size_max: number | null;

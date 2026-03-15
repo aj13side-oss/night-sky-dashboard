@@ -336,8 +336,8 @@ const FovCalculator = () => {
                             alt={`${obj?.name} reference image`}
                             className={`object-contain transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
                             style={{
-                              width: `${Math.max(5, objFractionW * 100)}%`,
-                              height: `${Math.max(5, objFractionH * 100)}%`,
+                              width: `${Math.max(4, (obj?.sizeArcmin ?? 0) / (fov.wArcmin * 1.3) * 100)}%`,
+                              height: `${Math.max(4, (obj?.sizeArcmin ?? 0) / (fov.hArcmin * 1.3) * 100)}%`,
                             }}
                             loading="eager"
                             onLoad={() => setImgLoaded(true)}
@@ -378,8 +378,26 @@ const FovCalculator = () => {
                         <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/30" />
 
                         {isSolar ? (
-                          /* Solar: container = sensor, show border around entire container */
-                          <div className="absolute inset-[3px] border-2 border-primary/60 rounded" />
+                          <>
+                            {/* Sensor frame at 77% of container (= 1/1.3) — same visual as deep sky */}
+                            <div
+                              className="absolute border-2 border-primary/60 rounded"
+                              style={{
+                                width: `${(1 / 1.3) * 100}%`,
+                                height: `${(1 / 1.3) * 100}%`,
+                                left: `${50 - (1 / 1.3) * 50}%`,
+                                top: `${50 - (1 / 1.3) * 50}%`,
+                              }}
+                            />
+                            {/* Blue object circle matching the planet size */}
+                            {obj && obj.sizeArcmin > 0 && (
+                              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"
+                                style={{
+                                  width: `${Math.max(3, (obj.sizeArcmin / (fov.wArcmin * 1.3)) * 100)}%`,
+                                  paddingBottom: `${Math.max(3, (obj.sizeArcmin / (fov.hArcmin * 1.3)) * 100)}%`,
+                                }} />
+                            )}
+                          </>
                         ) : (
                           <>
                             {aladinFovDeg > 0 && (

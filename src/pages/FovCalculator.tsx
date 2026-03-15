@@ -445,14 +445,15 @@ const FovCalculator = () => {
               </div>
 
               {/* Solar system imaging tips */}
+              {isSolar && solarObj?.danger_warning && (
+                <div className="mt-2 p-3 rounded-lg bg-destructive/20 border border-destructive/50 text-xs text-destructive font-semibold flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                  {solarObj.danger_warning}
+                </div>
+              )}
+
               {isSolar && solarObj && imgLoaded && (
                 <div className="space-y-2 bg-secondary/30 rounded-lg p-3 text-xs">
-                  {solarObj.danger_warning && (
-                    <div className="flex items-center gap-1.5 text-destructive font-medium">
-                      <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                      {solarObj.danger_warning}
-                    </div>
-                  )}
                   {solarObj.recommended_technique && (
                     <p className="text-muted-foreground"><span className="text-foreground font-medium">Technique:</span> {solarObj.recommended_technique}</p>
                   )}

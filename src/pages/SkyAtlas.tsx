@@ -16,7 +16,7 @@ import { calculateAltitude } from "@/lib/visibility";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";
-import ToolSuggestions from "@/components/ToolSuggestions";
+
 import TonightTopPicks from "@/components/atlas/TonightTopPicks";
 
 const DEFAULT_EXCLUDE_TYPES = ["Star", "Double Star"];

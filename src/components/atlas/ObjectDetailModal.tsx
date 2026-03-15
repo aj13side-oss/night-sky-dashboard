@@ -4,10 +4,6 @@ import { useObjectImage } from "@/hooks/useObjectImage";
 import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
 import { calculateFov } from "@/lib/sky-images";
 import { formatRA, formatDec } from "@/lib/format-coords";
-import { CelestialObject } from "@/hooks/useCelestialObjects";
-import { useObjectImage } from "@/hooks/useObjectImage";
-import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
-import { calculateFov } from "@/lib/sky-images";
 import {
   Dialog,
   DialogContent,

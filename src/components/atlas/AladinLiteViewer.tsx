@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Props {
   ra: number;
   dec: number;
   fovDeg: number;
+  className?: string;
+  survey?: "P/DSS2/color" | "P/Mellinger/color";
 }
 
 declare global {
@@ -26,7 +29,6 @@ function loadAladinScript(): Promise<void> {
     }
     scriptLoading = true;
 
-    // Load CSS
     if (!document.querySelector('link[href*="aladin"]')) {
       const link = document.createElement("link");
       link.rel = "stylesheet";
@@ -34,7 +36,6 @@ function loadAladinScript(): Promise<void> {
       document.head.appendChild(link);
     }
 
-    // Load JS
     const script = document.createElement("script");
     script.src = "https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.min.js";
     script.charset = "utf-8";
@@ -49,7 +50,7 @@ function loadAladinScript(): Promise<void> {
   });
 }
 
-const AladinLiteViewer = ({ ra, dec, fovDeg }: Props) => {
+const AladinLiteViewer = ({ ra, dec, fovDeg, className, survey = "P/DSS2/color" }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const aladinRef = useRef<any>(null);
   const [ready, setReady] = useState(false);
@@ -60,12 +61,11 @@ const AladinLiteViewer = ({ ra, dec, fovDeg }: Props) => {
     loadAladinScript().then(() => {
       if (cancelled || !containerRef.current) return;
 
-      // Small delay to ensure DOM is ready
       requestAnimationFrame(() => {
         if (cancelled || !containerRef.current || !window.A) return;
         try {
           const aladin = window.A.aladin(containerRef.current, {
-            survey: "P/DSS2/color",
+            survey,
             fov: fovDeg,
             target: `${ra} ${dec}`,
             showReticle: true,
@@ -86,7 +86,7 @@ const AladinLiteViewer = ({ ra, dec, fovDeg }: Props) => {
     return () => {
       cancelled = true;
     };
-  }, [ra, dec, fovDeg]);
+  }, [ra, dec, fovDeg, survey]);
 
   const handleRecenter = () => {
     if (aladinRef.current) {
@@ -96,7 +96,7 @@ const AladinLiteViewer = ({ ra, dec, fovDeg }: Props) => {
   };
 
   return (
-    <div className="relative w-full h-48 rounded-lg overflow-hidden bg-muted/50 border border-border/30">
+    <div className={cn("relative w-full rounded-lg overflow-hidden bg-muted/50 border border-border/30", className || "h-48")}>
       <div ref={containerRef} className="w-full h-full" />
       {!ready && (
         <div className="absolute inset-0 flex items-center justify-center">

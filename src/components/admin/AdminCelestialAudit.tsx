@@ -3,8 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3, ImageIcon, Download, Trash2, Eye } from "lucide-react";
+import { Check, X, RefreshCw, ChevronLeft, ChevronRight, Search, Zap, Loader2, Command as CommandIcon, ArrowUpDown, CheckSquare, Rows3, ImageIcon, Download, Trash2, Eye, Plus, Pencil } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,6 +14,7 @@ import { useAuditStatuses, useSetAuditStatus, checkImageHealth, type AuditStatus
 import AuditCommandPalette, { type AuditableItem } from "./AuditCommandPalette";
 import AuditBatchBar from "./AuditBatchBar";
 import { formatCatalogId } from "@/lib/format-catalog";
+import CelestialEditDialog from "./CelestialEditDialog";
 
 /** Build Wikimedia thumbnail URL directly from a full-res commons URL */
 function buildWikimediaThumbUrl(url: string, width: number): string {
@@ -97,6 +99,9 @@ export default function AdminCelestialAudit() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [focusIndex, setFocusIndex] = useState(-1);
   const gridRef = useRef<HTMLDivElement>(null);
+  const [editObj, setEditObj] = useState<any | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteObj, setDeleteObj] = useState<any | null>(null);
 
   const { data: audit = {} } = useAuditStatuses("celestial_objects");
   const setAuditMutation = useSetAuditStatus("celestial_objects");
@@ -609,6 +614,9 @@ export default function AdminCelestialAudit() {
         <Button size="sm" variant="outline" onClick={resetAllAudit} className="gap-1 text-xs border-destructive/50 text-destructive hover:bg-destructive/10">
           <Trash2 className="w-3 h-3" /> Reset validations
         </Button>
+        <Button size="sm" onClick={() => { setEditObj(null); setEditDialogOpen(true); }} className="gap-1 text-xs">
+          <Plus className="w-3 h-3" /> New Object
+        </Button>
         <span className="text-xs text-muted-foreground">
           {needsClientFilter ? `${filteredAll.length} filtrés / ${data?.total ?? 0}` : `${data?.total ?? 0} objets`} · Page {page + 1}/{totalPages || 1}
           {brokenSet.size > 0 && <span className="text-destructive ml-1">· {brokenSet.size} cassées détectées</span>}
@@ -895,6 +903,14 @@ export default function AdminCelestialAudit() {
                       <Search className="w-2.5 h-2.5 mx-auto" />
                     </button>
                   </div>
+                  <div className="flex gap-0.5">
+                    <button onClick={(e) => { e.stopPropagation(); setEditObj(item); setEditDialogOpen(true); }} title="Edit" className="flex-1 py-0.5 rounded text-[8px] border border-border/50 text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors">
+                      <Pencil className="w-2.5 h-2.5 mx-auto" />
+                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); setDeleteObj(item); }} title="Delete" className="flex-1 py-0.5 rounded text-[8px] border border-border/50 text-muted-foreground hover:border-destructive/50 hover:text-destructive transition-colors">
+                      <Trash2 className="w-2.5 h-2.5 mx-auto" />
+                    </button>
+                  </div>
                   {replacing === item.id && (
                     <div className="space-y-0.5">
                       <div className="flex gap-0.5">
@@ -933,6 +949,30 @@ export default function AdminCelestialAudit() {
       </div>
 
       <AuditCommandPalette open={cmdOpen} onOpenChange={setCmdOpen} items={cmdItems} onAction={handleCmdAction} />
+
+      <CelestialEditDialog open={editDialogOpen} onOpenChange={setEditDialogOpen} item={editObj} />
+
+      <AlertDialog open={!!deleteObj} onOpenChange={open => !open && setDeleteObj(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {deleteObj?.catalog_id}?</AlertDialogTitle>
+            <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                const { error } = await (supabase as any).from("celestial_objects").delete().eq("id", deleteObj.id);
+                if (error) { toast.error(error.message); return; }
+                toast.success(`${deleteObj.catalog_id} deleted`);
+                qc.invalidateQueries({ queryKey: ["admin_celestial"] });
+                setDeleteObj(null);
+              }}
+            >Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

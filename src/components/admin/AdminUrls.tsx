@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Check, X } from "lucide-react";
+import { Check, X, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useCameras, useTelescopes, useMounts, useFilters } from "@/hooks/useEquipmentCatalog";
@@ -30,8 +30,9 @@ export default function AdminUrls() {
   const { data: mounts } = useMounts();
   const { data: filters } = useFilters();
   const [catFilter, setCatFilter] = useState<string | null>(null);
-  const [editing, setEditing] = useState<string | null>(null); // "id|key"
+  const [editing, setEditing] = useState<string | null>(null);
   const [editUrl, setEditUrl] = useState("");
+  const [flashCell, setFlashCell] = useState<string | null>(null);
 
   const allRows: UrlRow[] = useMemo(() => {
     const rows: UrlRow[] = [];
@@ -47,7 +48,6 @@ export default function AdminUrls() {
     return allRows.filter(r => r.category === catFilter);
   }, [allRows, catFilter]);
 
-  // Coverage stats
   const coverage = RETAILERS.map(r => ({
     ...r,
     count: allRows.filter(row => row.raw[`url_${r.key}`]).length,
@@ -55,12 +55,20 @@ export default function AdminUrls() {
   }));
 
   const handleSaveUrl = async (row: UrlRow, retailerKey: string) => {
-    if (!editUrl.trim()) return;
-    const { error } = await (supabase as any).from(row.table).update({ [`url_${retailerKey}`]: editUrl.trim() }).eq("id", row.id);
-    if (error) { toast.error("Erreur: " + error.message); return; }
-    toast.success("URL mise à jour !");
+    const cellKey = `${row.id}|${retailerKey}`;
+    const val = editUrl.trim() || null;
+    const { error } = await (supabase as any).from(row.table).update({ [`url_${retailerKey}`]: val }).eq("id", row.id);
+    if (error) {
+      toast.error("Error: " + error.message);
+      setFlashCell(`${cellKey}:error`);
+      setTimeout(() => setFlashCell(null), 600);
+      return;
+    }
+    toast.success("URL updated!");
     setEditing(null);
     setEditUrl("");
+    setFlashCell(`${cellKey}:ok`);
+    setTimeout(() => setFlashCell(null), 600);
     qc.invalidateQueries();
   };
 
@@ -77,15 +85,15 @@ export default function AdminUrls() {
         ))}
       </div>
 
-      <ChipFilter label="Catégorie" options={["Caméra", "Télescope", "Monture", "Filtre"]} selected={catFilter} onChange={setCatFilter} />
+      <ChipFilter label="Category" options={["Caméra", "Télescope", "Monture", "Filtre"]} selected={catFilter} onChange={setCatFilter} />
 
       <Card className="border-border/50 overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-[10px] w-24">Marque</TableHead>
-                <TableHead className="text-[10px] w-40">Modèle</TableHead>
+                <TableHead className="text-[10px] w-24">Brand</TableHead>
+                <TableHead className="text-[10px] w-40">Model</TableHead>
                 <TableHead className="text-[10px] w-16">Cat.</TableHead>
                 {RETAILERS.map(r => <TableHead key={r.key} className="text-[10px] text-center w-16">{r.label}</TableHead>)}
               </TableRow>
@@ -100,12 +108,20 @@ export default function AdminUrls() {
                     const url = row.raw[`url_${r.key}`];
                     const editKey = `${row.id}|${r.key}`;
                     const isEditing = editing === editKey;
+                    const flash = flashCell?.startsWith(editKey) ? flashCell.split(":")[1] : null;
 
                     if (isEditing) {
                       return (
                         <TableCell key={r.key} className="p-1">
                           <div className="flex gap-0.5">
-                            <Input value={editUrl} onChange={e => setEditUrl(e.target.value)} className="h-5 text-[9px] px-1 w-24" placeholder="URL..." />
+                            <Input
+                              value={editUrl}
+                              onChange={e => setEditUrl(e.target.value)}
+                              onKeyDown={e => { if (e.key === "Enter") handleSaveUrl(row, r.key); if (e.key === "Escape") setEditing(null); }}
+                              className="h-5 text-[9px] px-1 w-24"
+                              placeholder="URL..."
+                              autoFocus
+                            />
                             <button onClick={() => handleSaveUrl(row, r.key)} className="text-green-400 hover:text-green-300"><Check className="w-3 h-3" /></button>
                             <button onClick={() => setEditing(null)} className="text-muted-foreground hover:text-foreground"><X className="w-3 h-3" /></button>
                           </div>
@@ -114,15 +130,19 @@ export default function AdminUrls() {
                     }
 
                     return (
-                      <TableCell key={r.key} className="text-center">
+                      <TableCell
+                        key={r.key}
+                        className={`text-center cursor-pointer transition-colors ${
+                          flash === "ok" ? "bg-green-500/20" : flash === "error" ? "bg-red-500/20" : "hover:bg-muted/20"
+                        }`}
+                        onClick={() => { setEditing(editKey); setEditUrl(url || ""); }}
+                      >
                         {url ? (
-                          <a href={url} target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-green-300">
+                          <a href={url} target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-green-300" onClick={e => e.stopPropagation()}>
                             <Check className="w-3 h-3 mx-auto" />
                           </a>
                         ) : (
-                          <button onClick={() => { setEditing(editKey); setEditUrl(""); }} className="text-red-400/50 hover:text-red-400">
-                            <X className="w-3 h-3 mx-auto" />
-                          </button>
+                          <Pencil className="w-3 h-3 mx-auto text-muted-foreground/30 hover:text-muted-foreground" />
                         )}
                       </TableCell>
                     );
@@ -132,7 +152,7 @@ export default function AdminUrls() {
             </TableBody>
           </Table>
         </div>
-        {filtered.length > 100 && <p className="text-[10px] text-muted-foreground p-2 text-center">Affichage limité à 100 lignes ({filtered.length} total)</p>}
+        {filtered.length > 100 && <p className="text-[10px] text-muted-foreground p-2 text-center">Showing 100 of {filtered.length}</p>}
       </Card>
     </div>
   );

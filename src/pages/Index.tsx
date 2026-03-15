@@ -11,7 +11,7 @@ import EphemeridesCard from "@/components/EphemeridesCard";
 import PlanetsTonight from "@/components/dashboard/PlanetsTonight";
 import DeepSkyTonight from "@/components/dashboard/DeepSkyTonight";
 import SpecialEvents from "@/components/dashboard/SpecialEvents";
-import ToolSuggestions from "@/components/ToolSuggestions";
+
 import { motion } from "framer-motion";
 
 const DashboardContent = () => {

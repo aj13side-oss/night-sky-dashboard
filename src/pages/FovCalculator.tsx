@@ -336,8 +336,8 @@ const FovCalculator = () => {
                             alt={`${obj?.name} reference image`}
                             className={`object-contain transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
                             style={{
-                              width: `${Math.max(5, objFractionW * 100)}%`,
-                              height: `${Math.max(5, objFractionH * 100)}%`,
+                              width: `${Math.max(4, (obj?.sizeArcmin ?? 0) / (fov.wArcmin * 1.3) * 100)}%`,
+                              height: `${Math.max(4, (obj?.sizeArcmin ?? 0) / (fov.hArcmin * 1.3) * 100)}%`,
                             }}
                             loading="eager"
                             onLoad={() => setImgLoaded(true)}

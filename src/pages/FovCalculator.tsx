@@ -6,7 +6,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import AladinLiteViewer from "@/components/atlas/AladinLiteViewer";
+import { getSkyImageUrlWithFov, type SkyImageSurvey } from "@/lib/sky-images";
 
 import TargetObjectPicker, { type TargetObject } from "@/components/fov/TargetObjectPicker";
 

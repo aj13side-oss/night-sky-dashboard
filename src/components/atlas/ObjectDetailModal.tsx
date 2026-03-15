@@ -442,8 +442,8 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
           )}
 
           {/* Altitude Chart */}
-          {obj.ra != null && obj.dec != null && (
-            <AltitudeChart ra={obj.ra} dec={obj.dec} lat={lat} lng={lng} />
+          {obj.ra_deg != null && obj.dec_deg != null && (
+            <AltitudeChart ra={obj.ra_deg} dec={obj.dec_deg} lat={lat} lng={lng} />
           )}
 
           {/* FOV Calculator link — prominent */}

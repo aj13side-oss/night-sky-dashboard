@@ -78,7 +78,6 @@ const AppNav = () => {
                 )}>
                 <item.icon className="w-3.5 h-3.5" />
                 <span>{item.label}</span>
-                {item.to === "/sky-atlas" && favCount > 0 && <Badge className="text-[8px] px-1 py-0">{favCount}</Badge>}
               </Link>
             </span>
           ))}

@@ -12,24 +12,10 @@ export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState<"login" | "signup">("login");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
-    if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: window.location.origin + "/admin" },
-      });
-      setLoading(false);
-      if (error) { toast.error(error.message); return; }
-      toast.success("Account created! Check your email to confirm, then log in.");
-      setMode("login");
-      return;
-    }
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
@@ -78,19 +64,13 @@ export default function AdminLogin() {
               onChange={e => setPassword(e.target.value)}
               required
               minLength={6}
-              autoComplete={mode === "signup" ? "new-password" : "current-password"}
+              autoComplete="current-password"
             />
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              {mode === "login" ? "Log in" : "Create account"}
+              Log in
             </Button>
           </form>
-          <button
-            onClick={() => setMode(mode === "login" ? "signup" : "login")}
-            className="mt-4 text-xs text-muted-foreground hover:text-foreground transition-colors w-full text-center"
-          >
-            {mode === "login" ? "First time? Create account" : "Already have an account? Log in"}
-          </button>
         </CardContent>
       </Card>
     </div>

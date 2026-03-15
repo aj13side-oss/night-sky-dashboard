@@ -289,8 +289,6 @@ const EquipmentProfile = () => {
             Stored locally in your browser. Used by the Atlas, FOV calculator, and assistant.
           </p>
         </motion.div>
-
-        <ToolSuggestions />
       </main>
 
       <Footer />

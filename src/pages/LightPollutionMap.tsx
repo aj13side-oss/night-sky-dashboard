@@ -230,8 +230,6 @@ const LightPollutionMap = () => {
                 ))}
               </div>
             </motion.div>
-
-            <ToolSuggestions />
           </>
         )}
       </main>

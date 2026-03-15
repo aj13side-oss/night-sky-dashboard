@@ -19,7 +19,7 @@ interface Props {
   onFilterModeChange?: (mode: string) => void;
 }
 
-const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, favoritesEnabled, onToggleFavorites, isLoggedIn }: Props) => {
+const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange }: Props) => {
   const isTop50 = filters.limitResults === 50;
 
   const toggleType = (t: string) => {

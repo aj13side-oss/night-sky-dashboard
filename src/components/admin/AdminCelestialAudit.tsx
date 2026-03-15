@@ -99,6 +99,9 @@ export default function AdminCelestialAudit() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [focusIndex, setFocusIndex] = useState(-1);
   const gridRef = useRef<HTMLDivElement>(null);
+  const [editObj, setEditObj] = useState<any | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteObj, setDeleteObj] = useState<any | null>(null);
 
   const { data: audit = {} } = useAuditStatuses("celestial_objects");
   const setAuditMutation = useSetAuditStatus("celestial_objects");

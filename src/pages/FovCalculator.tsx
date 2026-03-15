@@ -137,6 +137,8 @@ const FovCalculator = () => {
     return { text: "Very wide field", ok: false };
   }, [fov.resolution]);
 
+  const imageAspect = fov.h / Math.max(fov.w, 0.001);
+
   const filteredTelescopes = useMemo(() => {
     if (!dbTelescopes) return [];
     if (!telescopeSearch.trim()) return dbTelescopes;
@@ -295,9 +297,9 @@ const FovCalculator = () => {
                 </div>
               </div>
 
-              <div className="relative rounded-xl border border-border overflow-hidden bg-black" style={{ minHeight: 400 }}>
+              <div className="relative rounded-xl border border-border overflow-hidden bg-black max-w-[800px] mx-auto">
                 {obj?.ra != null && obj?.dec != null ? (
-                  <>
+                  <div className="relative w-full" style={{ paddingBottom: `${imageAspect * 100}%` }}>
                     {!imgLoaded && !imgError && (
                       <div className="absolute inset-0 flex items-center justify-center z-10">
                         <div className="h-6 w-6 border-2 border-primary/40 border-t-primary rounded-full animate-spin" />
@@ -313,7 +315,7 @@ const FovCalculator = () => {
                       key={`${obj.ra}-${obj.dec}-${survey}-${aladinFovDeg}`}
                       src={getSkyImageUrlWithFov(obj.ra, obj.dec, aladinFovDeg, aladinFovDeg * (fov.h / Math.max(fov.w, 0.01)), survey)}
                       alt={`Sky view centered on ${obj.name}`}
-                      className={`w-full h-[400px] object-contain transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
                       loading="eager"
                       onLoad={() => setImgLoaded(true)}
                       onError={() => setImgError(true)}
@@ -381,10 +383,10 @@ const FovCalculator = () => {
                         </div>
                       </>
                     )}
-                  </>
+                  </div>
                 ) : (
-                  <div className="flex items-center justify-center h-[400px] text-muted-foreground text-sm">
-                    Select equipment and a target to preview framing
+                  <div className="flex items-center justify-center" style={{ minHeight: 400 }}>
+                    <span className="text-muted-foreground text-sm">Select equipment and a target to preview framing</span>
                   </div>
                 )}
               </div>

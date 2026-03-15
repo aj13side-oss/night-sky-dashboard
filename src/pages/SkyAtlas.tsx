@@ -99,7 +99,7 @@ const SkyAtlas = () => {
     }
 
     return results;
-  }, [data?.data, visibleTonight, filterMode, userPos.lat, userPos.lng]);
+  }, [data?.data, visibleTonight, filterMode, userPos.lat, userPos.lng, showFavorites, favorites]);
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 

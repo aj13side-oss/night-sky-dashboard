@@ -15,6 +15,7 @@ const navItems = [
   { to: "/", label: "Dashboard", icon: Home, group: "plan" },
   { to: "/sky-atlas", label: "Atlas", icon: Map, group: "plan" },
   { to: "/fov-calculator", label: "FOV", icon: Crosshair, group: "plan" },
+  { to: "/planner", label: "Planner", icon: ClipboardList, group: "plan" },
   { to: "/light-pollution", label: "Light Pollution", icon: Eclipse, group: "tools" },
   { to: "/rig-builder", label: "Rig Builder", icon: Scale, group: "tools" },
   { to: "/equipment", label: "Gear", icon: Settings, group: "tools" },

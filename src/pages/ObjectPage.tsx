@@ -62,12 +62,12 @@ const ObjectPage = () => {
     obj?.size_max, obj?.image_search_query, obj?.forced_image_url, obj?.obj_type, 1500
   );
 
-  const alt = obj?.ra != null && obj?.dec != null ? calculateAltitude(obj.ra, obj.dec, pos.lat, pos.lng) : null;
+  const alt = obj?.ra_deg != null && obj?.dec_deg != null ? calculateAltitude(obj.ra_deg, obj.dec_deg, pos.lat, pos.lng) : null;
   const vis = alt != null ? getVisibilityLabel(alt) : null;
   const rs = useMemo(() => {
-    if (!obj?.ra || !obj?.dec) return null;
-    return getObjectRiseSetTransit(obj.ra, obj.dec, pos.lat, pos.lng, new Date());
-  }, [obj?.ra, obj?.dec, pos.lat, pos.lng]);
+    if (!obj?.ra_deg || !obj?.dec_deg) return null;
+    return getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, pos.lat, pos.lng, new Date());
+  }, [obj?.ra_deg, obj?.dec_deg, pos.lat, pos.lng]);
 
   const aladinFov = useMemo(() => {
     if (!obj?.size_max || obj.size_max <= 0) return 1.0;

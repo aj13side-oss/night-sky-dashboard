@@ -30,6 +30,7 @@ export function SaveRigDialog({
   const [notes, setNotes] = useState("");
   const [isCurrent, setIsCurrent] = useState(false);
   const { userId } = useCurrentUser();
+  const { openAuthModal } = useAuthModal();
   const saveRig = useSaveRig();
 
   const handleSave = () => {

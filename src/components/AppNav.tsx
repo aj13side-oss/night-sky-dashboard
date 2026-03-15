@@ -92,38 +92,6 @@ const AppNav = () => {
             {nightVision ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
             <span className="text-xs">{nightVision ? "Normal" : "Night"}</span>
           </button>
-
-          {/* Auth */}
-          {!authLoading && (
-            userId ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 ml-1">
-                    <User className="w-3.5 h-3.5" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem asChild>
-                    <Link to="/sky-atlas?favorites=true" className="gap-2"><Heart className="w-3.5 h-3.5" /> My Favorites</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/rig-builder" className="gap-2"><Wrench className="w-3.5 h-3.5" /> My Setups</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/equipment" className="gap-2"><Settings className="w-3.5 h-3.5" /> My Gear</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut} className="gap-2">
-                    <LogOut className="w-3.5 h-3.5" /> Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <button onClick={openAuthModal} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/50 ml-1">
-                <LogIn className="w-3.5 h-3.5" /> Sign In
-              </button>
-            )
-          )}
         </nav>
       </div>
     </header>

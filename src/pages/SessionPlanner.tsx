@@ -160,9 +160,7 @@ const PlannerContent = () => {
   };
 
   const addFromFavorites = () => {
-    if (!favorites?.size) { toast("No favorites saved"); return; }
-    // We'd need to fetch favorite object IDs → catalog_ids. For now just toast.
-    toast("Coming soon — add from favorites");
+    toast("Favorites have been removed from the app");
   };
 
   const copyPlan = () => {

@@ -56,6 +56,21 @@ const SkyAtlas = () => {
   const { types, constellations } = useDistinctFilters();
   const { data, isLoading } = useCelestialObjects(filters, page);
 
+  // Solar system search
+  const { data: solarResults = [] } = useQuery({
+    queryKey: ["solar-atlas-search", filters.search],
+    queryFn: async () => {
+      if (!filters.search || filters.search.length < 2) return [];
+      const { data } = await (supabase as any)
+        .from("solar_system_objects")
+        .select("*")
+        .eq("is_active", true)
+        .or(`name.ilike.%${filters.search}%,search_aliases.ilike.%${filters.search}%`);
+      return (data ?? []) as SolarSystemObject[];
+    },
+    enabled: filters.search.length >= 2,
+  });
+
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
       (pos) => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),

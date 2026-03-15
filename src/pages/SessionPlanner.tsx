@@ -175,8 +175,8 @@ const PlannerContent = () => {
       const rs = obj.ra != null && obj.dec != null
         ? getObjectRiseSetTransit(obj.ra, obj.dec, location.lat, location.lng, date)
         : null;
-      const window = rs?.bestWindow
-        ? `${formatTimeShort(rs.bestWindow.start)} - ${formatTimeShort(rs.bestWindow.end)}`
+      const window = rs?.bestWindowStart && rs?.bestWindowEnd
+        ? `${formatTimeShort(rs.bestWindowStart)} - ${formatTimeShort(rs.bestWindowEnd)}`
         : "—";
       const filter = obj.recommended_filter ?? "RGB";
       return `${i + 1}. ${formatCatalogId(obj)}${obj.common_name ? ` — ${obj.common_name}` : ""} (${window}) — ${filter}`;

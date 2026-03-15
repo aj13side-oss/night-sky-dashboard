@@ -103,6 +103,7 @@ const Admin = () => {
           <TabsContent value="functions"><AdminFunctions /></TabsContent>
           <TabsContent value="seo"><AdminSEO /></TabsContent>
           <TabsContent value="logs"><AdminLogs /></TabsContent>
+          <TabsContent value="solar"><AdminSolarSystemAudit /></TabsContent>
         </Tabs>
       </main>
     </div>

@@ -60,7 +60,7 @@ export function getSkyImageUrlWithFov(
   const params = new URLSearchParams({
     hips: HIPS_IDS[survey],
     width: String(w),
-    height: String(h),
+    height: String(clampedH),
     fov: String(fovW),
     projection: "TAN",
     coordsys: "icrs",

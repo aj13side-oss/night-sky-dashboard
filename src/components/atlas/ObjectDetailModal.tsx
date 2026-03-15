@@ -112,7 +112,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
         setActiveTab("aladin");
       }
     }
-  }, [imgLoading, wikiImage?.url, obj?.ra, obj?.photo_score]);
+  }, [imgLoading, wikiImage?.url, obj?.ra_deg, obj?.photo_score]);
 
   // Stellarium URL
   const stellariumUrl = useMemo(() => {

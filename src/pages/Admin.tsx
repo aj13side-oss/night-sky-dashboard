@@ -89,6 +89,7 @@ const Admin = () => {
             <TabsTrigger value="functions" className="gap-1.5 text-xs"><Activity className="w-3.5 h-3.5" /> Functions</TabsTrigger>
             <TabsTrigger value="seo" className="gap-1.5 text-xs"><SearchIcon className="w-3.5 h-3.5" /> SEO</TabsTrigger>
             <TabsTrigger value="logs" className="gap-1.5 text-xs"><Terminal className="w-3.5 h-3.5" /> Logs</TabsTrigger>
+            <TabsTrigger value="solar" className="gap-1.5 text-xs"><Globe2 className="w-3.5 h-3.5" /> Solar System</TabsTrigger>
           </TabsList>
 
           <TabsContent value="stats"><AdminStats /></TabsContent>

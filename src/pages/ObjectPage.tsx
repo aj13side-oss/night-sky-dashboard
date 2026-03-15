@@ -188,8 +188,8 @@ const ObjectPage = () => {
 
             {/* Coordinates */}
             <div className="flex flex-wrap gap-1.5">
-              {obj.ra != null && <Badge variant="secondary" className="font-mono text-[10px]">RA {obj.ra.toFixed(4)}°</Badge>}
-              {obj.dec != null && <Badge variant="secondary" className="font-mono text-[10px]">Dec {obj.dec.toFixed(4)}°</Badge>}
+              {obj.ra_hours != null && <Badge variant="secondary" className="font-mono text-[10px]">RA {formatRA(obj.ra_hours)}</Badge>}
+              {obj.dec_deg != null && <Badge variant="secondary" className="font-mono text-[10px]">Dec {formatDec(obj.dec_deg)}</Badge>}
             </div>
 
             {/* Visibility */}

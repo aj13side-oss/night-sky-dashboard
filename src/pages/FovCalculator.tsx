@@ -155,6 +155,14 @@ const FovCalculator = () => {
     );
   }, [dbCameras, cameraSearch]);
 
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgLoaded(false);
+    setImgError(false);
+  }, [obj?.ra, obj?.dec, survey, aladinFovDeg]);
+
   const skyImageUrl = obj?.ra != null && obj?.dec != null && fov.w > 0
     ? getSkyImageUrlWithFov(obj.ra, obj.dec, aladinFovDeg, aladinFovDeg * (fov.h / Math.max(fov.w, 0.001)), survey)
     : null;

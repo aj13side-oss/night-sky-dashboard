@@ -95,7 +95,7 @@ const DeepSkyTonight = () => {
         ))}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 max-h-[500px] overflow-y-auto">
         {filtered.map((item, i) => (
           <DeepSkyRow
             key={item.obj.id}

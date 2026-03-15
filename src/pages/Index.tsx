@@ -43,6 +43,8 @@ const DashboardContent = () => {
           </p>
         </motion.div>
 
+        <EventBanner />
+        <QuickActions />
         <ObservationToolbar />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

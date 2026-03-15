@@ -55,6 +55,7 @@ export default function CelestialEditDialog({ open, onOpenChange, item }: Props)
   const [form, setForm] = useState<Record<string, any>>({});
   const [saving, setSaving] = useState(false);
   const [selectedMonths, setSelectedMonths] = useState<string[]>([]);
+  const [raFormat, setRaFormat] = useState<"degrees" | "hours">("degrees");
   const isNew = !item;
 
   useEffect(() => {

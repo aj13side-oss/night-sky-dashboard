@@ -37,6 +37,7 @@ const App = () => (
               <Route path="/rig-builder" element={<RigBuilder />} />
               <Route path="/light-pollution" element={<LightPollutionMap />} />
               <Route path="/object/:catalogId" element={<ObjectPage />} />
+              <Route path="/planner" element={<SessionPlanner />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

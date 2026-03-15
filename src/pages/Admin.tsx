@@ -16,6 +16,7 @@ import AdminEquipmentCRUD from "@/components/admin/AdminEquipmentCRUD";
 import AdminDataQuality from "@/components/admin/AdminDataQuality";
 import AdminFunctions from "@/components/admin/AdminFunctions";
 import AdminSEO from "@/components/admin/AdminSEO";
+import AdminSolarSystemAudit from "@/components/admin/AdminSolarSystemAudit";
 
 const Admin = () => {
   const navigate = useNavigate();

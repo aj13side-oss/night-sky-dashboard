@@ -426,7 +426,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
             </div>
           )}
           {/* Night Planner */}
-          <NightPlanner targetRa={obj.ra} targetDec={obj.dec} />
+          <NightPlanner targetRa={obj.ra_deg} targetDec={obj.dec_deg} />
 
           {/* Setup Assistant */}
           <SetupAssistant obj={obj} userFocalLength={focalLength} />

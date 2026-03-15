@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { ObservationProvider, useObservation } from "@/contexts/ObservationContext";
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useObjectImage } from "@/hooks/useObjectImage";
-import { useFavorites } from "@/hooks/useFavorites";
 import { useCurrentUser } from "@/hooks/useUserRigs";
 import { calculateAltitude } from "@/lib/visibility";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";

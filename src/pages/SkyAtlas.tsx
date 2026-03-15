@@ -181,7 +181,7 @@ const SkyAtlas = () => {
             </Button>
           </div>
         )}
-        <ToolSuggestions />
+        
       </main>
 
       <Footer />

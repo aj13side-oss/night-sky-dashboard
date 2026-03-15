@@ -16,9 +16,6 @@ const navItems = [
 
 const AppNav = () => {
   const { pathname } = useLocation();
-  const { userId, loading: authLoading } = useCurrentUser();
-  const { count: favCount } = useFavorites();
-  const { openAuthModal } = useAuthModal();
   const [nightVision, setNightVision] = useState(() => localStorage.getItem("nightVision") === "true");
   const [open, setOpen] = useState(false);
 
@@ -26,11 +23,6 @@ const AppNav = () => {
     document.documentElement.classList.toggle("night-vision", nightVision);
     localStorage.setItem("nightVision", String(nightVision));
   }, [nightVision]);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    toast.success("Signed out");
-  };
 
   return (
     <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-10 bg-background/80">

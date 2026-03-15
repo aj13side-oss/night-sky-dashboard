@@ -39,8 +39,8 @@ const DeepSkyTonight = () => {
     const now = date;
     return objects
       .map((obj) => {
-        const alt = calculateAltitude(obj.ra!, obj.dec!, location.lat, location.lng, now);
-        const rs = getObjectRiseSetTransit(obj.ra!, obj.dec!, location.lat, location.lng, now);
+        const alt = calculateAltitude(obj.ra_deg!, obj.dec_deg!, location.lat, location.lng, now);
+        const rs = getObjectRiseSetTransit(obj.ra_deg!, obj.dec_deg!, location.lat, location.lng, now);
         return { obj, alt, rs };
       })
       .filter((item) => !item.rs.neverRises)

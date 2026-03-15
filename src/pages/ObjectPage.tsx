@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Star, Eye, Ruler, Compass, MapPin, Camera, Clock, HelpCircle,
-  Crosshair, Scale, ArrowLeft, Heart, ClipboardList, Loader2,
+  Crosshair, Scale, ArrowLeft, ClipboardList, Loader2,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";

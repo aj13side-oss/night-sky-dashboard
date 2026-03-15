@@ -116,9 +116,9 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
 
   // Stellarium URL
   const stellariumUrl = useMemo(() => {
-    if (!obj || obj.ra == null || obj.dec == null) return null;
+    if (!obj || obj.ra_deg == null || obj.dec_deg == null) return null;
     const id = obj.catalog_id.replace(/\s+/g, "");
-    return `https://stellarium-web.org/skysource/${id}?ra=${obj.ra}&dec=${obj.dec}`;
+    return `https://stellarium-web.org/skysource/${id}?ra=${obj.ra_deg}&dec=${obj.dec_deg}`;
   }, [obj]);
 
   // ESASky URL (new sky.esa.int)

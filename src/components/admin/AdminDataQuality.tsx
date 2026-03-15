@@ -185,6 +185,34 @@ export default function AdminDataQuality() {
           )}
         </CardContent>
       </Card>
+
+      {/* Solar System Objects */}
+      <Card className="border-border/50">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Globe2 className="w-4 h-4" /> Solar System Objects
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {solarStats ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: "Total", value: solarStats.total },
+                { label: "With image", value: solarStats.withImage },
+                { label: "With aliases", value: solarStats.withAliases },
+                { label: "With imaging guide", value: solarStats.withGuide },
+              ].map(s => (
+                <div key={s.label} className="bg-muted/20 rounded p-3 text-center">
+                  <p className="text-xl font-bold font-mono text-foreground">{s.value}</p>
+                  <p className="text-[10px] text-muted-foreground">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Loading...</p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

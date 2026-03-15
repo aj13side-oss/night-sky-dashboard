@@ -120,9 +120,12 @@ const FovCalculator = () => {
   const objFractionH = obj ? obj.sizeArcmin / fov.hArcmin : 0;
 
   const aladinFovDeg = useMemo(() => {
-    const sensorFov = fov.w > 0 ? fov.w : 1.0;
-    const objFov = obj && obj.sizeArcmin > 0 ? (obj.sizeArcmin * 1.5) / 60 : 0;
-    return Math.min(8.0, Math.max(0.1, Math.max(sensorFov, objFov) * 1.2));
+    const sensorFovDeg = fov.w > 0 ? fov.w : 1.0;
+    const objFovDeg = obj && obj.sizeArcmin > 0 ? (obj.sizeArcmin / 60) : 0;
+    if (objFovDeg <= 0) return sensorFovDeg * 1.2;
+    const objectViewFov = objFovDeg * 2.5;
+    const sensorViewFov = sensorFovDeg * 1.3;
+    return Math.min(10.0, Math.max(0.05, Math.max(objectViewFov, sensorViewFov)));
   }, [obj, fov.w]);
 
   const samplingLabel = useMemo(() => {

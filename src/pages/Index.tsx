@@ -12,6 +12,8 @@ import PlanetsTonight from "@/components/dashboard/PlanetsTonight";
 import DeepSkyTonight from "@/components/dashboard/DeepSkyTonight";
 import SpecialEvents from "@/components/dashboard/SpecialEvents";
 import TonightList from "@/components/dashboard/TonightList";
+import EventBanner from "@/components/dashboard/EventBanner";
+import QuickActions from "@/components/dashboard/QuickActions";
 import { motion } from "framer-motion";
 
 const DashboardContent = () => {

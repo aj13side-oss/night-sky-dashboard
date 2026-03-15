@@ -132,8 +132,8 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
   if (!obj) return null;
 
   const alt =
-    obj.ra != null && obj.dec != null
-      ? calculateAltitude(obj.ra, obj.dec, lat, lng)
+    obj.ra_deg != null && obj.dec_deg != null
+      ? calculateAltitude(obj.ra_deg, obj.dec_deg, lat, lng)
       : null;
   const vis = alt != null ? getVisibilityLabel(alt) : null;
 

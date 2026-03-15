@@ -12,7 +12,6 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Telescope, Camera, Save, CheckCircle2, Info } from "lucide-react";
 import { toast } from "sonner";
-import ToolSuggestions from "@/components/ToolSuggestions";
 import { useCameras, useTelescopes } from "@/hooks/useEquipmentCatalog";
 
 interface EquipmentData {
@@ -290,8 +289,6 @@ const EquipmentProfile = () => {
             Stored locally in your browser. Used by the Atlas, FOV calculator, and assistant.
           </p>
         </motion.div>
-
-        <ToolSuggestions />
       </main>
 
       <Footer />

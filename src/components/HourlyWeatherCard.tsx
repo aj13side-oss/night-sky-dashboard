@@ -224,7 +224,6 @@ function scoreColor(score: number): string {
   if (score >= 65) return "hsl(120, 55%, 40%)";
   if (score >= 45) return "hsl(80, 50%, 40%)";
   if (score >= 30) return "hsl(40, 70%, 45%)";
-  if (score >= 35) return "hsl(40, 70%, 45%)";
   return "hsl(0, 60%, 40%)";
 }
 

@@ -44,6 +44,23 @@ export default function AdminDataQuality() {
     staleTime: 1000 * 60 * 5,
   });
 
+  const { data: solarStats } = useQuery({
+    queryKey: ["admin_solar_quality"],
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from("solar_system_objects")
+        .select("id, image_url, search_aliases, recommended_technique")
+        .eq("is_active", true);
+      const items = data ?? [];
+      return {
+        total: items.length,
+        withImage: items.filter((i: any) => !!i.image_url).length,
+        withAliases: items.filter((i: any) => !!i.search_aliases).length,
+        withGuide: items.filter((i: any) => !!i.recommended_technique).length,
+      };
+    },
+    staleTime: 1000 * 60 * 5,
+  });
   const coverage = useMemo(() => {
     const cats = [
       { label: "Cameras", items: cameras ?? [], requiredSpecs: ["pixel_size_um", "sensor_width_mm", "sensor_height_mm"] },

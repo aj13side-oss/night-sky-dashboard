@@ -1,4 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useCurrentUser } from "@/hooks/useUserRigs";
+import { useFavorites } from "@/hooks/useFavorites";
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
@@ -33,12 +36,16 @@ const defaultFilters: CelestialFilters = {
 };
 
 const SkyAtlas = () => {
+  const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState<CelestialFilters>(defaultFilters);
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<CelestialObject | null>(null);
   const [userPos, setUserPos] = useState({ lat: 48.8566, lng: 2.3522 });
   const [visibleTonight, setVisibleTonight] = useState(false);
-  const [filterMode, setFilterMode] = useState("all"); // "all" | "rgb" | "narrowband"
+  const [filterMode, setFilterMode] = useState("all");
+  const [showFavorites, setShowFavorites] = useState(() => searchParams.get("favorites") === "true");
+  const { userId } = useCurrentUser();
+  const { isFavorite, favorites } = useFavorites();
 
   const [equipment, setEquipment] = useState({
     focalLength: 0,
@@ -67,6 +74,10 @@ const SkyAtlas = () => {
     if (!data?.data) return [];
     let results = data.data;
 
+    if (showFavorites && favorites) {
+      results = results.filter((obj) => favorites.has(obj.id));
+    }
+
     if (visibleTonight) {
       results = results.filter((obj) => {
         if (obj.ra == null || obj.dec == null) return false;
@@ -88,7 +99,7 @@ const SkyAtlas = () => {
     }
 
     return results;
-  }, [data?.data, visibleTonight, filterMode, userPos.lat, userPos.lng]);
+  }, [data?.data, visibleTonight, filterMode, userPos.lat, userPos.lng, showFavorites, favorites]);
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 
@@ -134,11 +145,14 @@ const SkyAtlas = () => {
           })}
           types={types}
           constellations={constellations}
-          totalCount={visibleTonight || filterMode !== "all" ? filteredData.length : (data?.count ?? 0)}
+          totalCount={visibleTonight || filterMode !== "all" || showFavorites ? filteredData.length : (data?.count ?? 0)}
           visibleTonightEnabled={visibleTonight}
           onToggleVisibleTonight={() => setVisibleTonight((v) => !v)}
           filterMode={filterMode}
           onFilterModeChange={setFilterMode}
+          favoritesEnabled={showFavorites}
+          onToggleFavorites={() => setShowFavorites((v) => !v)}
+          isLoggedIn={!!userId}
         />
 
         {isLoading ? (

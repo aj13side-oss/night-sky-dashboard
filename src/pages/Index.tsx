@@ -11,7 +11,7 @@ import EphemeridesCard from "@/components/EphemeridesCard";
 import PlanetsTonight from "@/components/dashboard/PlanetsTonight";
 import DeepSkyTonight from "@/components/dashboard/DeepSkyTonight";
 import SpecialEvents from "@/components/dashboard/SpecialEvents";
-
+import TonightList from "@/components/dashboard/TonightList";
 import { motion } from "framer-motion";
 
 const DashboardContent = () => {
@@ -63,9 +63,10 @@ const DashboardContent = () => {
           </div>
         </div>
 
-        <EphemeridesCard />
+        <TonightList />
 
-        
+        <EphemeridesCard />
+import TonightList from "@/components/dashboard/TonightList";
 
         {/* SEO Content Section */}
         <section className="space-y-6 pt-8 border-t border-border/20">

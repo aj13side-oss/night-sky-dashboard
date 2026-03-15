@@ -13,7 +13,6 @@ import BortleInfoPanel from "@/components/lightpollution/BortleInfoPanel";
 import DarkSitesFinder from "@/components/lightpollution/DarkSitesFinder";
 import CitySearch from "@/components/lightpollution/CitySearch";
 import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
-import ToolSuggestions from "@/components/ToolSuggestions";
 import { DarkSite } from "@/lib/dark-sites";
 
 // Fix default marker icons

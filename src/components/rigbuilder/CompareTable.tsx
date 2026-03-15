@@ -160,7 +160,13 @@ export function CompareTable<T extends { id: string; _raw?: Record<string, any> 
                             <ExternalLink className="w-3 h-3" /> Shop
                           </a>
                         )}
-                        {!aff.amazon && !aff.astro && !aff.manufacturer && (
+                        {getFrRetailers(item._raw ?? {}).map(r => (
+                          <a key={r.label} href={r.url} target="_blank" rel="noopener noreferrer"
+                            className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-1">
+                            🇫🇷 {r.label}
+                          </a>
+                        ))}
+                        {!aff.amazon && !aff.astro && !aff.manufacturer && getFrRetailers(item._raw ?? {}).length === 0 && (
                           <span className="text-muted-foreground text-[10px]">—</span>
                         )}
                       </div>

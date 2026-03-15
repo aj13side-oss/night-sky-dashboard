@@ -65,7 +65,7 @@ const DashboardContent = () => {
 
         <EphemeridesCard />
 
-        <ToolSuggestions />
+        
 
         {/* SEO Content Section */}
         <section className="space-y-6 pt-8 border-t border-border/20">

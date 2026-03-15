@@ -7,7 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import { getSkyImageUrlWithFov, type SkyImageSurvey } from "@/lib/sky-images";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import ToolSuggestions from "@/components/ToolSuggestions";
+
 import TargetObjectPicker, { type TargetObject } from "@/components/fov/TargetObjectPicker";
 
 import { useCameras, useTelescopes } from "@/hooks/useEquipmentCatalog";

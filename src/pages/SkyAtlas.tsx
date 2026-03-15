@@ -74,6 +74,10 @@ const SkyAtlas = () => {
     if (!data?.data) return [];
     let results = data.data;
 
+    if (showFavorites && favorites) {
+      results = results.filter((obj) => favorites.has(obj.id));
+    }
+
     if (visibleTonight) {
       results = results.filter((obj) => {
         if (obj.ra == null || obj.dec == null) return false;

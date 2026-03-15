@@ -10,8 +10,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, Globe, Info, ChevronDown, ChevronUp, Telescope, Link as LinkIcon, Paperclip, Crosshair, Scale } from "lucide-react";
+import { Star, MapPin, Eye, Ruler, Compass, HelpCircle, Camera, Clock, ExternalLink, Globe, Info, ChevronDown, ChevronUp, Telescope, Link as LinkIcon, Paperclip, Crosshair, Scale, Heart } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
+import { useFavorites } from "@/hooks/useFavorites";
+import { useCurrentUser } from "@/hooks/useUserRigs";
+import { useAuthModal } from "@/contexts/AuthModalContext";
+import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";

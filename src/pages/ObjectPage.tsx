@@ -121,7 +121,6 @@ const ObjectPage = () => {
     );
   }
 
-  const isFav = isFavorite(obj.id);
   const inList = isInList(obj.catalog_id);
 
   return (

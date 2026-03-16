@@ -20,6 +20,24 @@ import { AlertTriangle } from "lucide-react";
 
 const DEFAULT_TARGET: TargetObject = { name: "M31 — Andromeda", sizeArcmin: 178, exposureFast: 30, exposureDeep: 120, ra: 10.6847, dec: 41.2687 };
 
+const BARLOW_OPTIONS = [
+  { value: "0.5", label: "0.5× Reducer" },
+  { value: "0.6", label: "0.6× Reducer" },
+  { value: "0.63", label: "0.63× Reducer (Celestron)" },
+  { value: "0.7", label: "0.7× Reducer (Askar)" },
+  { value: "0.73", label: "0.73× Reducer (Takahashi)" },
+  { value: "0.77", label: "0.77× Reducer (Starizona)" },
+  { value: "0.8", label: "0.8× Reducer" },
+  { value: "0.85", label: "0.85× Reducer (Sky-Watcher)" },
+  { value: "1", label: "None (1×)" },
+  { value: "1.5", label: "1.5× Barlow" },
+  { value: "2", label: "2× Barlow" },
+  { value: "2.5", label: "2.5× Powermate" },
+  { value: "3", label: "3× Barlow" },
+  { value: "4", label: "4× Powermate" },
+  { value: "5", label: "5× Powermate" },
+];
+
 const FovCalculator = () => {
   const [searchParams] = useSearchParams();
   const { data: dbTelescopes } = useTelescopes();

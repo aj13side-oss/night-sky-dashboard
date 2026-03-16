@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Telescope, Map, Crosshair, Home, Eclipse, Settings, Scale, EyeOff, Eye, Menu, ClipboardList, Moon } from "lucide-react";
+import { Telescope, Map, Crosshair, Home, Eclipse, Settings, Scale, EyeOff, Eye, Menu, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -9,7 +9,6 @@ const navItems = [
   { to: "/tonight", label: "Tonight", icon: Moon, group: "plan" },
   { to: "/sky-atlas", label: "Atlas", icon: Map, group: "plan" },
   { to: "/fov-calculator", label: "FOV", icon: Crosshair, group: "plan" },
-  { to: "/planner", label: "Planner", icon: ClipboardList, group: "plan" },
   { to: "/light-pollution", label: "Light Pollution", icon: Eclipse, group: "tools" },
   { to: "/rig-builder", label: "Rig Builder", icon: Scale, group: "tools" },
   { to: "/equipment", label: "Gear", icon: Settings, group: "tools" },

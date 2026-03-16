@@ -84,7 +84,7 @@ const SkyAtlas = () => {
     } catch {}
   }, []);
 
-  useEffect(() => setPage(0), [filters]);
+  useEffect(() => { setPage(0); setClientPage(0); }, [filters, visibleTonight, filterMode]);
 
   // Client-side filters: visible tonight + filter mode
   const filteredData = useMemo(() => {

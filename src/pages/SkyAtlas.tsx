@@ -42,9 +42,11 @@ const SkyAtlas = () => {
   const [filters, setFilters] = useState<CelestialFilters>(defaultFilters);
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<CelestialObject | null>(null);
-  const [userPos, setUserPos] = useState({ lat: 48.8566, lng: 2.3522 });
+  const [userPos, setUserPos] = useState({ lat: 45.7347, lng: 4.4931 });
   const [visibleTonight, setVisibleTonight] = useState(false);
   const [filterMode, setFilterMode] = useState("all");
+  const [clientPage, setClientPage] = useState(0);
+  const CLIENT_PAGE_SIZE = 20;
   const { userId } = useCurrentUser();
 
   const [equipment, setEquipment] = useState({
@@ -82,7 +84,7 @@ const SkyAtlas = () => {
     } catch {}
   }, []);
 
-  useEffect(() => setPage(0), [filters]);
+  useEffect(() => { setPage(0); setClientPage(0); }, [filters, visibleTonight, filterMode]);
 
   // Client-side filters: visible tonight + filter mode
   const filteredData = useMemo(() => {
@@ -113,6 +115,14 @@ const SkyAtlas = () => {
   }, [data?.data, visibleTonight, filterMode, userPos.lat, userPos.lng]);
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
+
+  const isClientFiltered = visibleTonight || filterMode !== "all";
+  const paginatedData = useMemo(() => {
+    if (!isClientFiltered) return filteredData;
+    const start = clientPage * CLIENT_PAGE_SIZE;
+    return filteredData.slice(start, start + CLIENT_PAGE_SIZE);
+  }, [filteredData, clientPage, isClientFiltered]);
+  const clientTotalPages = Math.ceil(filteredData.length / CLIENT_PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-background star-field">
@@ -206,7 +216,7 @@ const SkyAtlas = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {filteredData.map((obj, i) => (
+            {paginatedData.map((obj, i) => (
               <ObjectCard
                 key={obj.id}
                 obj={obj}
@@ -220,7 +230,8 @@ const SkyAtlas = () => {
           </div>
         )}
 
-        {!visibleTonight && filterMode === "all" && totalPages > 1 && (
+        {/* Server-side pagination */}
+        {!isClientFiltered && totalPages > 1 && (
           <div className="flex items-center justify-center gap-4 pt-4">
             <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)} className="gap-1">
               <ChevronLeft className="w-4 h-4" /> Prev
@@ -229,6 +240,21 @@ const SkyAtlas = () => {
               {page + 1} / {totalPages}
             </span>
             <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)} className="gap-1">
+              Next <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+
+        {/* Client-side pagination for filtered views */}
+        {isClientFiltered && clientTotalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 pt-4">
+            <Button variant="outline" size="sm" disabled={clientPage === 0} onClick={() => setClientPage((p) => p - 1)} className="gap-1">
+              <ChevronLeft className="w-4 h-4" /> Prev
+            </Button>
+            <span className="text-sm text-muted-foreground font-mono">
+              {clientPage + 1} / {clientTotalPages}
+            </span>
+            <Button variant="outline" size="sm" disabled={clientPage >= clientTotalPages - 1} onClick={() => setClientPage((p) => p + 1)} className="gap-1">
               Next <ChevronRight className="w-4 h-4" />
             </Button>
           </div>

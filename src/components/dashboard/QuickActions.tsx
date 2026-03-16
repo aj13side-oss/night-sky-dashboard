@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
 const actions = [
-  { label: "Plan Tonight's Session", icon: ClipboardList, to: "/planner" },
-  { label: "Open Atlas", icon: Map, to: "/sky-atlas?filter=tonight" },
+  { label: "Tonight's Best", icon: ClipboardList, to: "/sky-atlas?filter=tonight" },
+  { label: "Open Atlas", icon: Map, to: "/sky-atlas" },
   { label: "Frame Object", icon: Crosshair, to: "/fov-calculator" },
   { label: "Check Light Pollution", icon: Eclipse, to: "/light-pollution" },
 ];

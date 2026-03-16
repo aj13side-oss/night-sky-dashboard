@@ -2,6 +2,7 @@ import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -36,8 +37,8 @@ const BORTLE_SCALE = [
 ];
 
 const LightPollutionMap = () => {
-  const [lat, setLat] = useState(48.8566);
-  const [lng, setLng] = useState(2.3522);
+  const [lat, setLat] = useState(45.7347);
+  const [lng, setLng] = useState(4.4931);
   const [overlayOpacity, setOverlayOpacity] = useState([0.6]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [clickedPoint, setClickedPoint] = useState<{ lat: number; lng: number; bortle: number } | null>(null);
@@ -116,7 +117,7 @@ const LightPollutionMap = () => {
           setLng(pos.coords.longitude);
           mapRef.current?.setView([pos.coords.latitude, pos.coords.longitude], 10);
         },
-        () => alert("Geolocation denied or unavailable")
+        () => toast.error("Location access denied — use the search bar instead.")
       );
     }
   };

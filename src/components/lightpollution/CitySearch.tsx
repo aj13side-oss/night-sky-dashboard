@@ -57,7 +57,7 @@ const CitySearch = ({ onSelectCity }: Props) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (query.trim().length >= 3) handleSearch();
-    }, 300);
+    }, 500);
     return () => clearTimeout(timeout);
   }, [query]);
 

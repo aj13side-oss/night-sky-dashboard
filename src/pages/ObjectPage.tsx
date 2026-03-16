@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CelestialObject } from "@/hooks/useCelestialObjects";
@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Star, Eye, Ruler, Compass, MapPin, Camera, Clock, HelpCircle,
-  Crosshair, Scale, ArrowLeft, ClipboardList, Loader2,
+  Crosshair, Scale, ArrowLeft, ClipboardList, Loader2, Telescope,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
@@ -35,7 +35,7 @@ const ObjectPage = () => {
   const [showExposureInfo, setShowExposureInfo] = useState(false);
 
   // Geolocation
-  const [pos, setPos] = useState({ lat: 48.8566, lng: 2.3522 });
+  const [pos, setPos] = useState({ lat: 45.7347, lng: 4.4931 });
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
       (p) => setPos({ lat: p.coords.latitude, lng: p.coords.longitude }),
@@ -261,10 +261,13 @@ const ObjectPage = () => {
             onClick={() => navigate(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`)}>
             <Crosshair className="w-4 h-4" /> Frame in FOV Calculator
           </Button>
-          <Button variant="outline" className="gap-2" onClick={() => navigate("/rig-builder")}>
+          <Button variant="outline" className="gap-2" onClick={() => navigate("/equipment")}>
             <Scale className="w-4 h-4" /> Compare in Rig Builder
           </Button>
         </div>
+
+        {/* Similar Objects */}
+        <SimilarObjects obj={obj} />
       </main>
 
       <Footer />
@@ -279,5 +282,70 @@ const InfoItem = ({ icon, label, value }: { icon: React.ReactNode; label: string
     <p className="text-sm font-medium text-foreground">{value}</p>
   </div>
 );
+
+const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
+  const { data: similar } = useQuery({
+    queryKey: ["similar-objects", obj.id, obj.obj_type, obj.constellation],
+    queryFn: async () => {
+      let { data } = await (supabase as any)
+        .from("celestial_objects")
+        .select("id, catalog_id, common_name, obj_type, constellation, photo_score, forced_image_url, magnitude")
+        .eq("obj_type", obj.obj_type)
+        .eq("constellation", obj.constellation)
+        .neq("id", obj.id)
+        .order("photo_score", { ascending: false })
+        .limit(6);
+      if (!data || data.length < 4) {
+        const { data: broader } = await (supabase as any)
+          .from("celestial_objects")
+          .select("id, catalog_id, common_name, obj_type, constellation, photo_score, forced_image_url, magnitude")
+          .eq("obj_type", obj.obj_type)
+          .neq("id", obj.id)
+          .order("photo_score", { ascending: false })
+          .limit(6);
+        data = broader;
+      }
+      return data ?? [];
+    },
+    enabled: !!obj,
+    staleTime: Infinity,
+  });
+
+  if (!similar || similar.length === 0) return null;
+
+  return (
+    <section className="space-y-3">
+      <div className="flex items-center gap-2">
+        <Telescope className="w-4 h-4 text-primary" />
+        <h2 className="text-sm font-semibold text-foreground">Similar Objects</h2>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {similar.map((s: any) => (
+          <Link
+            key={s.id}
+            to={`/object/${encodeURIComponent(s.catalog_id)}`}
+            className="glass-card rounded-xl p-3 hover:bg-secondary/50 transition-colors space-y-2"
+          >
+            {s.forced_image_url && (
+              <img src={s.forced_image_url} alt={s.catalog_id} className="w-full h-20 object-cover rounded-lg bg-black" />
+            )}
+            <div>
+              <p className="text-xs font-semibold text-foreground truncate">{s.catalog_id}</p>
+              {s.common_name && <p className="text-[10px] text-primary truncate">{s.common_name}</p>}
+              <div className="flex items-center gap-1.5 mt-1">
+                {s.photo_score && (
+                  <Badge variant="secondary" className="text-[9px] px-1 py-0">⭐ {s.photo_score}</Badge>
+                )}
+                {s.magnitude && (
+                  <span className="text-[9px] text-muted-foreground">mag {s.magnitude.toFixed(1)}</span>
+                )}
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+};
 
 export default ObjectPage;

@@ -446,23 +446,36 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
             <AltitudeChart ra={obj.ra_deg} dec={obj.dec_deg} lat={lat} lng={lng} />
           )}
 
-          {/* FOV Calculator link — prominent */}
-          <Button
-            variant="outline"
-            className="w-full gap-2 border-primary/30 hover:bg-primary/10"
-            onClick={() => navigate(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`)}
-          >
-            <Crosshair className="w-4 h-4" /> Frame this object in FOV Calculator
-          </Button>
-
-          {/* Rig Builder link */}
-          <Button
-            variant="outline"
-            className="w-full gap-2"
-            onClick={() => navigate('/rig-builder')}
-          >
-            <Scale className="w-4 h-4" /> Compare equipment in Rig Builder
-          </Button>
+          {/* Action buttons */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => {
+                onClose();
+                navigate(`/object/${encodeURIComponent(obj.catalog_id)}`);
+              }}
+            >
+              <ExternalLink className="w-3.5 h-3.5" /> Open Full Page
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 border-primary/30 hover:bg-primary/10"
+              onClick={() => navigate(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`)}
+            >
+              <Crosshair className="w-3.5 h-3.5" /> Frame in FOV
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => navigate('/equipment')}
+            >
+              <Scale className="w-3.5 h-3.5" /> Rig Builder
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 

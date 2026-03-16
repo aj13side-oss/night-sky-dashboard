@@ -8,7 +8,6 @@ import Index from "./pages/Index";
 import SkyAtlas from "./pages/SkyAtlas";
 import FovCalculator from "./pages/FovCalculator";
 import EquipmentProfile from "./pages/EquipmentProfile";
-import RigBuilder from "./pages/RigBuilder";
 import LightPollutionMap from "./pages/LightPollutionMap";
 import ObjectPage from "./pages/ObjectPage";
 import Admin from "./pages/Admin";

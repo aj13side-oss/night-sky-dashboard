@@ -530,6 +530,8 @@ const FovCalculator = () => {
                                 height: `${(1 / 1.3) * 100}%`,
                                 left: `${50 - (1 / 1.3) * 50}%`,
                                 top: `${50 - (1 / 1.3) * 50}%`,
+                                transform: `rotate(${rotation}deg)`,
+                                transformOrigin: 'center center',
                               }}
                             />
                             {/* Blue object circle — true scale */}

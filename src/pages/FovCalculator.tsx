@@ -6,6 +6,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { getSkyImageUrlWithFov, type SkyImageSurvey } from "@/lib/sky-images";
 
 import TargetObjectPicker, { type TargetObject } from "@/components/fov/TargetObjectPicker";

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Telescope, Map, Crosshair, Home, Eclipse, Settings, EyeOff, Eye, Menu } from "lucide-react";
+import { Map, Crosshair, Home, Eclipse, Settings, EyeOff, Eye, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";

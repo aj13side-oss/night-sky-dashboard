@@ -129,8 +129,10 @@ const FovCalculator = () => {
       pixelSize,
       telescopeId: telescopeId !== "custom" ? telescopeId : undefined,
       cameraId: cameraId !== "custom" ? cameraId : undefined,
+      barlow,
+      rotation,
     }));
-  }, [effectiveFL, sensorW, sensorH, pixelSize, telescopeId, cameraId]);
+  }, [effectiveFL, sensorW, sensorH, pixelSize, telescopeId, cameraId, barlow, rotation]);
 
   // Instant FOV for results
   const fov = useMemo(() => {

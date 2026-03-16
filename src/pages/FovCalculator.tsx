@@ -75,6 +75,8 @@ const FovCalculator = () => {
         if (parsed.sensorWidth) setSensorW(parsed.sensorWidth);
         if (parsed.sensorHeight) setSensorH(parsed.sensorHeight);
         if (parsed.pixelSize) setPixelSize(parsed.pixelSize);
+        if (parsed.barlow) setBarlow(parsed.barlow);
+        if (parsed.rotation != null) setRotation(parsed.rotation);
       }
     } catch {}
   }, []);

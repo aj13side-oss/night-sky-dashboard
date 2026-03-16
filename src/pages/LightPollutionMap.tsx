@@ -36,8 +36,8 @@ const BORTLE_SCALE = [
 ];
 
 const LightPollutionMap = () => {
-  const [lat, setLat] = useState(48.8566);
-  const [lng, setLng] = useState(2.3522);
+  const [lat, setLat] = useState(45.7347);
+  const [lng, setLng] = useState(4.4931);
   const [overlayOpacity, setOverlayOpacity] = useState([0.6]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [clickedPoint, setClickedPoint] = useState<{ lat: number; lng: number; bortle: number } | null>(null);

@@ -26,14 +26,12 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/tonight" element={<TonightPage />} />
             <Route path="/sky-atlas" element={<SkyAtlas />} />
             <Route path="/fov-calculator" element={<FovCalculator />} />
             <Route path="/equipment" element={<EquipmentProfile />} />
-            <Route path="/rig-builder" element={<RigBuilder />} />
+            <Route path="/rig-builder" element={<Navigate to="/equipment" replace />} />
             <Route path="/light-pollution" element={<LightPollutionMap />} />
             <Route path="/object/:catalogId" element={<ObjectPage />} />
-            <Route path="/planner" element={<Navigate to="/tonight" replace />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

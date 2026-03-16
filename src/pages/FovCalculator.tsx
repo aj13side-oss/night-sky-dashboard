@@ -517,8 +517,8 @@ const FovCalculator = () => {
                     {/* Sensor FOV overlay */}
                     {imgLoaded && (
                       <div className="absolute inset-0 pointer-events-none z-10">
-                        <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/30" />
-                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/30" />
+                        <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/30" style={{ transform: `rotate(${rotation}deg)`, transformOrigin: 'center center' }} />
+                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/30" style={{ transform: `rotate(${rotation}deg)`, transformOrigin: 'center center' }} />
 
                         {isSolar ? (
                           <>

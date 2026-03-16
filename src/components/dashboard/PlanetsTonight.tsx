@@ -1,33 +1,12 @@
 import { useAstronomyData, PlanetData } from "@/hooks/useAstronomyData";
+import { useSolarSystemObjects } from "@/hooks/useSolarSystemObjects";
 import { motion } from "framer-motion";
 import { Globe, Loader2 } from "lucide-react";
-
-const PLANET_COLORS: Record<string, { bg: string; ring?: boolean }> = {
-  Mercury: { bg: "#a0a0a0" },
-  Venus: { bg: "#f5e6b8" },
-  Mars: { bg: "#c1440e" },
-  Jupiter: { bg: "#c88b3a" },
-  Saturn: { bg: "#e8d191", ring: true },
-  Uranus: { bg: "#73c2c6" },
-  Neptune: { bg: "#3f54ba" },
-};
-
-const PlanetIcon = ({ name }: { name: string }) => {
-  const config = PLANET_COLORS[name];
-  if (!config) return <span className="text-lg w-7 text-center">🪐</span>;
-
-  return (
-    <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0">
-      <circle cx="12" cy="12" r="8" fill={config.bg} />
-      {config.ring && (
-        <ellipse cx="12" cy="12" rx="12" ry="4" fill="none" stroke={config.bg} strokeWidth="1.5" opacity="0.6" transform="rotate(-20 12 12)" />
-      )}
-    </svg>
-  );
-};
+import type { SolarSystemObject } from "@/hooks/useSolarSystemObjects";
 
 const PlanetsTonight = () => {
   const { data, isLoading } = useAstronomyData();
+  const { data: solarObjects } = useSolarSystemObjects();
   const planets = data?.planets;
 
   if (isLoading) {
@@ -54,7 +33,7 @@ const PlanetsTonight = () => {
       ) : (
         <div className="space-y-1.5">
           {entries.map(([name, planet], i) => (
-            <PlanetRow key={name} name={name} planet={planet} index={i} />
+            <PlanetRow key={name} name={name} planet={planet} index={i} solarObjects={solarObjects} />
           ))}
         </div>
       )}
@@ -62,9 +41,11 @@ const PlanetsTonight = () => {
   );
 };
 
-const PlanetRow = ({ name, planet, index }: { name: string; planet: PlanetData; index: number }) => {
+const PlanetRow = ({ name, planet, index, solarObjects }: { name: string; planet: PlanetData; index: number; solarObjects?: SolarSystemObject[] }) => {
   const isVisible = planet.transitAlt != null && planet.transitAlt > 0;
   const hasRise = !!planet.rise;
+  const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+  const ssoMatch = solarObjects?.find(o => o.name.toLowerCase() === name.toLowerCase());
 
   let statusDot: string;
   let statusText: string;
@@ -87,10 +68,18 @@ const PlanetRow = ({ name, planet, index }: { name: string; planet: PlanetData; 
       transition={{ delay: index * 0.05 }}
       className="flex items-center gap-2.5 p-2 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors"
     >
-      <PlanetIcon name={name} />
+      {ssoMatch?.image_url ? (
+        <img
+          src={ssoMatch.image_url}
+          alt={displayName}
+          className="w-7 h-7 rounded-full object-cover shrink-0"
+        />
+      ) : (
+        <span className="text-lg w-7 text-center">🪐</span>
+      )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <p className="text-sm font-medium text-foreground">{name}</p>
+          <p className="text-sm font-medium text-foreground">{displayName}</p>
           <span className={`w-1.5 h-1.5 rounded-full ${statusDot}`} />
           <span className="text-[10px] text-muted-foreground">{statusText}</span>
         </div>

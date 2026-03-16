@@ -28,6 +28,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/tonight" element={<TonightPage />} />
             <Route path="/sky-atlas" element={<SkyAtlas />} />
             <Route path="/fov-calculator" element={<FovCalculator />} />
             <Route path="/equipment" element={<EquipmentProfile />} />

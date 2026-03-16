@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: Home, group: "plan" },
+  { to: "/tonight", label: "Tonight", icon: Moon, group: "plan" },
   { to: "/sky-atlas", label: "Atlas", icon: Map, group: "plan" },
   { to: "/fov-calculator", label: "FOV", icon: Crosshair, group: "plan" },
   { to: "/planner", label: "Planner", icon: ClipboardList, group: "plan" },

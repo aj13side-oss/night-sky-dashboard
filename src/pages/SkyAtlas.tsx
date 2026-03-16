@@ -116,6 +116,14 @@ const SkyAtlas = () => {
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 
+  const isClientFiltered = visibleTonight || filterMode !== "all";
+  const paginatedData = useMemo(() => {
+    if (!isClientFiltered) return filteredData;
+    const start = clientPage * CLIENT_PAGE_SIZE;
+    return filteredData.slice(start, start + CLIENT_PAGE_SIZE);
+  }, [filteredData, clientPage, isClientFiltered]);
+  const clientTotalPages = Math.ceil(filteredData.length / CLIENT_PAGE_SIZE);
+
   return (
     <div className="min-h-screen bg-background star-field">
       <SEOHead

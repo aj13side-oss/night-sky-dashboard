@@ -11,7 +11,6 @@ import EquipmentProfile from "./pages/EquipmentProfile";
 import RigBuilder from "./pages/RigBuilder";
 import LightPollutionMap from "./pages/LightPollutionMap";
 import ObjectPage from "./pages/ObjectPage";
-import TonightPage from "./pages/TonightPage";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import NotFound from "./pages/NotFound";

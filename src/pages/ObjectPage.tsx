@@ -35,7 +35,7 @@ const ObjectPage = () => {
   const [showExposureInfo, setShowExposureInfo] = useState(false);
 
   // Geolocation
-  const [pos, setPos] = useState({ lat: 48.8566, lng: 2.3522 });
+  const [pos, setPos] = useState({ lat: 45.7347, lng: 4.4931 });
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
       (p) => setPos({ lat: p.coords.latitude, lng: p.coords.longitude }),

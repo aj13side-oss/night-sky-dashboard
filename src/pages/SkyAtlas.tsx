@@ -42,7 +42,7 @@ const SkyAtlas = () => {
   const [filters, setFilters] = useState<CelestialFilters>(defaultFilters);
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<CelestialObject | null>(null);
-  const [userPos, setUserPos] = useState({ lat: 48.8566, lng: 2.3522 });
+  const [userPos, setUserPos] = useState({ lat: 45.7347, lng: 4.4931 });
   const [visibleTonight, setVisibleTonight] = useState(false);
   const [filterMode, setFilterMode] = useState("all");
   const { userId } = useCurrentUser();

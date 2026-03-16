@@ -556,6 +556,8 @@ const FovCalculator = () => {
                                   height: `${Math.min((fov.h / aladinFovDeg) * 100, 98)}%`,
                                   left: `${50 - Math.min((fov.w / aladinFovDeg) * 50, 49)}%`,
                                   top: `${50 - Math.min((fov.h / aladinFovDeg) * 50, 49)}%`,
+                                  transform: `rotate(${rotation}deg)`,
+                                  transformOrigin: 'center center',
                                 }}
                               />
                             )}

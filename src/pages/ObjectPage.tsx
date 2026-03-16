@@ -261,10 +261,13 @@ const ObjectPage = () => {
             onClick={() => navigate(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`)}>
             <Crosshair className="w-4 h-4" /> Frame in FOV Calculator
           </Button>
-          <Button variant="outline" className="gap-2" onClick={() => navigate("/rig-builder")}>
+          <Button variant="outline" className="gap-2" onClick={() => navigate("/equipment")}>
             <Scale className="w-4 h-4" /> Compare in Rig Builder
           </Button>
         </div>
+
+        {/* Similar Objects */}
+        <SimilarObjects obj={obj} />
       </main>
 
       <Footer />

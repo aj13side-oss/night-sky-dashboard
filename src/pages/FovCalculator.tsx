@@ -305,7 +305,14 @@ const FovCalculator = () => {
               </div>
               <div className="space-y-1">
                 <Label className="text-xs text-muted-foreground">Barlow / Reducer</Label>
-                <Input type="number" step="0.1" value={barlow} onChange={(e) => setBarlow(Number(e.target.value))} className="bg-secondary/50 font-mono" />
+                <Select value={String(barlow)} onValueChange={(v) => setBarlow(Number(v))}>
+                  <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {BARLOW_OPTIONS.map(opt => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

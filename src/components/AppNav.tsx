@@ -25,8 +25,8 @@ const AppNav = () => {
   return (
     <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-10 bg-background/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
-          <Telescope className="w-6 h-6 text-primary" />
+        <Link to="/" className="flex items-center gap-2.5">
+          <img src="/icon-192.png" alt="Cosmic Frame" className="w-7 h-7 rounded-full" />
           <span className="text-xl font-bold text-gradient-gold">Cosmic Frame</span>
         </Link>
 

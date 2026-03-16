@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import { ObservationProvider, useObservation } from "@/contexts/ObservationContext";
 import AppNav from "@/components/AppNav";
 import Footer from "@/components/Footer";
@@ -10,20 +10,17 @@ import WeatherTimeline from "@/components/tonight/WeatherTimeline";
 import ImagingStrategy from "@/components/tonight/ImagingStrategy";
 import SessionPlanner, { SessionTarget } from "@/components/tonight/SessionPlanner";
 import ObservationToolbar from "@/components/ObservationToolbar";
-import { useAstronomyData } from "@/hooks/useAstronomyData";
 import { useQuery } from "@tanstack/react-query";
 import { getMoonPhaseInfo } from "@/lib/moon-phase";
 import { motion } from "framer-motion";
 
 const TonightContent = () => {
   const { date, location } = useObservation();
-  const { data: astro } = useAstronomyData();
   const moon = getMoonPhaseInfo(date);
   const [sessionIds, setSessionIds] = useState<string[]>([]);
   const [showToolbar, setShowToolbar] = useState(false);
   const [sessionTargets, setSessionTargets] = useState<SessionTarget[]>([]);
 
-  // Simple observation score from weather
   const dateStr = date.toISOString().split("T")[0];
   const { data: weatherData } = useQuery({
     queryKey: ["weather-score-tonight", location.lat, location.lng, dateStr],
@@ -45,7 +42,6 @@ const TonightContent = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Compute simple score from clouds
   const nightHours = (weatherData?.openMeteo ?? []).filter((h: any) => {
     const normalized = h.time.replace(" ", "T");
     const hourNum = parseInt(normalized.split("T")[1]?.split(":")[0] ?? "0");
@@ -62,7 +58,6 @@ const TonightContent = () => {
 
   const obsScore = avgClouds !== null ? Math.round(Math.max(0, 100 - avgClouds)) : null;
 
-  // Find best clear hour
   const bestClearHour = nightHours.length > 0
     ? (() => {
         const best = nightHours.reduce((a: any, b: any) => (a.clouds < b.clouds ? a : b));
@@ -77,12 +72,6 @@ const TonightContent = () => {
   const removeFromSession = useCallback((catalogId: string) => {
     setSessionIds((prev) => prev.filter((id) => id !== catalogId));
   }, []);
-
-  // Dummy ranked targets for ImagingStrategy (will be populated from TonightTargetList data)
-  // For simplicity, pass empty — the strategy card can work with the session targets
-  const rankedForStrategy = sessionTargets.length > 0
-    ? [] // ImagingStrategy uses its own targets prop
-    : [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -108,7 +97,6 @@ const TonightContent = () => {
         <TimelineBar />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main content */}
           <div className="lg:col-span-2 space-y-6">
             <WeatherTimeline />
 
@@ -124,12 +112,12 @@ const TonightContent = () => {
             />
           </div>
 
-          {/* Sidebar — Session Planner */}
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-20 space-y-4">
               <SessionPlanner
                 sessionIds={sessionIds}
                 onRemove={removeFromSession}
+                onAdd={addToSession}
                 onUpdateTargets={setSessionTargets}
               />
             </div>

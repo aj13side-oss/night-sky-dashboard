@@ -5,21 +5,29 @@ import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useObservation } from "@/contexts/ObservationContext";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { formatCatalogId } from "@/lib/format-catalog";
+import { calculateAltitude } from "@/lib/visibility";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { X, Copy, Trash2, GripVertical, Clock, ChevronUp, ChevronDown } from "lucide-react";
+import {
+  X, Copy, Trash2, Clock, ChevronUp, ChevronDown, Search,
+  Sparkles, Check, Loader2, ArrowUp, ArrowDown,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 
 const STORAGE_KEY = "cosmicframe_tonight_session";
 const OVERHEAD_PER_TARGET_MIN = 10;
 
+type TargetStatus = "queued" | "imaging" | "done";
+
 export interface SessionTarget {
   catalogId: string;
   exposureSec: number;
   numSubs: number;
+  status: TargetStatus;
+  notes: string;
 }
 
 function defaultExposure(objType: string | null): number {
@@ -46,14 +54,16 @@ function saveSession(dateStr: string, targets: SessionTarget[]) {
 interface SessionPlannerProps {
   sessionIds: string[];
   onRemove: (catalogId: string) => void;
+  onAdd: (catalogId: string) => void;
   onUpdateTargets: (targets: SessionTarget[]) => void;
 }
 
-const SessionPlanner = ({ sessionIds, onRemove, onUpdateTargets }: SessionPlannerProps) => {
+const SessionPlanner = ({ sessionIds, onRemove, onAdd, onUpdateTargets }: SessionPlannerProps) => {
   const { date, location } = useObservation();
   const dateStr = date.toISOString().split("T")[0];
   const [targets, setTargets] = useState<SessionTarget[]>(() => loadSession(dateStr));
   const [collapsed, setCollapsed] = useState(false);
+  const [search, setSearch] = useState("");
 
   // Sync when sessionIds change (new items added externally)
   useEffect(() => {
@@ -61,7 +71,7 @@ const SessionPlanner = ({ sessionIds, onRemove, onUpdateTargets }: SessionPlanne
       const existing = new Set(prev.map((t) => t.catalogId));
       const newItems = sessionIds
         .filter((id) => !existing.has(id))
-        .map((id) => ({ catalogId: id, exposureSec: 120, numSubs: 50 }));
+        .map((id) => ({ catalogId: id, exposureSec: 120, numSubs: 50, status: "queued" as TargetStatus, notes: "" }));
       if (newItems.length === 0 && prev.length === sessionIds.length) return prev;
       const filtered = prev.filter((t) => sessionIds.includes(t.catalogId));
       return [...filtered, ...newItems];
@@ -72,6 +82,52 @@ const SessionPlanner = ({ sessionIds, onRemove, onUpdateTargets }: SessionPlanne
     saveSession(dateStr, targets);
     onUpdateTargets(targets);
   }, [targets, dateStr]);
+
+  // Search for objects
+  const { data: searchResults, isLoading: searching } = useQuery({
+    queryKey: ["planner-search", search],
+    queryFn: async () => {
+      if (search.trim().length < 2) return [];
+      const { data } = await (supabase as any)
+        .from("celestial_objects")
+        .select("*")
+        .or(`catalog_id.ilike.%${search}%,common_name.ilike.%${search}%`)
+        .order("photo_score", { ascending: false })
+        .limit(10);
+      return (data ?? []) as CelestialObject[];
+    },
+    enabled: search.trim().length >= 2,
+    staleTime: 30_000,
+  });
+
+  // Auto-suggest top 5
+  const { data: topTargets } = useQuery({
+    queryKey: ["planner-suggest", location.lat, location.lng, date.toDateString()],
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from("celestial_objects")
+        .select("*")
+        .gte("photo_score", 5)
+        .not("ra_deg", "is", null)
+        .not("dec_deg", "is", null)
+        .order("photo_score", { ascending: false })
+        .limit(100);
+      const objs = (data ?? []) as CelestialObject[];
+      return objs
+        .filter((o) => {
+          if (o.ra_deg == null || o.dec_deg == null) return false;
+          const alt = calculateAltitude(o.ra_deg, o.dec_deg, location.lat, location.lng);
+          return alt > 10;
+        })
+        .sort((a, b) => {
+          const altA = calculateAltitude(a.ra_deg!, a.dec_deg!, location.lat, location.lng);
+          const altB = calculateAltitude(b.ra_deg!, b.dec_deg!, location.lat, location.lng);
+          return (b.photo_score ?? 0) + altB * 0.2 - ((a.photo_score ?? 0) + altA * 0.2);
+        })
+        .slice(0, 5);
+    },
+    staleTime: 60_000,
+  });
 
   // Fetch objects for catalog IDs in session
   const { data: objects } = useQuery({
@@ -93,24 +149,20 @@ const SessionPlanner = ({ sessionIds, onRemove, onUpdateTargets }: SessionPlanne
     return map;
   }, [objects]);
 
-  // Sort targets by transit time
   const sortedTargets = useMemo(() => {
     return [...targets].sort((a, b) => {
       const objA = objMap.get(a.catalogId);
       const objB = objMap.get(b.catalogId);
       if (!objA || !objB) return 0;
-      const rsA = getObjectRiseSetTransit(objA.ra_deg!, objA.dec_deg!, location.lat, location.lng, date);
-      const rsB = getObjectRiseSetTransit(objB.ra_deg!, objB.dec_deg!, location.lat, location.lng, date);
-      const tA = rsA.transitTime?.getTime() ?? 0;
-      const tB = rsB.transitTime?.getTime() ?? 0;
-      return tA - tB;
+      if (objA.ra_deg == null || objA.dec_deg == null || objB.ra_deg == null || objB.dec_deg == null) return 0;
+      const rsA = getObjectRiseSetTransit(objA.ra_deg, objA.dec_deg, location.lat, location.lng, date);
+      const rsB = getObjectRiseSetTransit(objB.ra_deg, objB.dec_deg, location.lat, location.lng, date);
+      return (rsA.transitTime?.getTime() ?? 0) - (rsB.transitTime?.getTime() ?? 0);
     });
   }, [targets, objMap, location, date]);
 
   const totalMinutes = useMemo(() => {
-    return targets.reduce((sum, t) => {
-      return sum + (t.exposureSec * t.numSubs) / 60 + OVERHEAD_PER_TARGET_MIN;
-    }, 0);
+    return targets.reduce((sum, t) => sum + (t.exposureSec * t.numSubs) / 60 + OVERHEAD_PER_TARGET_MIN, 0);
   }, [targets]);
 
   const updateTarget = useCallback((catalogId: string, update: Partial<SessionTarget>) => {
@@ -134,7 +186,14 @@ const SessionPlanner = ({ sessionIds, onRemove, onUpdateTargets }: SessionPlanne
       const obj = objMap.get(t.catalogId);
       const name = obj ? (obj.common_name ? `${obj.catalog_id} (${obj.common_name})` : obj.catalog_id) : t.catalogId;
       const totalMin = Math.round((t.exposureSec * t.numSubs) / 60);
-      return `${i + 1}. ${name} — ${t.numSubs}×${t.exposureSec}s (${totalMin}m)`;
+      const rs = obj?.ra_deg != null && obj?.dec_deg != null
+        ? getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, location.lat, location.lng, date)
+        : null;
+      const window = rs?.bestWindowStart && rs?.bestWindowEnd
+        ? `${formatTimeShort(rs.bestWindowStart)}–${formatTimeShort(rs.bestWindowEnd)}`
+        : "";
+      const filter = obj?.recommended_filter ?? "RGB";
+      return `${i + 1}. ${name} — ${t.numSubs}×${t.exposureSec}s (${totalMin}m)${window ? ` — ${window}` : ""} — ${filter} — ${t.status}`;
     });
     lines.push(`\nTotal: ${Math.round(totalMinutes)}m (${(totalMinutes / 60).toFixed(1)}h)`);
     navigator.clipboard.writeText(lines.join("\n"));
@@ -146,15 +205,11 @@ const SessionPlanner = ({ sessionIds, onRemove, onUpdateTargets }: SessionPlanne
     setTargets([]);
   };
 
-  if (sessionIds.length === 0) {
-    return (
-      <div className="glass-card rounded-xl p-6 text-center space-y-2">
-        <Clock className="w-8 h-8 text-muted-foreground mx-auto" />
-        <p className="text-sm text-muted-foreground">Your imaging session is empty</p>
-        <p className="text-xs text-muted-foreground">Click "+ Add to Session" on any target above</p>
-      </div>
-    );
-  }
+  const autoSuggest = () => {
+    if (!topTargets?.length) return;
+    topTargets.forEach((o) => onAdd(o.catalog_id));
+    toast({ title: "Added!", description: `Added ${topTargets.length} suggested targets` });
+  };
 
   return (
     <div className="glass-card rounded-xl overflow-hidden">
@@ -166,7 +221,7 @@ const SessionPlanner = ({ sessionIds, onRemove, onUpdateTargets }: SessionPlanne
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-primary" />
           <h3 className="text-sm font-semibold text-foreground">Session Planner</h3>
-          <Badge variant="secondary" className="text-[10px]">{sessionIds.length} targets</Badge>
+          {sessionIds.length > 0 && <Badge variant="secondary" className="text-[10px]">{sessionIds.length} targets</Badge>}
         </div>
         {collapsed ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronUp className="w-4 h-4 text-muted-foreground" />}
       </div>
@@ -179,46 +234,99 @@ const SessionPlanner = ({ sessionIds, onRemove, onUpdateTargets }: SessionPlanne
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="p-4 space-y-2">
-              {sortedTargets.map((target, i) => (
-                <SessionRow
-                  key={target.catalogId}
-                  target={target}
-                  obj={objMap.get(target.catalogId)}
-                  index={i}
-                  total={sortedTargets.length}
-                  onUpdate={(u) => updateTarget(target.catalogId, u)}
-                  onRemove={() => onRemove(target.catalogId)}
-                  onMove={(dir) => moveTarget(target.catalogId, dir)}
-                  location={location}
-                  date={date}
+            {/* Search + Auto-suggest */}
+            <div className="p-4 border-b border-border/30 space-y-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Search target..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9 h-8 text-xs bg-secondary/50"
                 />
-              ))}
+              </div>
+
+              {searching && <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground mx-auto" />}
+
+              {searchResults && searchResults.length > 0 && (
+                <div className="space-y-1 max-h-40 overflow-y-auto">
+                  {searchResults.map((obj) => (
+                    <button
+                      key={obj.id}
+                      onClick={() => { onAdd(obj.catalog_id); setSearch(""); }}
+                      disabled={sessionIds.includes(obj.catalog_id)}
+                      className="w-full text-left p-2 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors text-[11px] disabled:opacity-40"
+                    >
+                      <span className="font-semibold text-foreground">{formatCatalogId(obj)}</span>
+                      {obj.common_name && <span className="text-primary ml-1">— {obj.common_name}</span>}
+                      <span className="text-muted-foreground ml-2">{obj.obj_type}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <Button variant="outline" size="sm" className="gap-1.5 text-[10px] w-full h-7" onClick={autoSuggest}>
+                <Sparkles className="w-3 h-3" /> Auto-suggest Top 5
+              </Button>
             </div>
+
+            {/* Queue */}
+            {sessionIds.length === 0 ? (
+              <div className="p-6 text-center space-y-1">
+                <p className="text-xs text-muted-foreground">No targets yet</p>
+                <p className="text-[10px] text-muted-foreground">Search above or click "+ Add to Session" on targets</p>
+              </div>
+            ) : (
+              <div className="p-3 space-y-1.5">
+                {sortedTargets.map((target, i) => (
+                  <SessionRow
+                    key={target.catalogId}
+                    target={target}
+                    obj={objMap.get(target.catalogId)}
+                    index={i}
+                    total={sortedTargets.length}
+                    onUpdate={(u) => updateTarget(target.catalogId, u)}
+                    onRemove={() => onRemove(target.catalogId)}
+                    onMove={(dir) => moveTarget(target.catalogId, dir)}
+                    location={location}
+                    date={date}
+                  />
+                ))}
+              </div>
+            )}
 
             {/* Summary */}
-            <div className="px-4 py-3 border-t border-border/30 bg-secondary/20 space-y-2">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">Total session time:</span>
-                <span className="font-mono font-semibold text-foreground">
-                  {Math.round(totalMinutes)}m ({(totalMinutes / 60).toFixed(1)}h)
-                </span>
+            {sessionIds.length > 0 && (
+              <div className="px-4 py-3 border-t border-border/30 bg-secondary/20 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Total session:</span>
+                  <span className="font-mono font-semibold text-foreground">
+                    {Math.round(totalMinutes)}m ({(totalMinutes / 60).toFixed(1)}h)
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="flex-1 text-[10px] gap-1 h-7" onClick={handleCopyToClipboard}>
+                    <Copy className="w-3 h-3" /> Copy Plan
+                  </Button>
+                  <Button size="sm" variant="ghost" className="text-[10px] gap-1 h-7 text-destructive hover:text-destructive" onClick={handleClear}>
+                    <Trash2 className="w-3 h-3" /> Clear
+                  </Button>
+                </div>
               </div>
-
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="flex-1 text-xs gap-1.5" onClick={handleCopyToClipboard}>
-                  <Copy className="w-3 h-3" /> Copy Plan
-                </Button>
-                <Button size="sm" variant="ghost" className="text-xs gap-1.5 text-destructive hover:text-destructive" onClick={handleClear}>
-                  <Trash2 className="w-3 h-3" /> Clear
-                </Button>
-              </div>
-            </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
+};
+
+/* ── Session Row ── */
+
+const statusColors: Record<TargetStatus, string> = {
+  queued: "bg-muted text-muted-foreground",
+  imaging: "bg-primary/20 text-primary",
+  done: "bg-green-500/20 text-green-400",
 };
 
 interface SessionRowProps {
@@ -246,7 +354,6 @@ const SessionRow = ({ target, obj, index, total, onUpdate, onRemove, onMove, loc
 
   const integrationMin = Math.round((target.exposureSec * target.numSubs) / 60);
 
-  // Set default exposure based on object type
   useEffect(() => {
     if (obj && target.exposureSec === 120 && obj.obj_type) {
       const def = defaultExposure(obj.obj_type);
@@ -254,20 +361,26 @@ const SessionRow = ({ target, obj, index, total, onUpdate, onRemove, onMove, loc
     }
   }, [obj?.obj_type]);
 
+  const cycleStatus = () => {
+    const next: Record<TargetStatus, TargetStatus> = { queued: "imaging", imaging: "done", done: "queued" };
+    onUpdate({ status: next[target.status] });
+  };
+
   return (
-    <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary/20 hover:bg-secondary/30 transition-colors">
+    <div className="flex items-center gap-1.5 p-2 rounded-lg bg-secondary/20 hover:bg-secondary/30 transition-colors">
       {/* Reorder */}
       <div className="flex flex-col gap-0.5">
         <button onClick={() => onMove(-1)} disabled={index === 0} className="text-muted-foreground hover:text-foreground disabled:opacity-20">
           <ChevronUp className="w-3 h-3" />
         </button>
+        <span className="text-[9px] text-muted-foreground font-mono text-center">{index + 1}</span>
         <button onClick={() => onMove(1)} disabled={index === total - 1} className="text-muted-foreground hover:text-foreground disabled:opacity-20">
           <ChevronDown className="w-3 h-3" />
         </button>
       </div>
 
       {/* Thumb */}
-      <div className="w-10 h-10 rounded bg-muted/40 border border-border/30 overflow-hidden shrink-0">
+      <div className="w-9 h-9 rounded bg-muted/40 border border-border/30 overflow-hidden shrink-0">
         {img?.url && !imgError ? (
           <img src={img.url} className="w-full h-full object-cover" onError={() => setImgError(true)} loading="lazy" />
         ) : (
@@ -276,43 +389,58 @@ const SessionRow = ({ target, obj, index, total, onUpdate, onRemove, onMove, loc
       </div>
 
       {/* Info */}
-      <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold text-foreground truncate">
-          {obj ? formatCatalogId(obj) : target.catalogId}
-        </p>
-        {rs?.bestWindowStart && rs?.bestWindowEnd && (
-          <p className="text-[9px] text-accent font-mono">
-            {formatTimeShort(rs.bestWindowStart)} → {formatTimeShort(rs.bestWindowEnd)}
+      <div className="flex-1 min-w-0 space-y-0.5">
+        <div className="flex items-center gap-1.5">
+          <p className="text-[11px] font-semibold text-foreground truncate">
+            {obj ? formatCatalogId(obj) : target.catalogId}
+            {obj?.common_name && <span className="text-primary font-normal ml-1">— {obj.common_name}</span>}
           </p>
-        )}
+          <button
+            onClick={cycleStatus}
+            className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${statusColors[target.status]}`}
+          >
+            {target.status === "done" && <Check className="w-2.5 h-2.5 inline mr-0.5" />}
+            {target.status}
+          </button>
+        </div>
+
+        <div className="flex gap-2 text-[9px] text-muted-foreground font-mono">
+          {rs?.bestWindowStart && rs?.bestWindowEnd && (
+            <span>{formatTimeShort(rs.bestWindowStart)}→{formatTimeShort(rs.bestWindowEnd)}</span>
+          )}
+          {obj?.recommended_filter && <span>{obj.recommended_filter}</span>}
+        </div>
+
+        <input
+          value={target.notes}
+          onChange={(e) => onUpdate({ notes: e.target.value })}
+          placeholder="Notes..."
+          className="w-full text-[10px] bg-transparent border-b border-border/20 focus:border-primary/50 outline-none py-0.5 text-muted-foreground placeholder:text-muted-foreground/40"
+        />
       </div>
 
       {/* Exposure inputs */}
-      <div className="flex items-center gap-1 shrink-0">
+      <div className="flex items-center gap-0.5 shrink-0">
         <Input
           type="number"
           value={target.numSubs}
           onChange={(e) => onUpdate({ numSubs: Math.max(1, parseInt(e.target.value) || 1) })}
-          className="w-14 h-7 text-[10px] text-center font-mono bg-secondary/50 px-1"
+          className="w-12 h-6 text-[9px] text-center font-mono bg-secondary/50 px-0.5"
         />
-        <span className="text-[9px] text-muted-foreground">×</span>
+        <span className="text-[8px] text-muted-foreground">×</span>
         <Input
           type="number"
           value={target.exposureSec}
           onChange={(e) => onUpdate({ exposureSec: Math.max(1, parseInt(e.target.value) || 1) })}
-          className="w-14 h-7 text-[10px] text-center font-mono bg-secondary/50 px-1"
+          className="w-12 h-6 text-[9px] text-center font-mono bg-secondary/50 px-0.5"
         />
-        <span className="text-[9px] text-muted-foreground">s</span>
+        <span className="text-[8px] text-muted-foreground">s</span>
       </div>
 
-      {/* Integration time */}
-      <span className="text-[10px] font-mono text-muted-foreground w-12 text-right shrink-0">
-        {integrationMin}m
-      </span>
+      <span className="text-[9px] font-mono text-muted-foreground w-10 text-right shrink-0">{integrationMin}m</span>
 
-      {/* Remove */}
       <button onClick={onRemove} className="text-muted-foreground hover:text-destructive transition-colors shrink-0">
-        <X className="w-3.5 h-3.5" />
+        <X className="w-3 h-3" />
       </button>
     </div>
   );

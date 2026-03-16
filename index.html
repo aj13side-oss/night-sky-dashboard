@@ -40,14 +40,16 @@
     <meta name="robots" content="index, follow" />
     
     <!-- Theme -->
-    <meta name="theme-color" content="#0a0e1a" />
+    <meta name="theme-color" content="#0A1128" />
     <meta name="color-scheme" content="dark" />
     
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <meta name="apple-mobile-web-app-title" content="Cosmic Frame" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
     
     <!-- Structured Data: WebApplication -->
     <script type="application/ld+json">
@@ -130,5 +132,12 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>

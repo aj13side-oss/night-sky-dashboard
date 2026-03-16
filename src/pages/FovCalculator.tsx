@@ -2,7 +2,7 @@ import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -110,6 +110,7 @@ const FovCalculator = () => {
     }));
   }, [effectiveFL, sensorW, sensorH, pixelSize, telescopeId, cameraId]);
 
+  // Instant FOV for results
   const fov = useMemo(() => {
     if (effectiveFL <= 0) return { w: 0, h: 0, wArcmin: 0, hArcmin: 0, resolution: 0 };
     const wDeg = 2 * Math.atan(sensorW / (2 * effectiveFL)) * (180 / Math.PI);
@@ -118,18 +119,44 @@ const FovCalculator = () => {
     return { w: wDeg, h: hDeg, wArcmin: wDeg * 60, hArcmin: hDeg * 60, resolution };
   }, [effectiveFL, sensorW, sensorH, pixelSize]);
 
+  // Debounced values for image loading only
+  const [debouncedFL, setDebouncedFL] = useState(effectiveFL);
+  const [debouncedSensorW, setDebouncedSensorW] = useState(sensorW);
+  const [debouncedSensorH, setDebouncedSensorH] = useState(sensorH);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedFL(effectiveFL);
+      setDebouncedSensorW(sensorW);
+      setDebouncedSensorH(sensorH);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [effectiveFL, sensorW, sensorH]);
+
+  // Debounced FOV for image only
+  const debouncedFov = useMemo(() => {
+    if (debouncedFL <= 0) return { w: 0, h: 0, wArcmin: 0, hArcmin: 0 };
+    const wDeg = 2 * Math.atan(debouncedSensorW / (2 * debouncedFL)) * (180 / Math.PI);
+    const hDeg = 2 * Math.atan(debouncedSensorH / (2 * debouncedFL)) * (180 / Math.PI);
+    return { w: wDeg, h: hDeg, wArcmin: wDeg * 60, hArcmin: hDeg * 60 };
+  }, [debouncedFL, debouncedSensorW, debouncedSensorH]);
+
   const obj = selectedObject;
   const objFractionW = obj ? obj.sizeArcmin / fov.wArcmin : 0;
   const objFractionH = obj ? obj.sizeArcmin / fov.hArcmin : 0;
 
+  // True size percentage for planet rendering
+  const trueSizePercent = (obj?.sizeArcmin ?? 0) / (fov.wArcmin * 1.3) * 100;
+  const trueSizePercentH = (obj?.sizeArcmin ?? 0) / (fov.hArcmin * 1.3) * 100;
+
   const aladinFovDeg = useMemo(() => {
-    const sensorFovDeg = fov.w > 0 ? fov.w : 1.0;
+    const sensorFovDeg = debouncedFov.w > 0 ? debouncedFov.w : 1.0;
     const objFovDeg = obj && obj.sizeArcmin > 0 ? (obj.sizeArcmin / 60) : 0;
     if (objFovDeg <= 0) return sensorFovDeg * 1.2;
     const objectViewFov = objFovDeg * 2.5;
     const sensorViewFov = sensorFovDeg * 1.3;
     return Math.min(10.0, Math.max(0.05, Math.max(objectViewFov, sensorViewFov)));
-  }, [obj, fov.w]);
+  }, [obj, debouncedFov.w]);
 
   const samplingLabel = useMemo(() => {
     const r = fov.resolution;
@@ -163,14 +190,39 @@ const FovCalculator = () => {
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
-  useEffect(() => {
-    setImgLoaded(false);
-    setImgError(false);
-  }, [obj?.ra, obj?.dec, obj?.imageUrl, survey, aladinFovDeg]);
+  // Progressive image loading state
+  const [currentImgUrl, setCurrentImgUrl] = useState<string | null>(null);
+  const [prevImgUrl, setPrevImgUrl] = useState<string | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const skyImageUrl = obj?.ra != null && obj?.dec != null && fov.w > 0
-    ? getSkyImageUrlWithFov(obj.ra, obj.dec, aladinFovDeg, aladinFovDeg * (fov.h / Math.max(fov.w, 0.001)), survey)
+  const skyImageUrl = obj?.ra != null && obj?.dec != null && debouncedFov.w > 0
+    ? getSkyImageUrlWithFov(obj.ra, obj.dec, aladinFovDeg, aladinFovDeg * (debouncedFov.h / Math.max(debouncedFov.w, 0.01)), survey)
     : null;
+
+  // When skyImageUrl changes, start transition (deep sky only)
+  useEffect(() => {
+    if (skyImageUrl && skyImageUrl !== currentImgUrl) {
+      setPrevImgUrl(currentImgUrl);
+      setCurrentImgUrl(skyImageUrl);
+      setIsTransitioning(true);
+      setImgLoaded(false);
+      setImgError(false);
+    }
+  }, [skyImageUrl]);
+
+  // Reset for solar system objects
+  useEffect(() => {
+    if (obj?.isSolarSystem) {
+      setImgLoaded(false);
+      setImgError(false);
+    }
+  }, [obj?.name, obj?.imageUrl]);
+
+  const handleImageLoad = () => {
+    setImgLoaded(true);
+    setIsTransitioning(false);
+    setPrevImgUrl(null);
+  };
 
   const isSolar = obj?.isSolarSystem === true;
   const solarObj = isSolar ? solarObjects.find(s => s.name === obj?.name) : null;
@@ -286,7 +338,16 @@ const FovCalculator = () => {
                 <ResultItem label="Sampling Quality"
                   value={samplingLabel.text}
                   highlight={samplingLabel.ok} />
-                {obj && <ResultItem label={`Framing ${obj.name}`} value={`${(objFractionW * 100).toFixed(0)}% of width`} />}
+                {obj && (
+                  <ResultItem
+                    label={`Framing ${obj.name}`}
+                    value={
+                      objFractionW >= 0.01
+                        ? `${(objFractionW * 100).toFixed(0)}% of width`
+                        : `${(objFractionW * 100).toFixed(1)}% of width — very small, consider using a barlow`
+                    }
+                  />
+                )}
               </div>
             </div>
 
@@ -310,7 +371,7 @@ const FovCalculator = () => {
               <div className="relative rounded-xl border border-border overflow-hidden bg-black max-w-[800px] mx-auto">
                 {hasImage ? (
                   <div className="relative w-full" style={{ paddingBottom: `${imageAspect * 100}%` }}>
-                    {!imgLoaded && !imgError && (
+                    {!imgLoaded && !imgError && !isTransitioning && (
                       <div className="absolute inset-0 flex items-center justify-center z-10">
                         <div className="h-6 w-6 border-2 border-primary/40 border-t-primary rounded-full animate-spin" />
                         <span className="text-xs text-muted-foreground ml-2">Loading {isSolar ? "image" : "sky view"}...</span>
@@ -330,21 +391,36 @@ const FovCalculator = () => {
                         <div className="absolute inset-0 bg-black" />
                         {/* Planet image scaled to true angular size */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <img
-                            key={`solar-${obj?.name}`}
-                            src={obj?.imageUrl ?? ""}
-                            alt={`${obj?.name} reference image`}
-                            className={`object-contain transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
-                            style={{
-                              width: `${Math.max(4, (obj?.sizeArcmin ?? 0) / (fov.wArcmin * 1.3) * 100)}%`,
-                              height: `${Math.max(4, (obj?.sizeArcmin ?? 0) / (fov.hArcmin * 1.3) * 100)}%`,
-                            }}
-                            loading="eager"
-                            onLoad={() => setImgLoaded(true)}
-                            onError={() => setImgError(true)}
-                          />
+                          {trueSizePercent >= 2 ? (
+                            <img
+                              key={`solar-${obj?.name}`}
+                              src={obj?.imageUrl ?? ""}
+                              alt={`${obj?.name} reference image`}
+                              className={`object-contain transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                              style={{
+                                width: `${trueSizePercent}%`,
+                                height: `${trueSizePercentH}%`,
+                              }}
+                              loading="eager"
+                              onLoad={() => setImgLoaded(true)}
+                              onError={() => setImgError(true)}
+                            />
+                          ) : (
+                            <>
+                              {/* True-scale dot for tiny objects */}
+                              <div
+                                className="rounded-full bg-accent/90 animate-pulse shadow-[0_0_12px_3px_hsl(var(--accent)/0.6)]"
+                                style={{
+                                  width: `${Math.max(0.5, trueSizePercent)}%`,
+                                  paddingBottom: `${Math.max(0.5, trueSizePercent)}%`,
+                                }}
+                              />
+                              {/* Hidden img to trigger load state */}
+                              <img src={obj?.imageUrl ?? ""} className="hidden" onLoad={() => setImgLoaded(true)} onError={() => setImgError(true)} />
+                            </>
+                          )}
                         </div>
-                        {/* Detail inset for solar system objects */}
+                        {/* Detail inset — always show for solar system */}
                         {imgLoaded && obj?.imageUrl && (
                           <div className="absolute bottom-3 right-3 w-36 h-36 rounded-lg border-2 border-accent/60 overflow-hidden shadow-lg z-20 bg-black">
                             <img
@@ -355,20 +431,41 @@ const FovCalculator = () => {
                             />
                             <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-[8px] text-accent text-center py-0.5 font-mono">
                               🔍 {obj.name} — {obj.sizeArcmin >= 1 ? `${obj.sizeArcmin.toFixed(1)}'` : `${(obj.sizeArcmin * 60).toFixed(1)}"`}
+                              {trueSizePercent < 2 && " (enlarged)"}
                             </div>
                           </div>
                         )}
                       </>
                     ) : (
-                      <img
-                        key={`${obj?.ra}-${obj?.dec}-${survey}-${aladinFovDeg}`}
-                        src={getSkyImageUrlWithFov(obj!.ra!, obj!.dec!, aladinFovDeg, aladinFovDeg * (fov.h / Math.max(fov.w, 0.01)), survey)}
-                        alt={`Sky view centered on ${obj?.name}`}
-                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
-                        loading="eager"
-                        onLoad={() => setImgLoaded(true)}
-                        onError={() => setImgError(true)}
-                      />
+                      <>
+                        {/* Previous image (fading out) */}
+                        {isTransitioning && prevImgUrl && (
+                          <img
+                            src={prevImgUrl}
+                            alt="Previous view"
+                            className="absolute inset-0 w-full h-full object-cover opacity-40 blur-[1px]"
+                          />
+                        )}
+
+                        {/* Loading indicator overlay on top of old image */}
+                        {isTransitioning && (
+                          <div className="absolute inset-0 flex items-center justify-center z-10 bg-black/30">
+                            <div className="h-5 w-5 border-2 border-primary/40 border-t-primary rounded-full animate-spin" />
+                            <span className="text-xs text-muted-foreground ml-2">Updating view...</span>
+                          </div>
+                        )}
+
+                        {/* New image (fading in) */}
+                        <img
+                          key={currentImgUrl}
+                          src={currentImgUrl ?? ""}
+                          alt={`Sky view centered on ${obj?.name}`}
+                          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                          loading="eager"
+                          onLoad={handleImageLoad}
+                          onError={() => setImgError(true)}
+                        />
+                      </>
                     )}
 
                     {/* Sensor FOV overlay */}
@@ -379,7 +476,7 @@ const FovCalculator = () => {
 
                         {isSolar ? (
                           <>
-                            {/* Sensor frame at 77% of container (= 1/1.3) — same visual as deep sky */}
+                            {/* Sensor frame at 77% of container (= 1/1.3) */}
                             <div
                               className="absolute border-2 border-primary/60 rounded"
                               style={{
@@ -389,13 +486,16 @@ const FovCalculator = () => {
                                 top: `${50 - (1 / 1.3) * 50}%`,
                               }}
                             />
-                            {/* Blue object circle matching the planet size */}
-                            {obj && obj.sizeArcmin > 0 && (
+                            {/* Blue object circle — true scale */}
+                            {obj && obj.sizeArcmin > 0 && trueSizePercent >= 1 && (
                               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent/70"
                                 style={{
-                                  width: `${Math.max(3, (obj.sizeArcmin / (fov.wArcmin * 1.3)) * 100)}%`,
-                                  paddingBottom: `${Math.max(3, (obj.sizeArcmin / (fov.hArcmin * 1.3)) * 100)}%`,
+                                  width: `${trueSizePercent}%`,
+                                  paddingBottom: `${trueSizePercentH}%`,
                                 }} />
+                            )}
+                            {obj && obj.sizeArcmin > 0 && trueSizePercent < 1 && (
+                              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-accent/80 animate-pulse shadow-[0_0_8px_2px_hsl(var(--accent)/0.5)]" />
                             )}
                           </>
                         ) : (
@@ -537,7 +637,9 @@ const FovCalculator = () => {
                       ? ` good framing (${(objFractionW * 100).toFixed(0)}%)`
                       : objFractionW > 0.15
                       ? ` fits with room (${(objFractionW * 100).toFixed(0)}%)`
-                      : ` very small in frame (${(objFractionW * 100).toFixed(0)}%)`}
+                      : objFractionW >= 0.01
+                      ? ` very small in frame (${(objFractionW * 100).toFixed(0)}%)`
+                      : ` very small in frame (${(objFractionW * 100).toFixed(1)}%)`}
                   </span>
                 )}
               </div>

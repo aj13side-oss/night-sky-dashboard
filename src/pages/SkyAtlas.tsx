@@ -45,6 +45,8 @@ const SkyAtlas = () => {
   const [userPos, setUserPos] = useState({ lat: 45.7347, lng: 4.4931 });
   const [visibleTonight, setVisibleTonight] = useState(false);
   const [filterMode, setFilterMode] = useState("all");
+  const [clientPage, setClientPage] = useState(0);
+  const CLIENT_PAGE_SIZE = 20;
   const { userId } = useCurrentUser();
 
   const [equipment, setEquipment] = useState({

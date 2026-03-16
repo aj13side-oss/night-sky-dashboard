@@ -6,6 +6,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { getSkyImageUrlWithFov, type SkyImageSurvey } from "@/lib/sky-images";
 
 import TargetObjectPicker, { type TargetObject } from "@/components/fov/TargetObjectPicker";
@@ -18,6 +19,24 @@ import {
 import { AlertTriangle } from "lucide-react";
 
 const DEFAULT_TARGET: TargetObject = { name: "M31 — Andromeda", sizeArcmin: 178, exposureFast: 30, exposureDeep: 120, ra: 10.6847, dec: 41.2687 };
+
+const BARLOW_OPTIONS = [
+  { value: "0.5", label: "0.5× Reducer" },
+  { value: "0.6", label: "0.6× Reducer" },
+  { value: "0.63", label: "0.63× Reducer (Celestron)" },
+  { value: "0.7", label: "0.7× Reducer (Askar)" },
+  { value: "0.73", label: "0.73× Reducer (Takahashi)" },
+  { value: "0.77", label: "0.77× Reducer (Starizona)" },
+  { value: "0.8", label: "0.8× Reducer" },
+  { value: "0.85", label: "0.85× Reducer (Sky-Watcher)" },
+  { value: "1", label: "None (1×)" },
+  { value: "1.5", label: "1.5× Barlow" },
+  { value: "2", label: "2× Barlow" },
+  { value: "2.5", label: "2.5× Powermate" },
+  { value: "3", label: "3× Barlow" },
+  { value: "4", label: "4× Powermate" },
+  { value: "5", label: "5× Powermate" },
+];
 
 const FovCalculator = () => {
   const [searchParams] = useSearchParams();
@@ -32,6 +51,7 @@ const FovCalculator = () => {
   const [sensorH, setSensorH] = useState(15.5);
   const [pixelSize, setPixelSize] = useState(4.63);
   const [barlow, setBarlow] = useState(1);
+  const [rotation, setRotation] = useState(0);
   const [selectedObject, setSelectedObject] = useState<TargetObject>(DEFAULT_TARGET);
   const [survey, setSurvey] = useState<SkyImageSurvey>("dss2");
   const [telescopeSearch, setTelescopeSearch] = useState("");
@@ -55,6 +75,8 @@ const FovCalculator = () => {
         if (parsed.sensorWidth) setSensorW(parsed.sensorWidth);
         if (parsed.sensorHeight) setSensorH(parsed.sensorHeight);
         if (parsed.pixelSize) setPixelSize(parsed.pixelSize);
+        if (parsed.barlow) setBarlow(parsed.barlow);
+        if (parsed.rotation != null) setRotation(parsed.rotation);
       }
     } catch {}
   }, []);
@@ -107,8 +129,10 @@ const FovCalculator = () => {
       pixelSize,
       telescopeId: telescopeId !== "custom" ? telescopeId : undefined,
       cameraId: cameraId !== "custom" ? cameraId : undefined,
+      barlow,
+      rotation,
     }));
-  }, [effectiveFL, sensorW, sensorH, pixelSize, telescopeId, cameraId]);
+  }, [effectiveFL, sensorW, sensorH, pixelSize, telescopeId, cameraId, barlow, rotation]);
 
   // Instant FOV for results
   const fov = useMemo(() => {
@@ -281,7 +305,14 @@ const FovCalculator = () => {
               </div>
               <div className="space-y-1">
                 <Label className="text-xs text-muted-foreground">Barlow / Reducer</Label>
-                <Input type="number" step="0.1" value={barlow} onChange={(e) => setBarlow(Number(e.target.value))} className="bg-secondary/50 font-mono" />
+                <Select value={String(barlow)} onValueChange={(v) => setBarlow(Number(v))}>
+                  <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {BARLOW_OPTIONS.map(opt => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -322,6 +353,21 @@ const FovCalculator = () => {
                 <Label className="text-xs text-muted-foreground">Pixel (µm)</Label>
                 <Input type="number" step="0.01" value={pixelSize} onChange={(e) => setPixelSize(Number(e.target.value))} className="bg-secondary/50 font-mono" />
               </div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs text-muted-foreground">Sensor Rotation</Label>
+                <span className="text-xs font-mono text-foreground">{rotation}°</span>
+              </div>
+              <Slider
+                value={[rotation]}
+                onValueChange={(v) => setRotation(v[0])}
+                min={0}
+                max={359}
+                step={1}
+                className="w-full"
+              />
             </div>
 
             <TargetObjectPicker value={selectedObject} onChange={setSelectedObject} />
@@ -471,8 +517,8 @@ const FovCalculator = () => {
                     {/* Sensor FOV overlay */}
                     {imgLoaded && (
                       <div className="absolute inset-0 pointer-events-none z-10">
-                        <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/30" />
-                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/30" />
+                        <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/30" style={{ transform: `rotate(${rotation}deg)`, transformOrigin: 'center center' }} />
+                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/30" style={{ transform: `rotate(${rotation}deg)`, transformOrigin: 'center center' }} />
 
                         {isSolar ? (
                           <>
@@ -484,6 +530,8 @@ const FovCalculator = () => {
                                 height: `${(1 / 1.3) * 100}%`,
                                 left: `${50 - (1 / 1.3) * 50}%`,
                                 top: `${50 - (1 / 1.3) * 50}%`,
+                                transform: `rotate(${rotation}deg)`,
+                                transformOrigin: 'center center',
                               }}
                             />
                             {/* Blue object circle — true scale */}
@@ -508,6 +556,8 @@ const FovCalculator = () => {
                                   height: `${Math.min((fov.h / aladinFovDeg) * 100, 98)}%`,
                                   left: `${50 - Math.min((fov.w / aladinFovDeg) * 50, 49)}%`,
                                   top: `${50 - Math.min((fov.h / aladinFovDeg) * 50, 49)}%`,
+                                  transform: `rotate(${rotation}deg)`,
+                                  transformOrigin: 'center center',
                                 }}
                               />
                             )}

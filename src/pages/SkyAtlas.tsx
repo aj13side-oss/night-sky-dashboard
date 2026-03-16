@@ -230,7 +230,8 @@ const SkyAtlas = () => {
           </div>
         )}
 
-        {!visibleTonight && filterMode === "all" && totalPages > 1 && (
+        {/* Server-side pagination */}
+        {!isClientFiltered && totalPages > 1 && (
           <div className="flex items-center justify-center gap-4 pt-4">
             <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)} className="gap-1">
               <ChevronLeft className="w-4 h-4" /> Prev
@@ -239,6 +240,21 @@ const SkyAtlas = () => {
               {page + 1} / {totalPages}
             </span>
             <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)} className="gap-1">
+              Next <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+
+        {/* Client-side pagination for filtered views */}
+        {isClientFiltered && clientTotalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 pt-4">
+            <Button variant="outline" size="sm" disabled={clientPage === 0} onClick={() => setClientPage((p) => p - 1)} className="gap-1">
+              <ChevronLeft className="w-4 h-4" /> Prev
+            </Button>
+            <span className="text-sm text-muted-foreground font-mono">
+              {clientPage + 1} / {clientTotalPages}
+            </span>
+            <Button variant="outline" size="sm" disabled={clientPage >= clientTotalPages - 1} onClick={() => setClientPage((p) => p + 1)} className="gap-1">
               Next <ChevronRight className="w-4 h-4" />
             </Button>
           </div>

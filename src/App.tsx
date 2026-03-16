@@ -12,6 +12,7 @@ import RigBuilder from "./pages/RigBuilder";
 import LightPollutionMap from "./pages/LightPollutionMap";
 import ObjectPage from "./pages/ObjectPage";
 import SessionPlanner from "./pages/SessionPlanner";
+import TonightPage from "./pages/TonightPage";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import NotFound from "./pages/NotFound";
@@ -27,6 +28,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/tonight" element={<TonightPage />} />
             <Route path="/sky-atlas" element={<SkyAtlas />} />
             <Route path="/fov-calculator" element={<FovCalculator />} />
             <Route path="/equipment" element={<EquipmentProfile />} />

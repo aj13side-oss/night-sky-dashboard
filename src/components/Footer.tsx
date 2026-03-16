@@ -38,7 +38,8 @@ const Footer = () => (
         <p className="text-[10px] text-muted-foreground/50">
           Links to third-party stores are provided for convenience. We are not affiliated with any retailer.
         </p>
-        <p className="mt-4 text-muted-foreground/60">
+        <p className="mt-4 text-muted-foreground/60 flex items-center gap-2">
+          <img src="/icon-192.png" alt="Cosmic Frame" className="w-5 h-5 rounded-full" />
           © {new Date().getFullYear()} Cosmic Frame
         </p>
       </div>

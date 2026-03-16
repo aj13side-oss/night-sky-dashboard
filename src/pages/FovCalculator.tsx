@@ -355,6 +355,21 @@ const FovCalculator = () => {
               </div>
             </div>
 
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs text-muted-foreground">Sensor Rotation</Label>
+                <span className="text-xs font-mono text-foreground">{rotation}°</span>
+              </div>
+              <Slider
+                value={[rotation]}
+                onValueChange={(v) => setRotation(v[0])}
+                min={0}
+                max={359}
+                step={1}
+                className="w-full"
+              />
+            </div>
+
             <TargetObjectPicker value={selectedObject} onChange={setSelectedObject} />
           </motion.div>
 

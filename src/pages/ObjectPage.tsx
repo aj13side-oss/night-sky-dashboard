@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CelestialObject } from "@/hooks/useCelestialObjects";
@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Star, Eye, Ruler, Compass, MapPin, Camera, Clock, HelpCircle,
-  Crosshair, Scale, ArrowLeft, ClipboardList, Loader2,
+  Crosshair, Scale, ArrowLeft, ClipboardList, Loader2, Telescope,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";

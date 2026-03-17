@@ -14,7 +14,7 @@ import {
   CelestialObject,
   PAGE_SIZE,
 } from "@/hooks/useCelestialObjects";
-import { calculateAltitude } from "@/lib/visibility";
+import { getObjectRiseSetTransit } from "@/lib/rise-set";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";
@@ -45,6 +45,7 @@ const SkyAtlas = () => {
   const [userPos, setUserPos] = useState({ lat: 45.7347, lng: 4.4931 });
   const [visibleTonight, setVisibleTonight] = useState(false);
   const [filterMode, setFilterMode] = useState("all");
+  const [minHoursVisible, setMinHoursVisible] = useState(0);
   const [clientPage, setClientPage] = useState(0);
   const CLIENT_PAGE_SIZE = 20;
   const { userId } = useCurrentUser();
@@ -89,14 +90,27 @@ const SkyAtlas = () => {
   // Client-side filters: visible tonight + filter mode
   const filteredData = useMemo(() => {
     if (!data?.data) return [];
-    let results = data.data;
+    let results: (CelestialObject & { _hoursVisible?: number })[] = data.data;
 
     if (visibleTonight) {
-      results = results.filter((obj) => {
-        if (obj.ra_deg == null || obj.dec_deg == null) return false;
-        const alt = calculateAltitude(obj.ra_deg, obj.dec_deg, userPos.lat, userPos.lng);
-        return alt > 0;
-      });
+      results = results
+        .map((obj) => {
+          if (obj.ra_deg == null || obj.dec_deg == null) return null;
+          const rs = getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, userPos.lat, userPos.lng, new Date());
+          if (rs.neverRises) return null;
+          let hoursVisible = 0;
+          if (rs.isCircumpolar) {
+            hoursVisible = 12;
+          } else if (rs.riseTime || rs.setTime) {
+            const nightStart = new Date(); nightStart.setHours(18, 0, 0, 0);
+            const nightEnd = new Date(); nightEnd.setDate(nightEnd.getDate() + 1); nightEnd.setHours(6, 0, 0, 0);
+            const start = rs.riseTime && rs.riseTime > nightStart ? rs.riseTime : nightStart;
+            const end = rs.setTime && rs.setTime < nightEnd ? rs.setTime : nightEnd;
+            hoursVisible = Math.max(0, (end.getTime() - start.getTime()) / 3600000);
+          }
+          return { ...obj, _hoursVisible: hoursVisible };
+        })
+        .filter((obj): obj is NonNullable<typeof obj> => obj !== null && (obj._hoursVisible ?? 0) >= minHoursVisible);
     }
 
     if (filterMode === "rgb") {
@@ -112,7 +126,7 @@ const SkyAtlas = () => {
     }
 
     return results;
-  }, [data?.data, visibleTonight, filterMode, userPos.lat, userPos.lng]);
+  }, [data?.data, visibleTonight, filterMode, userPos.lat, userPos.lng, minHoursVisible]);
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 
@@ -168,9 +182,11 @@ const SkyAtlas = () => {
           constellations={constellations}
           totalCount={visibleTonight || filterMode !== "all" ? filteredData.length : (data?.count ?? 0)}
           visibleTonightEnabled={visibleTonight}
-          onToggleVisibleTonight={() => setVisibleTonight((v) => !v)}
+          onToggleVisibleTonight={() => { setVisibleTonight((v) => !v); setMinHoursVisible(0); }}
           filterMode={filterMode}
           onFilterModeChange={setFilterMode}
+          minHoursVisible={minHoursVisible}
+          onMinHoursVisibleChange={setMinHoursVisible}
         />
 
         {/* Solar system results */}

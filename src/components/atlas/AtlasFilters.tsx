@@ -17,9 +17,11 @@ interface Props {
   onToggleVisibleTonight?: () => void;
   filterMode?: string;
   onFilterModeChange?: (mode: string) => void;
+  minHoursVisible?: number;
+  onMinHoursVisibleChange?: (hours: number) => void;
 }
 
-const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange }: Props) => {
+const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, minHoursVisible, onMinHoursVisibleChange }: Props) => {
   const isTop50 = filters.limitResults === 50;
 
   const toggleType = (t: string) => {
@@ -195,6 +197,22 @@ const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, vi
             className="py-2"
           />
         </div>
+
+        {visibleTonightEnabled && onMinHoursVisibleChange != null && (
+          <div className="space-y-1 min-w-[180px] flex-1">
+            <label className="text-xs text-muted-foreground">
+              🕐 Min hours visible: {(minHoursVisible ?? 0) > 0 ? `${(minHoursVisible ?? 0)}h+` : "All"}
+            </label>
+            <Slider
+              value={[minHoursVisible ?? 0]}
+              onValueChange={([v]) => onMinHoursVisibleChange(v)}
+              min={0}
+              max={10}
+              step={1}
+              className="py-2"
+            />
+          </div>
+        )}
 
         <div className="text-xs text-muted-foreground whitespace-nowrap">
           {totalCount.toLocaleString()} objects

@@ -21,7 +21,7 @@ interface Props {
   onMinHoursVisibleChange?: (hours: number) => void;
 }
 
-const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange }: Props) => {
+const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, minHoursVisible, onMinHoursVisibleChange }: Props) => {
   const isTop50 = filters.limitResults === 50;
 
   const toggleType = (t: string) => {

@@ -44,7 +44,8 @@ const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, vi
         constellation: "",
         maxMagnitude: 20,
         minPhotoScore: 0,
-        sizeCategory: "",
+        minSize: 0,
+        maxSize: 300,
       });
     }
   };
@@ -151,22 +152,34 @@ const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, vi
           </Select>
         </div>
 
-        <div className="space-y-1 min-w-[130px]">
-          <label className="text-xs text-muted-foreground">Target Size</label>
-          <Select
-            value={filters.sizeCategory || "__all__"}
-            onValueChange={(v) => onChange({ ...filters, sizeCategory: (v === "__all__" ? "" : v) as CelestialFilters["sizeCategory"] })}
-          >
-            <SelectTrigger className="bg-secondary/50 border-border/30 h-9 text-xs">
-              <SelectValue placeholder="All sizes" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__all__">All sizes</SelectItem>
-              <SelectItem value="small">Small (&lt;5')</SelectItem>
-              <SelectItem value="medium">Medium (5–30')</SelectItem>
-              <SelectItem value="large">Large (&gt;30')</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="space-y-1 min-w-[220px] flex-1">
+          <label className="text-xs text-muted-foreground">
+            Size: {filters.minSize > 0 ? `${filters.minSize}'` : "0'"} — {filters.maxSize < 300 ? `${filters.maxSize}'` : "Any"}
+          </label>
+          <div className="flex items-center gap-3">
+            <div className="flex-1 space-y-1">
+              <span className="text-[10px] text-muted-foreground">Min</span>
+              <Slider
+                value={[filters.minSize]}
+                onValueChange={([v]) => onChange({ ...filters, minSize: v })}
+                min={0}
+                max={120}
+                step={1}
+                className="py-1"
+              />
+            </div>
+            <div className="flex-1 space-y-1">
+              <span className="text-[10px] text-muted-foreground">Max</span>
+              <Slider
+                value={[filters.maxSize]}
+                onValueChange={([v]) => onChange({ ...filters, maxSize: v })}
+                min={1}
+                max={300}
+                step={1}
+                className="py-1"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="space-y-1 min-w-[180px] flex-1">

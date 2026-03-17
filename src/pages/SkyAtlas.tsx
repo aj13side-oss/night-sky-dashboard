@@ -34,7 +34,8 @@ const defaultFilters: CelestialFilters = {
   maxMagnitude: 20,
   minPhotoScore: 0,
   sortBy: "photo_score",
-  sizeCategory: "",
+  minSize: 0,
+  maxSize: 300,
 };
 
 const SkyAtlas = () => {

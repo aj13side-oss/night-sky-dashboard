@@ -40,7 +40,8 @@ export interface CelestialFilters {
   maxMagnitude: number;
   minPhotoScore: number;
   sortBy: "photo_score" | "magnitude" | "size_max" | "catalog_id" | "tonight_best";
-  sizeCategory?: "small" | "medium" | "large" | "";
+  minSize: number;
+  maxSize: number;
   limitResults?: number;
 }
 
@@ -100,12 +101,11 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
     if (filters.minPhotoScore > 0) {
       results = results.filter((o) => o.photo_score != null && o.photo_score >= filters.minPhotoScore);
     }
-    if (filters.sizeCategory === "small") {
-      results = results.filter((o) => o.size_max != null && o.size_max < 5);
-    } else if (filters.sizeCategory === "medium") {
-      results = results.filter((o) => o.size_max != null && o.size_max >= 5 && o.size_max <= 30);
-    } else if (filters.sizeCategory === "large") {
-      results = results.filter((o) => o.size_max != null && o.size_max > 30);
+    if (filters.minSize > 0) {
+      results = results.filter((o) => o.size_max != null && o.size_max >= filters.minSize);
+    }
+    if (filters.maxSize < 300) {
+      results = results.filter((o) => o.size_max != null && o.size_max <= filters.maxSize);
     }
 
     const totalCount = filters.limitResults ? Math.min(results.length, filters.limitResults) : results.length;
@@ -140,12 +140,11 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
     query = query.gte("photo_score", filters.minPhotoScore);
   }
 
-  if (filters.sizeCategory === "small") {
-    query = query.lt("size_max", 5);
-  } else if (filters.sizeCategory === "medium") {
-    query = query.gte("size_max", 5).lte("size_max", 30);
-  } else if (filters.sizeCategory === "large") {
-    query = query.gt("size_max", 30);
+  if (filters.minSize > 0) {
+    query = query.gte("size_max", filters.minSize);
+  }
+  if (filters.maxSize < 300) {
+    query = query.lte("size_max", filters.maxSize);
   }
 
   switch (filters.sortBy) {

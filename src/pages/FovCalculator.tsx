@@ -17,7 +17,8 @@ import { useCameras, useTelescopes } from "@/hooks/useEquipmentCatalog";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Telescope } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const DEFAULT_TARGET: TargetObject = { name: "M31 — Andromeda", sizeArcmin: 178, exposureFast: 30, exposureDeep: 120, ra: 10.6847, dec: 41.2687 };
 

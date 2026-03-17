@@ -17,6 +17,8 @@ interface Props {
   onToggleVisibleTonight?: () => void;
   filterMode?: string;
   onFilterModeChange?: (mode: string) => void;
+  minHoursVisible?: number;
+  onMinHoursVisibleChange?: (hours: number) => void;
 }
 
 const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange }: Props) => {

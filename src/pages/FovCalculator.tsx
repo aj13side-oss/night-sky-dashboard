@@ -604,19 +604,22 @@ const FovCalculator = () => {
                           </>
                         ) : (
                           <>
-                            {aladinFovDeg > 0 && (
-                              <div
-                                className="absolute border-2 border-primary/60 rounded"
-                                style={{
-                                  width: `${Math.min((fov.w / aladinFovDeg) * 100, 98)}%`,
-                                  height: `${Math.min((fov.h / aladinFovDeg) * 100, 98)}%`,
-                                  left: `${50 - Math.min((fov.w / aladinFovDeg) * 50, 49)}%`,
-                                  top: `${50 - Math.min((fov.h / aladinFovDeg) * 50, 49)}%`,
-                                  transform: `rotate(${rotation}deg)`,
-                                  transformOrigin: 'center center',
-                                }}
-                              />
-                            )}
+                            {aladinFovDeg > 0 && (() => {
+                              const sensorPercent = Math.min((fov.w / aladinFovDeg) * 100, 98);
+                              return (
+                                <div
+                                  className="absolute border-2 border-primary/60 rounded"
+                                  style={{
+                                    width: `${sensorPercent}%`,
+                                    height: `${sensorPercent}%`,
+                                    left: `${50 - sensorPercent / 2}%`,
+                                    top: `${50 - sensorPercent / 2}%`,
+                                    transform: `rotate(${rotation}deg)`,
+                                    transformOrigin: 'center center',
+                                  }}
+                                />
+                              );
+                            })()}
                             {/* Object circle — deep sky only */}
                             {objFractionW > 0 && (
                               <>

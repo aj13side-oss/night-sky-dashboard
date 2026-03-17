@@ -3,6 +3,7 @@ import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +34,7 @@ const STORAGE_KEY = "cosmicframe_equipment";
 const EquipmentProfile = () => {
   const { data: dbTelescopes } = useTelescopes();
   const { data: dbCameras } = useCameras();
+  const navigate = useNavigate();
 
   const [equipment, setEquipment] = useState<EquipmentData>({
     focalLength: 0, aperture: 0, sensorWidth: 0, sensorHeight: 0,
@@ -278,6 +280,26 @@ const EquipmentProfile = () => {
                     </div>
                   )}
                 </div>
+                {fovW && (
+                  <div className="col-span-2 sm:col-span-4 pt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full gap-2"
+                      onClick={() => {
+                        const minSize = Math.round(fovW * 0.15);
+                        const maxSize = Math.round(fovW);
+                        navigate(`/sky-atlas?minSize=${minSize}&maxSize=${maxSize}`);
+                      }}
+                    >
+                      <Telescope className="w-4 h-4" />
+                      Find best targets for this setup
+                    </Button>
+                    <p className="text-[10px] text-muted-foreground text-center mt-1">
+                      Objects between {Math.round(fovW * 0.15)}' and {Math.round(fovW)}' — ideal framing for your {Math.round(fovW)}' wide field
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>

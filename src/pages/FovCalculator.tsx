@@ -4,7 +4,7 @@ import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -17,7 +17,8 @@ import { useCameras, useTelescopes } from "@/hooks/useEquipmentCatalog";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Telescope } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const DEFAULT_TARGET: TargetObject = { name: "M31 — Andromeda", sizeArcmin: 178, exposureFast: 30, exposureDeep: 120, ra: 10.6847, dec: 41.2687 };
 
@@ -41,6 +42,7 @@ const BARLOW_OPTIONS = [
 
 const FovCalculator = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { data: dbTelescopes } = useTelescopes();
   const { data: dbCameras } = useCameras();
   const { data: solarObjects = [] } = useSolarSystemObjects();
@@ -429,6 +431,26 @@ const FovCalculator = () => {
                   />
                 )}
               </div>
+              {fov.wArcmin > 0 && (
+                <div className="pt-2 space-y-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-2"
+                    onClick={() => {
+                      const minSize = Math.round(fov.wArcmin * 0.15);
+                      const maxSize = Math.round(fov.wArcmin);
+                      navigate(`/sky-atlas?minSize=${minSize}&maxSize=${maxSize}`);
+                    }}
+                  >
+                    <Telescope className="w-4 h-4" />
+                    Find best targets for this setup
+                  </Button>
+                  <p className="text-[10px] text-muted-foreground text-center">
+                    Objects between {Math.round(fov.wArcmin * 0.15)}' and {Math.round(fov.wArcmin)}' — ideal framing for your {Math.round(fov.wArcmin)}' wide field
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="glass-card rounded-2xl p-6 space-y-4">

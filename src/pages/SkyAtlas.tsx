@@ -182,9 +182,11 @@ const SkyAtlas = () => {
           constellations={constellations}
           totalCount={visibleTonight || filterMode !== "all" ? filteredData.length : (data?.count ?? 0)}
           visibleTonightEnabled={visibleTonight}
-          onToggleVisibleTonight={() => setVisibleTonight((v) => !v)}
+          onToggleVisibleTonight={() => { setVisibleTonight((v) => !v); setMinHoursVisible(0); }}
           filterMode={filterMode}
           onFilterModeChange={setFilterMode}
+          minHoursVisible={minHoursVisible}
+          onMinHoursVisibleChange={setMinHoursVisible}
         />
 
         {/* Solar system results */}

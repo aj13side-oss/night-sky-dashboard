@@ -13,14 +13,6 @@ export interface ObjectImage {
   fallbackUrl: string | null;
 }
 
-const STAR_TYPES = ["Star", "Double Star", "Variable Star", "Carbon Star", "Star System"];
-
-const ASTRO_CATEGORIES = [
-  "astronomy", "nebulae", "galaxies", "messier objects", "ngc objects",
-  "star clusters", "planetary nebulae", "emission nebulae", "reflection nebulae",
-  "supernova remnants", "galaxy clusters", "open clusters", "globular clusters",
-  "astrophotography", "deep-sky objects",
-];
 
 // ── Wikimedia helpers ──────────────────────────────────────────────
 
@@ -179,25 +171,7 @@ async function fetchObjectImage(
     };
   }
 
-  // 2. Stars → skip Wikipedia, go straight to DSS2
-  const isStar = objType && STAR_TYPES.some(t => objType.toLowerCase().includes(t.toLowerCase()));
-
-  // 3. Dynamic search via Wikipedia (skip for stars)
-  if (!isStar) {
-    const searchTerms = [
-      imageSearchQuery,
-      commonName,
-      catalogId.replace(/\s+/g, " "),
-      catalogId.startsWith("M") ? `Messier ${catalogId.slice(1).trim()}` : null,
-    ].filter(Boolean) as string[];
-
-    for (const term of searchTerms) {
-      const result = await tryWikipedia(term, thumbWidth, dss2Fallback);
-      if (result) return result;
-    }
-  }
-
-  // 4. Fallback: DSS2
+  // 2. Fallback: DSS2 sky survey (unique per object coordinates)
   if (dss2Fallback) {
     return {
       url: dss2Fallback,
@@ -217,67 +191,6 @@ async function fetchObjectImage(
     artist: null, date: null, license: null, licenseUrl: null,
     filePageUrl: null, source: "survey", pageUrl: null, fallbackUrl: null,
   };
-}
-
-async function tryWikipedia(title: string, thumbWidth: number = 400, fallbackUrl: string | null = null): Promise<ObjectImage | null> {
-  try {
-    const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(title)}&srnamespace=0&srlimit=3&format=json&origin=*`;
-    const searchRes = await fetch(searchUrl);
-    if (!searchRes.ok) return null;
-    const searchData = await searchRes.json();
-    const results = searchData?.query?.search;
-    if (!results || results.length === 0) return null;
-
-    const pageTitle = results[0].title;
-
-    const catUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=categories&cllimit=50&format=json&origin=*`;
-    const catRes = await fetch(catUrl);
-    if (catRes.ok) {
-      const catData = await catRes.json();
-      const pages = catData?.query?.pages;
-      if (pages) {
-        const page = Object.values(pages)[0] as any;
-        const cats: string[] = (page?.categories || []).map((c: any) =>
-          (c.title || "").replace("Category:", "").toLowerCase()
-        );
-        if (!cats.some(cat => ASTRO_CATEGORIES.some(kw => cat.includes(kw)))) return null;
-      }
-    }
-
-    const imgUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=pageimages&piprop=thumbnail&pithumbsize=${thumbWidth}&format=json&origin=*`;
-    const imgRes = await fetch(imgUrl);
-    if (!imgRes.ok) return null;
-    const imgData = await imgRes.json();
-    const pages = imgData?.query?.pages;
-    if (!pages) return null;
-
-    const page = Object.values(pages)[0] as any;
-    const thumbnail = page?.thumbnail;
-    if (!thumbnail?.source) return null;
-
-    const src: string = thumbnail.source;
-    if (src.endsWith(".svg") || src.endsWith(".svg.png")) return null;
-    if (thumbnail.width && thumbnail.width < 200) return null;
-
-    const fileName = src.split("/").pop()?.split("?")[0];
-    let artist: string | null = null, date: string | null = null;
-    let license: string | null = null, licenseUrl: string | null = null, filePageUrl: string | null = null;
-
-    if (fileName) {
-      const meta = await fetchWikimediaMetadata(decodeURIComponent(fileName));
-      artist = meta.artist; date = meta.date;
-      license = meta.license; licenseUrl = meta.licenseUrl; filePageUrl = meta.filePageUrl;
-    }
-
-    return {
-      url: src, artist: artist ?? "Wikimedia Commons", date, license, licenseUrl, filePageUrl,
-      source: "wikipedia",
-      pageUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent(pageTitle)}`,
-      fallbackUrl,
-    };
-  } catch {
-    return null;
-  }
 }
 
 export function useObjectImage(

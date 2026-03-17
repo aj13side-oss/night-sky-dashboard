@@ -13,14 +13,6 @@ export interface ObjectImage {
   fallbackUrl: string | null;
 }
 
-const STAR_TYPES = ["Star", "Double Star", "Variable Star", "Carbon Star", "Star System"];
-
-const ASTRO_CATEGORIES = [
-  "astronomy", "nebulae", "galaxies", "messier objects", "ngc objects",
-  "star clusters", "planetary nebulae", "emission nebulae", "reflection nebulae",
-  "supernova remnants", "galaxy clusters", "open clusters", "globular clusters",
-  "astrophotography", "deep-sky objects",
-];
 
 // ── Wikimedia helpers ──────────────────────────────────────────────
 

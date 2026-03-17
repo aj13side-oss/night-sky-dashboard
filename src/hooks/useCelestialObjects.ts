@@ -40,7 +40,8 @@ export interface CelestialFilters {
   maxMagnitude: number;
   minPhotoScore: number;
   sortBy: "photo_score" | "magnitude" | "size_max" | "catalog_id" | "tonight_best";
-  sizeCategory?: "small" | "medium" | "large" | "";
+  minSize: number;
+  maxSize: number;
   limitResults?: number;
 }
 

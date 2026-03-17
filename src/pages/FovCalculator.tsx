@@ -431,6 +431,26 @@ const FovCalculator = () => {
                   />
                 )}
               </div>
+              {fov.wArcmin > 0 && (
+                <div className="pt-2 space-y-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-2"
+                    onClick={() => {
+                      const minSize = Math.round(fov.wArcmin * 0.15);
+                      const maxSize = Math.round(fov.wArcmin);
+                      navigate(`/sky-atlas?minSize=${minSize}&maxSize=${maxSize}`);
+                    }}
+                  >
+                    <Telescope className="w-4 h-4" />
+                    Find best targets for this setup
+                  </Button>
+                  <p className="text-[10px] text-muted-foreground text-center">
+                    Objects between {Math.round(fov.wArcmin * 0.15)}' and {Math.round(fov.wArcmin)}' — ideal framing for your {Math.round(fov.wArcmin)}' wide field
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="glass-card rounded-2xl p-6 space-y-4">

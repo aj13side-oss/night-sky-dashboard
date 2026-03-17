@@ -76,6 +76,19 @@ const SkyAtlas = () => {
   });
 
   useEffect(() => {
+    const minSizeParam = searchParams.get("minSize");
+    const maxSizeParam = searchParams.get("maxSize");
+    if (minSizeParam || maxSizeParam) {
+      setFilters(prev => ({
+        ...prev,
+        minSize: minSizeParam ? Math.round(Number(minSizeParam)) : prev.minSize,
+        maxSize: maxSizeParam ? Math.round(Number(maxSizeParam)) : prev.maxSize,
+      }));
+      setVisibleTonight(true);
+    }
+  }, []);
+
+  useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
       (pos) => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       () => {}

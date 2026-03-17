@@ -101,12 +101,11 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
     if (filters.minPhotoScore > 0) {
       results = results.filter((o) => o.photo_score != null && o.photo_score >= filters.minPhotoScore);
     }
-    if (filters.sizeCategory === "small") {
-      results = results.filter((o) => o.size_max != null && o.size_max < 5);
-    } else if (filters.sizeCategory === "medium") {
-      results = results.filter((o) => o.size_max != null && o.size_max >= 5 && o.size_max <= 30);
-    } else if (filters.sizeCategory === "large") {
-      results = results.filter((o) => o.size_max != null && o.size_max > 30);
+    if (filters.minSize > 0) {
+      results = results.filter((o) => o.size_max != null && o.size_max >= filters.minSize);
+    }
+    if (filters.maxSize < 300) {
+      results = results.filter((o) => o.size_max != null && o.size_max <= filters.maxSize);
     }
 
     const totalCount = filters.limitResults ? Math.min(results.length, filters.limitResults) : results.length;

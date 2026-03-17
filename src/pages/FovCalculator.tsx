@@ -42,6 +42,7 @@ const BARLOW_OPTIONS = [
 
 const FovCalculator = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { data: dbTelescopes } = useTelescopes();
   const { data: dbCameras } = useCameras();
   const { data: solarObjects = [] } = useSolarSystemObjects();

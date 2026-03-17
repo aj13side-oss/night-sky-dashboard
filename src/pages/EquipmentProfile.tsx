@@ -34,6 +34,7 @@ const STORAGE_KEY = "cosmicframe_equipment";
 const EquipmentProfile = () => {
   const { data: dbTelescopes } = useTelescopes();
   const { data: dbCameras } = useCameras();
+  const navigate = useNavigate();
 
   const [equipment, setEquipment] = useState<EquipmentData>({
     focalLength: 0, aperture: 0, sensorWidth: 0, sensorHeight: 0,

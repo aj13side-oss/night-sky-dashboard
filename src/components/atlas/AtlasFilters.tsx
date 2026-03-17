@@ -44,7 +44,8 @@ const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, vi
         constellation: "",
         maxMagnitude: 20,
         minPhotoScore: 0,
-        sizeCategory: "",
+        minSize: 0,
+        maxSize: 300,
       });
     }
   };

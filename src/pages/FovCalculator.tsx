@@ -60,10 +60,43 @@ const FovCalculator = () => {
 
   useEffect(() => {
     const target = searchParams.get("target");
-    if (target) {
-      setSelectedObject({ ...DEFAULT_TARGET, name: target });
-    }
-  }, [searchParams]);
+    if (!target) return;
+
+    const fetchTarget = async () => {
+      const { data } = await (supabase as any)
+        .from("celestial_objects")
+        .select("catalog_id, common_name, size_max, ra_deg, dec_deg, exposure_guide_fast, exposure_guide_deep, forced_image_url")
+        .eq("catalog_id", target)
+        .maybeSingle();
+
+      if (data && data.size_max > 0) {
+        setSelectedObject({
+          name: data.common_name ? `${data.catalog_id} — ${data.common_name}` : data.catalog_id,
+          sizeArcmin: data.size_max,
+          exposureFast: data.exposure_guide_fast ?? null,
+          exposureDeep: data.exposure_guide_deep ?? null,
+          ra: data.ra_deg ?? null,
+          dec: data.dec_deg ?? null,
+        });
+      } else {
+        const sso = solarObjects.find(s => s.name.toLowerCase() === target.toLowerCase());
+        if (sso) {
+          setSelectedObject({
+            name: sso.name,
+            sizeArcmin: (sso.max_apparent_size_arcsec ?? 0) / 60,
+            exposureFast: null,
+            exposureDeep: null,
+            ra: null,
+            dec: null,
+            imageUrl: sso.image_url ?? undefined,
+            isSolarSystem: true,
+          });
+        }
+      }
+    };
+
+    fetchTarget();
+  }, [searchParams, solarObjects]);
 
   useEffect(() => {
     try {

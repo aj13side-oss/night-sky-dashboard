@@ -14,7 +14,7 @@ import {
   CelestialObject,
   PAGE_SIZE,
 } from "@/hooks/useCelestialObjects";
-import { calculateAltitude } from "@/lib/visibility";
+import { getObjectRiseSetTransit } from "@/lib/rise-set";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";

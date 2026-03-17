@@ -1,4 +1,5 @@
 import AppNav from "@/components/AppNav";
+import { supabase } from "@/integrations/supabase/client";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";

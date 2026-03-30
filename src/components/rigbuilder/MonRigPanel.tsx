@@ -96,9 +96,9 @@ export function MonRigPanel({
       const ruleUnder = getRule("sampling_undersampled");
       const ruleOver = getRule("sampling_oversampled");
       const ruleIdeal = getRule("sampling_ideal_deep_sky");
-      if (ruleUnder && sampling > ruleUnder.max_value) triggered.push({ severity: "warning", message: ruleUnder.message_fr });
-      else if (ruleOver && sampling < ruleOver.max_value) triggered.push({ severity: "warning", message: ruleOver.message_fr });
-      else if (ruleIdeal && sampling >= ruleIdeal.min_value && sampling <= ruleIdeal.max_value) triggered.push({ severity: "info", message: ruleIdeal.message_fr });
+      if (ruleUnder && sampling > ruleUnder.max_value) triggered.push({ severity: "warning", message: ruleUnder.message_en });
+      else if (ruleOver && sampling < ruleOver.max_value) triggered.push({ severity: "warning", message: ruleOver.message_en });
+      else if (ruleIdeal && sampling >= ruleIdeal.min_value && sampling <= ruleIdeal.max_value) triggered.push({ severity: "info", message: ruleIdeal.message_en });
     }
 
     // Sensor vs image circle

@@ -87,8 +87,8 @@ export function MonRigPanel({
       const ratio = (teleW + camW) / mount.payload_kg;
       const ruleErr = getRule("payload_ratio");
       const ruleWarn = getRule("payload_ratio_warning");
-      if (ruleErr && ratio > ruleErr.max_value) triggered.push({ severity: "error", message: ruleErr.message_fr });
-      else if (ruleWarn && ratio > ruleWarn.min_value) triggered.push({ severity: "warning", message: ruleWarn.message_fr });
+      if (ruleErr && ratio > ruleErr.max_value) triggered.push({ severity: "error", message: ruleErr.message_en });
+      else if (ruleWarn && ratio > ruleWarn.min_value) triggered.push({ severity: "warning", message: ruleWarn.message_en });
     }
 
     // Sampling

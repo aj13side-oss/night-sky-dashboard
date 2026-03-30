@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useCurrentUser } from "@/hooks/useUserRigs";
+
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
@@ -49,7 +49,7 @@ const SkyAtlas = () => {
   const [minHoursVisible, setMinHoursVisible] = useState(0);
   const [clientPage, setClientPage] = useState(0);
   const CLIENT_PAGE_SIZE = 20;
-  const { userId } = useCurrentUser();
+  
 
   const [equipment, setEquipment] = useState({
     focalLength: 0,
@@ -93,10 +93,6 @@ const SkyAtlas = () => {
       (pos) => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       () => {}
     );
-    try {
-      const saved = localStorage.getItem("cosmicframe_equipment") || localStorage.getItem("astrodash_equipment");
-      if (saved) setEquipment(JSON.parse(saved));
-    } catch {}
   }, []);
 
   useEffect(() => { setPage(0); setClientPage(0); }, [filters, visibleTonight, filterMode]);

@@ -93,10 +93,6 @@ const SkyAtlas = () => {
       (pos) => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       () => {}
     );
-    try {
-      const saved = localStorage.getItem("cosmicframe_equipment") || localStorage.getItem("astrodash_equipment");
-      if (saved) setEquipment(JSON.parse(saved));
-    } catch {}
   }, []);
 
   useEffect(() => { setPage(0); setClientPage(0); }, [filters, visibleTonight, filterMode]);

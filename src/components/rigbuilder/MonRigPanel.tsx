@@ -83,7 +83,7 @@ export function MonRigPanel({
     // Payload
     if (mount?.payload_kg && mount.payload_kg > 0) {
       const teleW = telescope?.weight_kg ?? 0;
-      const camW = camera?.weight_g ? camera.weight_g / 1000 : (camera?.weight_kg ?? 0);
+      const camW = camera?.weight_g ? camera.weight_g / 1000 : 0;
       const ratio = (teleW + camW) / mount.payload_kg;
       const ruleErr = getRule("payload_ratio");
       const ruleWarn = getRule("payload_ratio_warning");

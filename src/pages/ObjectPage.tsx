@@ -30,7 +30,7 @@ const ObjectPage = () => {
   const { catalogId } = useParams<{ catalogId: string }>();
   const navigate = useNavigate();
   const decodedId = decodeURIComponent(catalogId ?? "");
-  const { userId } = useCurrentUser();
+  
   const { isInList, addObject, removeObject } = useTonightList();
   const [showExposureInfo, setShowExposureInfo] = useState(false);
 

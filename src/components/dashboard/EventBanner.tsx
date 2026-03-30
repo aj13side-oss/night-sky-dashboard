@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { getMeteorShowers, getAuroraForecast } from "@/lib/celestial-data";
+import { getMoonPhase } from "@/lib/astronomy";
 import { useObservation } from "@/contexts/ObservationContext";
 import { X, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -51,12 +52,21 @@ const EventBanner = () => {
 
     // New moon check (approximate: illumination < 5%)
     // We don't have live moon data here, so check day of month roughly
-    // Simplified: offer a generic deep-sky tip around new moon dates
-    const dayOfMonth = now.getDate();
-    if (dayOfMonth >= 28 || dayOfMonth <= 2) {
+    // Moon phase check using actual lunar cycle calculation
+    const moon = getMoonPhase(now);
+    const illum = moon.illumination; // 0-100%
+
+    if (illum <= 10) {
       return {
         id: "newmoon",
         text: "🌑 Near New Moon — perfect conditions for deep sky imaging tonight!",
+        type: "moon",
+      };
+    }
+    if (illum >= 90) {
+      return {
+        id: "fullmoon",
+        text: "🌕 Near Full Moon — poor conditions for deep sky imaging. Try bright targets or narrowband filters.",
         type: "moon",
       };
     }

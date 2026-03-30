@@ -235,7 +235,7 @@ export function MonRigPanel({
               <p className="text-sm font-bold font-mono text-foreground">{fovW > 0 ? `${fovW.toFixed(0)}'×${fovH.toFixed(0)}'` : "—"}</p>
             </div>
             <div>
-              <span className="text-[10px] text-muted-foreground block">Focale</span>
+              <span className="text-[10px] text-muted-foreground block">Focal Length</span>
               <p className="text-sm font-bold font-mono text-foreground">{fl > 0 ? `${fl}mm` : "—"}</p>
             </div>
           </div>

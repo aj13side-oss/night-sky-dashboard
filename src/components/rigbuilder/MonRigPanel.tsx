@@ -191,9 +191,9 @@ export function MonRigPanel({
       {/* MOUNT slot */}
       <SlotCard label="MOUNT" item={mount ? `${mount.brand} ${mount.model}` : null} onClear={onClearMount} />
 
-      {/* FILTRES */}
+      {/* FILTERS */}
       <div className="rounded-lg border border-border/50 p-3">
-        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">Filtres</span>
+        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">Filters</span>
         {filters.length > 0 ? (
           <div className="flex flex-wrap gap-1 mt-1">
             {filters.map(f => (

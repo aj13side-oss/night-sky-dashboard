@@ -49,7 +49,7 @@ const SkyAtlas = () => {
   const [minHoursVisible, setMinHoursVisible] = useState(0);
   const [clientPage, setClientPage] = useState(0);
   const CLIENT_PAGE_SIZE = 20;
-  const { userId } = useCurrentUser();
+  
 
   const [equipment, setEquipment] = useState({
     focalLength: 0,

@@ -135,7 +135,7 @@ export function MonRigPanel({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold" style={{ color: "#FFB347" }}>🔭 Mon Rig</h2>
+      <h2 className="text-xl font-bold" style={{ color: "#FFB347" }}>🔭 My Rig</h2>
 
       {/* OPTIQUE slot */}
       <SlotCard

@@ -264,7 +264,7 @@ export function MonRigPanel({
             </p>
           </div>
         )}
-        <p className="text-[9px] text-muted-foreground text-center py-1">M31 — Galaxie d'Andromède (190'×60')</p>
+        <p className="text-[9px] text-muted-foreground text-center py-1">M31 — Andromeda Galaxy (190'×60')</p>
       </div>
 
       {/* COMPATIBILITY ALERTS */}

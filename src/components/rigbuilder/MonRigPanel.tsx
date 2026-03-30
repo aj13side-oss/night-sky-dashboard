@@ -260,7 +260,7 @@ export function MonRigPanel({
         ) : (
           <div className="h-[160px] flex items-center justify-center bg-secondary/10">
             <p className="text-[10px] text-muted-foreground italic text-center px-4">
-              Configurez votre rig pour voir le cadrage
+              Configure your rig to see the framing preview
             </p>
           </div>
         )}

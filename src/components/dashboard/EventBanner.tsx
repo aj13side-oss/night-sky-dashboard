@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { getMeteorShowers, getAuroraForecast } from "@/lib/celestial-data";
+import { getMoonPhase } from "@/lib/astronomy";
 import { useObservation } from "@/contexts/ObservationContext";
 import { X, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";

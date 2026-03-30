@@ -57,9 +57,9 @@ export function MonRigPanel({
     const ruleUnder = rules?.find(r => r.rule_key === "sampling_undersampled" && r.is_active);
     const minOk = ruleOver?.max_value ?? 0.6;
     const maxOk = ruleUnder?.min_value ?? 2.5;
-    if (sampling < minOk) return { text: "Sur-échantillonné", color: "text-amber-400" };
-    if (sampling > maxOk) return { text: "Sous-échantillonné", color: "text-amber-400" };
-    return { text: "Idéal", color: "text-emerald-400" };
+    if (sampling < minOk) return { text: "Oversampled", color: "text-amber-400" };
+    if (sampling > maxOk) return { text: "Undersampled", color: "text-amber-400" };
+    return { text: "Ideal", color: "text-emerald-400" };
   }, [sampling, rules]);
 
   // M31 FOV preview

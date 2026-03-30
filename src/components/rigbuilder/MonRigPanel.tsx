@@ -332,7 +332,7 @@ function SlotCard({ label, item, onClear, showManual, onToggleManual, manualCont
             <>
               <button onClick={onToggleManual} className="text-[10px] text-primary hover:underline flex items-center gap-0.5 mt-1">
                 <ChevronDown className={`w-3 h-3 transition-transform ${showManual ? "rotate-180" : ""}`} />
-                Saisir manuellement
+                Enter manually
               </button>
               {showManual && manualContent}
             </>

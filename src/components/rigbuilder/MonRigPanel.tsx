@@ -115,8 +115,8 @@ export function MonRigPanel({
     if (fovW > 0) {
       const ruleNarrow = getRule("fov_too_narrow");
       const ruleWide = getRule("fov_very_wide");
-      if (ruleNarrow && fovW < (ruleNarrow.max_value ?? 15)) triggered.push({ severity: "info", message: ruleNarrow.message_fr });
-      if (ruleWide && fovW > (ruleWide.min_value ?? 300)) triggered.push({ severity: "info", message: ruleWide.message_fr });
+      if (ruleNarrow && fovW < (ruleNarrow.max_value ?? 15)) triggered.push({ severity: "info", message: ruleNarrow.message_en });
+      if (ruleWide && fovW > (ruleWide.min_value ?? 300)) triggered.push({ severity: "info", message: ruleWide.message_en });
     }
 
     // Backfocus

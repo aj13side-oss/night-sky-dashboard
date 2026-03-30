@@ -327,7 +327,7 @@ function SlotCard({ label, item, onClear, showManual, onToggleManual, manualCont
         </div>
       ) : (
         <div className="mt-1">
-          <p className="text-[10px] text-muted-foreground italic">Sélectionner dans le catalogue</p>
+          <p className="text-[10px] text-muted-foreground italic">Select from catalog</p>
           {onToggleManual && (
             <>
               <button onClick={onToggleManual} className="text-[10px] text-primary hover:underline flex items-center gap-0.5 mt-1">

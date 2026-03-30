@@ -107,8 +107,8 @@ export function MonRigPanel({
       const ic = telescope.image_circle_mm;
       const ruleVig = getRule("sensor_vs_image_circle");
       const ruleWarn = getRule("sensor_illumination_warning");
-      if (ruleVig && diag / ic > ruleVig.max_value) triggered.push({ severity: "error", message: ruleVig.message_fr });
-      else if (ruleWarn && diag / ic > (ruleWarn.min_value ?? 0.85)) triggered.push({ severity: "warning", message: ruleWarn.message_fr });
+      if (ruleVig && diag / ic > ruleVig.max_value) triggered.push({ severity: "error", message: ruleVig.message_en });
+      else if (ruleWarn && diag / ic > (ruleWarn.min_value ?? 0.85)) triggered.push({ severity: "warning", message: ruleWarn.message_en });
     }
 
     // FOV too narrow / very wide

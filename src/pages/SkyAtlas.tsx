@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useCurrentUser } from "@/hooks/useUserRigs";
+
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";

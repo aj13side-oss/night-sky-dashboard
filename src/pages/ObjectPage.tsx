@@ -8,7 +8,7 @@ import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { formatCatalogId } from "@/lib/format-catalog";
 import { formatRA, formatDec } from "@/lib/format-coords";
 import { useTonightList } from "@/hooks/useTonightList";
-import { useCurrentUser } from "@/hooks/useUserRigs";
+
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";

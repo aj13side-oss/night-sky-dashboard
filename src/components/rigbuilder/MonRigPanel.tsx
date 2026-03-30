@@ -203,12 +203,12 @@ export function MonRigPanel({
               </Badge>
             ))}
           </div>
-        ) : <p className="text-[10px] text-muted-foreground italic mt-1">Aucun</p>}
+        ) : <p className="text-[10px] text-muted-foreground italic mt-1">None</p>}
       </div>
 
-      {/* ACCESSOIRES */}
+      {/* ACCESSORIES */}
       <div className="rounded-lg border border-border/50 p-3">
-        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">Accessoires</span>
+        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">Accessories</span>
         {accessories.length > 0 ? (
           <div className="flex flex-wrap gap-1 mt-1">
             {accessories.map(a => (

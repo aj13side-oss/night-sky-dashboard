@@ -139,7 +139,7 @@ export function MonRigPanel({
 
       {/* OPTIQUE slot */}
       <SlotCard
-        label="OPTIQUE"
+        label="OPTICS"
         item={telescope ? `${telescope.brand} ${telescope.model}` : null}
         onClear={onClearTelescope}
         showManual={!telescope && showManualScope}

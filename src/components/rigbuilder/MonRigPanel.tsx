@@ -188,8 +188,8 @@ export function MonRigPanel({
         }
       />
 
-      {/* MONTURE slot */}
-      <SlotCard label="MONTURE" item={mount ? `${mount.brand} ${mount.model}` : null} onClear={onClearMount} />
+      {/* MOUNT slot */}
+      <SlotCard label="MOUNT" item={mount ? `${mount.brand} ${mount.model}` : null} onClear={onClearMount} />
 
       {/* FILTRES */}
       <div className="rounded-lg border border-border/50 p-3">

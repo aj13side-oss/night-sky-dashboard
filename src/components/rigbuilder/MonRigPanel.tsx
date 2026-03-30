@@ -57,9 +57,9 @@ export function MonRigPanel({
     const ruleUnder = rules?.find(r => r.rule_key === "sampling_undersampled" && r.is_active);
     const minOk = ruleOver?.max_value ?? 0.6;
     const maxOk = ruleUnder?.min_value ?? 2.5;
-    if (sampling < minOk) return { text: "Sur-échantillonné", color: "text-amber-400" };
-    if (sampling > maxOk) return { text: "Sous-échantillonné", color: "text-amber-400" };
-    return { text: "Idéal", color: "text-emerald-400" };
+    if (sampling < minOk) return { text: "Oversampled", color: "text-amber-400" };
+    if (sampling > maxOk) return { text: "Undersampled", color: "text-amber-400" };
+    return { text: "Ideal", color: "text-emerald-400" };
   }, [sampling, rules]);
 
   // M31 FOV preview
@@ -87,8 +87,8 @@ export function MonRigPanel({
       const ratio = (teleW + camW) / mount.payload_kg;
       const ruleErr = getRule("payload_ratio");
       const ruleWarn = getRule("payload_ratio_warning");
-      if (ruleErr && ratio > ruleErr.max_value) triggered.push({ severity: "error", message: ruleErr.message_fr });
-      else if (ruleWarn && ratio > ruleWarn.min_value) triggered.push({ severity: "warning", message: ruleWarn.message_fr });
+      if (ruleErr && ratio > ruleErr.max_value) triggered.push({ severity: "error", message: ruleErr.message_en });
+      else if (ruleWarn && ratio > ruleWarn.min_value) triggered.push({ severity: "warning", message: ruleWarn.message_en });
     }
 
     // Sampling
@@ -96,9 +96,9 @@ export function MonRigPanel({
       const ruleUnder = getRule("sampling_undersampled");
       const ruleOver = getRule("sampling_oversampled");
       const ruleIdeal = getRule("sampling_ideal_deep_sky");
-      if (ruleUnder && sampling > ruleUnder.max_value) triggered.push({ severity: "warning", message: ruleUnder.message_fr });
-      else if (ruleOver && sampling < ruleOver.max_value) triggered.push({ severity: "warning", message: ruleOver.message_fr });
-      else if (ruleIdeal && sampling >= ruleIdeal.min_value && sampling <= ruleIdeal.max_value) triggered.push({ severity: "info", message: ruleIdeal.message_fr });
+      if (ruleUnder && sampling > ruleUnder.max_value) triggered.push({ severity: "warning", message: ruleUnder.message_en });
+      else if (ruleOver && sampling < ruleOver.max_value) triggered.push({ severity: "warning", message: ruleOver.message_en });
+      else if (ruleIdeal && sampling >= ruleIdeal.min_value && sampling <= ruleIdeal.max_value) triggered.push({ severity: "info", message: ruleIdeal.message_en });
     }
 
     // Sensor vs image circle
@@ -107,16 +107,16 @@ export function MonRigPanel({
       const ic = telescope.image_circle_mm;
       const ruleVig = getRule("sensor_vs_image_circle");
       const ruleWarn = getRule("sensor_illumination_warning");
-      if (ruleVig && diag / ic > ruleVig.max_value) triggered.push({ severity: "error", message: ruleVig.message_fr });
-      else if (ruleWarn && diag / ic > (ruleWarn.min_value ?? 0.85)) triggered.push({ severity: "warning", message: ruleWarn.message_fr });
+      if (ruleVig && diag / ic > ruleVig.max_value) triggered.push({ severity: "error", message: ruleVig.message_en });
+      else if (ruleWarn && diag / ic > (ruleWarn.min_value ?? 0.85)) triggered.push({ severity: "warning", message: ruleWarn.message_en });
     }
 
     // FOV too narrow / very wide
     if (fovW > 0) {
       const ruleNarrow = getRule("fov_too_narrow");
       const ruleWide = getRule("fov_very_wide");
-      if (ruleNarrow && fovW < (ruleNarrow.max_value ?? 15)) triggered.push({ severity: "info", message: ruleNarrow.message_fr });
-      if (ruleWide && fovW > (ruleWide.min_value ?? 300)) triggered.push({ severity: "info", message: ruleWide.message_fr });
+      if (ruleNarrow && fovW < (ruleNarrow.max_value ?? 15)) triggered.push({ severity: "info", message: ruleNarrow.message_en });
+      if (ruleWide && fovW > (ruleWide.min_value ?? 300)) triggered.push({ severity: "info", message: ruleWide.message_en });
     }
 
     // Backfocus
@@ -125,7 +125,7 @@ export function MonRigPanel({
     if (reqBF > 0 && camBF > 0) {
       const diff = Math.abs(camBF - reqBF);
       const ruleBF = getRule("backfocus_mismatch");
-      if (ruleBF && diff > (ruleBF.max_value ?? 5)) triggered.push({ severity: "warning", message: ruleBF.message_fr });
+      if (ruleBF && diff > (ruleBF.max_value ?? 5)) triggered.push({ severity: "warning", message: ruleBF.message_en });
     }
 
     return triggered;
@@ -135,11 +135,11 @@ export function MonRigPanel({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold" style={{ color: "#FFB347" }}>🔭 Mon Rig</h2>
+      <h2 className="text-xl font-bold" style={{ color: "#FFB347" }}>🔭 My Rig</h2>
 
       {/* OPTIQUE slot */}
       <SlotCard
-        label="OPTIQUE"
+        label="OPTICS"
         item={telescope ? `${telescope.brand} ${telescope.model}` : null}
         onClear={onClearTelescope}
         showManual={!telescope && showManualScope}
@@ -160,9 +160,9 @@ export function MonRigPanel({
         }
       />
 
-      {/* CAMÉRA slot */}
+      {/* CAMERA slot */}
       <SlotCard
-        label="CAMÉRA"
+        label="CAMERA"
         item={camera ? `${camera.brand} ${camera.model}` : null}
         onClear={onClearCamera}
         showManual={!camera && showManualCam}
@@ -188,12 +188,12 @@ export function MonRigPanel({
         }
       />
 
-      {/* MONTURE slot */}
-      <SlotCard label="MONTURE" item={mount ? `${mount.brand} ${mount.model}` : null} onClear={onClearMount} />
+      {/* MOUNT slot */}
+      <SlotCard label="MOUNT" item={mount ? `${mount.brand} ${mount.model}` : null} onClear={onClearMount} />
 
-      {/* FILTRES */}
+      {/* FILTERS */}
       <div className="rounded-lg border border-border/50 p-3">
-        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">Filtres</span>
+        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">Filters</span>
         {filters.length > 0 ? (
           <div className="flex flex-wrap gap-1 mt-1">
             {filters.map(f => (
@@ -203,12 +203,12 @@ export function MonRigPanel({
               </Badge>
             ))}
           </div>
-        ) : <p className="text-[10px] text-muted-foreground italic mt-1">Aucun</p>}
+        ) : <p className="text-[10px] text-muted-foreground italic mt-1">None</p>}
       </div>
 
-      {/* ACCESSOIRES */}
+      {/* ACCESSORIES */}
       <div className="rounded-lg border border-border/50 p-3">
-        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">Accessoires</span>
+        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">Accessories</span>
         {accessories.length > 0 ? (
           <div className="flex flex-wrap gap-1 mt-1">
             {accessories.map(a => (
@@ -218,7 +218,7 @@ export function MonRigPanel({
               </Badge>
             ))}
           </div>
-        ) : <p className="text-[10px] text-muted-foreground italic mt-1">Aucun</p>}
+        ) : <p className="text-[10px] text-muted-foreground italic mt-1">None</p>}
       </div>
 
       {/* CALCULATED SETUP */}
@@ -235,7 +235,7 @@ export function MonRigPanel({
               <p className="text-sm font-bold font-mono text-foreground">{fovW > 0 ? `${fovW.toFixed(0)}'×${fovH.toFixed(0)}'` : "—"}</p>
             </div>
             <div>
-              <span className="text-[10px] text-muted-foreground block">Focale</span>
+              <span className="text-[10px] text-muted-foreground block">Focal Length</span>
               <p className="text-sm font-bold font-mono text-foreground">{fl > 0 ? `${fl}mm` : "—"}</p>
             </div>
           </div>
@@ -260,11 +260,11 @@ export function MonRigPanel({
         ) : (
           <div className="h-[160px] flex items-center justify-center bg-secondary/10">
             <p className="text-[10px] text-muted-foreground italic text-center px-4">
-              Configurez votre rig pour voir le cadrage
+              Configure your rig to see the framing preview
             </p>
           </div>
         )}
-        <p className="text-[9px] text-muted-foreground text-center py-1">M31 — Galaxie d'Andromède (190'×60')</p>
+        <p className="text-[9px] text-muted-foreground text-center py-1">M31 — Andromeda Galaxy (190'×60')</p>
       </div>
 
       {/* COMPATIBILITY ALERTS */}
@@ -300,7 +300,7 @@ export function MonRigPanel({
         }}
       >
         <Rocket className="w-4 h-4" />
-        Trouver des cibles pour ce rig →
+        Find targets for this rig →
       </Button>
     </div>
   );
@@ -327,12 +327,12 @@ function SlotCard({ label, item, onClear, showManual, onToggleManual, manualCont
         </div>
       ) : (
         <div className="mt-1">
-          <p className="text-[10px] text-muted-foreground italic">Sélectionner dans le catalogue</p>
+          <p className="text-[10px] text-muted-foreground italic">Select from catalog</p>
           {onToggleManual && (
             <>
               <button onClick={onToggleManual} className="text-[10px] text-primary hover:underline flex items-center gap-0.5 mt-1">
                 <ChevronDown className={`w-3 h-3 transition-transform ${showManual ? "rotate-180" : ""}`} />
-                Saisir manuellement
+                Enter manually
               </button>
               {showManual && manualContent}
             </>

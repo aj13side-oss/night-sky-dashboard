@@ -125,7 +125,7 @@ export function MonRigPanel({
     if (reqBF > 0 && camBF > 0) {
       const diff = Math.abs(camBF - reqBF);
       const ruleBF = getRule("backfocus_mismatch");
-      if (ruleBF && diff > (ruleBF.max_value ?? 5)) triggered.push({ severity: "warning", message: ruleBF.message_fr });
+      if (ruleBF && diff > (ruleBF.max_value ?? 5)) triggered.push({ severity: "warning", message: ruleBF.message_en });
     }
 
     return triggered;

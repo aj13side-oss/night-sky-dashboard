@@ -218,7 +218,7 @@ export function MonRigPanel({
               </Badge>
             ))}
           </div>
-        ) : <p className="text-[10px] text-muted-foreground italic mt-1">Aucun</p>}
+        ) : <p className="text-[10px] text-muted-foreground italic mt-1">None</p>}
       </div>
 
       {/* CALCULATED SETUP */}

@@ -160,9 +160,9 @@ export function MonRigPanel({
         }
       />
 
-      {/* CAMÉRA slot */}
+      {/* CAMERA slot */}
       <SlotCard
-        label="CAMÉRA"
+        label="CAMERA"
         item={camera ? `${camera.brand} ${camera.model}` : null}
         onClear={onClearCamera}
         showManual={!camera && showManualCam}

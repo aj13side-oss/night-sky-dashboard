@@ -300,7 +300,7 @@ export function MonRigPanel({
         }}
       >
         <Rocket className="w-4 h-4" />
-        Trouver des cibles pour ce rig →
+        Find targets for this rig →
       </Button>
     </div>
   );

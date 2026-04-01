@@ -1,24 +1,19 @@
-import { useMemo, useState } from "react";
-import { getMeteorShowers, getAuroraForecast } from "@/lib/celestial-data";
+import { useMemo, useState, useEffect } from "react";
+import { getAuroraForecast } from "@/lib/celestial-data";
 import { getMoonPhase } from "@/lib/astronomy";
 import { useObservation } from "@/contexts/ObservationContext";
 import { X, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
-function getMonthDay(dateStr: string): { month: number; day: number } | null {
-  const months: Record<string, number> = {
-    jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-    jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
-  };
-  const match = dateStr.match(/([A-Za-z]+)\s+(\d+)/);
-  if (!match) return null;
-  const m = months[match[1].toLowerCase().slice(0, 3)];
-  return m != null ? { month: m, day: parseInt(match[2]) } : null;
-}
-
-function daysBetween(d1: Date, m: number, day: number): number {
-  const target = new Date(d1.getFullYear(), m, day);
-  return Math.round((target.getTime() - d1.getTime()) / 86400000);
+interface ShowerRow {
+  id: string;
+  name: string;
+  peak_month: number;
+  peak_day_start: number;
+  active_window_days: number;
+  zhr: number;
+  best_time: string | null;
 }
 
 const EventBanner = () => {
@@ -27,63 +22,45 @@ const EventBanner = () => {
     const key = `cosmicframe_dismiss_${date.toISOString().split("T")[0]}`;
     return localStorage.getItem(key);
   });
+  const [showers, setShowers] = useState<ShowerRow[]>([]);
+
+  useEffect(() => {
+    (supabase as any).from("meteor_showers").select("id,name,peak_month,peak_day_start,active_window_days,zhr,best_time")
+      .then(({ data }: any) => { if (data) setShowers(data); });
+  }, []);
 
   const event = useMemo(() => {
     const now = date;
-    const month = now.getMonth();
+    const todayMs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const currentMonth = now.getMonth() + 1;
 
-    // Check meteor showers within 3 days
-    const showers = getMeteorShowers();
     for (const s of showers) {
-      const peak = getMonthDay(s.peakDate);
-      if (peak) {
-        const diff = daysBetween(now, peak.month, peak.day);
-        if (diff >= -1 && diff <= 3) {
-          return {
-            id: s.id,
-            text: diff <= 0
-              ? `☄️ ${s.name} meteor shower peaks tonight! ZHR ${s.zhr}. Best viewing after midnight.`
-              : `☄️ ${s.name} meteor shower peaks in ${diff} day${diff > 1 ? "s" : ""}! ZHR ${s.zhr}.`,
-            type: "meteor",
-          };
-        }
+      let year = now.getFullYear();
+      if (s.peak_month < currentMonth - 2) year++;
+      const peakMs = new Date(year, s.peak_month - 1, s.peak_day_start).getTime();
+      const diff = Math.round((peakMs - todayMs) / 86400000);
+      if (diff >= -1 && diff <= 3) {
+        return {
+          id: s.id,
+          text: diff <= 0
+            ? `☄️ ${s.name} meteor shower peaks tonight! ZHR ${s.zhr}. ${s.best_time ? `Best viewing ${s.best_time.toLowerCase()}.` : ""}`
+            : `☄️ ${s.name} meteor shower peaks in ${diff} day${diff > 1 ? "s" : ""}! ZHR ${s.zhr}.`,
+          type: "meteor",
+        };
       }
     }
 
-    // New moon check (approximate: illumination < 5%)
-    // We don't have live moon data here, so check day of month roughly
-    // Moon phase check using actual lunar cycle calculation
     const moon = getMoonPhase(now);
-    const illum = moon.illumination; // 0-100%
+    const illum = moon.illumination;
+    if (illum <= 10) return { id: "newmoon", text: "🌑 Near New Moon — perfect conditions for deep sky imaging tonight!", type: "moon" };
+    if (illum >= 90) return { id: "fullmoon", text: "🌕 Near Full Moon — poor conditions for deep sky imaging. Try bright targets or narrowband filters.", type: "moon" };
 
-    if (illum <= 10) {
-      return {
-        id: "newmoon",
-        text: "🌑 Near New Moon — perfect conditions for deep sky imaging tonight!",
-        type: "moon",
-      };
-    }
-    if (illum >= 90) {
-      return {
-        id: "fullmoon",
-        text: "🌕 Near Full Moon — poor conditions for deep sky imaging. Try bright targets or narrowband filters.",
-        type: "moon",
-      };
-    }
-
-    // Aurora check
     const aurora = getAuroraForecast();
     const highKp = aurora.find((a) => a.kpIndex >= 5);
-    if (highKp) {
-      return {
-        id: "aurora",
-        text: `🌌 Geomagnetic storm alert! Kp ${highKp.kpIndex} — aurora possible at ${highKp.bestLatitude}.`,
-        type: "aurora",
-      };
-    }
+    if (highKp) return { id: "aurora", text: `🌌 Geomagnetic storm alert! Kp ${highKp.kpIndex} — aurora possible at ${highKp.bestLatitude}.`, type: "aurora" };
 
     return null;
-  }, [date]);
+  }, [date, showers]);
 
   if (!event || dismissed === event.id) return null;
 

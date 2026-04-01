@@ -1,9 +1,11 @@
-import { getMeteorShowers, getAuroraForecast, getAsteroids } from "@/lib/celestial-data";
+import { getAuroraForecast, getAsteroids } from "@/lib/celestial-data";
 import { motion } from "framer-motion";
 import { Zap, Sun, CircleDot } from "lucide-react";
+import { useMeteorShowers, formatPeakRange } from "@/hooks/useMeteorShowers";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const SpecialEvents = () => {
-  const showers = getMeteorShowers();
+  const { showers, loading: showersLoading, error: showersError } = useMeteorShowers();
   const aurora = getAuroraForecast();
   const asteroids = getAsteroids(new Date().getMonth());
 
@@ -18,50 +20,91 @@ const SpecialEvents = () => {
         <h3 className="text-sm font-semibold text-foreground">☄️ Special Events</h3>
       </div>
 
-      {!hasContent && (
+      {!showersLoading && !hasContent && (
         <p className="text-xs text-muted-foreground text-center py-4">No special events this week</p>
       )}
 
       {/* Meteor Showers */}
-      {showers.length > 0 && (
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-1.5 pt-1">
-            <Zap className="w-3 h-3 text-primary" />
-            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Meteor Showers</span>
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-1.5 pt-1">
+          <Zap className="w-3 h-3 text-primary" />
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Meteor Showers</span>
+        </div>
+
+        {showersLoading && (
+          <div className="space-y-1.5">
+            {[1, 2].map((k) => (
+              <div key={k} className="p-2.5 rounded-xl bg-secondary/30 space-y-2">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-2.5 w-full" />
+                <div className="flex gap-1.5">
+                  <Skeleton className="h-4 w-16 rounded-full" />
+                  <Skeleton className="h-4 w-12 rounded-full" />
+                </div>
+              </div>
+            ))}
           </div>
-          {showers.slice(0, 3).map((shower) => {
-            const i = animIndex++;
-            return (
-              <motion.div
-                key={shower.id}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="p-2.5 rounded-xl bg-secondary/30"
-              >
-                <div className="flex items-start gap-2">
-                  <Zap className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
-                  <div className="min-w-0 flex-1">
+        )}
+
+        {showersError && (
+          <p className="text-[10px] text-muted-foreground text-center py-2">Failed to load showers</p>
+        )}
+
+        {!showersLoading && !showersError && showers.length === 0 && (
+          <p className="text-[10px] text-muted-foreground text-center py-2">No major shower in the next 30 days</p>
+        )}
+
+        {showers.map((shower) => {
+          const i = animIndex++;
+          return (
+            <motion.div
+              key={shower.id}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="p-2.5 rounded-xl bg-secondary/30"
+            >
+              <div className="flex items-start gap-2">
+                <Zap className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
                     <p className="text-xs font-semibold text-foreground">{shower.name}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{shower.description}</p>
-                    <div className="flex flex-wrap gap-1.5 mt-1">
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-medium">
-                        Peak: {shower.peakDate}
-                      </span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent font-medium">
-                        ZHR: {shower.zhr}
-                      </span>
+                    {shower.status === "active" ? (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-medium">Active</span>
+                    ) : (
                       <span className="text-[9px] text-muted-foreground">
-                        {shower.speed} km/s
+                        In {shower.daysUntilStart}d — {formatPeakRange(shower)}
                       </span>
-                    </div>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{shower.description}</p>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-medium">
+                      Peak: {formatPeakRange(shower)}
+                    </span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent font-medium">
+                      ZHR: {shower.zhr}
+                    </span>
+                    <span className="text-[9px] text-muted-foreground">
+                      {shower.speed_km_s} km/s
+                    </span>
+                    {shower.parent_body && (
+                      <span className="text-[9px] text-muted-foreground">
+                        {shower.parent_body}
+                      </span>
+                    )}
+                    {shower.best_time && (
+                      <span className="text-[9px] text-muted-foreground">
+                        {shower.best_time}
+                      </span>
+                    )}
                   </div>
                 </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      )}
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
 
       {/* Asteroids / Near-Earth Objects */}
       {asteroids.length > 0 && (

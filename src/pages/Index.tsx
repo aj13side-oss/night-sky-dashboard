@@ -68,6 +68,8 @@ const DashboardContent = () => {
 
         <TonightList />
 
+        <SpaceActivities />
+
         {/* SEO Content Section — collapsible */}
         <details className="space-y-6 pt-8 border-t border-border/20">
           <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">

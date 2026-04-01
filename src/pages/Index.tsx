@@ -12,6 +12,7 @@ import SpecialEvents from "@/components/dashboard/SpecialEvents";
 import TonightList from "@/components/dashboard/TonightList";
 import EventBanner from "@/components/dashboard/EventBanner";
 import QuickActions from "@/components/dashboard/QuickActions";
+import SpaceActivities from "@/components/dashboard/SpaceActivities";
 import { motion } from "framer-motion";
 
 const DashboardContent = () => {
@@ -66,6 +67,8 @@ const DashboardContent = () => {
         </div>
 
         <TonightList />
+
+        <SpaceActivities />
 
         {/* SEO Content Section — collapsible */}
         <details className="space-y-6 pt-8 border-t border-border/20">

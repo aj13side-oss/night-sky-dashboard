@@ -119,11 +119,11 @@ function useEnhancedMoon(date: Date, lat: number, lng: number) {
 
         // Check for supermoon/micromoon
         try {
-          const apsis = Astronomy.SearchLunarApsis(now);
-          const distKm = illum.dist_au * 149597870.7;
-          // Average perigee ~363,300 km, apogee ~405,500 km
-          const perigeeThreshold = 363300 * 1.10; // within 10% of perigee
-          const apogeeThreshold = 405500 * 0.90; // within 10% of apogee
+          const geoMoon = Astronomy.GeoVector(Astronomy.Body.Moon, now, true);
+          const distAU = Math.sqrt(geoMoon.x ** 2 + geoMoon.y ** 2 + geoMoon.z ** 2);
+          const distKm = distAU * 149597870.7;
+          const perigeeThreshold = 363300 * 1.10;
+          const apogeeThreshold = 405500 * 0.90;
           if (distKm <= perigeeThreshold) specialName = `Super ${monthName}`;
           else if (distKm >= apogeeThreshold) specialName = `Micro ${monthName}`;
         } catch { /* skip */ }

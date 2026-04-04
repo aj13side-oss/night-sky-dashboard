@@ -1,15 +1,40 @@
+import { useEffect, useState } from "react";
 import { getAuroraForecast, getAsteroids } from "@/lib/celestial-data";
+import { useObservation } from "@/contexts/ObservationContext";
 import { motion } from "framer-motion";
-import { Zap, Sun, CircleDot } from "lucide-react";
+import { Zap, Sun, CircleDot, Satellite } from "lucide-react";
 import { useMeteorShowers, formatPeakRange } from "@/hooks/useMeteorShowers";
 import { Skeleton } from "@/components/ui/skeleton";
+
+interface SatPass {
+  rise_time: string;
+  max_elevation: number;
+  duration_minutes: number;
+}
+
+interface SatelliteData {
+  name: string;
+  passes: SatPass[];
+}
 
 const SpecialEvents = () => {
   const { showers, loading: showersLoading, error: showersError } = useMeteorShowers();
   const aurora = getAuroraForecast();
   const asteroids = getAsteroids(new Date().getMonth());
+  const { location } = useObservation();
 
-  const hasContent = showers.length > 0 || aurora.length > 0 || asteroids.length > 0;
+  const [satellites, setSatellites] = useState<SatelliteData[]>([]);
+  const [satLoading, setSatLoading] = useState(true);
+  const [satError, setSatError] = useState(false);
+
+  useEffect(() => {
+    fetch(`https://ytitrmdlmjpyhwkbpjvf.supabase.co/functions/v1/satellite-passes?lat=${location.lat}&lon=${location.lng}&min_el=10`)
+      .then((r) => r.json())
+      .then((d) => setSatellites(Array.isArray(d) ? d : d.satellites ?? []))
+      .catch(() => setSatError(true))
+      .finally(() => setSatLoading(false));
+  }, [location.lat, location.lng]);
+  const hasContent = showers.length > 0 || aurora.length > 0 || asteroids.length > 0 || satellites.length > 0;
 
   let animIndex = 0;
 
@@ -189,6 +214,73 @@ const SpecialEvents = () => {
           })}
         </div>
       )}
+
+      {/* Satellite Passes */}
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-1.5 pt-1">
+          <Satellite className="w-3 h-3 text-blue-400" />
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Satellite Passes</span>
+        </div>
+
+        {satLoading && (
+          <div className="space-y-1.5">
+            {[1, 2].map((k) => (
+              <div key={k} className="p-2.5 rounded-xl bg-secondary/30 space-y-2">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-2.5 w-full" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {satError && (
+          <p className="text-[10px] text-muted-foreground text-center py-2">Failed to load satellite passes</p>
+        )}
+
+        {!satLoading && !satError && satellites.length === 0 && (
+          <p className="text-[10px] text-muted-foreground text-center py-2">No satellite passes available</p>
+        )}
+
+        {!satLoading && !satError && satellites.map((sat) => {
+          const i = animIndex++;
+          const pass = sat.passes?.[0];
+          return (
+            <motion.div
+              key={sat.name}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="p-2.5 rounded-xl bg-secondary/30"
+            >
+              <div className="flex items-start gap-2">
+                <Satellite className="w-3.5 h-3.5 text-blue-400 mt-0.5 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold text-foreground">{sat.name}</p>
+                  {pass ? (
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-medium">
+                        {new Date(pass.rise_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                      <span className="text-[9px] text-muted-foreground">
+                        Max {pass.max_elevation}°
+                      </span>
+                      <span className="text-[9px] text-muted-foreground">
+                        {pass.duration_minutes} min
+                      </span>
+                    </div>
+                  ) : (
+                    <p className="text-[10px] text-muted-foreground mt-0.5">No pass in the next 24h</p>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+
+        {!satLoading && !satError && satellites.length > 0 && (
+          <p className="text-[9px] text-muted-foreground/50 text-right">Data from CelesTrak</p>
+        )}
+      </div>
     </div>
   );
 };

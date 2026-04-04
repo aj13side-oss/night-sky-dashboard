@@ -311,8 +311,8 @@ const HourlyWeatherCard = () => {
           <p className="text-xs text-muted-foreground">18h → 09h · {location.name} · {data?.timezone || ""}</p>
         </div>
         <div className="flex items-center gap-2">
-          {isLoading && <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />}
-          {!isLoading && !error && (
+          {(isLoading || isFetching) && <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />}
+          {!isLoading && !isFetching && !error && (
             <span className="text-xs text-green-400 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" /> Live
             </span>
@@ -322,6 +322,15 @@ const HourlyWeatherCard = () => {
               <AlertTriangle className="w-3 h-3" /> Error
             </span>
           )}
+          <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md px-2 py-1 transition-colors disabled:opacity-50"
+            title="Refresh weather data"
+          >
+            <RefreshCw className={cn("w-3 h-3", isFetching && "animate-spin")} />
+            Refresh
+          </button>
         </div>
       </div>
 

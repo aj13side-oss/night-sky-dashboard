@@ -69,6 +69,8 @@ const DashboardContent = () => {
 
         <TonightList />
 
+        <SkyEvents />
+
         <SpaceActivities />
 
         {/* SEO Content Section — collapsible */}

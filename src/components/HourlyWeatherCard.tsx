@@ -1,5 +1,6 @@
 import { useObservation } from "@/contexts/ObservationContext";
-import { Loader2, AlertTriangle } from "lucide-react";
+import { Loader2, AlertTriangle, RefreshCw } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";

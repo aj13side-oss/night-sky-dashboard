@@ -271,7 +271,7 @@ const HourlyWeatherCard = () => {
   const { date, location } = useObservation();
   const dateStr = date.toISOString().split("T")[0];
 
-  const { data, isLoading, error } = useQuery<WeatherResponse>({
+  const { data, isLoading, error, refetch, isFetching } = useQuery<WeatherResponse>({
     queryKey: ["weather", location.lat, location.lng, dateStr],
     queryFn: async () => {
       const res = await fetch(

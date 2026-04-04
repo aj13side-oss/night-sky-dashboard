@@ -36,13 +36,13 @@ const SpaceActivities = () => {
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => {
-    fetch("http://api.open-notify.org/astros.json")
+    fetch("https://ytitrmdlmjpyhwkbpjvf.supabase.co/functions/v1/iss-proxy?endpoint=astros")
       .then((r) => r.json())
       .then((d) => setAstronauts(d.people ?? []))
       .catch(() => setAstroError(true));
 
     const fetchISS = () =>
-      fetch("http://api.open-notify.org/iss-now.json")
+      fetch("https://ytitrmdlmjpyhwkbpjvf.supabase.co/functions/v1/iss-proxy?endpoint=iss_now")
         .then((r) => r.json())
         .then((d) => setIssPos(d.iss_position))
         .catch(() => setIssError(true));

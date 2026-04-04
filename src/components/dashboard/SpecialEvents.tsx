@@ -1,14 +1,39 @@
+import { useEffect, useState } from "react";
 import { getAuroraForecast, getAsteroids } from "@/lib/celestial-data";
+import { useObservation } from "@/contexts/ObservationContext";
 import { motion } from "framer-motion";
-import { Zap, Sun, CircleDot } from "lucide-react";
+import { Zap, Sun, CircleDot, Satellite } from "lucide-react";
 import { useMeteorShowers, formatPeakRange } from "@/hooks/useMeteorShowers";
 import { Skeleton } from "@/components/ui/skeleton";
+
+interface SatPass {
+  rise_time: string;
+  max_elevation: number;
+  duration_minutes: number;
+}
+
+interface SatelliteData {
+  name: string;
+  passes: SatPass[];
+}
 
 const SpecialEvents = () => {
   const { showers, loading: showersLoading, error: showersError } = useMeteorShowers();
   const aurora = getAuroraForecast();
   const asteroids = getAsteroids(new Date().getMonth());
+  const { location } = useObservation();
 
+  const [satellites, setSatellites] = useState<SatelliteData[]>([]);
+  const [satLoading, setSatLoading] = useState(true);
+  const [satError, setSatError] = useState(false);
+
+  useEffect(() => {
+    fetch(`https://ytitrmdlmjpyhwkbpjvf.supabase.co/functions/v1/satellite-passes?lat=${location.lat}&lon=${location.lng}&min_el=10`)
+      .then((r) => r.json())
+      .then((d) => setSatellites(Array.isArray(d) ? d : d.satellites ?? []))
+      .catch(() => setSatError(true))
+      .finally(() => setSatLoading(false));
+  }, [location.lat, location.lng]);
   const hasContent = showers.length > 0 || aurora.length > 0 || asteroids.length > 0;
 
   let animIndex = 0;

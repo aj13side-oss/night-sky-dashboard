@@ -34,7 +34,7 @@ const SpecialEvents = () => {
       .catch(() => setSatError(true))
       .finally(() => setSatLoading(false));
   }, [location.lat, location.lng]);
-  const hasContent = showers.length > 0 || aurora.length > 0 || asteroids.length > 0;
+  const hasContent = showers.length > 0 || aurora.length > 0 || asteroids.length > 0 || satellites.length > 0;
 
   let animIndex = 0;
 

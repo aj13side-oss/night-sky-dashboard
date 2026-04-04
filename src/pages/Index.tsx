@@ -13,6 +13,7 @@ import TonightList from "@/components/dashboard/TonightList";
 import EventBanner from "@/components/dashboard/EventBanner";
 import QuickActions from "@/components/dashboard/QuickActions";
 import SpaceActivities from "@/components/dashboard/SpaceActivities";
+import SkyEvents from "@/components/dashboard/SkyEvents";
 import { motion } from "framer-motion";
 
 const DashboardContent = () => {

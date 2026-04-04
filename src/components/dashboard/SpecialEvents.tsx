@@ -98,6 +98,13 @@ const SpecialEvents = () => {
                         {shower.best_time}
                       </span>
                     )}
+                    <span className="text-[9px] text-muted-foreground">
+                      🌍 {shower.northern_hemisphere && shower.southern_hemisphere
+                        ? "Both hemispheres"
+                        : shower.northern_hemisphere
+                        ? "North only"
+                        : "South only"}
+                    </span>
                   </div>
                 </div>
               </div>

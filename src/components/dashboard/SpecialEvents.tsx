@@ -38,6 +38,7 @@ const SpecialEvents = () => {
   const [satellites, setSatellites] = useState<SatelliteData[]>([]);
   const [satLoading, setSatLoading] = useState(true);
   const [satError, setSatError] = useState(false);
+  const [transients, setTransients] = useState<TransientObject[]>([]);
 
   useEffect(() => {
     fetch(`https://ytitrmdlmjpyhwkbpjvf.supabase.co/functions/v1/satellite-passes?lat=${location.lat}&lon=${location.lng}&min_el=10`)
@@ -46,7 +47,21 @@ const SpecialEvents = () => {
       .catch(() => setSatError(true))
       .finally(() => setSatLoading(false));
   }, [location.lat, location.lng]);
-  const hasContent = showers.length > 0 || aurora.length > 0 || asteroids.length > 0 || satellites.length > 0;
+
+  useEffect(() => {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const dateStr = thirtyDaysAgo.toISOString().split("T")[0];
+    supabase
+      .from("transient_objects")
+      .select("tns_name, obj_type, magnitude, magnitude_band, host_galaxy, discovering_group, discovery_date, source_url")
+      .gte("discovery_date", dateStr)
+      .order("discovery_date", { ascending: false })
+      .limit(8)
+      .then(({ data }) => setTransients((data as TransientObject[]) ?? []));
+  }, []);
+
+  const hasContent = showers.length > 0 || aurora.length > 0 || asteroids.length > 0 || satellites.length > 0 || transients.length > 0;
 
   let animIndex = 0;
 

@@ -2,9 +2,21 @@ import { useEffect, useState } from "react";
 import { getAuroraForecast, getAsteroids } from "@/lib/celestial-data";
 import { useObservation } from "@/contexts/ObservationContext";
 import { motion } from "framer-motion";
-import { Zap, Sun, CircleDot, Satellite } from "lucide-react";
+import { Zap, Sun, CircleDot, Satellite, Sparkles } from "lucide-react";
 import { useMeteorShowers, formatPeakRange } from "@/hooks/useMeteorShowers";
 import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@/integrations/supabase/client";
+
+interface TransientObject {
+  tns_name: string;
+  obj_type: string;
+  magnitude: number | null;
+  magnitude_band: string | null;
+  host_galaxy: string | null;
+  discovering_group: string | null;
+  discovery_date: string;
+  source_url: string | null;
+}
 
 interface SatPass {
   rise_time: string;
@@ -26,6 +38,7 @@ const SpecialEvents = () => {
   const [satellites, setSatellites] = useState<SatelliteData[]>([]);
   const [satLoading, setSatLoading] = useState(true);
   const [satError, setSatError] = useState(false);
+  const [transients, setTransients] = useState<TransientObject[]>([]);
 
   useEffect(() => {
     fetch(`https://ytitrmdlmjpyhwkbpjvf.supabase.co/functions/v1/satellite-passes?lat=${location.lat}&lon=${location.lng}&min_el=10`)
@@ -34,7 +47,21 @@ const SpecialEvents = () => {
       .catch(() => setSatError(true))
       .finally(() => setSatLoading(false));
   }, [location.lat, location.lng]);
-  const hasContent = showers.length > 0 || aurora.length > 0 || asteroids.length > 0 || satellites.length > 0;
+
+  useEffect(() => {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const dateStr = thirtyDaysAgo.toISOString().split("T")[0];
+    supabase
+      .from("transient_objects")
+      .select("tns_name, obj_type, magnitude, magnitude_band, host_galaxy, discovering_group, discovery_date, source_url")
+      .gte("discovery_date", dateStr)
+      .order("discovery_date", { ascending: false })
+      .limit(8)
+      .then(({ data }) => setTransients((data as TransientObject[]) ?? []));
+  }, []);
+
+  const hasContent = showers.length > 0 || aurora.length > 0 || asteroids.length > 0 || satellites.length > 0 || transients.length > 0;
 
   let animIndex = 0;
 
@@ -177,7 +204,67 @@ const SpecialEvents = () => {
         </div>
       )}
 
-      {/* Aurora */}
+      {/* Recent Supernovae & Novae */}
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-1.5 pt-1">
+          <Sparkles className="w-3 h-3 text-yellow-400" />
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Recent Supernovae & Novae</span>
+        </div>
+
+        {transients.length === 0 && (
+          <p className="text-[10px] text-muted-foreground text-center py-2">No recent transients reported</p>
+        )}
+
+        {transients.map((t) => {
+          const i = animIndex++;
+          return (
+            <motion.div
+              key={t.tns_name}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="p-2.5 rounded-xl bg-secondary/30"
+            >
+              <div className="flex items-start gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-yellow-400 mt-0.5 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    {t.source_url ? (
+                      <a href={t.source_url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-primary hover:underline">
+                        {t.tns_name}
+                      </a>
+                    ) : (
+                      <p className="text-xs font-semibold text-foreground">{t.tns_name}</p>
+                    )}
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 font-medium">
+                      {t.obj_type}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {t.magnitude != null && (
+                      <span className="text-[9px] text-muted-foreground">
+                        mag {t.magnitude.toFixed(1)}{t.magnitude_band ? ` ${t.magnitude_band}` : ""}
+                      </span>
+                    )}
+                    {t.host_galaxy && (
+                      <span className="text-[9px] text-muted-foreground">{t.host_galaxy}</span>
+                    )}
+                    <span className="text-[9px] text-muted-foreground">
+                      {new Date(t.discovery_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+
+        {transients.length > 0 && (
+          <p className="text-[9px] text-muted-foreground/50 text-right">Transient Name Server (TNS)</p>
+        )}
+      </div>
+
+
       {aurora.length > 0 && (
         <div className="space-y-1.5">
           <div className="flex items-center gap-1.5 pt-1">

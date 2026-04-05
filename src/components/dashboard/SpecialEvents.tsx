@@ -204,7 +204,67 @@ const SpecialEvents = () => {
         </div>
       )}
 
-      {/* Aurora */}
+      {/* Recent Supernovae & Novae */}
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-1.5 pt-1">
+          <Sparkles className="w-3 h-3 text-yellow-400" />
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Recent Supernovae & Novae</span>
+        </div>
+
+        {transients.length === 0 && (
+          <p className="text-[10px] text-muted-foreground text-center py-2">No recent transients reported</p>
+        )}
+
+        {transients.map((t) => {
+          const i = animIndex++;
+          return (
+            <motion.div
+              key={t.tns_name}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="p-2.5 rounded-xl bg-secondary/30"
+            >
+              <div className="flex items-start gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-yellow-400 mt-0.5 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    {t.source_url ? (
+                      <a href={t.source_url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-primary hover:underline">
+                        {t.tns_name}
+                      </a>
+                    ) : (
+                      <p className="text-xs font-semibold text-foreground">{t.tns_name}</p>
+                    )}
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 font-medium">
+                      {t.obj_type}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {t.magnitude != null && (
+                      <span className="text-[9px] text-muted-foreground">
+                        mag {t.magnitude.toFixed(1)}{t.magnitude_band ? ` ${t.magnitude_band}` : ""}
+                      </span>
+                    )}
+                    {t.host_galaxy && (
+                      <span className="text-[9px] text-muted-foreground">{t.host_galaxy}</span>
+                    )}
+                    <span className="text-[9px] text-muted-foreground">
+                      {new Date(t.discovery_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+
+        {transients.length > 0 && (
+          <p className="text-[9px] text-muted-foreground/50 text-right">Transient Name Server (TNS)</p>
+        )}
+      </div>
+
+
       {aurora.length > 0 && (
         <div className="space-y-1.5">
           <div className="flex items-center gap-1.5 pt-1">

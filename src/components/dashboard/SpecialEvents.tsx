@@ -2,9 +2,21 @@ import { useEffect, useState } from "react";
 import { getAuroraForecast, getAsteroids } from "@/lib/celestial-data";
 import { useObservation } from "@/contexts/ObservationContext";
 import { motion } from "framer-motion";
-import { Zap, Sun, CircleDot, Satellite } from "lucide-react";
+import { Zap, Sun, CircleDot, Satellite, Sparkles } from "lucide-react";
 import { useMeteorShowers, formatPeakRange } from "@/hooks/useMeteorShowers";
 import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@/integrations/supabase/client";
+
+interface TransientObject {
+  tns_name: string;
+  obj_type: string;
+  magnitude: number | null;
+  magnitude_band: string | null;
+  host_galaxy: string | null;
+  discovering_group: string | null;
+  discovery_date: string;
+  source_url: string | null;
+}
 
 interface SatPass {
   rise_time: string;

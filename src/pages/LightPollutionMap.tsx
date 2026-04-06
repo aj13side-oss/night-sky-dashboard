@@ -36,12 +36,57 @@ const BORTLE_SCALE = [
   { level: 9, label: "Inner-city sky", color: "#ffffff", sqm: "< 17.80" },
 ];
 
+/** Estimate Bortle level from the light pollution tile color at click point */
+function estimateBortleFromClick(map: L.Map, latlng: L.LatLng): number {
+  try {
+    const container = map.getContainer();
+    const point = map.latLngToContainerPoint(latlng);
+    // Find tile layer canvas/images
+    const tiles = container.querySelectorAll<HTMLImageElement>(".leaflet-tile-pane img");
+    // Create an offscreen canvas to sample pixel
+    for (const tile of Array.from(tiles)) {
+      const rect = tile.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const px = point.x - (rect.left - containerRect.left);
+      const py = point.y - (rect.top - containerRect.top);
+      if (px >= 0 && py >= 0 && px < rect.width && py < rect.height) {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = tile.naturalWidth || tile.width;
+          canvas.height = tile.naturalHeight || tile.height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) continue;
+          ctx.drawImage(tile, 0, 0);
+          const scaleX = canvas.width / rect.width;
+          const scaleY = canvas.height / rect.height;
+          const data = ctx.getImageData(Math.floor(px * scaleX), Math.floor(py * scaleY), 1, 1).data;
+          const [r, g, b, a] = data;
+          if (a < 30) continue; // transparent tile — skip
+          // Map brightness/color to Bortle
+          const brightness = (r + g + b) / 3;
+          if (brightness > 220) return 9;
+          if (brightness > 180) return 8;
+          if (r > 180 && g < 120) return 7;
+          if (r > 150 && g > 80 && b < 80) return 6;
+          if (r > 120 && g > 120 && b < 80) return 5;
+          if (g > 80 && r < 100 && b < 80) return 4;
+          if (g > 50 && r < 80) return 3;
+          if (brightness < 30) return 1;
+          return 2;
+        } catch { continue; } // CORS — can't read pixel
+      }
+    }
+  } catch {}
+  return 5; // fallback
+}
+
 const LightPollutionMap = () => {
   const [lat, setLat] = useState(45.7347);
   const [lng, setLng] = useState(4.4931);
   const [overlayOpacity, setOverlayOpacity] = useState([0.6]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [clickedPoint, setClickedPoint] = useState<{ lat: number; lng: number; bortle: number } | null>(null);
+  const [selectedBortle, setSelectedBortle] = useState<number | undefined>(undefined);
 
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -80,8 +125,29 @@ const LightPollutionMap = () => {
     markerRef.current = marker;
 
     map.on("click", (e: L.LeafletMouseEvent) => {
-      setClickedPoint({ lat: e.latlng.lat, lng: e.latlng.lng, bortle: 5 });
+      // Attempt to read Bortle from tile pixel color
+      const bortle = estimateBortleFromClick(map, e.latlng);
+      setClickedPoint({ lat: e.latlng.lat, lng: e.latlng.lng, bortle });
+      setSelectedBortle(bortle);
     });
+
+    // Add color legend control
+    const legend = new L.Control({ position: "bottomleft" });
+    legend.onAdd = () => {
+      const div = L.DomUtil.create("div", "");
+      div.innerHTML = `
+        <div style="background:rgba(0,0,0,0.75);border-radius:8px;padding:6px 8px;font-size:10px;color:#ccc;max-width:140px;line-height:1.6;">
+          <div style="font-weight:600;margin-bottom:3px;color:#fff;">Bortle Scale</div>
+          <div style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#333;border:1px solid #555;"></span> B1–B2</div>
+          <div style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#2d6a4f;"></span> B3–B4</div>
+          <div style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#e9c46a;"></span> B5</div>
+          <div style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#e76f51;"></span> B6–B7</div>
+          <div style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#e63946;"></span> B8–B9</div>
+        </div>
+      `;
+      return div;
+    };
+    legend.addTo(map);
 
     mapRef.current = map;
 
@@ -133,6 +199,7 @@ const LightPollutionMap = () => {
     setLng(site.lng);
     mapRef.current?.setView([site.lat, site.lng], 10);
     setClickedPoint({ lat: site.lat, lng: site.lng, bortle: site.bortle });
+    setSelectedBortle(site.bortle);
   }, []);
 
   return (
@@ -209,7 +276,7 @@ const LightPollutionMap = () => {
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-              <ImagingImpactCard selectedBortle={clickedPoint?.bortle} />
+              <ImagingImpactCard selectedBortle={selectedBortle} />
             </motion.div>
 
             <motion.div

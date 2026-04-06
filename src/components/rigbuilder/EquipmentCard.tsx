@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ShoppingCart, ExternalLink, Globe, Tag } from "lucide-react";
+import { ShoppingCart, ExternalLink, Globe } from "lucide-react";
 import { thumb400 } from "@/lib/utils";
 
 interface RetailerLink {
@@ -19,7 +19,6 @@ interface EquipmentCardProps {
   affiliateAmazon: string | null;
   affiliateAstro: string | null;
   manufacturerUrl?: string | null;
-  bestPrice?: { price: number; label: string; url: string | null } | null;
   extraRetailers?: RetailerLink[];
 }
 
@@ -32,7 +31,6 @@ export function EquipmentCard({
   affiliateAmazon,
   affiliateAstro,
   manufacturerUrl,
-  bestPrice,
   extraRetailers = [],
 }: EquipmentCardProps) {
   const filteredSpecs = specs.filter(Boolean) as string[];
@@ -57,20 +55,6 @@ export function EquipmentCard({
         ) : (
           <div className="rounded-md bg-secondary/10 flex items-center justify-center aspect-square">
             <span className="text-muted-foreground text-[10px]">No image</span>
-          </div>
-        )}
-
-        {bestPrice && (
-          <div className="flex items-center gap-1 text-[10px]" onClick={e => e.stopPropagation()}>
-            <Tag className="w-3 h-3 text-primary" />
-            {bestPrice.url ? (
-              <a href={bestPrice.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-semibold">
-                From {bestPrice.price.toLocaleString()}€
-              </a>
-            ) : (
-              <span className="text-primary font-semibold">From {bestPrice.price.toLocaleString()}€</span>
-            )}
-            <span className="text-muted-foreground">({bestPrice.label})</span>
           </div>
         )}
 

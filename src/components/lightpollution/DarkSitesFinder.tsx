@@ -13,7 +13,7 @@ interface Props {
 }
 
 const DarkSitesFinder = ({ userLat, userLng, onSelectSite }: Props) => {
-  const [maxRadius, setMaxRadius] = useState([500]);
+  const [maxRadius, setMaxRadius] = useState([150]);
 
   const nearbySites = useMemo(() => {
     return DARK_SITES
@@ -38,7 +38,7 @@ const DarkSitesFinder = ({ userLat, userLng, onSelectSite }: Props) => {
 
       <div className="flex items-center gap-3">
         <Label className="text-xs text-muted-foreground whitespace-nowrap">Radius: {maxRadius[0]} km</Label>
-        <Slider value={maxRadius} onValueChange={setMaxRadius} min={50} max={2000} step={50} className="flex-1" />
+        <Slider value={maxRadius} onValueChange={setMaxRadius} min={50} max={500} step={50} className="flex-1" />
       </div>
 
       {nearbySites.length === 0 ? (

@@ -420,16 +420,30 @@ const FovCalculator = () => {
                 <ResultItem label="Sampling Quality"
                   value={samplingLabel.text}
                   highlight={samplingLabel.ok} />
-                {obj && (
-                  <ResultItem
-                    label={`Framing ${obj.name}`}
-                    value={
-                      objFractionW >= 0.01
-                        ? `${(objFractionW * 100).toFixed(0)}% of width`
-                        : `${(objFractionW * 100).toFixed(1)}% of width — very small, consider using a barlow`
-                    }
-                  />
-                )}
+                {obj && (() => {
+                  const pct = objFractionW * 100;
+                  const framingColor = pct > 100 ? "text-red-400" : pct >= 80 ? "text-orange-400" : "";
+                  const framingBadge = pct > 100 ? "Mosaic needed" : pct >= 80 ? "Tight fit" : "";
+                  return (
+                    <div>
+                      <ResultItem
+                        label={`Framing ${obj.name}`}
+                        value={
+                          objFractionW >= 0.01
+                            ? `${pct.toFixed(0)}% of width`
+                            : `${pct.toFixed(1)}% of width — very small, consider using a barlow`
+                        }
+                        highlight={pct < 80}
+                        className={framingColor}
+                      />
+                      {framingBadge && (
+                        <span className={`text-[10px] font-medium mt-0.5 inline-block px-1.5 py-0.5 rounded ${pct > 100 ? "bg-red-500/20 text-red-400" : "bg-orange-500/20 text-orange-400"}`}>
+                          {framingBadge}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
               {fov.wArcmin > 0 && (
                 <div className="pt-2 space-y-1">
@@ -763,10 +777,10 @@ const FovCalculator = () => {
   );
 };
 
-const ResultItem = ({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) => (
+const ResultItem = ({ label, value, highlight, className }: { label: string; value: string; highlight?: boolean; className?: string }) => (
   <div>
     <p className="text-xs text-muted-foreground">{label}</p>
-    <p className={`text-sm font-mono font-medium ${highlight ? "text-green-400" : "text-foreground"}`}>{value}</p>
+    <p className={`text-sm font-mono font-medium ${className ? className : highlight ? "text-green-400" : "text-foreground"}`}>{value}</p>
   </div>
 );
 

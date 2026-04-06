@@ -17,6 +17,9 @@ export const DARK_SITES: DarkSite[] = [
   { name: "Zselic Starry Sky Park", lat: 46.23, lng: 17.77, bortle: 2, country: "HU", designation: "IDA Dark Sky Park" },
   { name: "Westhavelland", lat: 52.72, lng: 12.33, bortle: 3, country: "DE", designation: "IDA Dark Sky Reserve" },
   { name: "Brecon Beacons", lat: 51.88, lng: -3.44, bortle: 3, country: "GB", designation: "IDA Dark Sky Reserve" },
+  { name: "Vercors Regional Natural Park", lat: 44.95, lng: 5.45, bortle: 3, country: "FR" },
+  { name: "Chartreuse", lat: 45.35, lng: 5.82, bortle: 3, country: "FR" },
+  { name: "Ardèche", lat: 44.60, lng: 4.35, bortle: 3, country: "FR" },
   { name: "Aosta Valley", lat: 45.74, lng: 7.32, bortle: 2, country: "IT" },
   { name: "Hortobágy National Park", lat: 47.58, lng: 21.15, bortle: 2, country: "HU", designation: "IDA Dark Sky Park" },
 

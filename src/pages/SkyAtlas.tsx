@@ -42,6 +42,8 @@ const SkyAtlas = () => {
   const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState<CelestialFilters>(defaultFilters);
   const [page, setPage] = useState(0);
+  const [allLoadedData, setAllLoadedData] = useState<CelestialObject[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [selected, setSelected] = useState<CelestialObject | null>(null);
   const [userPos, setUserPos] = useState({ lat: 45.7347, lng: 4.4931 });
   const [visibleTonight, setVisibleTonight] = useState(false);
@@ -59,6 +61,21 @@ const SkyAtlas = () => {
 
   const { types, constellations } = useDistinctFilters();
   const { data, isLoading } = useCelestialObjects(filters, page);
+
+  // Accumulate data across pages for load-more
+  useEffect(() => {
+    if (!data?.data) return;
+    if (page === 0) {
+      setAllLoadedData(data.data);
+    } else {
+      setAllLoadedData(prev => {
+        const existingIds = new Set(prev.map(o => o.id));
+        const newItems = data.data.filter(o => !existingIds.has(o.id));
+        return [...prev, ...newItems];
+      });
+    }
+    setTotalCount(data.count ?? 0);
+  }, [data, page]);
 
   // Solar system search
   const { data: solarResults = [] } = useQuery({
@@ -95,12 +112,12 @@ const SkyAtlas = () => {
     );
   }, []);
 
-  useEffect(() => { setPage(0); setClientPage(0); }, [filters, visibleTonight, filterMode]);
+  useEffect(() => { setPage(0); setClientPage(0); setAllLoadedData([]); }, [filters, visibleTonight, filterMode]);
 
   // Client-side filters: visible tonight + filter mode
   const filteredData = useMemo(() => {
-    if (!data?.data) return [];
-    let results: (CelestialObject & { _hoursVisible?: number })[] = data.data;
+    if (!allLoadedData.length) return [];
+    let results: (CelestialObject & { _hoursVisible?: number })[] = allLoadedData;
 
     if (visibleTonight) {
       results = results
@@ -136,7 +153,7 @@ const SkyAtlas = () => {
     }
 
     return results;
-  }, [data?.data, visibleTonight, filterMode, userPos.lat, userPos.lng, minHoursVisible]);
+  }, [allLoadedData, visibleTonight, filterMode, userPos.lat, userPos.lng, minHoursVisible]);
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 
@@ -176,7 +193,7 @@ const SkyAtlas = () => {
           </h1>
           <p className="text-muted-foreground mt-1 flex items-center gap-2">
             <MapPin className="w-3.5 h-3.5" />
-            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — Explore {data?.count?.toLocaleString() ?? "..."} celestial objects
+            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — Explore {totalCount > 0 ? totalCount.toLocaleString() : "..."} celestial objects
           </p>
         </motion.div>
 
@@ -190,7 +207,7 @@ const SkyAtlas = () => {
           })}
           types={types}
           constellations={constellations}
-          totalCount={visibleTonight || filterMode !== "all" ? filteredData.length : (data?.count ?? 0)}
+          totalCount={visibleTonight || filterMode !== "all" ? filteredData.length : totalCount}
           visibleTonightEnabled={visibleTonight}
           onToggleVisibleTonight={() => { setVisibleTonight((v) => !v); setMinHoursVisible(0); }}
           filterMode={filterMode}
@@ -242,7 +259,7 @@ const SkyAtlas = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {paginatedData.map((obj, i) => (
+            {(isClientFiltered ? paginatedData : allLoadedData).map((obj, i) => (
               <ObjectCard
                 key={obj.id}
                 obj={obj}
@@ -256,18 +273,15 @@ const SkyAtlas = () => {
           </div>
         )}
 
-        {/* Server-side pagination */}
-        {!isClientFiltered && totalPages > 1 && (
-          <div className="flex items-center justify-center gap-4 pt-4">
-            <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)} className="gap-1">
-              <ChevronLeft className="w-4 h-4" /> Prev
+        {/* Load more button */}
+        {!isClientFiltered && allLoadedData.length < totalCount && (
+          <div className="flex flex-col items-center gap-2 pt-4">
+            <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} className="gap-1">
+              Load more (30)
             </Button>
-            <span className="text-sm text-muted-foreground font-mono">
-              {page + 1} / {totalPages}
+            <span className="text-xs text-muted-foreground font-mono">
+              Showing {allLoadedData.length} of {totalCount.toLocaleString()}
             </span>
-            <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)} className="gap-1">
-              Next <ChevronRight className="w-4 h-4" />
-            </Button>
           </div>
         )}
 

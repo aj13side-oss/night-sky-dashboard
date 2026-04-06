@@ -42,13 +42,14 @@ const SkyAtlas = () => {
   const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState<CelestialFilters>(defaultFilters);
   const [page, setPage] = useState(0);
+  const [allLoadedData, setAllLoadedData] = useState<CelestialObject[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [selected, setSelected] = useState<CelestialObject | null>(null);
   const [userPos, setUserPos] = useState({ lat: 45.7347, lng: 4.4931 });
   const [visibleTonight, setVisibleTonight] = useState(false);
   const [filterMode, setFilterMode] = useState("all");
   const [minHoursVisible, setMinHoursVisible] = useState(0);
   const [clientPage, setClientPage] = useState(0);
-  const [loadMoreCount, setLoadMoreCount] = useState(1);
   const CLIENT_PAGE_SIZE = 20;
   
 

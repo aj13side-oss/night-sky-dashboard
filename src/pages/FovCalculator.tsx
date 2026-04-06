@@ -777,10 +777,10 @@ const FovCalculator = () => {
   );
 };
 
-const ResultItem = ({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) => (
+const ResultItem = ({ label, value, highlight, className }: { label: string; value: string; highlight?: boolean; className?: string }) => (
   <div>
     <p className="text-xs text-muted-foreground">{label}</p>
-    <p className={`text-sm font-mono font-medium ${highlight ? "text-green-400" : "text-foreground"}`}>{value}</p>
+    <p className={`text-sm font-mono font-medium ${className ? className : highlight ? "text-green-400" : "text-foreground"}`}>{value}</p>
   </div>
 );
 

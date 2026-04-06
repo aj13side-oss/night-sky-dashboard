@@ -62,6 +62,21 @@ const SkyAtlas = () => {
   const { types, constellations } = useDistinctFilters();
   const { data, isLoading } = useCelestialObjects(filters, page);
 
+  // Accumulate data across pages for load-more
+  useEffect(() => {
+    if (!data?.data) return;
+    if (page === 0) {
+      setAllLoadedData(data.data);
+    } else {
+      setAllLoadedData(prev => {
+        const existingIds = new Set(prev.map(o => o.id));
+        const newItems = data.data.filter(o => !existingIds.has(o.id));
+        return [...prev, ...newItems];
+      });
+    }
+    setTotalCount(data.count ?? 0);
+  }, [data, page]);
+
   // Solar system search
   const { data: solarResults = [] } = useQuery({
     queryKey: ["solar-atlas-search", filters.search],

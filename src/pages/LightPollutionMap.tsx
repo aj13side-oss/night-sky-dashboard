@@ -36,6 +36,50 @@ const BORTLE_SCALE = [
   { level: 9, label: "Inner-city sky", color: "#ffffff", sqm: "< 17.80" },
 ];
 
+/** Estimate Bortle level from the light pollution tile color at click point */
+function estimateBortleFromClick(map: L.Map, latlng: L.LatLng): number {
+  try {
+    const container = map.getContainer();
+    const point = map.latLngToContainerPoint(latlng);
+    // Find tile layer canvas/images
+    const tiles = container.querySelectorAll<HTMLImageElement>(".leaflet-tile-pane img");
+    // Create an offscreen canvas to sample pixel
+    for (const tile of Array.from(tiles)) {
+      const rect = tile.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const px = point.x - (rect.left - containerRect.left);
+      const py = point.y - (rect.top - containerRect.top);
+      if (px >= 0 && py >= 0 && px < rect.width && py < rect.height) {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = tile.naturalWidth || tile.width;
+          canvas.height = tile.naturalHeight || tile.height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) continue;
+          ctx.drawImage(tile, 0, 0);
+          const scaleX = canvas.width / rect.width;
+          const scaleY = canvas.height / rect.height;
+          const data = ctx.getImageData(Math.floor(px * scaleX), Math.floor(py * scaleY), 1, 1).data;
+          const [r, g, b, a] = data;
+          if (a < 30) continue; // transparent tile — skip
+          // Map brightness/color to Bortle
+          const brightness = (r + g + b) / 3;
+          if (brightness > 220) return 9;
+          if (brightness > 180) return 8;
+          if (r > 180 && g < 120) return 7;
+          if (r > 150 && g > 80 && b < 80) return 6;
+          if (r > 120 && g > 120 && b < 80) return 5;
+          if (g > 80 && r < 100 && b < 80) return 4;
+          if (g > 50 && r < 80) return 3;
+          if (brightness < 30) return 1;
+          return 2;
+        } catch { continue; } // CORS — can't read pixel
+      }
+    }
+  } catch {}
+  return 5; // fallback
+}
+
 const LightPollutionMap = () => {
   const [lat, setLat] = useState(45.7347);
   const [lng, setLng] = useState(4.4931);

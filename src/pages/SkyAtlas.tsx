@@ -193,7 +193,7 @@ const SkyAtlas = () => {
           </h1>
           <p className="text-muted-foreground mt-1 flex items-center gap-2">
             <MapPin className="w-3.5 h-3.5" />
-            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — Explore {data?.count?.toLocaleString() ?? "..."} celestial objects
+            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — Explore {totalCount > 0 ? totalCount.toLocaleString() : "..."} celestial objects
           </p>
         </motion.div>
 
@@ -207,7 +207,7 @@ const SkyAtlas = () => {
           })}
           types={types}
           constellations={constellations}
-          totalCount={visibleTonight || filterMode !== "all" ? filteredData.length : (data?.count ?? 0)}
+          totalCount={visibleTonight || filterMode !== "all" ? filteredData.length : totalCount}
           visibleTonightEnabled={visibleTonight}
           onToggleVisibleTonight={() => { setVisibleTonight((v) => !v); setMinHoursVisible(0); }}
           filterMode={filterMode}

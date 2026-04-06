@@ -112,7 +112,7 @@ const SkyAtlas = () => {
     );
   }, []);
 
-  useEffect(() => { setPage(0); setClientPage(0); setLoadMoreCount(1); }, [filters, visibleTonight, filterMode]);
+  useEffect(() => { setPage(0); setClientPage(0); setAllLoadedData([]); }, [filters, visibleTonight, filterMode]);
 
   // Client-side filters: visible tonight + filter mode
   const filteredData = useMemo(() => {
@@ -259,7 +259,7 @@ const SkyAtlas = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {paginatedData.slice(0, PAGE_SIZE * loadMoreCount).map((obj, i) => (
+            {(isClientFiltered ? paginatedData : allLoadedData).map((obj, i) => (
               <ObjectCard
                 key={obj.id}
                 obj={obj}
@@ -274,16 +274,13 @@ const SkyAtlas = () => {
         )}
 
         {/* Load more button */}
-        {!isClientFiltered && data && PAGE_SIZE * loadMoreCount < (data.count ?? 0) && (
+        {!isClientFiltered && allLoadedData.length < totalCount && (
           <div className="flex flex-col items-center gap-2 pt-4">
-            <Button variant="outline" size="sm" onClick={() => {
-              setLoadMoreCount(c => c + 1);
-              setPage(p => p + 1);
-            }} className="gap-1">
+            <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} className="gap-1">
               Load more (30)
             </Button>
             <span className="text-xs text-muted-foreground font-mono">
-              Showing {Math.min(PAGE_SIZE * loadMoreCount, data.count ?? 0)} of {(data.count ?? 0).toLocaleString()}
+              Showing {allLoadedData.length} of {totalCount.toLocaleString()}
             </span>
           </div>
         )}

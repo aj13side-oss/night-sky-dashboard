@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
@@ -16,10 +16,19 @@ const EquipmentProfile = () => {
   const { data: mounts } = useMounts();
   const { data: filters } = useFilters();
   const { data: accessories } = useAccessories();
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   const [rigPicks, setRigPicks] = useState<RigPicks>({
     telescope: null, camera: null, mount: null, filterIds: [], accessories: [],
   });
+
+  const handleRigPicksChange = (picks: RigPicks) => {
+    setRigPicks(picks);
+    // Scroll sidebar into view when preset loaded
+    setTimeout(() => {
+      sidebarRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 100);
+  };
 
   const pickedTelescope = telescopes?.find(t => t.id === rigPicks.telescope) ?? null;
   const pickedCamera = cameras?.find(c => c.id === rigPicks.camera) ?? null;
@@ -61,17 +70,17 @@ const EquipmentProfile = () => {
 
         {isMobile ? (
           <div className="space-y-8">
-            <RigBuilderSection rigPicks={rigPicks} onRigPicksChange={setRigPicks} />
-            <div className="border-t border-border/50 pt-6">
+            <RigBuilderSection rigPicks={rigPicks} onRigPicksChange={handleRigPicksChange} />
+            <div ref={sidebarRef} className="border-t border-border/50 pt-6">
               {sidebar}
             </div>
           </div>
         ) : (
           <div className="flex gap-6 items-start">
             <div className="flex-1 min-w-0">
-              <RigBuilderSection rigPicks={rigPicks} onRigPicksChange={setRigPicks} />
+              <RigBuilderSection rigPicks={rigPicks} onRigPicksChange={handleRigPicksChange} />
             </div>
-            <div className="w-[320px] shrink-0 sticky top-20">
+            <div ref={sidebarRef} className="w-[320px] shrink-0 sticky top-20">
               {sidebar}
             </div>
           </div>

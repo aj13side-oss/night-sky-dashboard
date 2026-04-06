@@ -257,18 +257,18 @@ const SkyAtlas = () => {
           </div>
         )}
 
-        {/* Server-side pagination */}
-        {!isClientFiltered && totalPages > 1 && (
-          <div className="flex items-center justify-center gap-4 pt-4">
-            <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)} className="gap-1">
-              <ChevronLeft className="w-4 h-4" /> Prev
+        {/* Load more button */}
+        {!isClientFiltered && data && PAGE_SIZE * loadMoreCount < (data.count ?? 0) && (
+          <div className="flex flex-col items-center gap-2 pt-4">
+            <Button variant="outline" size="sm" onClick={() => {
+              setLoadMoreCount(c => c + 1);
+              setPage(p => p + 1);
+            }} className="gap-1">
+              Load more (30)
             </Button>
-            <span className="text-sm text-muted-foreground font-mono">
-              {page + 1} / {totalPages}
+            <span className="text-xs text-muted-foreground font-mono">
+              Showing {Math.min(PAGE_SIZE * loadMoreCount, data.count ?? 0)} of {(data.count ?? 0).toLocaleString()}
             </span>
-            <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)} className="gap-1">
-              Next <ChevronRight className="w-4 h-4" />
-            </Button>
           </div>
         )}
 

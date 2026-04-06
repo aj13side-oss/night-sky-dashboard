@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ShoppingCart, ExternalLink, Globe, Tag } from "lucide-react";
+import { ShoppingCart, ExternalLink, Globe } from "lucide-react";
 import { thumb400 } from "@/lib/utils";
 
 interface RetailerLink {

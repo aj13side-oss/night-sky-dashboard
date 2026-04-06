@@ -116,8 +116,8 @@ const SkyAtlas = () => {
 
   // Client-side filters: visible tonight + filter mode
   const filteredData = useMemo(() => {
-    if (!data?.data) return [];
-    let results: (CelestialObject & { _hoursVisible?: number })[] = data.data;
+    if (!allLoadedData.length) return [];
+    let results: (CelestialObject & { _hoursVisible?: number })[] = allLoadedData;
 
     if (visibleTonight) {
       results = results
@@ -153,7 +153,7 @@ const SkyAtlas = () => {
     }
 
     return results;
-  }, [data?.data, visibleTonight, filterMode, userPos.lat, userPos.lng, minHoursVisible]);
+  }, [allLoadedData, visibleTonight, filterMode, userPos.lat, userPos.lng, minHoursVisible]);
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 

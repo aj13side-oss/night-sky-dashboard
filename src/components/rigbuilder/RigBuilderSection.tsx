@@ -352,11 +352,10 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
             ) : undefined}
           >
             {filteredScopes.map(t => {
-              const { best } = extractPrices(t._raw ?? {});
               return (
                 <EquipmentCard key={t.id} selected={rigPicks.telescope === t.id}
                   onToggle={() => pickTelescope(t.id)}
-                  imageUrl={t.image_url} title={`${t.brand} ${t.model}`} bestPrice={best}
+                  imageUrl={t.image_url} title={`${t.brand} ${t.model}`}
                   specs={[t.focal_length_mm ? `${t.focal_length_mm}mm` : null, t.aperture_mm ? `⌀${t.aperture_mm}mm` : null, t.focal_length_mm && t.aperture_mm ? `f/${(t.focal_length_mm / t.aperture_mm).toFixed(1)}` : null, t.type, t.weight_kg ? `${t.weight_kg}kg` : null, t.image_circle_mm ? `IC ${t.image_circle_mm}mm` : null]}
                   affiliateAmazon={t.url_amazon} affiliateAstro={t.url_astroshop_de} manufacturerUrl={t.url_manufacturer}
                   extraRetailers={getFrRetailers(t._raw ?? {})}
@@ -403,11 +402,10 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
             ) : undefined}
           >
             {filteredCams.map(c => {
-              const { best } = extractPrices(c._raw ?? {});
               return (
                 <EquipmentCard key={c.id} selected={rigPicks.camera === c.id}
                   onToggle={() => pickCamera(c.id)}
-                  imageUrl={c.image_url} title={`${c.brand} ${c.model}`} bestPrice={best}
+                  imageUrl={c.image_url} title={`${c.brand} ${c.model}`}
                   specs={[c.sensor_width_mm && c.sensor_height_mm ? `${c.sensor_width_mm}×${c.sensor_height_mm}mm` : null, c.pixel_size_um ? `${c.pixel_size_um}µm` : null, c.sensor_name, c.is_color !== null ? (c.is_color ? "Color" : "Mono") : null, c.qe_percent ? `QE ${c.qe_percent}%` : null, c.read_noise_e ? `${c.read_noise_e}e⁻` : null]}
                   affiliateAmazon={c.url_amazon} affiliateAstro={c.url_astroshop_de} manufacturerUrl={c.url_manufacturer}
                   extraRetailers={getFrRetailers(c._raw ?? {})}
@@ -448,11 +446,10 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
             ) : undefined}
           >
             {filteredMounts.map(m => {
-              const { best } = extractPrices(m._raw ?? {});
               return (
                 <EquipmentCard key={m.id} selected={rigPicks.mount === m.id}
                   onToggle={() => pickMount(m.id)}
-                  imageUrl={m.image_url} title={`${m.brand} ${m.model}`} bestPrice={best}
+                  imageUrl={m.image_url} title={`${m.brand} ${m.model}`}
                   specs={[m.payload_kg ? `Payload: ${m.payload_kg}kg` : null, m.mount_weight_kg ? `Weight: ${m.mount_weight_kg}kg` : null, m.mount_type, m.is_goto ? "GoTo" : null, m.periodic_error_arcsec ? `PE ±${m.periodic_error_arcsec}″` : null, m.connectivity]}
                   affiliateAmazon={m.url_amazon} affiliateAstro={m.url_astroshop_de} manufacturerUrl={m.url_manufacturer}
                   extraRetailers={getFrRetailers(m._raw ?? {})}
@@ -484,11 +481,10 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
             ) : undefined}
           >
             {filteredFilts.map(f => {
-              const { best } = extractPrices(f._raw ?? {});
               return (
                 <EquipmentCard key={f.id} selected={rigPicks.filterIds.includes(f.id)}
                   onToggle={() => toggleFilter(f.id)}
-                  imageUrl={f.image_url} title={`${f.brand} ${f.model}`} bestPrice={best}
+                  imageUrl={f.image_url} title={`${f.brand} ${f.model}`}
                   specs={[f.type, f.size, f.thickness_mm ? `${f.thickness_mm}mm thick` : null]}
                   affiliateAmazon={f.url_amazon} affiliateAstro={f.url_astroshop_de} manufacturerUrl={f.url_manufacturer}
                   extraRetailers={getFrRetailers(f._raw ?? {})}
@@ -517,11 +513,10 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
             ) : undefined}
           >
             {filteredAccessories.map(a => {
-              const { best } = extractPrices(a._raw ?? {});
               return (
                 <EquipmentCard key={a.id} selected={rigPicks.accessories.includes(a.id)}
                   onToggle={() => toggleAccessory(a.id)}
-                  imageUrl={a.image_url} title={`${a.brand} ${a.model}`} bestPrice={best}
+                  imageUrl={a.image_url} title={`${a.brand} ${a.model}`}
                   specs={[a.category, a.optical_length_mm ? `BF +${a.optical_length_mm}mm` : null, a.weight_g ? `${a.weight_g}g` : null, a.input_connection ? `In: ${a.input_connection}` : null, a.output_connection ? `Out: ${a.output_connection}` : null]}
                   affiliateAmazon={a.url_amazon} affiliateAstro={a.url_astroshop_de} manufacturerUrl={a.url_manufacturer}
                   extraRetailers={getFrRetailers(a._raw ?? {})}

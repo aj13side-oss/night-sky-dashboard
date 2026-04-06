@@ -48,6 +48,7 @@ const SkyAtlas = () => {
   const [filterMode, setFilterMode] = useState("all");
   const [minHoursVisible, setMinHoursVisible] = useState(0);
   const [clientPage, setClientPage] = useState(0);
+  const [loadMoreCount, setLoadMoreCount] = useState(1);
   const CLIENT_PAGE_SIZE = 20;
   
 
@@ -95,7 +96,7 @@ const SkyAtlas = () => {
     );
   }, []);
 
-  useEffect(() => { setPage(0); setClientPage(0); }, [filters, visibleTonight, filterMode]);
+  useEffect(() => { setPage(0); setClientPage(0); setLoadMoreCount(1); }, [filters, visibleTonight, filterMode]);
 
   // Client-side filters: visible tonight + filter mode
   const filteredData = useMemo(() => {
@@ -242,7 +243,7 @@ const SkyAtlas = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {paginatedData.map((obj, i) => (
+            {paginatedData.slice(0, PAGE_SIZE * loadMoreCount).map((obj, i) => (
               <ObjectCard
                 key={obj.id}
                 obj={obj}

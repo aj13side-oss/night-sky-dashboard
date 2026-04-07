@@ -6,6 +6,7 @@ import ObservationToolbar from "@/components/ObservationToolbar";
 import MoonPhaseCard from "@/components/MoonPhaseCard";
 import SunTimesCard from "@/components/SunTimesCard";
 import HourlyWeatherCard from "@/components/HourlyWeatherCard";
+import CometsCard from "@/components/dashboard/CometsCard";
 import PlanetsTonight from "@/components/dashboard/PlanetsTonight";
 import DeepSkyTonight from "@/components/dashboard/DeepSkyTonight";
 import SpecialEvents from "@/components/dashboard/SpecialEvents";

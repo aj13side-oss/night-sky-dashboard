@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.astronomy]
 verify_jwt = false
+
+[functions.iss-proxy]
+verify_jwt = false

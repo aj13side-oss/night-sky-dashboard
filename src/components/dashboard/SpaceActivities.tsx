@@ -38,14 +38,26 @@ const SpaceActivities = () => {
   useEffect(() => {
     fetch("https://ytitrmdlmjpyhwkbpjvf.supabase.co/functions/v1/iss-proxy?endpoint=astros")
       .then((r) => r.json())
-      .then((d) => setAstronauts(d.people ?? []))
+      .then((d) => {
+        if (d?.fallback) setAstroError(true);
+        else setAstronauts(d.people ?? []);
+      })
       .catch(() => setAstroError(true));
 
     const fetchISS = () =>
       fetch("https://ytitrmdlmjpyhwkbpjvf.supabase.co/functions/v1/iss-proxy?endpoint=iss_now")
-        .then((r) => r.json())
-        .then((d) => setIssPos(d.iss_position))
-        .catch(() => setIssError(true));
+        .then((r) => r.ok ? r.json() : Promise.reject(r.status))
+        .then((d) => {
+          if (d?.fallback || !d?.iss_position) return; // keep last known, skip
+          setIssPos(d.iss_position);
+          setIssError(false);
+        })
+        .catch(() => {
+          setIssPos((prev) => {
+            if (!prev) setIssError(true);
+            return prev;
+          });
+        });
 
     fetchISS();
     intervalRef.current = setInterval(fetchISS, 5000);

@@ -72,6 +72,8 @@ const DashboardContent = () => {
 
         <SkyEvents />
 
+        <CometsCard />
+
         <SpaceActivities />
 
         {/* SEO Content Section — collapsible */}

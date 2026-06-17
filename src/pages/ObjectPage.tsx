@@ -127,16 +127,22 @@ const ObjectPage = () => {
   return (
     <div className="min-h-screen bg-background star-field">
       <SEOHead
-        title={`${obj.common_name ?? obj.catalog_id} — ${obj.obj_type}`}
-        description={`${obj.obj_type} in ${obj.constellation ?? "the sky"}. ${obj.magnitude ? `Magnitude ${obj.magnitude.toFixed(1)}.` : ""} ${obj.photo_score ? `Photo score: ${obj.photo_score}/10.` : ""} Exposure guide, visibility, and equipment recommendations on Cosmic Frame.`}
-        path={`/object/${encodeURIComponent(obj.catalog_id)}`}
-        image={imageUrl || "/og-image.png"}
+        title={`${obj.common_name ? `${obj.common_name} (${obj.catalog_id})` : obj.catalog_id} Astrophotography${obj.obj_type ? ` — ${obj.obj_type}` : ''}`}
+        description={`How to photograph ${obj.common_name ?? obj.catalog_id}${obj.constellation ? ` in ${obj.constellation}` : ''}. ${obj.obj_type ?? ''} — magnitude ${obj.magnitude?.toFixed(1) ?? '?'}${obj.size_max ? `, size ${obj.size_max.toFixed(0)}'` : ''}. Best exposure settings${obj.recommended_filter ? `, ${obj.recommended_filter} filter` : ''}, visibility window and equipment guide on Cosmic Frame.`}
+        canonical={`https://cosmicframe.app/object/${encodeURIComponent(obj.catalog_id)}`}
+        image={imageUrl || "https://cosmicframe.app/og-image.png"}
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "Thing",
-          "name": obj.common_name ?? obj.catalog_id,
-          "description": `${obj.obj_type} in ${obj.constellation ?? "the sky"}`,
+          "@type": "Article",
+          "headline": `${obj.common_name ?? obj.catalog_id} Astrophotography Guide`,
+          "description": `${obj.obj_type ?? 'Deep sky object'} in ${obj.constellation ?? 'the sky'}, magnitude ${obj.magnitude?.toFixed(1) ?? 'unknown'}.`,
           "url": `https://cosmicframe.app/object/${encodeURIComponent(obj.catalog_id)}`,
+          "publisher": {
+            "@type": "Organization",
+            "name": "Cosmic Frame",
+            "url": "https://cosmicframe.app"
+          },
+          ...(imageUrl ? { "image": imageUrl } : {})
         }}
       />
       <AppNav />
@@ -158,6 +164,12 @@ const ObjectPage = () => {
             </Button>
           </div>
         </div>
+
+        {(obj as any).description && (
+          <p className="text-muted-foreground leading-relaxed">
+            {(obj as any).description}
+          </p>
+        )}
 
         {/* Image + Info grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

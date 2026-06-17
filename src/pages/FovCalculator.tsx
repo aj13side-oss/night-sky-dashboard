@@ -293,9 +293,9 @@ const FovCalculator = () => {
     <div className="min-h-screen bg-background star-field">
       <SEOHead
         title="Field of View & Sampling Calculator"
-        description="Calculate the field of view and sampling of your astrophotography setup. Simulate framing on any celestial object. Compatible with all telescopes and astro cameras."
+        description="Free telescope FOV and sampling calculator. Enter your telescope focal length and camera sensor to calculate field of view, arcsec/pixel sampling, and find the best matching deep sky objects."
         keywords="field of view calculator, FOV calculator, astrophoto sampling, arcsec pixel, nebula framing, astrophotography simulator"
-        path="/fov-calculator"
+        canonical="https://cosmicframe.app/fov-calculator"
       />
       <AppNav />
 

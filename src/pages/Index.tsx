@@ -24,9 +24,9 @@ const DashboardContent = () => {
     <div className="min-h-screen bg-background star-field">
       <SEOHead
         title="Astro Weather Tonight & Astrophotography Planner"
-        description="Check real-time astro weather, ephemerides, moon phase, and discover the best targets to photograph tonight. Plan your astrophotography sessions from your location."
+        description="Free astrophotography planning dashboard: real-time astro weather, moon phase, best deep sky targets tonight, ISS passes and aurora forecast. Updated live for your location."
         keywords="astro weather, astrophotography tonight, what to photograph tonight, moon phase, astronomy ephemerides, deep sky targets, observation conditions, seeing, cloud cover, météo astro, astrophotographie"
-        path="/"
+        canonical="https://cosmicframe.app/"
       />
       <AppNav />
 

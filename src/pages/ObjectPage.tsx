@@ -186,9 +186,9 @@ const ObjectPage = () => {
           {(obj.exposure_guide_fast || obj.exposure_guide_deep) && (
             <p>
               Suggested total integration time:
-              {obj.exposure_guide_fast ? ` ${obj.exposure_guide_fast} minutes for a quick result` : ''}
+              {obj.exposure_guide_fast ? ` ${formatExposure(obj.exposure_guide_fast)} for a quick session` : ''}
               {obj.exposure_guide_fast && obj.exposure_guide_deep ? ',' : ''}
-              {obj.exposure_guide_deep ? ` ${obj.exposure_guide_deep} minutes for a deep image` : ''}.
+              {obj.exposure_guide_deep ? ` ${formatExposure(obj.exposure_guide_deep)} for a deep image` : ''}.
             </p>
           )}
         </div>

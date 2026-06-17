@@ -23,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { SolarSystemObject } from "@/hooks/useSolarSystemObjects";
 
 import TonightTopPicks from "@/components/atlas/TonightTopPicks";
+import { useTopPhotoTargets } from "@/hooks/useTopPhotoTargets";
 
 const DEFAULT_EXCLUDE_TYPES = ["Star", "Double Star"];
 
@@ -61,6 +62,7 @@ const SkyAtlas = () => {
 
   const { types, constellations } = useDistinctFilters();
   const { data, isLoading } = useCelestialObjects(filters, page);
+  const { data: topPickIds } = useTopPhotoTargets();
 
   // Accumulate data across pages for load-more
   useEffect(() => {
@@ -268,6 +270,7 @@ const SkyAtlas = () => {
                 lng={userPos.lng}
                 searchQuery={filters.search}
                 onClick={() => setSelected(obj)}
+                isTopPick={topPickIds?.has(obj.catalog_id) ?? false}
               />
             ))}
           </div>

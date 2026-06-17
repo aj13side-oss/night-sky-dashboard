@@ -28,18 +28,21 @@ const SunTimesCard = () => {
   const astroBegin = toLocal(data?.sun?.astronomicalTwilightBegin);
   const astroEnd = toLocal(data?.sun?.astronomicalTwilightEnd);
 
-  const computeDayLength = () => {
-    if (data?.sun?.sunrise && data?.sun?.sunset) {
-      const [rh, rm] = data.sun.sunrise.split(":").map(Number);
-      const [sh, sm] = data.sun.sunset.split(":").map(Number);
-      let diff = (sh * 60 + sm) - (rh * 60 + rm);
-      if (diff < 0) diff += 24 * 60;
-      const h = Math.floor(diff / 60);
-      const m = diff % 60;
-      return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
-    }
-    return localSun.dayLength;
+  const formatDuration = (start: string | null | undefined, end: string | null | undefined) => {
+    if (!start || !end) return "—";
+    const [sh, sm] = start.split(":").map(Number);
+    const [eh, em] = end.split(":").map(Number);
+    let diff = (eh * 60 + em) - (sh * 60 + sm);
+    if (diff < 0) diff += 24 * 60;
+    const h = Math.floor(diff / 60);
+    const m = diff % 60;
+    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
   };
+
+  const civilDayLength = formatDuration(civilBegin, civilEnd);
+  const civilNightLength = formatDuration(civilEnd, civilBegin);
+  const nauticalNightLength = formatDuration(nauticalEnd, nauticalBegin);
+  const astroNightLength = formatDuration(astroEnd, astroBegin);
 
   const tzAbbr = getTimezoneAbbr(date, tz);
 
@@ -164,12 +167,32 @@ const SunTimesCard = () => {
         </div>
       </div>
 
-      {/* Day length */}
+      {/* Civil day length */}
       <div className="pt-3 border-t border-border">
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Day length</span>
-          <span className="font-mono">{computeDayLength()}</span>
+          <span>Civil day length</span>
+          <span className="font-mono">{civilDayLength}</span>
         </div>
+      </div>
+
+      {/* Night lengths */}
+      <div className="pt-3 border-t border-border space-y-1">
+        <div className="flex justify-between">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Night length</span>
+        </div>
+        {[
+          { label: "Civil", value: civilNightLength, color: "bg-amber-400/80" },
+          { label: "Nautical", value: nauticalNightLength, color: "bg-blue-400/70" },
+          { label: "Astronomical", value: astroNightLength, color: "bg-indigo-500/70" },
+        ].map((n) => (
+          <div key={n.label} className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${n.color}`} />
+              <span className="text-muted-foreground">{n.label}</span>
+            </div>
+            <span className="font-mono text-foreground">{n.value}</span>
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -171,6 +171,32 @@ const ObjectPage = () => {
           </p>
         )}
 
+        {/* SEO text block — indexable content for search engines */}
+        <div className="text-sm text-muted-foreground leading-relaxed space-y-1 max-w-2xl">
+          <p>
+            {obj.common_name ? `The ${obj.common_name} (${obj.catalog_id})` : obj.catalog_id} is
+            a{/^[aeiou]/i.test(obj.obj_type ?? '') ? 'n' : ''} {obj.obj_type?.toLowerCase() ?? 'deep sky object'}
+            {obj.constellation ? ` in the constellation ${obj.constellation}` : ''}.
+            {obj.magnitude != null ? ` Visual magnitude: ${obj.magnitude.toFixed(1)}.` : ''}
+            {obj.size_max != null && obj.size_max > 0 ? ` Angular size: ${obj.size_max.toFixed(0)}′.` : ''}
+          </p>
+          {(obj.best_months || obj.recommended_filter) && (
+            <p>
+              {obj.best_months ? `Best season for astrophotography: ${obj.best_months}.` : ''}
+              {obj.recommended_filter ? ` Recommended filter: ${obj.recommended_filter}.` : ''}
+              {obj.ideal_resolution ? ` Ideal sampling: ${obj.ideal_resolution}.` : ''}
+            </p>
+          )}
+          {(obj.exposure_guide_fast || obj.exposure_guide_deep) && (
+            <p>
+              Suggested total integration time:
+              {obj.exposure_guide_fast ? ` ${obj.exposure_guide_fast} minutes for a quick result` : ''}
+              {obj.exposure_guide_fast && obj.exposure_guide_deep ? ',' : ''}
+              {obj.exposure_guide_deep ? ` ${obj.exposure_guide_deep} minutes for a deep image` : ''}.
+            </p>
+          )}
+        </div>
+
         {/* Image + Info grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Media */}

@@ -3,6 +3,8 @@ import { Map, Crosshair, Home, Eclipse, Settings, EyeOff, Eye, Menu } from "luci
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import LocationPicker from "@/components/LocationPicker";
+
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: Home, group: "plan" },
@@ -39,6 +41,9 @@ const AppNav = () => {
               </button>
             </SheetTrigger>
             <SheetContent side="right" className="w-64 bg-background p-0 pt-8">
+              <div className="px-3 pb-4">
+                <LocationPicker />
+              </div>
               <nav className="flex flex-col gap-1 px-3">
                 {navItems.map((item) => (
                   <Link key={item.to} to={item.to} onClick={() => setOpen(false)}
@@ -82,6 +87,10 @@ const AppNav = () => {
 
           <span className="w-px h-4 bg-border/40 mx-1.5" />
 
+          <LocationPicker />
+
+          <span className="w-px h-4 bg-border/40 mx-1.5" />
+
           <button onClick={() => setNightVision((v) => !v)}
             className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors",
               nightVision ? "bg-red-900/30 text-red-400" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
@@ -90,6 +99,7 @@ const AppNav = () => {
             {nightVision ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
             <span className="text-xs">{nightVision ? "Normal" : "Night"}</span>
           </button>
+
         </nav>
       </div>
     </header>

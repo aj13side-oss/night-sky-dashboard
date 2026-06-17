@@ -62,6 +62,7 @@ const SkyAtlas = () => {
 
   const { types, constellations } = useDistinctFilters();
   const { data, isLoading } = useCelestialObjects(filters, page);
+  const { data: topPickIds } = useTopPhotoTargets();
 
   // Accumulate data across pages for load-more
   useEffect(() => {

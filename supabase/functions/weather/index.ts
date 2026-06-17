@@ -29,12 +29,15 @@ serve(async (req) => {
   try {
     const { lat, lng, date } = await req.json();
 
-    if (!lat || !lng) {
-      return new Response(JSON.stringify({ error: "lat and lng are required" }), {
+    const parsedLat = parseFloat(lat);
+    const parsedLng = parseFloat(lng);
+    if (Number.isNaN(parsedLat) || parsedLat < -90 || parsedLat > 90 || Number.isNaN(parsedLng) || parsedLng < -180 || parsedLng > 180) {
+      return new Response(JSON.stringify({ error: "lat and lng must be valid numbers (lat: -90 to 90, lng: -180 to 180)" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
 
     const meteoSourceKey = Deno.env.get("METEOSOURCE_API_KEY");
 

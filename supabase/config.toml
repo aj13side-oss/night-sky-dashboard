@@ -1,7 +1,7 @@
 project_id = "ytitrmdlmjpyhwkbpjvf"
 
 [functions.recommend-targets]
-verify_jwt = false
+verify_jwt = true
 
 [functions.weather]
 verify_jwt = false

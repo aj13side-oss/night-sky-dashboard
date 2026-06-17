@@ -153,12 +153,12 @@ const SunTimesCard = () => {
                 <span className={`w-2 h-2 rounded-full ${t.color}`} />
                 <span className="text-secondary-foreground text-sm">{t.label}</span>
               </div>
-              <span className="font-mono text-sm text-foreground text-center">
-                {isLoading ? <Skeleton className="h-4 w-14 mx-auto" /> : t.begin || "—"}
-              </span>
-              <span className="font-mono text-sm text-foreground text-center">
-                {isLoading ? <Skeleton className="h-4 w-14 mx-auto" /> : t.end || "—"}
-              </span>
+            <span className="font-mono text-sm text-foreground text-center">
+              {isLoading ? <Skeleton className="h-4 w-14 mx-auto" /> : t.nightStart || "—"}
+            </span>
+            <span className="font-mono text-sm text-foreground text-center">
+              {isLoading ? <Skeleton className="h-4 w-14 mx-auto" /> : t.nightEnd || "—"}
+            </span>
             </motion.div>
           ))}
         </div>

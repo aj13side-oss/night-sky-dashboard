@@ -8,6 +8,7 @@ import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { formatCatalogId } from "@/lib/format-catalog";
 import { formatRA, formatDec } from "@/lib/format-coords";
 import { useTonightList } from "@/hooks/useTonightList";
+import { useObservation } from "@/contexts/ObservationContext";
 
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
@@ -23,8 +24,9 @@ import {
   Star, Eye, Ruler, Compass, MapPin, Camera, Clock, HelpCircle,
   Crosshair, Scale, ArrowLeft, ClipboardList, Loader2, Telescope,
 } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
+
 
 const ObjectPage = () => {
   const { catalogId } = useParams<{ catalogId: string }>();
@@ -34,14 +36,8 @@ const ObjectPage = () => {
   const { isInList, addObject, removeObject } = useTonightList();
   const [showExposureInfo, setShowExposureInfo] = useState(false);
 
-  // Geolocation
-  const [pos, setPos] = useState({ lat: 45.7347, lng: 4.4931 });
-  useEffect(() => {
-    navigator.geolocation?.getCurrentPosition(
-      (p) => setPos({ lat: p.coords.latitude, lng: p.coords.longitude }),
-      () => {}
-    );
-  }, []);
+  const { location: pos } = useObservation();
+
 
   const { data: obj, isLoading } = useQuery({
     queryKey: ["object-page", decodedId],

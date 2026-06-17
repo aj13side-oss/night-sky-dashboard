@@ -6,7 +6,7 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Privacy Policy — Cosmic Frame"
+        title="Privacy Policy"
         description="Cosmic Frame privacy policy: no personal data collection, local-only storage, Google Analytics 4 usage data, and public data sources."
         canonical="https://cosmicframe.app/privacy"
       />

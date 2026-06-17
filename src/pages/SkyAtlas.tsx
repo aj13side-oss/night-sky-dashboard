@@ -270,6 +270,7 @@ const SkyAtlas = () => {
                 lng={userPos.lng}
                 searchQuery={filters.search}
                 onClick={() => setSelected(obj)}
+                isTopPick={topPickIds?.has(obj.catalog_id) ?? false}
               />
             ))}
           </div>

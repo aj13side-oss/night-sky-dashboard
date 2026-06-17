@@ -23,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { SolarSystemObject } from "@/hooks/useSolarSystemObjects";
 
 import TonightTopPicks from "@/components/atlas/TonightTopPicks";
+import { useTopPhotoTargets } from "@/hooks/useTopPhotoTargets";
 
 const DEFAULT_EXCLUDE_TYPES = ["Star", "Double Star"];
 

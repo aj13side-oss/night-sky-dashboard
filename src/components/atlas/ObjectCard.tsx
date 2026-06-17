@@ -20,6 +20,7 @@ interface Props {
   lng: number;
   searchQuery?: string;
   onClick: () => void;
+  isTopPick?: boolean;
 }
 
 const typeEmoji: Record<string, string> = {
@@ -35,7 +36,7 @@ const typeEmoji: Record<string, string> = {
   Planet: "🪐",
 };
 
-const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick }: Props) => {
+const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false }: Props) => {
   const navigate = useNavigate();
   const { isInList, addObject, removeObject } = useTonightList();
   const alt =

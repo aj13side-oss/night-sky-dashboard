@@ -16,7 +16,7 @@ const NotFound = () => {
   return (
     <div className="min-h-screen bg-background star-field flex flex-col">
       <SEOHead
-        title="Page Not Found — Cosmic Frame"
+        title="Page Not Found"
         description="This page doesn't exist. Explore the Cosmic Frame dashboard or Sky Atlas."
         canonical="https://cosmicframe.app/404"
       />

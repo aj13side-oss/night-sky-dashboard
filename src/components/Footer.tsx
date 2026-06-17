@@ -16,12 +16,27 @@ const Footer = () => (
 
       <div>
         <h4 className="font-semibold text-foreground/80 mb-2">Popular Objects</h4>
-        <p>
-          Orion Nebula (M42), Andromeda (M31), Pleiades (M45),
-          Veil Nebula, North America (NGC 7000),
-          Rosette, Lagoon (M8), Trifid (M20), Eagle (M16),
-          Crab (M1), Ring (M57), Dumbbell (M27)
-        </p>
+        <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
+          {[
+            {name:"Orion Nebula (M42)", id:"M 42"},
+            {name:"Andromeda (M31)", id:"M 31"},
+            {name:"Pleiades (M45)", id:"M 45"},
+            {name:"Veil Nebula", id:"NGC 6992"},
+            {name:"North America (NGC 7000)", id:"NGC 7000"},
+            {name:"Rosette", id:"NGC 2237"},
+            {name:"Lagoon (M8)", id:"M 8"},
+            {name:"Trifid (M20)", id:"M 20"},
+            {name:"Eagle (M16)", id:"M 16"},
+            {name:"Crab (M1)", id:"M 1"},
+            {name:"Ring (M57)", id:"M 57"},
+            {name:"Dumbbell (M27)", id:"M 27"},
+          ].map(o => (
+            <a key={o.id} href={`/object/${encodeURIComponent(o.id)}`}
+              className="hover:text-foreground transition-colors">
+              {o.name}
+            </a>
+          ))}
+        </div>
       </div>
 
       <div>
@@ -41,6 +56,9 @@ const Footer = () => (
         <p className="mt-4 text-muted-foreground/60 flex items-center gap-2">
           <img src="/icon-192.png" alt="Cosmic Frame" className="w-5 h-5 rounded-full" />
           © {new Date().getFullYear()} Cosmic Frame
+          <a href="/privacy" className="text-xs text-muted-foreground hover:text-foreground ml-4">
+            Privacy Policy
+          </a>
         </p>
       </div>
     </div>

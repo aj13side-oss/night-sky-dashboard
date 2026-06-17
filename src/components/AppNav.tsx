@@ -41,6 +41,9 @@ const AppNav = () => {
               </button>
             </SheetTrigger>
             <SheetContent side="right" className="w-64 bg-background p-0 pt-8">
+              <div className="px-3 pb-4">
+                <LocationPicker />
+              </div>
               <nav className="flex flex-col gap-1 px-3">
                 {navItems.map((item) => (
                   <Link key={item.to} to={item.to} onClick={() => setOpen(false)}

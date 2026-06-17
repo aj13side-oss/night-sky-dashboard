@@ -14,17 +14,37 @@ const PLANET_BODIES: { key: string; body: Astronomy.Body }[] = [
   { key: "saturn", body: Astronomy.Body.Saturn },
 ];
 
+function validateInputs(body: any): { error: string } | null {
+  const { lat, lng, date } = body;
+  if (lat == null || lng == null || date == null) {
+    return { error: "lat, lng, and date are required" };
+  }
+  if (typeof lat !== "number" || lat < -90 || lat > 90) {
+    return { error: "lat must be a number between -90 and 90" };
+  }
+  if (typeof lng !== "number" || lng < -180 || lng > 180) {
+    return { error: "lng must be a number between -180 and 180" };
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return { error: "date must be in YYYY-MM-DD format" };
+  }
+  return null;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { lat, lng, date } = await req.json();
-    if (!lat || !lng || !date) {
-      return new Response(JSON.stringify({ error: "lat, lng, and date are required" }), {
+    const body = await req.json();
+    const validation = validateInputs(body);
+    if (validation) {
+      return new Response(JSON.stringify({ error: validation.error }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const { lat, lng, date } = body;
+
 
     const coords = `${lat},${lng}`;
     const observer = new Astronomy.Observer(lat, lng, 0);
@@ -123,7 +143,7 @@ serve(async (req) => {
   } catch (e) {
     console.error("astronomy error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
+      JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

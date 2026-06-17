@@ -1,12 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Individual object pages (/object/:catalogId) are dynamically generated -->
-<!-- For static SEO, a satellite site generator will create 4800+ pages -->
-<!-- Dynamic sitemap available at: https://ytitrmdlmjpyhwkbpjvf.supabase.co/functions/v1/sitemap -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://cosmicframe.app/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
-  <url><loc>https://cosmicframe.app/sky-atlas</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://cosmicframe.app/rig-builder</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://cosmicframe.app/fov-calculator</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://cosmicframe.app/light-pollution</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://cosmicframe.app/equipment</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/</loc><lastmod>2026-06-17</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+<url><loc>https://cosmicframe.app/sky-atlas</loc><lastmod>2026-06-17</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+<url><loc>https://cosmicframe.app/equipment</loc><lastmod>2026-06-17</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+<url><loc>https://cosmicframe.app/fov-calculator</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://cosmicframe.app/light-pollution</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2051</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2045</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://cosmicframe.app/object/M%208</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2020</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2017</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%207293</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2033</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://cosmicframe.app/object/M%20104</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2031</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2042</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2016</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://cosmicframe.app/object/IC%20434</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%207000</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%201499</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/IC%205070</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%202237</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%206992</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%206960</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%203372</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/IC%201396</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%206357</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%202024</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%206334</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2044</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2027</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2057</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/IC%204628</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/LMC</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/M%201</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%202359</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%206188</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%204755</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%203576</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/IC%202944</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/M%207</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2024</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%206979</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/M%206</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2047</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/BARNARD%2059</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/IC%202118</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/ETA%20CAR</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%201977</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/BARNARD%2099</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2034</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%202023</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/BARNARD%2072</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/BARNARD%2078</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2035</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/M%204</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%20292</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2013</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2048</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/IC%202602</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/M%205</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2046</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/M%203</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2041</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/IC%202391</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/ARP%20273</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%203031</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2067</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2037</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%201333</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%204676</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2011</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/C%2014</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2036</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%202516</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2022</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2015</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%20101</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/IC%204756</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2038</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2092</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%20110</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%20104</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%206231</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%203532</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%205139</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2083</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%20752</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%20869</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%202477</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%202264</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%20884</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%202362</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%207380</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%205128</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%203034</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2087</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2066</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2065</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2074</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%207789</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%20457</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/NGC%20281</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2064</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://cosmicframe.app/object/M%2063</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
 </urlset>

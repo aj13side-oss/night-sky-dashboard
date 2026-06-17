@@ -185,6 +185,11 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
           <div className="min-w-0">
             <p className="text-sm font-semibold text-foreground truncate">
               {typeEmoji[obj.obj_type] ?? "🔭"} {formatCatalogId(obj)}
+              {isTopPick && (
+                <span className="ml-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-yellow-500/90 text-yellow-950 text-[9px] font-bold">
+                  🏆 Top Pick
+                </span>
+              )}
             </p>
             {obj.common_name && (
               <p className="text-xs text-primary truncate mt-0.5">{obj.common_name}</p>

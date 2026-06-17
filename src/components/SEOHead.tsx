@@ -21,7 +21,7 @@ export default function SEOHead({
   image = "https://cosmicframe.app/og-image.png",
   jsonLd,
 }: SEOHeadProps) {
-  const fullTitle = `${title} — Cosmic Frame`;
+  const fullTitle = title.includes("Cosmic Frame") ? title : `${title} — Cosmic Frame`;
   const url = canonical || `https://cosmicframe.app${path}`;
 
   return (

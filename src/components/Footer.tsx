@@ -8,7 +8,7 @@ const Footer = () => (
         <ul className="space-y-1">
           <li><Link to="/" className="hover:text-foreground transition-colors">Astro Weather & Dashboard</Link></li>
           <li><Link to="/sky-atlas" className="hover:text-foreground transition-colors">Sky Atlas (4,800+ objects)</Link></li>
-          <li><Link to="/rig-builder" className="hover:text-foreground transition-colors">Astrophotography Gear Comparator</Link></li>
+          <li><Link to="/equipment" className="hover:text-foreground transition-colors">Astrophotography Gear Comparator</Link></li>
           <li><Link to="/fov-calculator" className="hover:text-foreground transition-colors">FOV & Sampling Calculator</Link></li>
           <li><Link to="/light-pollution" className="hover:text-foreground transition-colors">Light Pollution Map</Link></li>
         </ul>

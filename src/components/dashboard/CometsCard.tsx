@@ -62,15 +62,23 @@ const CometsCard = () => {
   const [selected, setSelected] = useState<Comet | null>(null);
 
   useEffect(() => {
-    supabase
-      .from("comets" as any)
+    (supabase as any)
+      .from("comets")
       .select("id, full_name, short_name, status, magnitude_current, magnitude_peak, current_constellation, sky_condition, visibility_category, elongation_deg, earth_distance_au, perihelion_date, description, link_theskylive, is_visible")
       .in("visibility_category", ["active", "upcoming", "recently_ended"])
-      .order("magnitude_current", { ascending: true, nullsFirst: false })
-      .then(({ data }) => {
-        setComets((data as unknown as Comet[]) ?? []);
+      .order("magnitude_current", { ascending: true })
+      .then(({ data, error }: { data: Comet[] | null; error: unknown }) => {
+        if (!error && data) {
+          const sorted = [...data].sort((a, b) => {
+            if (a.magnitude_current == null) return 1;
+            if (b.magnitude_current == null) return -1;
+            return Number(a.magnitude_current) - Number(b.magnitude_current);
+          });
+          setComets(sorted);
+        }
         setLoading(false);
-      });
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   const activeCount = comets.filter(c => c.visibility_category === "active" || c.visibility_category === "upcoming").length;
@@ -113,7 +121,7 @@ const CometsCard = () => {
               {comets.map((c) => {
                 const sky = c.sky_condition ? (SKY[c.sky_condition] ?? SKY.unknown) : null;
                 const cat = c.visibility_category ? CAT[c.visibility_category] : null;
-                const mag = c.magnitude_current ?? c.magnitude_peak;
+                const mag = c.magnitude_current != null ? Number(c.magnitude_current) : c.magnitude_peak != null ? Number(c.magnitude_peak) : null;
 
                 return (
                   <button
@@ -126,7 +134,7 @@ const CometsCard = () => {
                     </span>
                     <span className="text-xs text-muted-foreground inline-flex items-center gap-1 shrink-0">
                       <Telescope className="w-3 h-3" />
-                      {mag != null ? `mag ${mag}` : "—"}
+                      {mag != null ? `mag ${mag.toFixed(1)}` : "—"}
                     </span>
                     {c.current_constellation && (
                       <span className="text-xs text-muted-foreground hidden sm:inline shrink-0">

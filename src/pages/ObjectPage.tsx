@@ -128,7 +128,7 @@ const ObjectPage = () => {
     <div className="min-h-screen bg-background star-field">
       <SEOHead
         title={`${obj.common_name ? `${obj.common_name} (${obj.catalog_id})` : obj.catalog_id} Astrophotography${obj.obj_type ? ` — ${obj.obj_type}` : ''}`}
-        description={`How to photograph ${obj.common_name ?? obj.catalog_id}${obj.constellation ? ` in ${obj.constellation}` : ''}. ${obj.obj_type ?? ''} — magnitude ${obj.magnitude?.toFixed(1) ?? '?'}${obj.size_max ? `, size ${obj.size_max.toFixed(0)}'` : ''}. Best exposure settings${obj.recommended_filter ? `, ${obj.recommended_filter} filter` : ''}, visibility window and equipment guide on Cosmic Frame.`}
+        description={obj.seo_description || `How to photograph ${obj.common_name ?? obj.catalog_id}${obj.constellation ? ` in ${obj.constellation}` : ''}. ${obj.obj_type ?? ''} — magnitude ${obj.magnitude?.toFixed(1) ?? '?'}. Exposure guide, visibility and equipment recommendations on Cosmic Frame.`}
         canonical={`https://cosmicframe.app/object/${encodeURIComponent(obj.catalog_id)}`}
         image={imageUrl || "https://cosmicframe.app/og-image.png"}
         jsonLd={{
@@ -196,6 +196,12 @@ const ObjectPage = () => {
             </p>
           )}
         </div>
+
+        {obj.seo_description && (
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
+            {obj.seo_description}
+          </p>
+        )}
 
         {/* Image + Info grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

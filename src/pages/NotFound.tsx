@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import AppNav from "@/components/AppNav";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Telescope } from "lucide-react";
 
@@ -10,7 +11,7 @@ const NotFound = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    console.warn("404 Error: User attempted to access non-existent route:", location.pathname);
   }, [location.pathname]);
 
   return (
@@ -20,6 +21,9 @@ const NotFound = () => {
         description="This page doesn't exist. Explore the Cosmic Frame dashboard or Sky Atlas."
         canonical="https://cosmicframe.app/404"
       />
+      <Helmet>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
       <AppNav />
 
       <main className="flex-1 flex items-center justify-center px-4 sm:px-6 py-16">

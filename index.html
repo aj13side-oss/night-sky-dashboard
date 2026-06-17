@@ -120,15 +120,21 @@
     }
     </script>
   <script>
-    // Remove CDN-injected tags that react-helmet-async manages dynamically.
-    // This runs synchronously before React hydrates, ensuring no duplicates.
     (function() {
-      var selectors = [
-        'link[rel="canonical"]',
-        'meta[property="og:image"]:not([content*="og-image-width"]):not([property="og:image:width"]):not([property="og:image:height"])'
-      ];
-      selectors.forEach(function(sel) {
-        document.querySelectorAll(sel).forEach(function(el) { el.remove(); });
+      // Sync: canonical is injected early in <head>, remove it immediately
+      document.querySelectorAll('link[rel="canonical"]').forEach(function(el) {
+        el.remove();
+      });
+
+      // Async: og:image and twitter:image are injected at the END of <head>
+      // by the CDN layer, so we need DOMContentLoaded to catch them
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('meta[property="og:image"]:not([data-rh])').forEach(function(el) {
+          el.remove();
+        });
+        document.querySelectorAll('meta[name="twitter:image"]:not([data-rh])').forEach(function(el) {
+          el.remove();
+        });
       });
     })();
   </script>

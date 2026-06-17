@@ -165,9 +165,9 @@ const ObjectPage = () => {
           </div>
         </div>
 
-        {obj.description && (
+        {(obj as any).description && (
           <p className="text-muted-foreground leading-relaxed">
-            {obj.description}
+            {(obj as any).description}
           </p>
         )}
 

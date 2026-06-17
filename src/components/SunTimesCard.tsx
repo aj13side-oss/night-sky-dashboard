@@ -167,12 +167,32 @@ const SunTimesCard = () => {
         </div>
       </div>
 
-      {/* Day length */}
+      {/* Civil day length */}
       <div className="pt-3 border-t border-border">
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Day length</span>
-          <span className="font-mono">{computeDayLength()}</span>
+          <span>Civil day length</span>
+          <span className="font-mono">{civilDayLength}</span>
         </div>
+      </div>
+
+      {/* Night lengths */}
+      <div className="pt-3 border-t border-border space-y-1">
+        <div className="flex justify-between">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Night length</span>
+        </div>
+        {[
+          { label: "Civil", value: civilNightLength, color: "bg-amber-400/80" },
+          { label: "Nautical", value: nauticalNightLength, color: "bg-blue-400/70" },
+          { label: "Astronomical", value: astroNightLength, color: "bg-indigo-500/70" },
+        ].map((n) => (
+          <div key={n.label} className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${n.color}`} />
+              <span className="text-muted-foreground">{n.label}</span>
+            </div>
+            <span className="font-mono text-foreground">{n.value}</span>
+          </div>
+        ))}
       </div>
     </div>
   );

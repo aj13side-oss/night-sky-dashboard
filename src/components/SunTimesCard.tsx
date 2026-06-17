@@ -46,22 +46,22 @@ const SunTimesCard = () => {
   const twilightSections = [
     {
       label: "Civil",
-      begin: civilBegin,
-      end: civilEnd,
+      nightStart: civilEnd,
+      nightEnd: civilBegin,
       color: "bg-amber-400/80",
       desc: "Sun is 0–6° below the horizon. Enough light for outdoor activities without artificial lighting.",
     },
     {
       label: "Nautical",
-      begin: nauticalBegin,
-      end: nauticalEnd,
+      nightStart: nauticalEnd,
+      nightEnd: nauticalBegin,
       color: "bg-blue-400/70",
       desc: "Sun is 6–12° below. Horizon still visible at sea; bright stars & planets appear.",
     },
     {
       label: "Astronomical",
-      begin: astroBegin,
-      end: astroEnd,
+      nightStart: astroEnd,
+      nightEnd: astroBegin,
       color: "bg-indigo-500/70",
       desc: "Sun is 12–18° below. Sky is dark enough for deep-sky astrophotography — the golden window.",
     },
@@ -153,12 +153,12 @@ const SunTimesCard = () => {
                 <span className={`w-2 h-2 rounded-full ${t.color}`} />
                 <span className="text-secondary-foreground text-sm">{t.label}</span>
               </div>
-              <span className="font-mono text-sm text-foreground text-center">
-                {isLoading ? <Skeleton className="h-4 w-14 mx-auto" /> : t.begin || "—"}
-              </span>
-              <span className="font-mono text-sm text-foreground text-center">
-                {isLoading ? <Skeleton className="h-4 w-14 mx-auto" /> : t.end || "—"}
-              </span>
+            <span className="font-mono text-sm text-foreground text-center">
+              {isLoading ? <Skeleton className="h-4 w-14 mx-auto" /> : t.nightStart || "—"}
+            </span>
+            <span className="font-mono text-sm text-foreground text-center">
+              {isLoading ? <Skeleton className="h-4 w-14 mx-auto" /> : t.nightEnd || "—"}
+            </span>
             </motion.div>
           ))}
         </div>

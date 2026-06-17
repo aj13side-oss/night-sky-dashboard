@@ -5,6 +5,7 @@ import { utcToLocal, getTimezoneAbbr } from "@/lib/timezone";
 import { Sunrise, Sunset, Sun, Loader2, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const SunTimesCard = () => {
   const { date, location } = useObservation();
@@ -152,8 +153,12 @@ const SunTimesCard = () => {
                 <span className={`w-2 h-2 rounded-full ${t.color}`} />
                 <span className="text-secondary-foreground text-sm">{t.label}</span>
               </div>
-              <span className="font-mono text-sm text-foreground text-center">{t.begin || "—"}</span>
-              <span className="font-mono text-sm text-foreground text-center">{t.end || "—"}</span>
+              <span className="font-mono text-sm text-foreground text-center">
+                {isLoading ? <Skeleton className="h-4 w-14 mx-auto" /> : t.begin || "—"}
+              </span>
+              <span className="font-mono text-sm text-foreground text-center">
+                {isLoading ? <Skeleton className="h-4 w-14 mx-auto" /> : t.end || "—"}
+              </span>
             </motion.div>
           ))}
         </div>

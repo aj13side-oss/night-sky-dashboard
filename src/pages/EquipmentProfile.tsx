@@ -55,9 +55,9 @@ const EquipmentProfile = () => {
     <div className="min-h-screen bg-background star-field">
       <SEOHead
         title="Equipment Catalog & Rig Builder — Astrophotography"
-        description="Compare 360+ astrophotography equipment: telescopes, cameras, mounts, filters. Build your rig, check compatibility, sampling and field of view."
+        description="Compare 360+ astrophotography equipment: telescopes, astro cameras (ZWO, QHY, Player One), equatorial mounts (Sky-Watcher, iOptron, ZWO), filters and accessories. Build and check your rig compatibility."
         keywords="astrophoto equipment, rig builder, telescope comparison, astrophotography setup, gear comparator"
-        path="/equipment"
+        canonical="https://cosmicframe.app/equipment"
       />
       <AppNav />
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">

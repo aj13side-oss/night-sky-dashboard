@@ -206,9 +206,9 @@ const LightPollutionMap = () => {
     <div className={`min-h-screen bg-background star-field ${isFullscreen ? "overflow-hidden" : ""}`}>
       <SEOHead
         title="Light Pollution Map — Find Dark Skies"
-        description="Interactive light pollution map. Find the best observation sites: Bortle scale, dark sky reserves, natural parks. Plan your astrophotography outings."
+        description="Interactive light pollution map for astrophotography. Find Bortle 1-4 dark sky sites near you using the D. Lorenz Atlas 2024 overlay. Search any location worldwide."
         keywords="light pollution, Bortle map, astronomy observation site, dark sky, light pollution map, best astrophoto spot"
-        path="/light-pollution"
+        canonical="https://cosmicframe.app/light-pollution"
       />
       {!isFullscreen && <AppNav />}
 

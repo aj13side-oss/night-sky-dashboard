@@ -169,9 +169,9 @@ const SkyAtlas = () => {
     <div className="min-h-screen bg-background star-field">
       <SEOHead
         title="4,800+ Deep Sky Objects Catalog — Sky Atlas"
-        description="Explore 4,800+ celestial objects: galaxies, nebulae, star clusters, planetary nebulae. Complete Messier, NGC, IC, Sharpless catalog with exposure guide, photogenicity score, and best observation months."
+        description="Catalog of 4,800+ deep sky objects: galaxies, nebulae, clusters. Filter by type, constellation, magnitude, best season. Each object includes exposure guide, photogenicity score and framing preview."
         keywords="Messier catalog, NGC catalog, galaxy, nebula, open cluster, globular cluster, planetary nebula, deep sky objects, astrophotography targets, star cluster"
-        path="/sky-atlas"
+        canonical="https://cosmicframe.app/sky-atlas"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Dataset",

@@ -5,6 +5,7 @@ interface SEOHeadProps {
   description: string;
   keywords?: string;
   path?: string;
+  canonical?: string;
   type?: string;
   image?: string;
   jsonLd?: Record<string, any>;
@@ -15,12 +16,13 @@ export default function SEOHead({
   description,
   keywords,
   path = "",
+  canonical,
   type = "website",
   image = "/og-image.png",
   jsonLd,
 }: SEOHeadProps) {
   const fullTitle = `${title} — Cosmic Frame`;
-  const url = `https://cosmicframe.app${path}`;
+  const url = canonical || `https://cosmicframe.app${path}`;
 
   return (
     <Helmet>

@@ -7,7 +7,7 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-background">
       <SEOHead
         title="Privacy Policy — Cosmic Frame"
-        description="Cosmic Frame privacy policy: no cookies, no personal data collection, local-only storage, and public data sources."
+        description="Cosmic Frame privacy policy: no personal data collection, local-only storage, Google Analytics 4 usage data, and public data sources."
         canonical="https://cosmicframe.app/privacy"
       />
       <AppNav />
@@ -19,30 +19,60 @@ export default function PrivacyPage() {
         </div>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">No cookies, no accounts, no tracking</h2>
+          <h2 className="text-lg font-semibold text-foreground">No accounts required</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Cosmic Frame does not use cookies, analytics trackers, or advertising identifiers. We do not require user accounts and we do not collect personal data.
+            Cosmic Frame does not require user accounts and does not collect
+            personal data such as your name, email address, or payment
+            information. You can use the full site without registering.
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold text-foreground">Analytics</h2>
+          <p className="text-muted-foreground leading-relaxed">
+            We use Google Analytics 4 to understand how visitors use the site
+            (pages visited, session duration, country of origin). Google
+            Analytics may set cookies and sends anonymised usage data to
+            Google's servers. No personally identifiable information is
+            collected. You can opt out at any time by using the{" "}
+            <a
+              href="https://tools.google.com/dlpage/gaoptout"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              Google Analytics opt-out browser add-on
+            </a>
+            .
           </p>
         </section>
 
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-foreground">Location data</h2>
           <p className="text-muted-foreground leading-relaxed">
-            If you allow browser geolocation, your coordinates are used only for local astronomy calculations (rise/set times, visibility, and altitude charts). Your location is stored in your browser's localStorage and is never transmitted to our servers.
+            If you allow browser geolocation, your coordinates are used only
+            for local astronomy calculations (rise/set times, visibility, and
+            altitude charts). Your location is stored in your browser's
+            localStorage and is never transmitted to our servers.
           </p>
         </section>
 
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-foreground">Equipment preferences</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Telescope, camera, and filter selections you save in the Rig Builder and FOV Calculator are stored locally in your browser. They are not sent to any server.
+            Telescope, camera, and filter selections you save in the Rig
+            Builder and FOV Calculator are stored locally in your browser.
+            They are not sent to any server.
           </p>
         </section>
 
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-foreground">Third-party data sources</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Astronomy data is sourced from public APIs and catalogs including USNO, NOAA, and NASA. Search-based geocoding uses Nominatim (OpenStreetMap). These services may log your IP address according to their own privacy policies.
+            Astronomy data is sourced from public APIs including USNO, NOAA,
+            and NASA. Search-based geocoding uses Nominatim (OpenStreetMap).
+            These services may log your IP address according to their own
+            privacy policies.
           </p>
         </section>
 

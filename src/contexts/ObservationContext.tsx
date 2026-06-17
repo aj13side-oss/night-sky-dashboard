@@ -34,13 +34,17 @@ const loadStoredLocation = (): ObservationLocation | null => {
   return null;
 };
 
-const ObservationContext = createContext<ObservationContextType | null>(null);
+const ObservationContext = createContext<ObservationContextType>({
+  date: new Date(),
+  setDate: () => {},
+  time: "22:00",
+  setTime: () => {},
+  location: defaultLocation,
+  setLocation: () => {},
+  isDetectingLocation: false,
+});
 
-export const useObservation = () => {
-  const ctx = useContext(ObservationContext);
-  if (!ctx) throw new Error("useObservation must be used within ObservationProvider");
-  return ctx;
-};
+export const useObservation = () => useContext(ObservationContext);
 
 export const ObservationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [date, setDate] = useState(new Date());

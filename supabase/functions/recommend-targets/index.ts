@@ -11,8 +11,41 @@ serve(async (req) => {
   try {
     const { location, date, timeWindow, equipment, targetType, experience, moonTolerance } = await req.json();
 
+    if (typeof location !== "string" || location.trim().length === 0) {
+      return new Response(JSON.stringify({ error: "location is required and must be a non-empty string" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (equipment) {
+      if (equipment.focalLength !== undefined && equipment.focalLength !== null) {
+        const fl = parseFloat(equipment.focalLength);
+        if (Number.isNaN(fl) || fl < 1 || fl > 10000) {
+          return new Response(JSON.stringify({ error: "focalLength must be a number between 1 and 10000" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+      if (equipment.aperture !== undefined && equipment.aperture !== null) {
+        const ap = parseFloat(equipment.aperture);
+        if (Number.isNaN(ap) || ap < 1 || ap > 2000) {
+          return new Response(JSON.stringify({ error: "aperture must be a number between 1 and 2000" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    if (!LOVABLE_API_KEY) {
+      return new Response(JSON.stringify({ error: "AI recommendations are temporarily unavailable" }), {
+        status: 503,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const systemPrompt = `You are an expert astrophotography advisor. Based on the astronomer's setup, location, date, and preferences, recommend exactly 3-4 celestial targets to photograph tonight.
 
@@ -34,17 +67,23 @@ Format your response in Markdown with clear headers. Use ## for target names and
 
     const focalRatio = equipment?.aperture ? (parseFloat(equipment.focalLength) / parseFloat(equipment.aperture)).toFixed(1) : "N/A";
     
+    const safeLocation = String(location).substring(0, 200);
+    const safeDate = String(date || "").substring(0, 20);
+    const safeTargetType = String(targetType || "").substring(0, 100);
+    const safeExperience = String(experience || "").substring(0, 50);
+    const safeMoonTolerance = String(moonTolerance || "").substring(0, 100);
+
     const userPrompt = `Here's my setup for tonight:
 
-**Location:** ${location || "Not specified"}
-**Date:** ${date || "Tonight"}
+**Location:** ${safeLocation || "Not specified"}
+**Date:** ${safeDate || "Tonight"}
 **Available time window:** ${timeWindow || "All night"}
 **Optics:** Focal length ${equipment?.focalLength || "?"}mm, Aperture ${equipment?.aperture || "?"}mm (f/${focalRatio})
 **Camera sensor:** ${equipment?.pixelSize || "?"}µm pixel size, ${equipment?.sensorWidth || "?"}×${equipment?.sensorHeight || "?"}mm sensor
 **Imaging type:** ${equipment?.imagingType === "narrowband" ? "Narrowband (Ha, OIII, SII)" : equipment?.imagingType === "both" ? "RGB and Narrowband" : "RGB / One-shot color"}
-**Target preferences:** ${targetType || "Any"}
-**Experience level:** ${experience || "Intermediate"}
-**Moon tolerance:** ${moonTolerance || "Prefer dark skies"}
+**Target preferences:** ${safeTargetType || "Any"}
+**Experience level:** ${safeExperience || "Intermediate"}
+**Moon tolerance:** ${safeMoonTolerance || "Prefer dark skies"}
 
 What should I photograph tonight? Give me your best 3-4 targets and tips!`;
 
@@ -90,7 +129,7 @@ What should I photograph tonight? Give me your best 3-4 targets and tips!`;
     });
   } catch (e) {
     console.error("recommend error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

@@ -28,18 +28,21 @@ const SunTimesCard = () => {
   const astroBegin = toLocal(data?.sun?.astronomicalTwilightBegin);
   const astroEnd = toLocal(data?.sun?.astronomicalTwilightEnd);
 
-  const computeDayLength = () => {
-    if (data?.sun?.sunrise && data?.sun?.sunset) {
-      const [rh, rm] = data.sun.sunrise.split(":").map(Number);
-      const [sh, sm] = data.sun.sunset.split(":").map(Number);
-      let diff = (sh * 60 + sm) - (rh * 60 + rm);
-      if (diff < 0) diff += 24 * 60;
-      const h = Math.floor(diff / 60);
-      const m = diff % 60;
-      return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
-    }
-    return localSun.dayLength;
+  const formatDuration = (start: string | null | undefined, end: string | null | undefined) => {
+    if (!start || !end) return "—";
+    const [sh, sm] = start.split(":").map(Number);
+    const [eh, em] = end.split(":").map(Number);
+    let diff = (eh * 60 + em) - (sh * 60 + sm);
+    if (diff < 0) diff += 24 * 60;
+    const h = Math.floor(diff / 60);
+    const m = diff % 60;
+    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
   };
+
+  const civilDayLength = formatDuration(civilBegin, civilEnd);
+  const civilNightLength = formatDuration(civilEnd, civilBegin);
+  const nauticalNightLength = formatDuration(nauticalEnd, nauticalBegin);
+  const astroNightLength = formatDuration(astroEnd, astroBegin);
 
   const tzAbbr = getTimezoneAbbr(date, tz);
 

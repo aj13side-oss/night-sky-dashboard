@@ -133,7 +133,7 @@ const ObjectPage = () => {
           return desc.length > 155 ? desc.slice(0, 152).trimEnd() + "…" : desc;
         })()}
         canonical={`https://cosmicframe.app/object/${encodeURIComponent(obj.catalog_id)}`}
-        image={imageUrl || "https://cosmicframe.app/og-image.png"}
+        image={imageUrl || undefined}
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Article",

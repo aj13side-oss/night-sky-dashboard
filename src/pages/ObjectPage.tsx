@@ -174,6 +174,9 @@ const ObjectPage = () => {
         )}
 
         {/* SEO text block — indexable content for search engines */}
+        <h2 className="text-xl font-semibold text-foreground pt-2">
+          How to photograph {obj.common_name ?? obj.catalog_id}
+        </h2>
         <div className="text-sm text-muted-foreground leading-relaxed space-y-1 max-w-2xl">
           <p>
             {obj.common_name ? `The ${obj.common_name} (${obj.catalog_id})` : obj.catalog_id} is

@@ -368,6 +368,7 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* CAMERAS */}
         <TabsContent value="cameras">
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Astrophotography Cameras</h2>
           <EquipmentTab loading={loadingCams} searchBar={searchBar} resultCount={filteredCams.length} searchQuery={searchQuery}
             filters={<>
               <div className="grid sm:grid-cols-2 gap-4">
@@ -418,6 +419,7 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* MOUNTS */}
         <TabsContent value="mounts">
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Equatorial Mounts</h2>
           <EquipmentTab loading={loadingMounts} searchBar={searchBar} resultCount={filteredMounts.length} searchQuery={searchQuery}
             filters={<>
               <div className="grid sm:grid-cols-2 gap-4">
@@ -462,6 +464,7 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* FILTERS */}
         <TabsContent value="filters">
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Filters</h2>
           <EquipmentTab loading={loadingFilters} searchBar={searchBar} resultCount={filteredFilts.length} searchQuery={searchQuery}
             filters={
               <div className="grid sm:grid-cols-2 gap-4">
@@ -497,6 +500,7 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* ACCESSORIES */}
         <TabsContent value="accessories">
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Accessories</h2>
           <EquipmentTab loading={loadingAccessories} searchBar={searchBar} resultCount={filteredAccessories.length} searchQuery={searchQuery}
             filters={<ChipFilter label="Category" options={accTypes} selected={accType} onChange={setAccType} />}
             compareTable={compareIds.accessories.length >= 2 ? (

@@ -156,6 +156,39 @@ const EquipmentProfile = () => {
             </div>
           </div>
         </details>
+
+        {/* About Equipment Buying Guide */}
+        <details className="space-y-6 pt-8 border-t border-border/20 mt-10">
+          <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
+            About Astrophotography Equipment — Buying Guide
+          </summary>
+          <div className="space-y-6 pt-4">
+            <div>
+              <h3 className="text-sm font-medium text-foreground/70">Telescopes for astrophotography</h3>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                Refractors, Newtonians and apochromatic (APO) triplets each have different strengths. A small APO refractor (72–100mm) is the best beginner astrophotography telescope: it is lightweight, needs little backfocus adjustment, and delivers pinpoint stars across the frame. Newtonian reflectors (150–200mm) offer more aperture per euro but require precise collimation and coma correction. Schmidt-Cassegrains excel at planets and small galaxies but have long focal lengths that demand excellent tracking.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-foreground/70">Astrophotography cameras</h3>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                Dedicated astro cameras beat DSLRs thanks to cooling, low read noise and high quantum efficiency. Cooled one-shot color (OSC) models like the ZWO ASI533MC Pro or ASI2600MC Pro are the easiest entry point. Mono cameras paired with LRGB or narrowband filters extract more detail but need a filter wheel. Uncooled options such as the ZWO ASI585MC or Player One Poseidon are budget-friendly for bright targets. QHY and Moravian offer larger sensors for full-frame setups.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-foreground/70">Equatorial mounts</h3>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                The mount is the most critical part of your rig. A good equatorial mount must carry at least 1.5× your total payload (telescope, camera, guidescope) for stable tracking. Belt-driven mounts like the Sky-Watcher HEQ5 and EQ6-R, or harmonic drive mounts like the ZWO AM5 and AM3, are popular choices. Check periodic error, guiding port compatibility, and whether the mount supports ASCOM or INDI for automated control.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-foreground/70">Filters</h3>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                Light pollution filters (Optolong L-Pro, IDAS LPS) help from suburban skies. Narrowband filters (Hydrogen-alpha, OIII, SII) isolate specific wavelengths and are essential for emission nebulae under heavy light pollution. Dual-band filters combine Ha and OIII in a single frame, offering a practical balance between convenience and signal. Choose the filter size (1.25″, 2″ or M48/M42 threaded) to match your optical train.
+              </p>
+            </div>
+          </div>
+        </details>
       </main>
       <Footer />
     </div>

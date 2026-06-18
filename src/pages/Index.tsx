@@ -27,6 +27,36 @@ const DashboardContent = () => {
         description="Free astrophotography planning dashboard: real-time astro weather, moon phase, best deep sky targets tonight, ISS passes and aurora forecast. Updated live for your location."
         keywords="astro weather, astrophotography tonight, what to photograph tonight, moon phase, astronomy ephemerides, deep sky targets, observation conditions, seeing, cloud cover, météo astro, astrophotographie"
         canonical="https://cosmicframe.app/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What should a beginner photograph tonight?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Beginners should start with bright, large targets that are forgiving of tracking and exposure errors. Tonight, check our dashboard for the best visible Messier objects like the Orion Nebula (M42) or the Andromeda Galaxy (M31). These are easy to find, photograph beautifully even with short exposures, and provide stunning results for new astrophotographers."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How does the astro weather forecast work?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Cosmic Frame combines hourly cloud cover, seeing, transparency and humidity data to give you a real-time score for astrophotography conditions. The forecast updates live for your chosen location so you can plan the perfect night under the stars."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What equipment do I need for deep sky astrophotography?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "At minimum you need a telescope or telephoto lens, a tracking mount (equatorial or alt-az with field derotator), an astro camera or DSLR, and a laptop or ASIAIR for control. Use our gear catalog and FOV calculator to find compatible setups for your budget and targets."
+              }
+            }
+          ]
+        }}
       />
       <AppNav />
 
@@ -37,10 +67,13 @@ const DashboardContent = () => {
           transition={{ delay: 0.1 }}
         >
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
-            Tonight's Sky
+            What to Photograph Tonight
           </h1>
-          <p className="text-muted-foreground mt-1">
-            Your astrophotography planning dashboard — {location.name}
+          <p className="text-muted-foreground mt-2 max-w-3xl leading-relaxed">
+            Your astrophotography planner — real-time astro weather, moon phase and the best Messier, NGC and deep sky targets for tonight, whether you're a beginner or seasoned astronomer.
+          </p>
+          <p className="text-sm text-muted-foreground/60 mt-1">
+            Tonight's Sky — {location.name}
           </p>
         </motion.div>
 
@@ -165,6 +198,45 @@ const DashboardContent = () => {
                   Eagle Nebula (M16, Pillars of Creation), Veil Nebula (NGC 6960/6992),
                   North America Nebula (NGC 7000), Rosette Nebula (NGC 2244),
                   Lagoon Nebula (M8), Crab Nebula (M1), Carina Nebula (NGC 3372).
+                </p>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        {/* FAQ Section */}
+        <details className="space-y-4 pt-6 border-t border-border/20">
+          <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
+            Frequently Asked Questions
+          </summary>
+          <div className="space-y-4 pt-4" itemScope itemType="https://schema.org/FAQPage">
+            <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
+                What should a beginner photograph tonight?
+              </h3>
+              <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                  Beginners should start with bright, large targets that are forgiving of tracking and exposure errors. Tonight, check our dashboard for the best visible Messier objects like the Orion Nebula (M42) or the Andromeda Galaxy (M31). These are easy to find, photograph beautifully even with short exposures, and provide stunning results for new astrophotographers.
+                </p>
+              </div>
+            </div>
+            <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
+                How does the astro weather forecast work?
+              </h3>
+              <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                  Cosmic Frame combines hourly cloud cover, seeing, transparency and humidity data to give you a real-time score for astrophotography conditions. The forecast updates live for your chosen location so you can plan the perfect night under the stars.
+                </p>
+              </div>
+            </div>
+            <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
+                What equipment do I need for deep sky astrophotography?
+              </h3>
+              <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                  At minimum you need a telescope or telephoto lens, a tracking mount (equatorial or alt-az with field derotator), an astro camera or DSLR, and a laptop or ASIAIR for control. Use our gear catalog and FOV calculator to find compatible setups for your budget and targets.
                 </p>
               </div>
             </div>

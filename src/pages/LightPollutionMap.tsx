@@ -209,6 +209,28 @@ const LightPollutionMap = () => {
         description="Interactive light pollution map for astrophotography. Find Bortle 1-4 dark sky sites near you using the D. Lorenz Atlas 2024 overlay. Search any location worldwide."
         keywords="light pollution, Bortle map, astronomy observation site, dark sky, light pollution map, best astrophoto spot"
         canonical="https://cosmicframe.app/light-pollution"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is the Bortle scale?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The Bortle scale is a nine-level numeric classification of sky darkness, from class 1 (pristine, star-filled skies) to class 9 (inner-city glow). It measures how much artificial light brightens the night sky, directly affecting how many stars you can see and how well cameras capture faint nebulae and galaxies."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I find dark skies near me?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Use our interactive light pollution map to scout Bortle 1–4 dark sky sites near your location. Click anywhere on the map to sample the light pollution level, or search for parks, reserves and certified dark sky locations in the Nearby Dark Sky Sites panel. Driving even 30–60 minutes from a city can dramatically improve your imaging quality."
+              }
+            }
+          ]
+        }}
       />
       {!isFullscreen && <AppNav />}
 
@@ -298,6 +320,34 @@ const LightPollutionMap = () => {
                 ))}
               </div>
             </motion.div>
+
+            <details className="space-y-4 pt-6 border-t border-border/20" itemScope itemType="https://schema.org/FAQPage">
+              <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
+                Frequently Asked Questions
+              </summary>
+              <div className="space-y-4 pt-4">
+                <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+                  <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
+                    What is the Bortle scale?
+                  </h3>
+                  <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                    <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                      The Bortle scale is a nine-level numeric classification of sky darkness, from class 1 (pristine, star-filled skies) to class 9 (inner-city glow). It measures how much artificial light brightens the night sky, directly affecting how many stars you can see and how well cameras capture faint nebulae and galaxies.
+                    </p>
+                  </div>
+                </div>
+                <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+                  <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
+                    How do I find dark skies near me?
+                  </h3>
+                  <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                    <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                      Use our interactive light pollution map to scout Bortle 1–4 dark sky sites near your location. Click anywhere on the map to sample the light pollution level, or search for parks, reserves and certified dark sky locations in the Nearby Dark Sky Sites panel. Driving even 30–60 minutes from a city can dramatically improve your imaging quality.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </details>
 
             <details className="space-y-4 pt-6 border-t border-border/20">
               <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";

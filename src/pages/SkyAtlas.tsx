@@ -196,7 +196,7 @@ const SkyAtlas = () => {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground flex items-center gap-3">
             <Telescope className="w-8 h-8 text-primary" />
-            Sky Atlas
+            Deep Sky Object Atlas
           </h1>
           <p className="text-muted-foreground mt-2 max-w-3xl">
             Browse 4,800+ deep sky objects — filter Messier, NGC and IC catalogs by type, constellation, magnitude and best season.

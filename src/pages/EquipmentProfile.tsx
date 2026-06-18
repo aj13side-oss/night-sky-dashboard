@@ -93,7 +93,7 @@ const EquipmentProfile = () => {
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground flex items-center gap-3">
-            <Telescope className="w-8 h-8 text-primary" /> Equipment Catalog
+            <Telescope className="w-8 h-8 text-primary" /> Astrophotography Equipment
           </h1>
           <p className="text-muted-foreground mt-2 max-w-3xl">
             Compare the best telescopes, astrophotography cameras and equatorial mounts — from beginner setups to advanced rigs.

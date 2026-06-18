@@ -324,6 +324,7 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* TELESCOPES */}
         <TabsContent value="telescopes">
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Telescopes for Astrophotography</h2>
           <EquipmentTab loading={loadingScopes} searchBar={searchBar} resultCount={filteredScopes.length} searchQuery={searchQuery}
             filters={<>
               <div className="grid sm:grid-cols-2 gap-4">

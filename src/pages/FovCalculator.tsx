@@ -301,7 +301,7 @@ const FovCalculator = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h2 className="text-3xl font-bold text-foreground">FOV Calculator</h2>
+          <h1 className="text-3xl font-bold text-foreground">Field of View &amp; Sampling Calculator</h1>
           <p className="text-muted-foreground mt-1">Visualize how objects fit in your telescope + camera setup</p>
         </motion.div>
 

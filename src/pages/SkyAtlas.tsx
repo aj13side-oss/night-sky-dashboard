@@ -178,6 +178,11 @@ const SkyAtlas = () => {
           "@context": "https://schema.org",
           "@type": "Dataset",
           "name": "Cosmic Frame Celestial Objects Catalog",
+          "creator": {
+            "@type": "Organization",
+            "name": "Cosmic Frame",
+            "url": "https://cosmicframe.app"
+          },
           "description": "Catalog of 4,800+ deep sky objects for astrophotography with exposure guides, photogenicity scores, and session planning data.",
           "url": "https://cosmicframe.app/sky-atlas",
           "keywords": ["astronomy", "astrophotography", "Messier", "NGC", "deep sky"],

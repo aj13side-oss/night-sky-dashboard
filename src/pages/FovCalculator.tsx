@@ -302,7 +302,9 @@ const FovCalculator = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-3xl font-bold text-foreground">Field of View &amp; Sampling Calculator</h1>
-          <p className="text-muted-foreground mt-1">Visualize how objects fit in your telescope + camera setup</p>
+          <p className="text-muted-foreground mt-2 max-w-3xl">
+            Calculate field of view, sampling in arcseconds per pixel, and check seeing compatibility for your telescope and camera.
+          </p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -416,7 +418,7 @@ const FovCalculator = () => {
                 <ResultItem label="FOV Width" value={`${fov.w.toFixed(2)}° (${fov.wArcmin.toFixed(1)}')`} />
                 <ResultItem label="FOV Height" value={`${fov.h.toFixed(2)}° (${fov.hArcmin.toFixed(1)}')`} />
                 <ResultItem label="Effective Focal Length" value={`${effectiveFL} mm`} />
-                <ResultItem label="Sampling" value={`${fov.resolution.toFixed(2)} "/px`} />
+                <ResultItem label="Sampling (arcsec/pixel)" value={`${fov.resolution.toFixed(2)} "/px`} />
                 <ResultItem label="Sampling Quality"
                   value={samplingLabel.text}
                   highlight={samplingLabel.ok} />

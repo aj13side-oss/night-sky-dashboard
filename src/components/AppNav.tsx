@@ -28,7 +28,7 @@ const AppNav = () => {
     <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-10 bg-background/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="Cosmic Frame" className="h-7 w-7" />
+          <img src="/logo.png" alt="Cosmic Frame" width={28} height={28} className="h-7 w-7" />
           <span className="text-xl font-bold text-gradient-gold hidden sm:inline">Cosmic Frame</span>
         </Link>
 

@@ -298,6 +298,24 @@ const LightPollutionMap = () => {
                 ))}
               </div>
             </motion.div>
+
+            <details className="space-y-4 pt-6 border-t border-border/20">
+              <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
+                Understanding Light Pollution & Dark Skies
+              </summary>
+              <div className="space-y-4 pt-4">
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
+                  Light pollution is artificial light that brightens the night sky and washes out faint celestial objects. The
+                  <span className="text-foreground/80 font-medium"> Bortle scale</span> ranks sky darkness from class 1 (pristine, star-filled skies) to class 9 (inner-city glow where only the brightest stars are visible). Class 1–3 locations are considered true dark sky sites and are ideal for deep sky astrophotography.
+                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
+                  <span className="text-foreground/80 font-medium">SQM (Sky Quality Meter)</span> gives a precise brightness reading in magnitudes per square arcsecond — higher values mean darker skies. A reading above 21.7 is excellent; below 18.5, imaging faint nebulae and galaxies becomes very difficult without narrowband filters.
+                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
+                  Light pollution directly affects astrophotography by reducing contrast, increasing noise, and requiring longer total integration times. Shooting from a Bortle 1–3 dark sky site can cut your required exposure time by half or more compared to a suburban Bortle 5 location. Use the map overlay above to scout dark sky sites near you, then check the Nearby Dark Sky Sites panel for parks, reserves and certified locations within driving distance.
+                </p>
+              </div>
+            </details>
           </>
         )}
       </main>

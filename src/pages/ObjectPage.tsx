@@ -267,10 +267,11 @@ const ObjectPage = () => {
             {/* Exposure guide */}
             {((obj.exposure_guide_fast ?? 0) > 0 || (obj.exposure_guide_deep ?? 0) > 0) && (
               <div className="p-4 rounded-xl bg-secondary/30 space-y-3">
+                <h3 className="sr-only">{obj.common_name ?? obj.catalog_id} exposure settings</h3>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Camera className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-semibold text-foreground">Capture Guide</span>
+                    <span className="text-sm font-semibold text-foreground">Recommended exposure &amp; settings</span>
                   </div>
                   <button onClick={() => setShowExposureInfo(true)} className="text-muted-foreground hover:text-foreground"><HelpCircle className="w-4 h-4" /></button>
                 </div>

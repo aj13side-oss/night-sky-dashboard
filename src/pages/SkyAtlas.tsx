@@ -198,9 +198,12 @@ const SkyAtlas = () => {
             <Telescope className="w-8 h-8 text-primary" />
             Sky Atlas
           </h1>
-          <p className="text-muted-foreground mt-1 flex items-center gap-2">
+          <p className="text-muted-foreground mt-2 max-w-3xl">
+            Browse 4,800+ deep sky objects — filter Messier, NGC and IC catalogs by type, constellation, magnitude and best season.
+          </p>
+          <p className="text-sm text-muted-foreground/60 mt-1 flex items-center gap-2">
             <MapPin className="w-3.5 h-3.5" />
-            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — Explore {totalCount > 0 ? totalCount.toLocaleString() : "..."} celestial objects
+            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — {totalCount > 0 ? totalCount.toLocaleString() : "..."} objects
           </p>
         </motion.div>
 

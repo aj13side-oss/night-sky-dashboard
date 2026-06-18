@@ -170,6 +170,9 @@ const DeepSkyRow = ({
             alt={obj.common_name ?? obj.catalog_id}
             className="w-full h-full object-cover"
             loading="lazy"
+            decoding="async"
+            width={40}
+            height={40}
             onError={() => setImgError(true)}
           />
         ) : (

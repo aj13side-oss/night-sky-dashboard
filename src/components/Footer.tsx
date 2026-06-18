@@ -54,7 +54,7 @@ const Footer = () => (
           Links to third-party stores are provided for convenience. We are not affiliated with any retailer.
         </p>
         <p className="mt-4 text-muted-foreground/60 flex items-center gap-2">
-          <img src="/icon-192.png" alt="Cosmic Frame" className="w-5 h-5 rounded-full" />
+          <img src="/icon-192.png" alt="Cosmic Frame" width={20} height={20} loading="lazy" className="w-5 h-5 rounded-full" />
           © {new Date().getFullYear()} Cosmic Frame
           <a href="/privacy" className="text-xs text-muted-foreground hover:text-foreground ml-4">
             Privacy Policy

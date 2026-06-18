@@ -241,7 +241,7 @@ const SkyAtlas = () => {
               {solarResults.map(obj => (
                 <div key={obj.id} className="glass-card rounded-2xl p-4 flex items-center gap-3 border border-primary/20">
                   {obj.image_url && (
-                    <img src={obj.image_url} alt={obj.name} className="w-16 h-16 object-cover rounded-lg bg-black shrink-0" />
+                    <img src={obj.image_url} alt={obj.name} width={64} height={64} loading="lazy" decoding="async" className="w-16 h-16 object-cover rounded-lg bg-black shrink-0" />
                   )}
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">

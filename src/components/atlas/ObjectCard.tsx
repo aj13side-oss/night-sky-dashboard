@@ -100,6 +100,9 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
               src={displayUrl}
               alt={`${obj.common_name ?? obj.catalog_id} — ${obj.obj_type}${obj.constellation ? ` in ${obj.constellation}` : ''}`}
               loading={index < 3 ? "eager" : "lazy"}
+              decoding="async"
+              width={400}
+              height={112}
               onLoad={() => setImgLoaded(true)}
               onError={() => {
                 if (!useFallback && wikiImage?.fallbackUrl) {

@@ -133,23 +133,66 @@ const ObjectPage = () => {
           return desc.length > 155 ? desc.slice(0, 152).trimEnd() + "…" : desc;
         })()}
         canonical={`https://cosmicframe.app/object/${encodeURIComponent(obj.catalog_id)}`}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Article",
-          "headline": `${obj.common_name ?? obj.catalog_id} Astrophotography Guide`,
-          "description": `${obj.obj_type ?? 'Deep sky object'} in ${obj.constellation ?? 'the sky'}, magnitude ${obj.magnitude?.toFixed(1) ?? 'unknown'}.`,
-          "url": `https://cosmicframe.app/object/${encodeURIComponent(obj.catalog_id)}`,
-          "publisher": {
-            "@type": "Organization",
-            "name": "Cosmic Frame",
-            "url": "https://cosmicframe.app"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": `${obj.common_name ?? obj.catalog_id} Astrophotography Guide`,
+            "description": `${obj.obj_type ?? 'Deep sky object'} in ${obj.constellation ?? 'the sky'}, magnitude ${obj.magnitude?.toFixed(1) ?? 'unknown'}.`,
+            "url": `https://cosmicframe.app/object/${encodeURIComponent(obj.catalog_id)}`,
+            "publisher": {
+              "@type": "Organization",
+              "name": "Cosmic Frame",
+              "url": "https://cosmicframe.app"
+            },
+            ...(imageUrl ? { "image": imageUrl } : {})
           },
-          ...(imageUrl ? { "image": imageUrl } : {})
-        }}
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://cosmicframe.app/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Sky Atlas",
+                "item": "https://cosmicframe.app/sky-atlas"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": obj.common_name ?? obj.catalog_id,
+                "item": `https://cosmicframe.app/object/${encodeURIComponent(obj.catalog_id)}`
+              }
+            ]
+          }
+        ]}
       />
       <AppNav />
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        {/* Breadcrumb */}
+        <nav aria-label="Breadcrumb">
+          <ol className="flex items-center gap-2 text-sm text-muted-foreground">
+            <li>
+              <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+            </li>
+            <li>/</li>
+            <li>
+              <Link to="/sky-atlas" className="hover:text-foreground transition-colors">Sky Atlas</Link>
+            </li>
+            <li>/</li>
+            <li className="text-foreground font-medium" aria-current="page">
+              {obj.common_name ?? obj.catalog_id}
+            </li>
+          </ol>
+        </nav>
+
         {/* Back + Title */}
         <div className="flex items-start justify-between gap-4">
           <div>

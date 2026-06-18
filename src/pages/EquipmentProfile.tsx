@@ -58,6 +58,36 @@ const EquipmentProfile = () => {
         description="Compare 360+ astrophotography equipment: telescopes, astro cameras (ZWO, QHY, Player One), equatorial mounts (Sky-Watcher, iOptron, ZWO), filters and accessories. Build and check your rig compatibility."
         keywords="astrophoto equipment, rig builder, telescope comparison, astrophotography setup, gear comparator"
         canonical="https://cosmicframe.app/equipment"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What's the best telescope for beginner astrophotography?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "For beginners, a small apochromatic refractor (72–80mm) or a fast Newtonian (150–200mm) on a sturdy equatorial mount like the Sky-Watcher HEQ5 or ZWO AM5 is ideal. These setups are forgiving, relatively affordable, and capture bright wide-field targets beautifully while you learn tracking and polar alignment."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the best astrophotography camera for a beginner?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "A cooled one-shot color camera such as the ZWO ASI533MC Pro or ASI2600MC Pro is a great first choice. They are easy to use, have low read noise, and deliver clean images without the complexity of mono filter wheels. For a tighter budget, uncooled models like the ZWO ASI585MC also perform well on bright targets."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do I need an equatorial mount for astrophotography?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. An equatorial mount rotates on an axis parallel to Earth's rotation, canceling star trailing during long exposures. Alt-az mounts can work for short exposures or with field derotators, but an equatorial mount (or a harmonic drive mount like the ZWO AM5) is the standard for serious deep sky imaging."
+              }
+            }
+          ]
+        }}
       />
       <AppNav />
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
@@ -65,7 +95,9 @@ const EquipmentProfile = () => {
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground flex items-center gap-3">
             <Telescope className="w-8 h-8 text-primary" /> Equipment Catalog
           </h1>
-          <p className="text-muted-foreground mt-1">Browse gear, build your rig, and find the best targets for your setup.</p>
+          <p className="text-muted-foreground mt-2 max-w-3xl">
+            Compare the best telescopes, astrophotography cameras and equatorial mounts — from beginner setups to advanced rigs.
+          </p>
         </motion.div>
 
         {isMobile ? (

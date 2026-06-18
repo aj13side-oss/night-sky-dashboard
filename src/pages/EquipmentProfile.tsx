@@ -117,6 +117,45 @@ const EquipmentProfile = () => {
             </div>
           </div>
         )}
+
+        {/* FAQ Section */}
+        <details className="space-y-4 pt-8 border-t border-border/20 mt-10">
+          <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
+            Frequently Asked Questions
+          </summary>
+          <div className="space-y-4 pt-4" itemScope itemType="https://schema.org/FAQPage">
+            <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
+                What's the best telescope for beginner astrophotography?
+              </h3>
+              <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                  For beginners, a small apochromatic refractor (72–80mm) or a fast Newtonian (150–200mm) on a sturdy equatorial mount like the Sky-Watcher HEQ5 or ZWO AM5 is ideal. These setups are forgiving, relatively affordable, and capture bright wide-field targets beautifully while you learn tracking and polar alignment.
+                </p>
+              </div>
+            </div>
+            <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
+                What is the best astrophotography camera for a beginner?
+              </h3>
+              <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                  A cooled one-shot color camera such as the ZWO ASI533MC Pro or ASI2600MC Pro is a great first choice. They are easy to use, have low read noise, and deliver clean images without the complexity of mono filter wheels. For a tighter budget, uncooled models like the ZWO ASI585MC also perform well on bright targets.
+                </p>
+              </div>
+            </div>
+            <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
+                Do I need an equatorial mount for astrophotography?
+              </h3>
+              <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                  Yes. An equatorial mount rotates on an axis parallel to Earth's rotation, canceling star trailing during long exposures. Alt-az mounts can work for short exposures or with field derotators, but an equatorial mount (or a harmonic drive mount like the ZWO AM5) is the standard for serious deep sky imaging.
+                </p>
+              </div>
+            </div>
+          </div>
+        </details>
       </main>
       <Footer />
     </div>

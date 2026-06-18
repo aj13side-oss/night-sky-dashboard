@@ -207,10 +207,10 @@ const SkyAtlas = () => {
           </p>
           <p className="text-sm text-muted-foreground mt-3">
             Popular targets:{' '}
-            <Link to="/object/M42" className="text-primary hover:underline">Orion Nebula (M42) astrophotography</Link>{' · '}
-            <Link to="/object/M31" className="text-primary hover:underline">Andromeda Galaxy (M31) astrophotography</Link>{' · '}
-            <Link to="/object/M45" className="text-primary hover:underline">Pleiades (M45) astrophotography</Link>{' · '}
-            <Link to="/object/M51" className="text-primary hover:underline">Whirlpool Galaxy (M51) astrophotography</Link>
+            <Link to={`/object/${encodeURIComponent('M 42')}`} className="text-primary hover:underline">Orion Nebula (M42) astrophotography</Link>{' · '}
+            <Link to={`/object/${encodeURIComponent('M 31')}`} className="text-primary hover:underline">Andromeda Galaxy (M31) astrophotography</Link>{' · '}
+            <Link to={`/object/${encodeURIComponent('M 45')}`} className="text-primary hover:underline">Pleiades (M45) astrophotography</Link>{' · '}
+            <Link to={`/object/${encodeURIComponent('M 51')}`} className="text-primary hover:underline">Whirlpool Galaxy (M51) astrophotography</Link>
           </p>
         </motion.div>
 

@@ -34,6 +34,14 @@ const DashboardContent = () => {
           "mainEntity": [
             {
               "@type": "Question",
+              "name": "What should I photograph tonight as a beginner?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Beginners should start with bright, large targets that are forgiving of tracking and exposure errors. Tonight, check our dashboard for the best visible Messier objects like the Orion Nebula (M42) or the Andromeda Galaxy (M31). These are easy to find, photograph beautifully even with short exposures, and provide stunning results for new astrophotographers."
+              }
+            },
+            {
+              "@type": "Question",
               "name": "What should a beginner photograph tonight?",
               "acceptedAnswer": {
                 "@type": "Answer",

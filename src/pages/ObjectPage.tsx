@@ -430,7 +430,7 @@ const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
             className="glass-card rounded-xl p-3 hover:bg-secondary/50 transition-colors space-y-2"
           >
             {s.forced_image_url && (
-              <img src={s.forced_image_url} alt={s.catalog_id} className="w-full h-20 object-cover rounded-lg bg-black" />
+              <img src={s.forced_image_url} alt={s.catalog_id} loading="lazy" decoding="async" width={200} height={80} className="w-full h-20 object-cover rounded-lg bg-black" />
             )}
             <div>
               <p className="text-xs font-semibold text-foreground truncate">{s.catalog_id}</p>

@@ -298,6 +298,9 @@ const ObjectPage = () => {
         <NightPlanner targetRa={obj.ra_deg} targetDec={obj.dec_deg} />
 
         {/* Setup Assistant */}
+        <h2 className="text-xl font-semibold text-foreground pt-2">
+          Best equipment for {obj.common_name ?? obj.catalog_id}
+        </h2>
         <SetupAssistant obj={obj} userFocalLength={0} />
 
         {/* Altitude Chart */}

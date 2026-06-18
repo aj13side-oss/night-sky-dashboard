@@ -72,6 +72,10 @@ const PlanetRow = ({ name, planet, index, solarObjects }: { name: string; planet
         <img
           src={ssoMatch.image_url}
           alt={displayName}
+          loading="lazy"
+          decoding="async"
+          width={28}
+          height={28}
           className="w-7 h-7 rounded-full object-cover shrink-0"
         />
       ) : (

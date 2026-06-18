@@ -675,7 +675,10 @@ const FovCalculator = () => {
                           src={getSkyImageUrlWithFov(obj.ra, obj.dec, (obj.sizeArcmin * 5) / 60, (obj.sizeArcmin * 5) / 60, "dss2")}
                           alt={`Closeup of ${obj.name}`}
                           className="w-full h-full object-cover"
-                          loading="eager"
+                          width={176}
+                          height={176}
+                          decoding="async"
+                          loading="lazy"
                         />
                         <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                           <div className="rounded-full border border-accent/50" style={{ width: '20%', height: '20%' }} />

@@ -205,6 +205,13 @@ const SkyAtlas = () => {
             <MapPin className="w-3.5 h-3.5" />
             {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — {totalCount > 0 ? totalCount.toLocaleString() : "..."} objects
           </p>
+          <p className="text-sm text-muted-foreground mt-3">
+            Popular targets:{' '}
+            <Link to="/object/M42" className="text-primary hover:underline">Orion Nebula (M42) astrophotography</Link>{' · '}
+            <Link to="/object/M31" className="text-primary hover:underline">Andromeda Galaxy (M31) astrophotography</Link>{' · '}
+            <Link to="/object/M45" className="text-primary hover:underline">Pleiades (M45) astrophotography</Link>{' · '}
+            <Link to="/object/M51" className="text-primary hover:underline">Whirlpool Galaxy (M51) astrophotography</Link>
+          </p>
         </motion.div>
 
         <TonightTopPicks lat={userPos.lat} lng={userPos.lng} onSelect={setSelected} />

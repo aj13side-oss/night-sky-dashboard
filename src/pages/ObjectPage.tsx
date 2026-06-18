@@ -264,7 +264,7 @@ const ObjectPage = () => {
           <div className="space-y-3">
             {imageUrl && (
               <div className="rounded-xl overflow-hidden border border-border/30 bg-muted/30">
-                <img src={imageUrl} alt={obj.common_name ?? obj.catalog_id} className="w-full max-h-80 object-contain" />
+                <img src={imageUrl} alt={obj.common_name ?? obj.catalog_id} width={800} height={320} fetchPriority="high" decoding="async" className="w-full max-h-80 object-contain" />
               </div>
             )}
             {obj.ra_deg != null && obj.dec_deg != null && (

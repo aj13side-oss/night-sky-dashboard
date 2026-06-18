@@ -34,6 +34,14 @@ const DashboardContent = () => {
           "mainEntity": [
             {
               "@type": "Question",
+              "name": "What should I photograph tonight as a beginner?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Beginners should start with bright, large targets that are forgiving of tracking and exposure errors. Tonight, check our dashboard for the best visible Messier objects like the Orion Nebula (M42) or the Andromeda Galaxy (M31). These are easy to find, photograph beautifully even with short exposures, and provide stunning results for new astrophotographers."
+              }
+            },
+            {
+              "@type": "Question",
               "name": "What should a beginner photograph tonight?",
               "acceptedAnswer": {
                 "@type": "Answer",
@@ -217,6 +225,16 @@ const DashboardContent = () => {
             Frequently Asked Questions
           </summary>
           <div className="space-y-4 pt-4" itemScope itemType="https://schema.org/FAQPage">
+            <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
+                What should I photograph tonight as a beginner?
+              </h3>
+              <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                  Beginners should start with bright, large targets that are forgiving of tracking and exposure errors. Tonight, check our dashboard for the best visible Messier objects like the Orion Nebula (M42) or the Andromeda Galaxy (M31). These are easy to find, photograph beautifully even with short exposures, and provide stunning results for new astrophotographers.
+                </p>
+              </div>
+            </div>
             <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
               <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
                 What should a beginner photograph tonight?

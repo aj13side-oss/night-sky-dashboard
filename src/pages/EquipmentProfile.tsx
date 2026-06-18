@@ -64,10 +64,26 @@ const EquipmentProfile = () => {
           "mainEntity": [
             {
               "@type": "Question",
+              "name": "What is the best telescope for beginner astrophotography?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "For beginners, a small apochromatic refractor (72–80mm) or a fast Newtonian (150–200mm) on a sturdy equatorial mount like the Sky-Watcher HEQ5 or ZWO AM5 is ideal. These setups are forgiving, relatively affordable, and capture bright wide-field targets beautifully while you learn tracking and polar alignment."
+              }
+            },
+            {
+              "@type": "Question",
               "name": "What's the best telescope for beginner astrophotography?",
               "acceptedAnswer": {
                 "@type": "Answer",
                 "text": "For beginners, a small apochromatic refractor (72–80mm) or a fast Newtonian (150–200mm) on a sturdy equatorial mount like the Sky-Watcher HEQ5 or ZWO AM5 is ideal. These setups are forgiving, relatively affordable, and capture bright wide-field targets beautifully while you learn tracking and polar alignment."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Cooled vs uncooled astrophotography camera — which to choose?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Cooled cameras reduce thermal noise significantly, producing cleaner images during long exposures — essential for faint deep sky objects. Uncooled cameras are more affordable and portable, but they accumulate more noise over time. For serious deep sky work, choose cooled; for bright targets, planetary imaging, or a tight budget, uncooled is perfectly viable."
               }
             },
             {
@@ -126,11 +142,21 @@ const EquipmentProfile = () => {
           <div className="space-y-4 pt-4" itemScope itemType="https://schema.org/FAQPage">
             <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
               <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
-                What's the best telescope for beginner astrophotography?
+                What is the best telescope for beginner astrophotography?
               </h3>
               <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
                 <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
                   For beginners, a small apochromatic refractor (72–80mm) or a fast Newtonian (150–200mm) on a sturdy equatorial mount like the Sky-Watcher HEQ5 or ZWO AM5 is ideal. These setups are forgiving, relatively affordable, and capture bright wide-field targets beautifully while you learn tracking and polar alignment.
+                </p>
+              </div>
+            </div>
+            <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
+                Cooled vs uncooled astrophotography camera — which to choose?
+              </h3>
+              <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+                  Cooled cameras reduce thermal noise significantly, producing cleaner images during long exposures — essential for faint deep sky objects. Uncooled cameras are more affordable and portable, but they accumulate more noise over time. For serious deep sky work, choose cooled; for bright targets, planetary imaging, or a tight budget, uncooled is perfectly viable.
                 </p>
               </div>
             </div>

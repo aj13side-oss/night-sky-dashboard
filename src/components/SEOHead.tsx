@@ -28,7 +28,7 @@ export default function SEOHead({
     <Helmet>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
-      {keywords && <meta name="keywords" content={keywords} />}
+      {/* meta keywords intentionally omitted — ignored by Google */}
       <link rel="canonical" href={url} />
 
       <meta property="og:title" content={fullTitle} />

@@ -124,7 +124,14 @@ const ObjectPage = () => {
     <div className="min-h-screen bg-background star-field">
       <SEOHead
         title={`${obj.common_name ? `${obj.common_name} (${obj.catalog_id})` : obj.catalog_id} Astrophotography${obj.obj_type ? ` — ${obj.obj_type}` : ''}`}
-        description={obj.seo_description || `How to photograph ${obj.common_name ?? obj.catalog_id}${obj.constellation ? ` in ${obj.constellation}` : ''}. ${obj.obj_type ?? ''} — magnitude ${obj.magnitude?.toFixed(1) ?? '?'}. Exposure guide, visibility and equipment recommendations on Cosmic Frame.`}
+        description={(() => {
+          const name = obj.common_name ?? obj.catalog_id;
+          const type = obj.obj_type ?? "deep sky object";
+          const mag = obj.magnitude != null ? `, mag ${obj.magnitude.toFixed(1)}` : "";
+          const constellation = obj.constellation ? ` in ${obj.constellation}` : "";
+          const desc = `Photograph ${name} (${obj.catalog_id}): ${type}${constellation}${mag}. Exposure guide & framing on Cosmic Frame.`;
+          return desc.length > 155 ? desc.slice(0, 152).trimEnd() + "…" : desc;
+        })()}
         canonical={`https://cosmicframe.app/object/${encodeURIComponent(obj.catalog_id)}`}
         image={imageUrl || "https://cosmicframe.app/og-image.png"}
         jsonLd={{

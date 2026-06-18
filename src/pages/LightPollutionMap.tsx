@@ -216,7 +216,7 @@ const LightPollutionMap = () => {
         {!isFullscreen && (
           <>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <h2 className="text-3xl font-bold text-foreground">Light Pollution Map</h2>
+              <h1 className="text-3xl font-bold text-foreground">Light Pollution Map</h1>
               <p className="text-muted-foreground mt-1">
                 Find the best observation sites — Light Pollution Atlas 2024
               </p>

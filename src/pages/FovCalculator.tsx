@@ -772,6 +772,28 @@ const FovCalculator = () => {
           </motion.div>
         </div>
 
+        {/* About Sampling & FOV */}
+        <details className="space-y-4 pt-8 border-t border-border/20 mt-10">
+          <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
+            How Sampling & Field of View Work
+          </summary>
+          <div className="space-y-4 pt-4">
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
+              <span className="text-foreground/80 font-medium">Sampling</span> (or resolution) tells you how many arcseconds of sky each pixel covers.
+              Calculate it with the formula: <span className="font-mono text-foreground/70">pixel size (µm) / focal length (mm) × 206.265</span>.
+              The result is in arcseconds per pixel (″/px). For deep sky astrophotography, the sweet spot is roughly
+              <span className="text-foreground/80 font-medium"> 1–2.5 arcsec/pixel</span>:
+              below 1″/px you risk oversampling (wasting sensor resolution and requiring perfect seeing), while above 3″/px you begin to lose fine detail.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
+              <span className="text-foreground/80 font-medium">Field of view</span> depends on your sensor dimensions and focal length.
+              A shorter focal length or a larger sensor gives a wider field; a longer focal length or a smaller sensor narrows it.
+              A <span className="text-foreground/80 font-medium">focal reducer</span> (e.g., 0.8×) shortens the effective focal length, widening the field and improving sampling —
+              useful when a telescope is natively too slow for your camera. A <span className="text-foreground/80 font-medium">Barlow lens</span> or Powermate does the opposite,
+              increasing focal length for planetary imaging or small galaxies. Use this calculator to preview how these changes affect both sampling and framing before you buy.
+            </p>
+          </div>
+        </details>
       </main>
 
       <Footer />

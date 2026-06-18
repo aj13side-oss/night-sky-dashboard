@@ -217,8 +217,8 @@ const LightPollutionMap = () => {
           <>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <h1 className="text-3xl font-bold text-foreground">Light Pollution Map</h1>
-              <p className="text-muted-foreground mt-1">
-                Find the best observation sites — Light Pollution Atlas 2024
+              <p className="text-muted-foreground mt-2 max-w-3xl">
+                Find dark sky sites near you — check Bortle scale, SQM readings and light pollution levels for better astrophotography.
               </p>
             </motion.div>
 

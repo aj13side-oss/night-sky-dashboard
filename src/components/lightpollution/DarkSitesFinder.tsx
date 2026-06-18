@@ -33,7 +33,7 @@ const DarkSitesFinder = ({ userLat, userLng, onSelectSite }: Props) => {
     <div className="glass-card rounded-2xl p-4 space-y-3">
       <div className="flex items-center gap-2">
         <Star className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-semibold text-foreground">Nearby Dark Sites</h3>
+        <h3 className="text-sm font-semibold text-foreground">Nearby Dark Sky Sites</h3>
       </div>
 
       <div className="flex items-center gap-3">

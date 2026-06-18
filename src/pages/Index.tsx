@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { ObservationProvider, useObservation } from "@/contexts/ObservationContext";
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
@@ -194,8 +195,14 @@ const DashboardContent = () => {
                   globular clusters (179), dark nebulae and molecular clouds (155+),
                   galaxy clusters (144), planetary nebulae (140), reflection nebulae,
                   supernova remnants, stellar associations.
-                  Famous objects: Orion Nebula (M42), Andromeda Galaxy (M31), Pleiades (M45),
-                  Eagle Nebula (M16, Pillars of Creation), Veil Nebula (NGC 6960/6992),
+                </p>
+                <p className="mt-2">
+                  Popular targets:{' '}
+                  <Link to="/object/M42" className="text-primary hover:underline">Orion Nebula (M42) astrophotography</Link>,{' '}
+                  <Link to="/object/M31" className="text-primary hover:underline">Andromeda Galaxy (M31) astrophotography</Link>,{' '}
+                  <Link to="/object/M45" className="text-primary hover:underline">Pleiades (M45) astrophotography</Link>,{' '}
+                  <Link to="/object/M51" className="text-primary hover:underline">Whirlpool Galaxy (M51) astrophotography</Link>.
+                  Other notable: Eagle Nebula (M16, Pillars of Creation), Veil Nebula (NGC 6960/6992),
                   North America Nebula (NGC 7000), Rosette Nebula (NGC 2244),
                   Lagoon Nebula (M8), Crab Nebula (M1), Carina Nebula (NGC 3372).
                 </p>

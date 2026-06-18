@@ -200,6 +200,13 @@ const ObjectPage = () => {
               {obj.exposure_guide_deep ? ` ${formatExposure(obj.exposure_guide_deep)} for a deep image` : ''}.
             </p>
           )}
+          <p>
+            Match your <Link to="/equipment" className="text-primary hover:underline">astrophotography equipment</Link> to this target,
+            then check focal length and sampling in the{' '}
+            <Link to={`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`} className="text-primary hover:underline">
+              field of view &amp; arcsec/pixel calculator
+            </Link>.
+          </p>
         </div>
 
         {obj.seo_description && (

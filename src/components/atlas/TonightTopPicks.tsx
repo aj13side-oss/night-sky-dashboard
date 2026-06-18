@@ -74,6 +74,10 @@ const TonightTopPicks = ({ lat, lng, onSelect }: Props) => {
                   <img
                     src={thumbUrl}
                     alt={obj.catalog_id}
+                    loading="lazy"
+                    decoding="async"
+                    width={400}
+                    height={160}
                     className="w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />

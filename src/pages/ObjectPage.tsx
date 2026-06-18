@@ -126,10 +126,10 @@ const ObjectPage = () => {
         title={`${obj.common_name ? `${obj.common_name} (${obj.catalog_id})` : obj.catalog_id} Astrophotography${obj.obj_type ? ` — ${obj.obj_type}` : ''}`}
         description={(() => {
           const name = obj.common_name ?? obj.catalog_id;
-          const mag = obj.magnitude != null ? `mag ${obj.magnitude.toFixed(1)}` : null;
-          const season = obj.best_season ? `best in ${obj.best_season}` : null;
-          const parts = [mag, season].filter(Boolean).join(", ");
-          const desc = `Photograph ${name} (${obj.catalog_id})${parts ? `: ${parts}` : ""}. Exposure guide & framing on Cosmic Frame.`;
+          const type = obj.obj_type ?? "deep sky object";
+          const mag = obj.magnitude != null ? `, mag ${obj.magnitude.toFixed(1)}` : "";
+          const constellation = obj.constellation ? ` in ${obj.constellation}` : "";
+          const desc = `Photograph ${name} (${obj.catalog_id}): ${type}${constellation}${mag}. Exposure guide & framing on Cosmic Frame.`;
           return desc.length > 155 ? desc.slice(0, 152).trimEnd() + "…" : desc;
         })()}
         canonical={`https://cosmicframe.app/object/${encodeURIComponent(obj.catalog_id)}`}

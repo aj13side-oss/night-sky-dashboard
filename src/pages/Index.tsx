@@ -206,10 +206,10 @@ const DashboardContent = () => {
                 </p>
                 <p className="mt-2">
                   Popular targets:{' '}
-                  <Link to="/object/M42" className="text-primary hover:underline">Orion Nebula (M42) astrophotography</Link>,{' '}
-                  <Link to="/object/M31" className="text-primary hover:underline">Andromeda Galaxy (M31) astrophotography</Link>,{' '}
-                  <Link to="/object/M45" className="text-primary hover:underline">Pleiades (M45) astrophotography</Link>,{' '}
-                  <Link to="/object/M51" className="text-primary hover:underline">Whirlpool Galaxy (M51) astrophotography</Link>.
+                  <Link to={`/object/${encodeURIComponent('M 42')}`} className="text-primary hover:underline">Orion Nebula (M42) astrophotography</Link>,{' '}
+                  <Link to={`/object/${encodeURIComponent('M 31')}`} className="text-primary hover:underline">Andromeda Galaxy (M31) astrophotography</Link>,{' '}
+                  <Link to={`/object/${encodeURIComponent('M 45')}`} className="text-primary hover:underline">Pleiades (M45) astrophotography</Link>,{' '}
+                  <Link to={`/object/${encodeURIComponent('M 51')}`} className="text-primary hover:underline">Whirlpool Galaxy (M51) astrophotography</Link>.
                   Other notable: Eagle Nebula (M16, Pillars of Creation), Veil Nebula (NGC 6960/6992),
                   North America Nebula (NGC 7000), Rosette Nebula (NGC 2244),
                   Lagoon Nebula (M8), Crab Nebula (M1), Carina Nebula (NGC 3372).

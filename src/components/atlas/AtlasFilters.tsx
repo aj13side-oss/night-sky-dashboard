@@ -114,6 +114,36 @@ const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, vi
         />
       </div>
 
+      {/* Catalog quick filters */}
+      <div className="flex flex-wrap gap-2 items-center">
+        <span className="text-xs text-muted-foreground mr-1">Catalogs:</span>
+        {[
+          { key: "M", label: "Messier" },
+          { key: "NGC", label: "NGC" },
+          { key: "IC", label: "IC" },
+        ].map((cat) => {
+          const active = filters.search.trim().toUpperCase() === cat.key;
+          return (
+            <Button
+              key={cat.key}
+              variant={active ? "default" : "outline"}
+              size="sm"
+              onClick={() =>
+                onChange({
+                  ...filters,
+                  search: active ? "" : cat.key,
+                  limitResults: undefined,
+                })
+              }
+              className={`text-xs h-7 px-2.5 ${active ? "bg-primary text-primary-foreground" : ""}`}
+            >
+              {cat.label}
+              {active && <X className="w-3 h-3 ml-1" />}
+            </Button>
+          );
+        })}
+      </div>
+
       <div className="flex flex-wrap gap-3 items-end">
         <div className="space-y-1 min-w-[180px]">
           <label className="text-xs text-muted-foreground">Constellation</label>

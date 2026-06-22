@@ -217,7 +217,7 @@ const SkyAtlas = () => {
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 
-  const isClientFiltered = visibleTonight || filterMode !== "all";
+
   const paginatedData = useMemo(() => {
     if (!isClientFiltered) return filteredData;
     const start = clientPage * CLIENT_PAGE_SIZE;

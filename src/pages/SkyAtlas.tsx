@@ -11,6 +11,7 @@ import {
   useCelestialObjects,
   useDistinctFilters,
   useCatalogTypeCounts,
+  fetchCatalogObjectIds,
   CelestialFilters,
   CelestialObject,
   PAGE_SIZE,

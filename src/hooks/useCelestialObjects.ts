@@ -35,7 +35,7 @@ export interface CelestialObject {
 
 export type CatalogFilter = "" | "M" | "NGC" | "IC" | "SH" | "B" | "ACO" | "C" | "OTHER";
 
-async function fetchCatalogObjectIds(catalog: Exclude<CatalogFilter, "">): Promise<string[]> {
+export async function fetchCatalogObjectIds(catalog: Exclude<CatalogFilter, "">): Promise<string[]> {
   const ids: string[] = [];
   const PAGE = 1000;
   let from = 0;

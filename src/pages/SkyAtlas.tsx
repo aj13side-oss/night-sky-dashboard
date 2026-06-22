@@ -65,6 +65,7 @@ const SkyAtlas = () => {
 
   const { types, typeBuckets, constellations } = useDistinctFilters();
   const { data, isLoading } = useCelestialObjects(filters, page);
+  const { data: typeCounts } = useCatalogTypeCounts(filters);
   const { data: topPickIds } = useTopPhotoTargets();
 
   const isClientFiltered = visibleTonight || filterMode !== "all";

@@ -222,7 +222,7 @@ async function fetchTypeBuckets(): Promise<TypeBucket[]> {
   const buckets: TypeBucket[] = [];
   const other: TypeBucket = { label: "Other", count: 0, values: [] };
   for (const [label, { count, values }] of map.entries()) {
-    if (count <= 1) {
+    if (count <= 1 || label.toLowerCase() === "other") {
       other.count += count;
       other.values.push(...values);
     } else {
@@ -230,7 +230,11 @@ async function fetchTypeBuckets(): Promise<TypeBucket[]> {
     }
   }
   buckets.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
-  if (other.count > 0) buckets.push(other);
+  if (other.count > 0) {
+    // De-duplicate raw values just in case
+    other.values = [...new Set(other.values)];
+    buckets.push(other);
+  }
   return buckets;
 }
 

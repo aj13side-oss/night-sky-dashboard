@@ -95,9 +95,20 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
   const { data: presets } = useRigPresets();
   const [presetsOpen, setPresetsOpen] = useState(true);
 
-  const [tab, setTab] = useState<Category>("telescopes");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const validCats: Category[] = ["telescopes", "cameras", "mounts", "filters", "accessories"];
+  const urlCat = searchParams.get("category") as Category | null;
+  const urlFov = searchParams.get("fov");
+  const initialTab: Category = urlCat && validCats.includes(urlCat) ? urlCat : "telescopes";
+  const initialSort = initialTab === "telescopes" && urlFov === "wide"
+    ? "focal_asc"
+    : initialTab === "telescopes" && urlFov === "long"
+      ? "focal_desc"
+      : "brand";
+
+  const [tab, setTab] = useState<Category>(initialTab);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("brand");
+  const [sortBy, setSortBy] = useState(initialSort);
   const [compareIds, setCompareIds] = useState<Record<Category, string[]>>({
     telescopes: [], cameras: [], mounts: [], filters: [], accessories: [],
   });

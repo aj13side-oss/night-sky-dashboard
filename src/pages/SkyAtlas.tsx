@@ -223,6 +223,7 @@ const SkyAtlas = () => {
             excludeTypes: f.search.trim() ? [] : DEFAULT_EXCLUDE_TYPES,
           })}
           types={types}
+          typeBuckets={typeBuckets}
           constellations={constellations}
           totalCount={visibleTonight || filterMode !== "all" ? filteredData.length : totalCount}
           visibleTonightEnabled={visibleTonight}

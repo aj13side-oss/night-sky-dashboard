@@ -305,7 +305,16 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
         </div>
       )}
 
-      <Tabs value={tab} onValueChange={(v) => { setTab(v as Category); setSearchQuery(""); setSortBy("brand"); }}>
+      <Tabs value={tab} onValueChange={(v) => {
+        const newTab = v as Category;
+        setTab(newTab);
+        setSearchQuery("");
+        setSortBy("brand");
+        const next = new URLSearchParams(searchParams);
+        next.set("category", newTab);
+        next.delete("fov");
+        setSearchParams(next, { replace: true });
+      }}>
         <TabsList className="grid grid-cols-5 w-full max-w-2xl">
           <TabsTrigger value="telescopes" className="gap-1.5">
             <Telescope className="w-3.5 h-3.5" /> Optics

@@ -128,9 +128,14 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
       <div className="flex flex-wrap gap-2 items-center">
         <span className="text-xs text-muted-foreground mr-1">Catalogs:</span>
         {([
-          { key: "M", label: "Messier" },
+          { key: "M", label: "M" },
           { key: "NGC", label: "NGC" },
           { key: "IC", label: "IC" },
+          { key: "SH", label: "Sh" },
+          { key: "B", label: "B" },
+          { key: "ACO", label: "Abell" },
+          { key: "C", label: "C" },
+          { key: "OTHER", label: "Other" },
         ] as const).map((cat) => {
           const active = filters.catalog === cat.key;
           return (
@@ -153,6 +158,7 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
           );
         })}
       </div>
+
 
       <div className="flex flex-wrap gap-3 items-end">
         <div className="space-y-1 min-w-[180px]">

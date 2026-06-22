@@ -290,7 +290,7 @@ const SkyAtlas = () => {
           </p>
           <p className="text-sm text-muted-foreground/60 mt-1 flex flex-wrap items-center gap-2">
             <MapPin className="w-3.5 h-3.5" />
-            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — {totalCount > 0 ? totalCount.toLocaleString() : "..."} objects
+            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — {displayedTotal > 0 ? displayedTotal.toLocaleString() : "..."} objects
             {(geoStatus === "default" || geoStatus === "denied") && (
               <button
                 type="button"

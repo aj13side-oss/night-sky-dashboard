@@ -135,8 +135,9 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
   }
 
   if (filters.catalog) {
-    query = query.filter("catalog_id", "imatch", CATALOG_REGEX[filters.catalog]);
+    query = query.ilike("catalog_id", `${filters.catalog} %`);
   }
+
 
   if (filters.constellation) {
     query = query.eq("constellation", filters.constellation);

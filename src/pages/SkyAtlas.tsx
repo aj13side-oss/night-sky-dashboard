@@ -342,11 +342,18 @@ const SkyAtlas = () => {
           </div>
         )}
 
-        {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="glass-card rounded-2xl p-4 h-40 animate-pulse" />
-            ))}
+        {isLoading || (isClientFiltered && largeSetLoading && !largeSet) ? (
+          <div className="space-y-3">
+            {isClientFiltered && largeSetLoading && (
+              <p className="text-xs text-muted-foreground text-center">
+                Loading candidate objects for visibility computation…
+              </p>
+            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="glass-card rounded-2xl p-4 h-40 animate-pulse" />
+              ))}
+            </div>
           </div>
         ) : filteredData.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 
 import AppNav from "@/components/AppNav";
@@ -47,6 +47,7 @@ const SkyAtlas = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [selected, setSelected] = useState<CelestialObject | null>(null);
   const [userPos, setUserPos] = useState({ lat: 45.7347, lng: 4.4931 });
+  const [geoStatus, setGeoStatus] = useState<'default' | 'requesting' | 'granted' | 'denied'>('default');
   const [visibleTonight, setVisibleTonight] = useState(false);
   const [filterMode, setFilterMode] = useState("all");
   const [minHoursVisible, setMinHoursVisible] = useState(0);
@@ -107,12 +108,28 @@ const SkyAtlas = () => {
     }
   }, []);
 
-  useEffect(() => {
-    navigator.geolocation?.getCurrentPosition(
-      (pos) => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => {}
+  const handleGeolocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setGeoStatus('denied');
+      return;
+    }
+    setGeoStatus('requesting');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setGeoStatus('granted');
+      },
+      () => {
+        setUserPos({ lat: 45.7347, lng: 4.4931 });
+        setGeoStatus('denied');
+      },
+      { timeout: 8000 }
     );
   }, []);
+
+  useEffect(() => {
+    handleGeolocation();
+  }, [handleGeolocation]);
 
   useEffect(() => { setPage(0); setClientPage(0); setAllLoadedData([]); }, [filters, visibleTonight, filterMode]);
 
@@ -201,9 +218,24 @@ const SkyAtlas = () => {
           <p className="text-muted-foreground mt-2 max-w-3xl">
             Browse 4,800+ deep sky objects — filter Messier, NGC and IC catalogs by type, constellation, magnitude and best season.
           </p>
-          <p className="text-sm text-muted-foreground/60 mt-1 flex items-center gap-2">
+          <p className="text-sm text-muted-foreground/60 mt-1 flex flex-wrap items-center gap-2">
             <MapPin className="w-3.5 h-3.5" />
             {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — {totalCount > 0 ? totalCount.toLocaleString() : "..."} objects
+            {(geoStatus === "default" || geoStatus === "denied") && (
+              <button
+                type="button"
+                onClick={handleGeolocation}
+                className="text-xs text-primary hover:underline focus:outline-none focus:underline"
+              >
+                Using default location Lyon — Use my location
+              </button>
+            )}
+            {geoStatus === "granted" && (
+              <span className="text-xs text-primary">Your location</span>
+            )}
+            {geoStatus === "requesting" && (
+              <span className="text-xs text-muted-foreground">Requesting location...</span>
+            )}
           </p>
           <p className="text-sm text-muted-foreground mt-3">
             Popular targets:{' '}

@@ -164,7 +164,7 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
 
   if (filters.objTypes.length > 0) {
     query = query.in("obj_type", filters.objTypes);
-  } else if (filters.excludeTypes.length > 0) {
+  } else if (!filters.catalog && filters.excludeTypes.length > 0) {
     for (const t of filters.excludeTypes) {
       query = query.neq("obj_type", t);
     }

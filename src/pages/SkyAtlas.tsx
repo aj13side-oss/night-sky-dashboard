@@ -102,7 +102,7 @@ const SkyAtlas = () => {
         .limit(LARGE_SET_LIMIT);
       if (filters.objTypes.length > 0) {
         q = q.in("obj_type", filters.objTypes);
-      } else if (filters.excludeTypes.length > 0) {
+      } else if (!filters.catalog && filters.excludeTypes.length > 0) {
         for (const t of filters.excludeTypes) q = q.neq("obj_type", t);
       }
       if (catalogIds) q = q.in("id", catalogIds);

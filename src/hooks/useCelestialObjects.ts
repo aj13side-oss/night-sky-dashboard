@@ -320,3 +320,27 @@ export function useCelestialObjects(filters: CelestialFilters, page: number) {
 }
 
 export { PAGE_SIZE };
+
+export type CatalogTypeCount = { obj_type: string; n: number };
+
+export function useCatalogTypeCounts(filters: CelestialFilters) {
+  const params = {
+    p_catalog: filters.catalog || "",
+    p_constellation: filters.constellation || "",
+    p_max_magnitude: filters.maxMagnitude,
+    p_min_photo_score: filters.minPhotoScore,
+    p_min_size: filters.minSize,
+    p_max_size: filters.maxSize,
+    p_search: filters.search || "",
+  };
+  return useQuery({
+    queryKey: ["catalog-type-counts", params],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("catalog_type_counts" as any, params as any);
+      if (error) throw error;
+      return (data ?? []) as CatalogTypeCount[];
+    },
+    staleTime: 30_000,
+  });
+}
+

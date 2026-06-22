@@ -10,6 +10,7 @@ import ObjectDetailModal from "@/components/atlas/ObjectDetailModal";
 import {
   useCelestialObjects,
   useDistinctFilters,
+  useCatalogTypeCounts,
   CelestialFilters,
   CelestialObject,
   PAGE_SIZE,

@@ -125,12 +125,12 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
       {/* Catalog quick filters */}
       <div className="flex flex-wrap gap-2 items-center">
         <span className="text-xs text-muted-foreground mr-1">Catalogs:</span>
-        {[
+        {([
           { key: "M", label: "Messier" },
           { key: "NGC", label: "NGC" },
           { key: "IC", label: "IC" },
-        ].map((cat) => {
-          const active = filters.search.trim().toUpperCase() === cat.key;
+        ] as const).map((cat) => {
+          const active = filters.catalog === cat.key;
           return (
             <Button
               key={cat.key}
@@ -139,7 +139,7 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
               onClick={() =>
                 onChange({
                   ...filters,
-                  search: active ? "" : cat.key,
+                  catalog: active ? undefined : cat.key,
                   limitResults: undefined,
                 })
               }

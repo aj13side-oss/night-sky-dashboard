@@ -33,6 +33,8 @@ export interface CelestialObject {
   alias_details: Record<string, { desc: string; img?: string | null }> | null;
 }
 
+export type CatalogFilter = "M" | "NGC" | "IC";
+
 export interface CelestialFilters {
   search: string;
   objTypes: string[];
@@ -44,7 +46,14 @@ export interface CelestialFilters {
   minSize: number;
   maxSize: number;
   limitResults?: number;
+  catalog?: CatalogFilter;
 }
+
+const CATALOG_REGEX: Record<CatalogFilter, string> = {
+  M: "^M[0-9]",
+  NGC: "^NGC",
+  IC: "^IC[0-9]",
+};
 
 const PAGE_SIZE = 30;
 
@@ -127,6 +136,10 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
     for (const t of filters.excludeTypes) {
       query = query.neq("obj_type", t);
     }
+  }
+
+  if (filters.catalog) {
+    query = query.filter("catalog_id", "imatch", CATALOG_REGEX[filters.catalog]);
   }
 
   if (filters.constellation) {

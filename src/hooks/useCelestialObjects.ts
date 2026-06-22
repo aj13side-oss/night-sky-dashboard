@@ -95,9 +95,14 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
     }
 
     // Apply client-side filters on fuzzy results
+    if (filters.catalog) {
+      const prefix = `${filters.catalog} `;
+      results = results.filter((o) => o.catalog_id?.startsWith(prefix));
+    }
     if (filters.objTypes.length > 0) {
       results = results.filter((o) => filters.objTypes.includes(o.obj_type));
     }
+
     if (filters.constellation) {
       results = results.filter((o) => o.constellation === filters.constellation);
     }

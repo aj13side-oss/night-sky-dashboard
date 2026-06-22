@@ -313,6 +313,7 @@ const SkyAtlas = () => {
           onFilterModeChange={setFilterMode}
           minHoursVisible={minHoursVisible}
           onMinHoursVisibleChange={setMinHoursVisible}
+          typeCounts={typeCounts}
         />
 
         {/* Solar system results */}

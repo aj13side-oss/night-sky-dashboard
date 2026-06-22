@@ -270,19 +270,27 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
         </div>
       </div>
 
-      {types.length > 0 && (
+      {buckets.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
-          {types.map((t) => (
-            <Badge
-              key={t}
-              variant={filters.objTypes.includes(t) ? "default" : "secondary"}
-              className="cursor-pointer text-[10px] px-2 py-0.5 transition-colors"
-              onClick={() => toggleType(t)}
-            >
-              {t}
-              {filters.objTypes.includes(t) && <X className="w-3 h-3 ml-1" />}
-            </Badge>
-          ))}
+          {buckets.map((b) => {
+            const active = b.values.some((v) => filters.objTypes.includes(v));
+            return (
+              <Badge
+                key={b.label}
+                variant={active ? "default" : "secondary"}
+                className="cursor-pointer text-[10px] px-2 py-0.5 transition-colors inline-flex items-center gap-1"
+                onClick={() => toggleBucket(b)}
+              >
+                <span>{b.label}</span>
+                {b.count > 0 && (
+                  <span className={`text-[9px] tabular-nums ${active ? "opacity-80" : "text-muted-foreground"}`}>
+                    {b.count.toLocaleString()}
+                  </span>
+                )}
+                {active && <X className="w-3 h-3" />}
+              </Badge>
+            );
+          })}
         </div>
       )}
     </div>

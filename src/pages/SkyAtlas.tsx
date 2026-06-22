@@ -175,9 +175,14 @@ const SkyAtlas = () => {
   useEffect(() => { setPage(0); setClientPage(0); setAllLoadedData([]); }, [filters, visibleTonight, filterMode]);
 
   // Client-side filters: visible tonight + filter mode
+  const sourceData = useMemo<CelestialObject[]>(() => {
+    if (isClientFiltered && largeSet && largeSet.length > 0) return largeSet;
+    return allLoadedData;
+  }, [isClientFiltered, largeSet, allLoadedData]);
+
   const filteredData = useMemo(() => {
-    if (!allLoadedData.length) return [];
-    let results: (CelestialObject & { _hoursVisible?: number })[] = allLoadedData;
+    if (!sourceData.length) return [];
+    let results: (CelestialObject & { _hoursVisible?: number })[] = sourceData;
 
     if (visibleTonight) {
       results = results

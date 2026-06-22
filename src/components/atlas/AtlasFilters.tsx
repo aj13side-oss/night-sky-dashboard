@@ -1,4 +1,4 @@
-import { CelestialFilters, TypeBucket } from "@/hooks/useCelestialObjects";
+import { CelestialFilters, TypeBucket, CatalogTypeCount } from "@/hooks/useCelestialObjects";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
@@ -20,9 +20,11 @@ interface Props {
   onFilterModeChange?: (mode: string) => void;
   minHoursVisible?: number;
   onMinHoursVisibleChange?: (hours: number) => void;
+  typeCounts?: CatalogTypeCount[];
 }
 
-const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, minHoursVisible, onMinHoursVisibleChange }: Props) => {
+const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, minHoursVisible, onMinHoursVisibleChange, typeCounts }: Props) => {
+
   const isTop50 = filters.limitResults === 50;
 
   // Fallback buckets when caller didn't pass them (preserves legacy behavior).

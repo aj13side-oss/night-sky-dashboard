@@ -78,6 +78,16 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
   const effectivePageSize = filters.limitResults && filters.limitResults < PAGE_SIZE ? filters.limitResults : PAGE_SIZE;
   const from = page * effectivePageSize;
 
+  // Resolve catalog membership via the object_catalogs link table.
+  let catalogIds: string[] | null = null;
+  if (filters.catalog) {
+    catalogIds = await fetchCatalogObjectIds(filters.catalog);
+    if (catalogIds.length === 0) {
+      return { data: [] as CelestialObject[], count: 0 };
+    }
+  }
+
+
   // Use fuzzy search RPC when there's a search term
   if (filters.search.trim()) {
     const term = filters.search.trim();

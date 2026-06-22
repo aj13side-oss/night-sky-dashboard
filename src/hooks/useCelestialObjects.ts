@@ -33,7 +33,28 @@ export interface CelestialObject {
   alias_details: Record<string, { desc: string; img?: string | null }> | null;
 }
 
-export type CatalogFilter = "" | "M" | "NGC" | "IC";
+export type CatalogFilter = "" | "M" | "NGC" | "IC" | "SH" | "B" | "ACO" | "C" | "OTHER";
+
+async function fetchCatalogObjectIds(catalog: Exclude<CatalogFilter, "">): Promise<string[]> {
+  const ids: string[] = [];
+  const PAGE = 1000;
+  let from = 0;
+  while (from < 50000) {
+    const { data, error } = await supabase
+      .from("object_catalogs" as any)
+      .select("object_id")
+      .eq("catalog", catalog)
+      .range(from, from + PAGE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    for (const r of data as any[]) {
+      if (r.object_id) ids.push(r.object_id as string);
+    }
+    if (data.length < PAGE) break;
+    from += PAGE;
+  }
+  return ids;
+}
 
 
 export interface CelestialFilters {

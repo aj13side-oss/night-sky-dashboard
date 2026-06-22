@@ -108,12 +108,28 @@ const SkyAtlas = () => {
     }
   }, []);
 
-  useEffect(() => {
-    navigator.geolocation?.getCurrentPosition(
-      (pos) => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => {}
+  const handleGeolocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setGeoStatus('denied');
+      return;
+    }
+    setGeoStatus('requesting');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setGeoStatus('granted');
+      },
+      () => {
+        setUserPos({ lat: 45.7347, lng: 4.4931 });
+        setGeoStatus('denied');
+      },
+      { timeout: 8000 }
     );
   }, []);
+
+  useEffect(() => {
+    handleGeolocation();
+  }, [handleGeolocation]);
 
   useEffect(() => { setPage(0); setClientPage(0); setAllLoadedData([]); }, [filters, visibleTonight, filterMode]);
 

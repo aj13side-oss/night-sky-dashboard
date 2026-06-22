@@ -35,6 +35,8 @@ export interface CelestialObject {
 
 export type CatalogFilter = "M" | "NGC" | "IC";
 
+export type CatalogFilter = "" | "M" | "NGC" | "IC";
+
 export interface CelestialFilters {
   search: string;
   objTypes: string[];
@@ -46,14 +48,9 @@ export interface CelestialFilters {
   minSize: number;
   maxSize: number;
   limitResults?: number;
-  catalog?: CatalogFilter;
+  catalog: CatalogFilter;
 }
 
-const CATALOG_REGEX: Record<CatalogFilter, string> = {
-  M: "^M[0-9]",
-  NGC: "^NGC",
-  IC: "^IC[0-9]",
-};
 
 const PAGE_SIZE = 30;
 

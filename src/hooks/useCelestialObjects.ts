@@ -33,9 +33,8 @@ export interface CelestialObject {
   alias_details: Record<string, { desc: string; img?: string | null }> | null;
 }
 
-export type CatalogFilter = "M" | "NGC" | "IC";
-
 export type CatalogFilter = "" | "M" | "NGC" | "IC";
+
 
 export interface CelestialFilters {
   search: string;

@@ -65,6 +65,47 @@ const SkyAtlas = () => {
   const { data, isLoading } = useCelestialObjects(filters, page);
   const { data: topPickIds } = useTopPhotoTargets();
 
+  const isClientFiltered = visibleTonight || filterMode !== "all";
+
+  // Larger working set fetched when a client-side filter is active, so the
+  // visibility computation can evaluate the whole catalog, not just page 0.
+  const LARGE_SET_LIMIT = 1500;
+  const { data: largeSet, isLoading: largeSetLoading } = useQuery({
+    queryKey: [
+      "celestial-large-set",
+      filters.objTypes,
+      filters.excludeTypes,
+      filters.constellation,
+      filters.maxMagnitude,
+      filters.minPhotoScore,
+      filters.minSize,
+      filters.maxSize,
+      filters.search,
+    ],
+    enabled: isClientFiltered && !filters.search.trim(),
+    staleTime: 60_000,
+    queryFn: async () => {
+      let q = (supabase as any)
+        .from("celestial_objects")
+        .select("*")
+        .order("photo_score", { ascending: false, nullsFirst: false })
+        .limit(LARGE_SET_LIMIT);
+      if (filters.objTypes.length > 0) {
+        q = q.in("obj_type", filters.objTypes);
+      } else if (filters.excludeTypes.length > 0) {
+        for (const t of filters.excludeTypes) q = q.neq("obj_type", t);
+      }
+      if (filters.constellation) q = q.eq("constellation", filters.constellation);
+      if (filters.maxMagnitude < 20) q = q.lte("magnitude", filters.maxMagnitude);
+      if (filters.minPhotoScore > 0) q = q.gte("photo_score", filters.minPhotoScore);
+      if (filters.minSize > 0) q = q.gte("size_max", filters.minSize);
+      if (filters.maxSize < 300) q = q.lte("size_max", filters.maxSize);
+      const { data, error } = await q;
+      if (error) throw error;
+      return (data ?? []) as CelestialObject[];
+    },
+  });
+
   // Accumulate data across pages for load-more
   useEffect(() => {
     if (!data?.data) return;
@@ -134,9 +175,14 @@ const SkyAtlas = () => {
   useEffect(() => { setPage(0); setClientPage(0); setAllLoadedData([]); }, [filters, visibleTonight, filterMode]);
 
   // Client-side filters: visible tonight + filter mode
+  const sourceData = useMemo<CelestialObject[]>(() => {
+    if (isClientFiltered && largeSet && largeSet.length > 0) return largeSet;
+    return allLoadedData;
+  }, [isClientFiltered, largeSet, allLoadedData]);
+
   const filteredData = useMemo(() => {
-    if (!allLoadedData.length) return [];
-    let results: (CelestialObject & { _hoursVisible?: number })[] = allLoadedData;
+    if (!sourceData.length) return [];
+    let results: (CelestialObject & { _hoursVisible?: number })[] = sourceData;
 
     if (visibleTonight) {
       results = results
@@ -172,11 +218,11 @@ const SkyAtlas = () => {
     }
 
     return results;
-  }, [allLoadedData, visibleTonight, filterMode, userPos.lat, userPos.lng, minHoursVisible]);
+  }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, minHoursVisible]);
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 
-  const isClientFiltered = visibleTonight || filterMode !== "all";
+
   const paginatedData = useMemo(() => {
     if (!isClientFiltered) return filteredData;
     const start = clientPage * CLIENT_PAGE_SIZE;
@@ -296,11 +342,18 @@ const SkyAtlas = () => {
           </div>
         )}
 
-        {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="glass-card rounded-2xl p-4 h-40 animate-pulse" />
-            ))}
+        {isLoading || (isClientFiltered && largeSetLoading && !largeSet) ? (
+          <div className="space-y-3">
+            {isClientFiltered && largeSetLoading && (
+              <p className="text-xs text-muted-foreground text-center">
+                Loading candidate objects for visibility computation…
+              </p>
+            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="glass-card rounded-2xl p-4 h-40 animate-pulse" />
+              ))}
+            </div>
           </div>
         ) : filteredData.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">

@@ -213,12 +213,13 @@ async function fetchTypeBuckets(): Promise<TypeBucket[]> {
     from += PAGE;
   }
 
-  const map = new Map<string, { count: number; values: Set<string> }>();
+  const map = new Map<string, { count: number; values: Set<string>; displayLabel: string }>();
   for (const raw of all) {
     const trimmed = raw?.trim();
     if (!trimmed) continue;
     const norm = titleCase(trimmed);
-    const entry = map.get(norm) ?? { count: 0, values: new Set<string>() };
+    const displayLabel = DISPLAY_LABEL_OVERRIDES[norm] ?? norm;
+    const entry = map.get(norm) ?? { count: 0, values: new Set<string>(), displayLabel };
     entry.count += 1;
     entry.values.add(raw);
     map.set(norm, entry);
@@ -226,12 +227,12 @@ async function fetchTypeBuckets(): Promise<TypeBucket[]> {
 
   const buckets: TypeBucket[] = [];
   const other: TypeBucket = { label: "Other", count: 0, values: [] };
-  for (const [label, { count, values }] of map.entries()) {
+  for (const [label, { count, values, displayLabel }] of map.entries()) {
     if (count <= 1 || label.toLowerCase() === "other") {
       other.count += count;
       other.values.push(...values);
     } else {
-      buckets.push({ label, count, values: [...values] });
+      buckets.push({ label: displayLabel, count, values: [...values] });
     }
   }
   buckets.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));

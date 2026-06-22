@@ -176,14 +176,62 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
   return { data: data as CelestialObject[], count: totalCount };
 }
 
-async function fetchDistinctTypes() {
-  const { data, error } = await supabase
-    .from("celestial_objects")
-    .select("obj_type")
-    .limit(1000);
-  if (error) throw error;
-  const unique = [...new Set((data || []).map((d: any) => d.obj_type))].sort();
-  return unique as string[];
+export interface TypeBucket {
+  label: string;
+  count: number;
+  values: string[]; // raw obj_type values that map to this bucket
+}
+
+function titleCase(s: string) {
+  return s.trim().toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+async function fetchTypeBuckets(): Promise<TypeBucket[]> {
+  const PAGE = 1000;
+  let from = 0;
+  const all: string[] = [];
+  // Paginate to fetch all obj_type values (catalog can exceed default 1000-row cap)
+  // Safety cap at 20k rows.
+  while (from < 20000) {
+    const { data, error } = await supabase
+      .from("celestial_objects")
+      .select("obj_type")
+      .not("obj_type", "is", null)
+      .range(from, from + PAGE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    for (const r of data) {
+      const v = (r as any).obj_type as string | null;
+      if (v) all.push(v);
+    }
+    if (data.length < PAGE) break;
+    from += PAGE;
+  }
+
+  const map = new Map<string, { count: number; values: Set<string> }>();
+  for (const raw of all) {
+    const trimmed = raw?.trim();
+    if (!trimmed) continue;
+    const norm = titleCase(trimmed);
+    const entry = map.get(norm) ?? { count: 0, values: new Set<string>() };
+    entry.count += 1;
+    entry.values.add(raw);
+    map.set(norm, entry);
+  }
+
+  const buckets: TypeBucket[] = [];
+  const other: TypeBucket = { label: "Other", count: 0, values: [] };
+  for (const [label, { count, values }] of map.entries()) {
+    if (count <= 1) {
+      other.count += count;
+      other.values.push(...values);
+    } else {
+      buckets.push({ label, count, values: [...values] });
+    }
+  }
+  buckets.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+  if (other.count > 0) buckets.push(other);
+  return buckets;
 }
 
 async function fetchDistinctConstellations() {
@@ -198,9 +246,12 @@ async function fetchDistinctConstellations() {
 }
 
 export function useDistinctFilters() {
-  const types = useQuery({ queryKey: ["celestial-types"], queryFn: fetchDistinctTypes, staleTime: Infinity });
+  const typeBucketsQ = useQuery({ queryKey: ["celestial-type-buckets"], queryFn: fetchTypeBuckets, staleTime: Infinity });
   const constellations = useQuery({ queryKey: ["celestial-constellations"], queryFn: fetchDistinctConstellations, staleTime: Infinity });
-  return { types: types.data ?? [], constellations: constellations.data ?? [] };
+  const typeBuckets = typeBucketsQ.data ?? [];
+  // Back-compat: expose flat type labels too
+  const types = typeBuckets.map((b) => b.label);
+  return { types, typeBuckets, constellations: constellations.data ?? [] };
 }
 
 export function useCelestialObjects(filters: CelestialFilters, page: number) {

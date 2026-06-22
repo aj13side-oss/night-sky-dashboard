@@ -65,6 +65,47 @@ const SkyAtlas = () => {
   const { data, isLoading } = useCelestialObjects(filters, page);
   const { data: topPickIds } = useTopPhotoTargets();
 
+  const isClientFiltered = visibleTonight || filterMode !== "all";
+
+  // Larger working set fetched when a client-side filter is active, so the
+  // visibility computation can evaluate the whole catalog, not just page 0.
+  const LARGE_SET_LIMIT = 1500;
+  const { data: largeSet, isLoading: largeSetLoading } = useQuery({
+    queryKey: [
+      "celestial-large-set",
+      filters.objTypes,
+      filters.excludeTypes,
+      filters.constellation,
+      filters.maxMagnitude,
+      filters.minPhotoScore,
+      filters.minSize,
+      filters.maxSize,
+      filters.search,
+    ],
+    enabled: isClientFiltered && !filters.search.trim(),
+    staleTime: 60_000,
+    queryFn: async () => {
+      let q = (supabase as any)
+        .from("celestial_objects")
+        .select("*")
+        .order("photo_score", { ascending: false, nullsFirst: false })
+        .limit(LARGE_SET_LIMIT);
+      if (filters.objTypes.length > 0) {
+        q = q.in("obj_type", filters.objTypes);
+      } else if (filters.excludeTypes.length > 0) {
+        for (const t of filters.excludeTypes) q = q.neq("obj_type", t);
+      }
+      if (filters.constellation) q = q.eq("constellation", filters.constellation);
+      if (filters.maxMagnitude < 20) q = q.lte("magnitude", filters.maxMagnitude);
+      if (filters.minPhotoScore > 0) q = q.gte("photo_score", filters.minPhotoScore);
+      if (filters.minSize > 0) q = q.gte("size_max", filters.minSize);
+      if (filters.maxSize < 300) q = q.lte("size_max", filters.maxSize);
+      const { data, error } = await q;
+      if (error) throw error;
+      return (data ?? []) as CelestialObject[];
+    },
+  });
+
   // Accumulate data across pages for load-more
   useEffect(() => {
     if (!data?.data) return;

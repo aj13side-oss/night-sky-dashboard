@@ -1,16 +1,17 @@
-import { CelestialFilters } from "@/hooks/useCelestialObjects";
+import { CelestialFilters, TypeBucket } from "@/hooks/useCelestialObjects";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, X, Trophy, Star, Moon, Camera } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface Props {
   filters: CelestialFilters;
   onChange: (f: CelestialFilters) => void;
   types: string[];
+  typeBuckets?: TypeBucket[];
   constellations: string[];
   totalCount: number;
   visibleTonightEnabled?: boolean;
@@ -21,13 +22,20 @@ interface Props {
   onMinHoursVisibleChange?: (hours: number) => void;
 }
 
-const AtlasFilters = ({ filters, onChange, types, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, minHoursVisible, onMinHoursVisibleChange }: Props) => {
+const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, minHoursVisible, onMinHoursVisibleChange }: Props) => {
   const isTop50 = filters.limitResults === 50;
 
-  const toggleType = (t: string) => {
-    const next = filters.objTypes.includes(t)
-      ? filters.objTypes.filter((x) => x !== t)
-      : [...filters.objTypes, t];
+  // Fallback buckets when caller didn't pass them (preserves legacy behavior).
+  const buckets: TypeBucket[] = useMemo(
+    () => typeBuckets ?? types.map((t) => ({ label: t, count: 0, values: [t] })),
+    [typeBuckets, types],
+  );
+
+  const toggleBucket = (b: TypeBucket) => {
+    const active = b.values.some((v) => filters.objTypes.includes(v));
+    const next = active
+      ? filters.objTypes.filter((x) => !b.values.includes(x))
+      : [...filters.objTypes, ...b.values.filter((v) => !filters.objTypes.includes(v))];
     onChange({ ...filters, objTypes: next, limitResults: undefined });
   };
 

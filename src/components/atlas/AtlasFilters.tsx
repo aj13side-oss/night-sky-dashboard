@@ -278,31 +278,38 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
         </div>
       </div>
 
-      {buckets.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {buckets.map((b) => {
-            const active = b.values.some((v) => filters.objTypes.includes(v));
-            return (
-              <Badge
-                key={b.label}
-                variant={active ? "default" : "secondary"}
-                className="cursor-pointer text-[10px] px-2 py-0.5 transition-colors inline-flex items-center gap-1"
-                onClick={() => toggleBucket(b)}
-              >
-                <span>{b.label}</span>
-                {b.count > 0 && (
+      {buckets.length > 0 && (() => {
+        const countByType = new Map<string, number>();
+        for (const r of typeCounts ?? []) countByType.set(r.obj_type, Number(r.n) || 0);
+        const dynamicCount = (b: TypeBucket) =>
+          typeCounts ? b.values.reduce((sum, v) => sum + (countByType.get(v) ?? 0), 0) : b.count;
+        return (
+          <div className="flex flex-wrap gap-1.5">
+            {buckets.map((b) => {
+              const active = b.values.some((v) => filters.objTypes.includes(v));
+              const n = dynamicCount(b);
+              const dimmed = typeCounts != null && n === 0 && !active;
+              return (
+                <Badge
+                  key={b.label}
+                  variant={active ? "default" : "secondary"}
+                  className={`cursor-pointer text-[10px] px-2 py-0.5 transition-colors inline-flex items-center gap-1 ${dimmed ? "opacity-40" : ""}`}
+                  onClick={() => toggleBucket(b)}
+                >
+                  <span>{b.label}</span>
                   <span className={`text-[9px] tabular-nums ${active ? "opacity-80" : "text-muted-foreground"}`}>
-                    {b.count.toLocaleString()}
+                    {n.toLocaleString()}
                   </span>
-                )}
-                {active && <X className="w-3 h-3" />}
-              </Badge>
-            );
-          })}
-        </div>
-      )}
+                  {active && <X className="w-3 h-3" />}
+                </Badge>
+              );
+            })}
+          </div>
+        );
+      })()}
     </div>
   );
 };
+
 
 export default AtlasFilters;

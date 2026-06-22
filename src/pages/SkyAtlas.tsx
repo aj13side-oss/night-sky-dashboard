@@ -11,6 +11,7 @@ import {
   useCelestialObjects,
   useDistinctFilters,
   useCatalogTypeCounts,
+  fetchCatalogObjectIds,
   CelestialFilters,
   CelestialObject,
   PAGE_SIZE,
@@ -84,10 +85,16 @@ const SkyAtlas = () => {
       filters.minSize,
       filters.maxSize,
       filters.search,
+      filters.catalog,
     ],
     enabled: isClientFiltered && !filters.search.trim(),
     staleTime: 60_000,
     queryFn: async () => {
+      let catalogIds: string[] | null = null;
+      if (filters.catalog) {
+        catalogIds = await fetchCatalogObjectIds(filters.catalog);
+        if (catalogIds.length === 0) return [] as CelestialObject[];
+      }
       let q = (supabase as any)
         .from("celestial_objects")
         .select("*")
@@ -98,6 +105,7 @@ const SkyAtlas = () => {
       } else if (filters.excludeTypes.length > 0) {
         for (const t of filters.excludeTypes) q = q.neq("obj_type", t);
       }
+      if (catalogIds) q = q.in("id", catalogIds);
       if (filters.constellation) q = q.eq("constellation", filters.constellation);
       if (filters.maxMagnitude < 20) q = q.lte("magnitude", filters.maxMagnitude);
       if (filters.minPhotoScore > 0) q = q.gte("photo_score", filters.minPhotoScore);

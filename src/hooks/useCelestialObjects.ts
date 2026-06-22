@@ -170,9 +170,10 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
     }
   }
 
-  if (filters.catalog) {
-    query = query.ilike("catalog_id", `${filters.catalog} %`);
+  if (catalogIds) {
+    query = query.in("id", catalogIds);
   }
+
 
 
   if (filters.constellation) {

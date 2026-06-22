@@ -60,7 +60,7 @@ const SkyAtlas = () => {
     sensorHeight: 0,
   });
 
-  const { types, constellations } = useDistinctFilters();
+  const { types, typeBuckets, constellations } = useDistinctFilters();
   const { data, isLoading } = useCelestialObjects(filters, page);
   const { data: topPickIds } = useTopPhotoTargets();
 

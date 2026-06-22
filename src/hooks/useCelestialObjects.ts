@@ -33,7 +33,8 @@ export interface CelestialObject {
   alias_details: Record<string, { desc: string; img?: string | null }> | null;
 }
 
-export type CatalogFilter = "M" | "NGC" | "IC";
+export type CatalogFilter = "" | "M" | "NGC" | "IC";
+
 
 export interface CelestialFilters {
   search: string;
@@ -46,14 +47,9 @@ export interface CelestialFilters {
   minSize: number;
   maxSize: number;
   limitResults?: number;
-  catalog?: CatalogFilter;
+  catalog: CatalogFilter;
 }
 
-const CATALOG_REGEX: Record<CatalogFilter, string> = {
-  M: "^M[0-9]",
-  NGC: "^NGC",
-  IC: "^IC[0-9]",
-};
 
 const PAGE_SIZE = 30;
 
@@ -99,9 +95,14 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
     }
 
     // Apply client-side filters on fuzzy results
+    if (filters.catalog) {
+      const prefix = `${filters.catalog} `;
+      results = results.filter((o) => o.catalog_id?.startsWith(prefix));
+    }
     if (filters.objTypes.length > 0) {
       results = results.filter((o) => filters.objTypes.includes(o.obj_type));
     }
+
     if (filters.constellation) {
       results = results.filter((o) => o.constellation === filters.constellation);
     }
@@ -139,8 +140,9 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
   }
 
   if (filters.catalog) {
-    query = query.filter("catalog_id", "imatch", CATALOG_REGEX[filters.catalog]);
+    query = query.ilike("catalog_id", `${filters.catalog} %`);
   }
+
 
   if (filters.constellation) {
     query = query.eq("constellation", filters.constellation);

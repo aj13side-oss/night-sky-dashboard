@@ -139,7 +139,7 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
               onClick={() =>
                 onChange({
                   ...filters,
-                  catalog: active ? undefined : cat.key,
+                  catalog: active ? "" : cat.key,
                   limitResults: undefined,
                 })
               }

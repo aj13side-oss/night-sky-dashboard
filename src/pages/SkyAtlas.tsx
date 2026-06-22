@@ -233,6 +233,19 @@ const SkyAtlas = () => {
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 
+  const isTop50 = filters.limitResults === 50;
+  const useClientCounts = isClientFiltered || isTop50;
+  const displayedTotal = useClientCounts ? filteredData.length : totalCount;
+
+  const clientTypeCounts = useMemo(() => {
+    if (!useClientCounts) return undefined;
+    const m = new Map<string, number>();
+    for (const o of filteredData) {
+      if (!o.obj_type) continue;
+      m.set(o.obj_type, (m.get(o.obj_type) ?? 0) + 1);
+    }
+    return Array.from(m.entries()).map(([obj_type, n]) => ({ obj_type, n }));
+  }, [useClientCounts, filteredData]);
 
   const paginatedData = useMemo(() => {
     if (!isClientFiltered) return filteredData;

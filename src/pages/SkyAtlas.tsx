@@ -233,6 +233,19 @@ const SkyAtlas = () => {
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 
+  const isTop50 = filters.limitResults === 50;
+  const useClientCounts = isClientFiltered || isTop50;
+  const displayedTotal = useClientCounts ? filteredData.length : totalCount;
+
+  const clientTypeCounts = useMemo(() => {
+    if (!useClientCounts) return undefined;
+    const m = new Map<string, number>();
+    for (const o of filteredData) {
+      if (!o.obj_type) continue;
+      m.set(o.obj_type, (m.get(o.obj_type) ?? 0) + 1);
+    }
+    return Array.from(m.entries()).map(([obj_type, n]) => ({ obj_type, n }));
+  }, [useClientCounts, filteredData]);
 
   const paginatedData = useMemo(() => {
     if (!isClientFiltered) return filteredData;
@@ -277,7 +290,7 @@ const SkyAtlas = () => {
           </p>
           <p className="text-sm text-muted-foreground/60 mt-1 flex flex-wrap items-center gap-2">
             <MapPin className="w-3.5 h-3.5" />
-            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — {totalCount > 0 ? totalCount.toLocaleString() : "..."} objects
+            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — {displayedTotal > 0 ? displayedTotal.toLocaleString() : "..."} objects
             {(geoStatus === "default" || geoStatus === "denied") && (
               <button
                 type="button"
@@ -314,14 +327,14 @@ const SkyAtlas = () => {
           types={types}
           typeBuckets={typeBuckets}
           constellations={constellations}
-          totalCount={visibleTonight || filterMode !== "all" ? filteredData.length : totalCount}
+          totalCount={displayedTotal}
           visibleTonightEnabled={visibleTonight}
           onToggleVisibleTonight={() => { setVisibleTonight((v) => !v); setMinHoursVisible(0); }}
           filterMode={filterMode}
           onFilterModeChange={setFilterMode}
           minHoursVisible={minHoursVisible}
           onMinHoursVisibleChange={setMinHoursVisible}
-          typeCounts={typeCounts}
+          typeCounts={clientTypeCounts ?? typeCounts}
         />
 
         {/* Solar system results */}

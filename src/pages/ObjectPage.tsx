@@ -353,6 +353,9 @@ const ObjectPage = () => {
         </h2>
         <SetupAssistant obj={obj} userFocalLength={0} />
 
+        {/* Equipment Recommendations — internal links into catalog */}
+        <EquipmentRecommendations obj={obj} />
+
         {/* Altitude Chart */}
         {obj.ra_deg != null && obj.dec_deg != null && (
           <AltitudeChart ra={obj.ra_deg} dec={obj.dec_deg} lat={pos.lat} lng={pos.lng} />

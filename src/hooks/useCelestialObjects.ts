@@ -186,6 +186,11 @@ function titleCase(s: string) {
   return s.trim().toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+// Display-only overrides for bucket labels. Filtering still uses the raw obj_type values.
+const DISPLAY_LABEL_OVERRIDES: Record<string, string> = {
+  Star: "Stars & Asterisms",
+};
+
 async function fetchTypeBuckets(): Promise<TypeBucket[]> {
   const PAGE = 1000;
   let from = 0;

@@ -322,7 +322,7 @@ const SkyAtlas = () => {
           filters={filters}
           onChange={(f) => setFilters({
             ...f,
-            excludeTypes: f.search.trim() ? [] : DEFAULT_EXCLUDE_TYPES,
+            excludeTypes: f.search.trim() || f.catalog ? [] : DEFAULT_EXCLUDE_TYPES,
           })}
           types={types}
           typeBuckets={typeBuckets}

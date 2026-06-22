@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -109,6 +109,15 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
   const [tab, setTab] = useState<Category>(initialTab);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState(initialSort);
+
+  // React to URL param changes (e.g. when navigating from an object page link)
+  useEffect(() => {
+    const cat = (urlCat && validCats.includes(urlCat) ? urlCat : "telescopes") as Category;
+    setTab(cat);
+    if (cat === "telescopes" && urlFov === "wide") setSortBy("focal_asc");
+    else if (cat === "telescopes" && urlFov === "long") setSortBy("focal_desc");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlCat, urlFov]);
   const [compareIds, setCompareIds] = useState<Record<Category, string[]>>({
     telescopes: [], cameras: [], mounts: [], filters: [], accessories: [],
   });

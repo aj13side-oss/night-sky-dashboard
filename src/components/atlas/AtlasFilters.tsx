@@ -128,14 +128,14 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
       <div className="flex flex-wrap gap-2 items-center">
         <span className="text-xs text-muted-foreground mr-1">Catalogs:</span>
         {([
-          { key: "M", label: "M" },
-          { key: "NGC", label: "NGC" },
-          { key: "IC", label: "IC" },
-          { key: "SH", label: "Sh" },
-          { key: "B", label: "B" },
-          { key: "ACO", label: "Abell" },
-          { key: "C", label: "C" },
-          { key: "OTHER", label: "Other" },
+          { key: "M", label: "M", fullLabel: "Messier" },
+          { key: "NGC", label: "NGC", fullLabel: "NGC" },
+          { key: "IC", label: "IC", fullLabel: "IC" },
+          { key: "SH", label: "Sh", fullLabel: "Sharpless" },
+          { key: "B", label: "B", fullLabel: "Barnard" },
+          { key: "ACO", label: "Abell", fullLabel: "Abell" },
+          { key: "C", label: "C", fullLabel: "Caldwell" },
+          { key: "OTHER", label: "Other", fullLabel: "Other" },
         ] as const).map((cat) => {
           const active = filters.catalog === cat.key;
           return (
@@ -152,7 +152,7 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
               }
               className={`text-xs h-7 px-2.5 ${active ? "bg-primary text-primary-foreground" : ""}`}
             >
-              {cat.label}
+              {active ? cat.fullLabel : cat.label}
               {active && <X className="w-3 h-3 ml-1" />}
             </Button>
           );

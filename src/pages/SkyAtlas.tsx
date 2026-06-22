@@ -327,14 +327,14 @@ const SkyAtlas = () => {
           types={types}
           typeBuckets={typeBuckets}
           constellations={constellations}
-          totalCount={visibleTonight || filterMode !== "all" ? filteredData.length : totalCount}
+          totalCount={displayedTotal}
           visibleTonightEnabled={visibleTonight}
           onToggleVisibleTonight={() => { setVisibleTonight((v) => !v); setMinHoursVisible(0); }}
           filterMode={filterMode}
           onFilterModeChange={setFilterMode}
           minHoursVisible={minHoursVisible}
           onMinHoursVisibleChange={setMinHoursVisible}
-          typeCounts={typeCounts}
+          typeCounts={clientTypeCounts ?? typeCounts}
         />
 
         {/* Solar system results */}

@@ -10,6 +10,7 @@ import ObjectDetailModal from "@/components/atlas/ObjectDetailModal";
 import {
   useCelestialObjects,
   useDistinctFilters,
+  useCatalogTypeCounts,
   CelestialFilters,
   CelestialObject,
   PAGE_SIZE,
@@ -64,6 +65,7 @@ const SkyAtlas = () => {
 
   const { types, typeBuckets, constellations } = useDistinctFilters();
   const { data, isLoading } = useCelestialObjects(filters, page);
+  const { data: typeCounts } = useCatalogTypeCounts(filters);
   const { data: topPickIds } = useTopPhotoTargets();
 
   const isClientFiltered = visibleTonight || filterMode !== "all";
@@ -311,6 +313,7 @@ const SkyAtlas = () => {
           onFilterModeChange={setFilterMode}
           minHoursVisible={minHoursVisible}
           onMinHoursVisibleChange={setMinHoursVisible}
+          typeCounts={typeCounts}
         />
 
         {/* Solar system results */}

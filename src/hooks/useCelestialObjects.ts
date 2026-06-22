@@ -33,7 +33,28 @@ export interface CelestialObject {
   alias_details: Record<string, { desc: string; img?: string | null }> | null;
 }
 
-export type CatalogFilter = "" | "M" | "NGC" | "IC";
+export type CatalogFilter = "" | "M" | "NGC" | "IC" | "SH" | "B" | "ACO" | "C" | "OTHER";
+
+async function fetchCatalogObjectIds(catalog: Exclude<CatalogFilter, "">): Promise<string[]> {
+  const ids: string[] = [];
+  const PAGE = 1000;
+  let from = 0;
+  while (from < 50000) {
+    const { data, error } = await supabase
+      .from("object_catalogs" as any)
+      .select("object_id")
+      .eq("catalog", catalog)
+      .range(from, from + PAGE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    for (const r of data as any[]) {
+      if (r.object_id) ids.push(r.object_id as string);
+    }
+    if (data.length < PAGE) break;
+    from += PAGE;
+  }
+  return ids;
+}
 
 
 export interface CelestialFilters {
@@ -56,6 +77,16 @@ const PAGE_SIZE = 30;
 async function fetchObjects(filters: CelestialFilters, page: number) {
   const effectivePageSize = filters.limitResults && filters.limitResults < PAGE_SIZE ? filters.limitResults : PAGE_SIZE;
   const from = page * effectivePageSize;
+
+  // Resolve catalog membership via the object_catalogs link table.
+  let catalogIds: string[] | null = null;
+  if (filters.catalog) {
+    catalogIds = await fetchCatalogObjectIds(filters.catalog);
+    if (catalogIds.length === 0) {
+      return { data: [] as CelestialObject[], count: 0 };
+    }
+  }
+
 
   // Use fuzzy search RPC when there's a search term
   if (filters.search.trim()) {
@@ -95,9 +126,9 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
     }
 
     // Apply client-side filters on fuzzy results
-    if (filters.catalog) {
-      const prefix = `${filters.catalog} `;
-      results = results.filter((o) => o.catalog_id?.startsWith(prefix));
+    if (catalogIds) {
+      const idSet = new Set(catalogIds);
+      results = results.filter((o) => idSet.has(o.id));
     }
     if (filters.objTypes.length > 0) {
       results = results.filter((o) => filters.objTypes.includes(o.obj_type));
@@ -139,9 +170,10 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
     }
   }
 
-  if (filters.catalog) {
-    query = query.ilike("catalog_id", `${filters.catalog} %`);
+  if (catalogIds) {
+    query = query.in("id", catalogIds);
   }
+
 
 
   if (filters.constellation) {
@@ -288,3 +320,27 @@ export function useCelestialObjects(filters: CelestialFilters, page: number) {
 }
 
 export { PAGE_SIZE };
+
+export type CatalogTypeCount = { obj_type: string; n: number };
+
+export function useCatalogTypeCounts(filters: CelestialFilters) {
+  const params = {
+    p_catalog: filters.catalog || "",
+    p_constellation: filters.constellation || "",
+    p_max_magnitude: filters.maxMagnitude,
+    p_min_photo_score: filters.minPhotoScore,
+    p_min_size: filters.minSize,
+    p_max_size: filters.maxSize,
+    p_search: filters.search || "",
+  };
+  return useQuery({
+    queryKey: ["catalog-type-counts", params],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("catalog_type_counts" as any, params as any);
+      if (error) throw error;
+      return (data ?? []) as CatalogTypeCount[];
+    },
+    staleTime: 30_000,
+  });
+}
+

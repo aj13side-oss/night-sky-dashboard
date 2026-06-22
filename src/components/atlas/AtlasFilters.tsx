@@ -1,4 +1,4 @@
-import { CelestialFilters, TypeBucket } from "@/hooks/useCelestialObjects";
+import { CelestialFilters, TypeBucket, CatalogTypeCount } from "@/hooks/useCelestialObjects";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
@@ -20,9 +20,11 @@ interface Props {
   onFilterModeChange?: (mode: string) => void;
   minHoursVisible?: number;
   onMinHoursVisibleChange?: (hours: number) => void;
+  typeCounts?: CatalogTypeCount[];
 }
 
-const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, minHoursVisible, onMinHoursVisibleChange }: Props) => {
+const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, minHoursVisible, onMinHoursVisibleChange, typeCounts }: Props) => {
+
   const isTop50 = filters.limitResults === 50;
 
   // Fallback buckets when caller didn't pass them (preserves legacy behavior).
@@ -126,9 +128,14 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
       <div className="flex flex-wrap gap-2 items-center">
         <span className="text-xs text-muted-foreground mr-1">Catalogs:</span>
         {([
-          { key: "M", label: "Messier" },
+          { key: "M", label: "M" },
           { key: "NGC", label: "NGC" },
           { key: "IC", label: "IC" },
+          { key: "SH", label: "Sh" },
+          { key: "B", label: "B" },
+          { key: "ACO", label: "Abell" },
+          { key: "C", label: "C" },
+          { key: "OTHER", label: "Other" },
         ] as const).map((cat) => {
           const active = filters.catalog === cat.key;
           return (
@@ -151,6 +158,7 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
           );
         })}
       </div>
+
 
       <div className="flex flex-wrap gap-3 items-end">
         <div className="space-y-1 min-w-[180px]">
@@ -270,31 +278,38 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
         </div>
       </div>
 
-      {buckets.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {buckets.map((b) => {
-            const active = b.values.some((v) => filters.objTypes.includes(v));
-            return (
-              <Badge
-                key={b.label}
-                variant={active ? "default" : "secondary"}
-                className="cursor-pointer text-[10px] px-2 py-0.5 transition-colors inline-flex items-center gap-1"
-                onClick={() => toggleBucket(b)}
-              >
-                <span>{b.label}</span>
-                {b.count > 0 && (
+      {buckets.length > 0 && (() => {
+        const countByType = new Map<string, number>();
+        for (const r of typeCounts ?? []) countByType.set(r.obj_type, Number(r.n) || 0);
+        const dynamicCount = (b: TypeBucket) =>
+          typeCounts ? b.values.reduce((sum, v) => sum + (countByType.get(v) ?? 0), 0) : b.count;
+        return (
+          <div className="flex flex-wrap gap-1.5">
+            {buckets.map((b) => {
+              const active = b.values.some((v) => filters.objTypes.includes(v));
+              const n = dynamicCount(b);
+              const dimmed = typeCounts != null && n === 0 && !active;
+              return (
+                <Badge
+                  key={b.label}
+                  variant={active ? "default" : "secondary"}
+                  className={`cursor-pointer text-[10px] px-2 py-0.5 transition-colors inline-flex items-center gap-1 ${dimmed ? "opacity-40" : ""}`}
+                  onClick={() => toggleBucket(b)}
+                >
+                  <span>{b.label}</span>
                   <span className={`text-[9px] tabular-nums ${active ? "opacity-80" : "text-muted-foreground"}`}>
-                    {b.count.toLocaleString()}
+                    {n.toLocaleString()}
                   </span>
-                )}
-                {active && <X className="w-3 h-3" />}
-              </Badge>
-            );
-          })}
-        </div>
-      )}
+                  {active && <X className="w-3 h-3" />}
+                </Badge>
+              );
+            })}
+          </div>
+        );
+      })()}
     </div>
   );
 };
+
 
 export default AtlasFilters;

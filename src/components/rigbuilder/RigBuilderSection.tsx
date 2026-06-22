@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -94,9 +95,20 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
   const { data: presets } = useRigPresets();
   const [presetsOpen, setPresetsOpen] = useState(true);
 
-  const [tab, setTab] = useState<Category>("telescopes");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const validCats: Category[] = ["telescopes", "cameras", "mounts", "filters", "accessories"];
+  const urlCat = searchParams.get("category") as Category | null;
+  const urlFov = searchParams.get("fov");
+  const initialTab: Category = urlCat && validCats.includes(urlCat) ? urlCat : "telescopes";
+  const initialSort = initialTab === "telescopes" && urlFov === "wide"
+    ? "focal_asc"
+    : initialTab === "telescopes" && urlFov === "long"
+      ? "focal_desc"
+      : "brand";
+
+  const [tab, setTab] = useState<Category>(initialTab);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("brand");
+  const [sortBy, setSortBy] = useState(initialSort);
   const [compareIds, setCompareIds] = useState<Record<Category, string[]>>({
     telescopes: [], cameras: [], mounts: [], filters: [], accessories: [],
   });
@@ -293,7 +305,16 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
         </div>
       )}
 
-      <Tabs value={tab} onValueChange={(v) => { setTab(v as Category); setSearchQuery(""); setSortBy("brand"); }}>
+      <Tabs value={tab} onValueChange={(v) => {
+        const newTab = v as Category;
+        setTab(newTab);
+        setSearchQuery("");
+        setSortBy("brand");
+        const next = new URLSearchParams(searchParams);
+        next.set("category", newTab);
+        next.delete("fov");
+        setSearchParams(next, { replace: true });
+      }}>
         <TabsList className="grid grid-cols-5 w-full max-w-2xl">
           <TabsTrigger value="telescopes" className="gap-1.5">
             <Telescope className="w-3.5 h-3.5" /> Optics

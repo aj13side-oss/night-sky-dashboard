@@ -353,6 +353,9 @@ const ObjectPage = () => {
         </h2>
         <SetupAssistant obj={obj} userFocalLength={0} />
 
+        {/* Equipment Recommendations — internal links into catalog */}
+        <EquipmentRecommendations obj={obj} />
+
         {/* Altitude Chart */}
         {obj.ra_deg != null && obj.dec_deg != null && (
           <AltitudeChart ra={obj.ra_deg} dec={obj.dec_deg} lat={pos.lat} lng={pos.lng} />
@@ -385,6 +388,72 @@ const InfoItem = ({ icon, label, value }: { icon: React.ReactNode; label: string
     <p className="text-sm font-medium text-foreground">{value}</p>
   </div>
 );
+
+const EquipmentRecommendations = ({ obj }: { obj: CelestialObject }) => {
+  const name = obj.common_name ?? obj.catalog_id;
+  const size = obj.size_max ?? 0;
+  const filter = obj.recommended_filter?.toLowerCase() ?? "";
+
+  let scopeLink = "/equipment?category=telescopes";
+  let scopeLabel = "Standard refractor or small Newtonian";
+  let scopeDesc = `${name} sits in the mid-range angular size — a 400–800mm focal length refractor or small Newtonian frames it nicely.`;
+
+  if (size > 60) {
+    scopeLink = "/equipment?category=telescopes&fov=wide";
+    scopeLabel = "Wide-field short focal length refractor";
+    scopeDesc = `${name} spans a large area of sky (${size.toFixed(0)}′). A short focal length refractor (200–500mm) is required to fit it in the frame.`;
+  } else if (size > 0 && size < 10) {
+    scopeLink = "/equipment?category=telescopes&fov=long";
+    scopeLabel = "Long focal length SCT or large Newtonian";
+    scopeDesc = `${name} is small (${size.toFixed(1)}′). A long focal length scope (1200mm+) like an SCT or large Newtonian reveals its details.`;
+  }
+
+  const isNarrowband = /ha|h-?alpha|oiii|sii|narrow|dual/.test(filter);
+  const isBroadband = /uhc|cls|l-?pro|lps|broadband|light pollution/.test(filter);
+  let filterLink = "/equipment?category=filters";
+  let filterLabel = obj.recommended_filter ?? "Light pollution filter";
+  let filterDesc = obj.recommended_filter
+    ? `For ${name}, the recommended filter is ${obj.recommended_filter}. Browse compatible options in the catalog.`
+    : `A light pollution filter improves contrast on ${name} from suburban skies.`;
+  if (isNarrowband) {
+    filterDesc = `${name} responds well to narrowband filters (${obj.recommended_filter}) — they isolate emission lines and cut through moonlight.`;
+  } else if (isBroadband) {
+    filterDesc = `${name} benefits from a broadband light-pollution filter (${obj.recommended_filter}) to boost contrast under city skies.`;
+  }
+
+  const recs: { href: string; label: string; desc: string }[] = [
+    { href: scopeLink, label: scopeLabel, desc: scopeDesc },
+    {
+      href: "/equipment?category=cameras",
+      label: "Cooled dedicated astro camera",
+      desc: `For long exposures on ${name}, a cooled astrophotography camera (mono or one-shot color) keeps thermal noise low.`,
+    },
+    {
+      href: "/equipment?category=mounts",
+      label: "Tracking equatorial mount",
+      desc: `${name} requires accurate tracking — an equatorial mount sized for your scope's weight is essential.`,
+    },
+    { href: filterLink, label: filterLabel, desc: filterDesc },
+  ];
+
+  return (
+    <section className="space-y-3 pt-2">
+      <h2 className="text-xl font-semibold text-foreground">
+        Recommended gear for {name}
+      </h2>
+      <ul className="space-y-2">
+        {recs.map((r, i) => (
+          <li key={i} className="p-3 rounded-xl bg-secondary/30 border border-border/30">
+            <Link to={r.href} className="text-primary hover:underline font-medium text-sm">
+              {r.label} →
+            </Link>
+            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{r.desc}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+};
 
 const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
   const { data: similar } = useQuery({

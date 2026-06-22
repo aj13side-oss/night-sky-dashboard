@@ -126,9 +126,9 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
     }
 
     // Apply client-side filters on fuzzy results
-    if (filters.catalog) {
-      const prefix = `${filters.catalog} `;
-      results = results.filter((o) => o.catalog_id?.startsWith(prefix));
+    if (catalogIds) {
+      const idSet = new Set(catalogIds);
+      results = results.filter((o) => idSet.has(o.id));
     }
     if (filters.objTypes.length > 0) {
       results = results.filter((o) => filters.objTypes.includes(o.obj_type));

@@ -388,6 +388,41 @@ const SkyAtlas = () => {
   }, [filteredData, clientPage, isClientFiltered]);
   const clientTotalPages = Math.ceil(filteredData.length / CLIENT_PAGE_SIZE);
 
+  const nightWindow = useMemo(() => {
+    const fallback = presets.astro ?? presets.nautical ?? presets.civil ?? presets.bounds;
+    const start = windowStart ?? fallback.start;
+    const end = windowEnd ?? fallback.end;
+    return {
+      startMs: Math.max(
+        Math.min(start.getTime(), presets.bounds.end.getTime()),
+        presets.bounds.start.getTime(),
+      ),
+      endMs: Math.min(
+        Math.max(end.getTime(), presets.bounds.start.getTime()),
+        presets.bounds.end.getTime(),
+      ),
+      minMs: presets.bounds.start.getTime(),
+      maxMs: presets.bounds.end.getTime(),
+      activePreset,
+      presetAvail: {
+        astro: !!presets.astro,
+        nautical: !!presets.nautical,
+        civil: !!presets.civil,
+      },
+      onPresetSelect: selectPreset,
+      onWindowChange: (s: number, e: number) => {
+        setWindowStart(new Date(s));
+        setWindowEnd(new Date(e));
+        setActivePreset("custom");
+      },
+      formatMs: (ms: number) => {
+        const d = new Date(ms);
+        return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+      },
+    };
+  }, [activePreset, presets, selectPreset, setActivePreset, setWindowEnd, setWindowStart, windowEnd, windowStart]);
+
+
   return (
     <div className="min-h-screen bg-background star-field">
       <SEOHead
@@ -465,40 +500,11 @@ const SkyAtlas = () => {
           visibleTonightEnabled={visibleTonight}
           onToggleVisibleTonight={() => {
             setVisibleTonight((v) => !v);
-            setWindowStart(null);
-            setWindowEnd(null);
             setActivePreset("astro");
           }}
           filterMode={filterMode}
           onFilterModeChange={setFilterMode}
-          nightWindow={visibleTonight && windowStart && windowEnd ? {
-            startMs: Math.max(
-              Math.min(windowStart.getTime(), presets.bounds.end.getTime()),
-              presets.bounds.start.getTime(),
-            ),
-            endMs: Math.min(
-              Math.max(windowEnd.getTime(), presets.bounds.start.getTime()),
-              presets.bounds.end.getTime(),
-            ),
-            minMs: presets.bounds.start.getTime(),
-            maxMs: presets.bounds.end.getTime(),
-            activePreset,
-            presetAvail: {
-              astro: !!presets.astro,
-              nautical: !!presets.nautical,
-              civil: !!presets.civil,
-            },
-            onPresetSelect: selectPreset,
-            onWindowChange: (s, e) => {
-              setWindowStart(new Date(s));
-              setWindowEnd(new Date(e));
-              setActivePreset("custom");
-            },
-            formatMs: (ms: number) => {
-              const d = new Date(ms);
-              return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
-            },
-          } : undefined}
+          nightWindow={nightWindow}
           typeCounts={clientTypeCounts ?? typeCounts}
         />
 

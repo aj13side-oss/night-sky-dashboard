@@ -344,8 +344,10 @@ const AtlasFilters = ({
         {buckets.length > 0 && (() => {
           const countByType = new Map<string, number>();
           for (const r of typeCounts ?? []) countByType.set(r.obj_type, Number(r.n) || 0);
-          const dynamicCount = (b: TypeBucket) =>
-            typeCounts ? b.values.reduce((sum, v) => sum + (countByType.get(v) ?? 0), 0) : b.count;
+          const dynamicCount = (b: TypeBucket) => {
+            if (!filters.catalog && b.values.every((v) => filters.excludeTypes.includes(v))) return 0;
+            return typeCounts ? b.values.reduce((sum, v) => sum + (countByType.get(v) ?? 0), 0) : b.count;
+          };
           return (
             <div className="flex flex-wrap gap-1.5">
               {buckets.map((b) => {

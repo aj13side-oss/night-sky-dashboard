@@ -21,6 +21,7 @@ interface Props {
   searchQuery?: string;
   onClick: () => void;
   isTopPick?: boolean;
+  maxAltInWindow?: number;
 }
 
 const typeEmoji: Record<string, string> = {

@@ -590,6 +590,10 @@ const SkyAtlas = () => {
                     onClick={() => setSelected(obj)}
                     isTopPick={topPickIds?.has(obj.catalog_id) ?? false}
                     maxAltInWindow={(obj as CelestialObject & { _maxAltInWindow?: number })._maxAltInWindow}
+                    sunset={presets.bounds?.start ?? null}
+                    sunrise={presets.bounds?.end ?? null}
+                    astroDuskEnd={presets.astro?.start ?? null}
+                    astroDawnBegin={presets.astro?.end ?? null}
                   />
                 ))}
               </div>

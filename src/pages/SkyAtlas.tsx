@@ -472,8 +472,14 @@ const SkyAtlas = () => {
           filterMode={filterMode}
           onFilterModeChange={setFilterMode}
           nightWindow={visibleTonight && windowStart && windowEnd ? {
-            startMs: windowStart.getTime(),
-            endMs: windowEnd.getTime(),
+            startMs: Math.max(
+              Math.min(windowStart.getTime(), presets.bounds.end.getTime()),
+              presets.bounds.start.getTime(),
+            ),
+            endMs: Math.min(
+              Math.max(windowEnd.getTime(), presets.bounds.start.getTime()),
+              presets.bounds.end.getTime(),
+            ),
             minMs: presets.bounds.start.getTime(),
             maxMs: presets.bounds.end.getTime(),
             activePreset,

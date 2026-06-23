@@ -2,18 +2,53 @@ import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useTonightTopPicks } from "@/hooks/useTonightTopPicks";
 import { getSkyImageUrl } from "@/lib/sky-images";
 import { getSeasonEmoji, getSeasonLabel, getCurrentSeason } from "@/lib/dynamic-score";
-import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
+import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { motion } from "framer-motion";
-import { Sparkles, TrendingUp, Sun, Mountain } from "lucide-react";
+import { Sparkles, Sun, Mountain } from "lucide-react";
 import { formatCatalogId } from "@/lib/format-catalog";
 
 interface Props {
   lat: number;
   lng: number;
   onSelect: (obj: CelestialObject) => void;
+  sunset?: Date | null;
+  astroDuskEnd?: Date | null;
+  astroDawnBegin?: Date | null;
+  sunrise?: Date | null;
 }
 
-const TonightTopPicks = ({ lat, lng, onSelect }: Props) => {
+function colorForTime(
+  t: Date | null,
+  sunset?: Date | null,
+  astroDuskEnd?: Date | null,
+  astroDawnBegin?: Date | null,
+  sunrise?: Date | null,
+): string {
+  if (!t) return "text-muted-foreground";
+  const toMin = (d: Date) => d.getHours() * 60 + d.getMinutes();
+  const tm = toMin(t);
+  const inRange = (a: number, b: number) => {
+    if (a === b) return false;
+    if (a < b) return tm >= a && tm < b;
+    return tm >= a || tm < b;
+  };
+  if (sunset && sunrise) {
+    const ss = toMin(sunset);
+    const sr = toMin(sunrise);
+    if (astroDuskEnd && astroDawnBegin) {
+      const de = toMin(astroDuskEnd);
+      const db = toMin(astroDawnBegin);
+      if (inRange(de, db)) return "text-emerald-400";
+      if (inRange(ss, de) || inRange(db, sr)) return "text-orange-400";
+      return "text-red-400";
+    }
+    if (inRange(ss, sr)) return "text-emerald-400";
+    return "text-red-400";
+  }
+  return "text-muted-foreground";
+}
+
+const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
   const { topPicks, isLoading } = useTonightTopPicks(lat, lng, 3);
 
   if (isLoading) {
@@ -55,8 +90,9 @@ const TonightTopPicks = ({ lat, lng, onSelect }: Props) => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {topPicks.map(({ obj, score }, i) => {
           const thumbUrl = getSkyImageUrl(obj.ra_deg, obj.dec_deg, obj.size_max, 400, 200);
-          const alt = obj.ra_deg != null && obj.dec_deg != null ? calculateAltitude(obj.ra_deg, obj.dec_deg, lat, lng) : null;
-          const vis = alt != null ? getVisibilityLabel(alt) : null;
+          const rs = obj.ra_deg != null && obj.dec_deg != null
+            ? getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, lat, lng, new Date())
+            : null;
           const season = getSeasonLabel(obj.best_months);
 
           return (
@@ -120,16 +156,28 @@ const TonightTopPicks = ({ lat, lng, onSelect }: Props) => {
                 </div>
 
                 {/* Season + visibility */}
-                <div className="flex items-center justify-between text-[10px]">
+                <div className="flex items-center justify-between text-[10px] gap-2">
                   {season && (
-                    <span className="text-muted-foreground">
+                    <span className="text-muted-foreground truncate">
                       {getSeasonEmoji(season)} Best in {season}
                     </span>
                   )}
-                  {vis && alt != null && (
-                    <span className={`font-medium ${vis.color}`}>
-                      {vis.label} · {alt.toFixed(0)}°
-                    </span>
+                  {rs && (
+                    rs.isCircumpolar ? (
+                      <span className="font-medium text-emerald-400">Always visible</span>
+                    ) : rs.neverRises ? (
+                      <span className="font-medium text-red-400/80">Not visible</span>
+                    ) : (
+                      <span className="font-mono whitespace-nowrap">
+                        <span className={colorForTime(rs.riseTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                          ↑ {formatTimeShort(rs.riseTime)}
+                        </span>
+                        <span className="text-muted-foreground"> · </span>
+                        <span className={colorForTime(rs.setTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                          ↓ {formatTimeShort(rs.setTime)}
+                        </span>
+                      </span>
+                    )
                   )}
                 </div>
               </div>

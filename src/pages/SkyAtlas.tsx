@@ -500,8 +500,6 @@ const SkyAtlas = () => {
           visibleTonightEnabled={visibleTonight}
           onToggleVisibleTonight={() => {
             setVisibleTonight((v) => !v);
-            setWindowStart(null);
-            setWindowEnd(null);
             setActivePreset("astro");
           }}
           filterMode={filterMode}

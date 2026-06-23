@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useObjectImage } from "@/hooks/useObjectImage";
-import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
+import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { calculateFov } from "@/lib/sky-images";
 import { formatRA, formatDec } from "@/lib/format-coords";
 import {
@@ -34,9 +34,45 @@ interface Props {
   focalLength?: number;
   sensorWidth?: number;
   sensorHeight?: number;
+  sunset?: Date | null;
+  astroDuskEnd?: Date | null;
+  astroDawnBegin?: Date | null;
+  sunrise?: Date | null;
 }
 
-const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0 }: Props) => {
+// Returns a tailwind text color class for a given time based on solar context.
+function colorForTime(
+  t: Date | null,
+  sunset?: Date | null,
+  astroDuskEnd?: Date | null,
+  astroDawnBegin?: Date | null,
+  sunrise?: Date | null,
+): string {
+  if (!t) return "text-muted-foreground";
+  const toMin = (d: Date) => d.getHours() * 60 + d.getMinutes();
+  const tm = toMin(t);
+  const inRange = (a: number, b: number) => {
+    if (a === b) return false;
+    if (a < b) return tm >= a && tm < b;
+    return tm >= a || tm < b;
+  };
+  if (sunset && sunrise) {
+    const ss = toMin(sunset);
+    const sr = toMin(sunrise);
+    if (astroDuskEnd && astroDawnBegin) {
+      const de = toMin(astroDuskEnd);
+      const db = toMin(astroDawnBegin);
+      if (inRange(de, db)) return "text-emerald-400";
+      if (inRange(ss, de) || inRange(db, sr)) return "text-orange-400";
+      return "text-red-400";
+    }
+    if (inRange(ss, sr)) return "text-emerald-400";
+    return "text-red-400";
+  }
+  return "text-muted-foreground";
+}
+
+const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
   const navigate = useNavigate();
   const [showExposureInfo, setShowExposureInfo] = useState(false);
   const [showCredits, setShowCredits] = useState(false);
@@ -128,14 +164,13 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
     return `https://sky.esa.int/?target=${obj.ra_deg}%20${obj.dec_deg}&hips=DSS2%20color&fov=${fov}&reticle=true`;
   }, [obj]);
 
+  // Rise / set / transit for the current date
+  const rs = useMemo(() => {
+    if (!obj || obj.ra_deg == null || obj.dec_deg == null) return null;
+    return getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, lat, lng, new Date());
+  }, [obj, lat, lng]);
 
   if (!obj) return null;
-
-  const alt =
-    obj.ra_deg != null && obj.dec_deg != null
-      ? calculateAltitude(obj.ra_deg, obj.dec_deg, lat, lng)
-      : null;
-  const vis = alt != null ? getVisibilityLabel(alt) : null;
 
   const formatExposure = (minutes: number | null) => {
     if (minutes == null) return null;
@@ -192,12 +227,28 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
                 )}
               </div>
 
-              {/* Current Visibility - compact in info column */}
-              {vis && alt != null && (
+              {/* Rise / set badge - compact in info column */}
+              {rs && (
                 <div className="flex items-center gap-2 text-xs">
                   <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="font-mono font-semibold">{alt.toFixed(1)}°</span>
-                  <span className={`font-medium ${vis.color}`}>{vis.label}</span>
+                  {rs.isCircumpolar ? (
+                    <span className="font-medium text-emerald-400">Always visible</span>
+                  ) : rs.neverRises ? (
+                    <span className="font-medium text-red-400/80">Not visible tonight</span>
+                  ) : (
+                    <span className="font-mono">
+                      <span className={colorForTime(rs.riseTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                        ↑ {formatTimeShort(rs.riseTime)}
+                      </span>
+                      <span className="text-muted-foreground"> · </span>
+                      <span className={colorForTime(rs.setTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                        ↓ {formatTimeShort(rs.setTime)}
+                      </span>
+                    </span>
+                  )}
+                  {!rs.neverRises && (
+                    <span className="text-muted-foreground font-mono">peak {Math.round(rs.transitAlt)}°</span>
+                  )}
                 </div>
               )}
             </div>
@@ -434,13 +485,28 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
           {/* Setup Assistant */}
           <SetupAssistant obj={obj} userFocalLength={focalLength} />
 
-          {/* Current Visibility */}
-          {vis && alt != null && (
+          {/* Rise / set badge */}
+          {rs && (
             <div className="flex items-center gap-3 p-3 rounded-xl bg-secondary/30">
               <MapPin className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Current altitude:</span>
-              <span className="font-mono text-sm font-semibold">{alt.toFixed(1)}°</span>
-              <span className={`text-sm font-medium ${vis.color}`}>{vis.label}</span>
+              {rs.isCircumpolar ? (
+                <span className="font-medium text-emerald-400">Always visible</span>
+              ) : rs.neverRises ? (
+                <span className="font-medium text-red-400/80">Not visible tonight</span>
+              ) : (
+                <span className="font-mono text-sm">
+                  <span className={colorForTime(rs.riseTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                    ↑ {formatTimeShort(rs.riseTime)}
+                  </span>
+                  <span className="text-muted-foreground"> · </span>
+                  <span className={colorForTime(rs.setTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                    ↓ {formatTimeShort(rs.setTime)}
+                  </span>
+                </span>
+              )}
+              {!rs.neverRises && (
+                <span className="text-muted-foreground font-mono text-sm">peak {Math.round(rs.transitAlt)}°</span>
+              )}
             </div>
           )}
 

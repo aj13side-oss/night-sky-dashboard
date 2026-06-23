@@ -699,6 +699,10 @@ const SkyAtlas = () => {
         focalLength={equipment.focalLength}
         sensorWidth={equipment.sensorWidth}
         sensorHeight={equipment.sensorHeight}
+        sunset={presets.bounds?.start ?? null}
+        sunrise={presets.bounds?.end ?? null}
+        astroDuskEnd={presets.astro?.start ?? null}
+        astroDawnBegin={presets.astro?.end ?? null}
       />
     </div>
   );

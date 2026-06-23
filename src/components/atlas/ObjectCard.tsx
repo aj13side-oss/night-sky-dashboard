@@ -37,7 +37,7 @@ const typeEmoji: Record<string, string> = {
   Planet: "🪐",
 };
 
-const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false }: Props) => {
+const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false, maxAltInWindow }: Props) => {
   const navigate = useNavigate();
   const { isInList, addObject, removeObject } = useTonightList();
   const alt =

@@ -326,7 +326,7 @@ const SkyAtlas = () => {
       results = [...results].sort(
         (a, b) => (a.magnitude ?? Infinity) - (b.magnitude ?? Infinity),
       );
-    } else if (filters.sortBy === "size") {
+    } else if (filters.sortBy === "size_max") {
       results = [...results].sort(
         (a, b) => (b.size_max ?? -Infinity) - (a.size_max ?? -Infinity),
       );

@@ -234,6 +234,11 @@ const SkyAtlas = () => {
     return results;
   }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, minHoursVisible]);
 
+  const hasTrueNightTonight = useMemo(
+    () => getAstroTwilightWindow(new Date(), userPos.lat, userPos.lng).hasTrueNight,
+    [userPos.lat, userPos.lng]
+  );
+
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 
   const isTop50 = filters.limitResults === 50;

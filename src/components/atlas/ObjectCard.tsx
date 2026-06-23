@@ -267,25 +267,26 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
           )}
         </div>
 
-        {/* Rise/Set times */}
-        {rs && !rs.neverRises && (
-          <div className="mt-2 text-[10px] text-muted-foreground font-mono">
+        {rs && (
+          <div className="mt-2 pt-2 border-t border-border/30 flex items-center justify-between text-xs">
             {rs.isCircumpolar ? (
-              <span>Up all night</span>
+              <span className="font-medium text-emerald-400">Always visible</span>
+            ) : rs.neverRises ? (
+              <span className="font-medium text-red-400/80">Not visible tonight</span>
             ) : (
-              <span>
-                {rs.riseTime && `↑ ${formatTimeShort(rs.riseTime)}`}
-                {rs.riseTime && rs.setTime && " · "}
-                {rs.setTime && `↓ ${formatTimeShort(rs.setTime)}`}
+              <span className="font-mono">
+                <span className={colorForTime(rs.riseTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                  ↑ {formatTimeShort(rs.riseTime)}
+                </span>
+                <span className="text-muted-foreground"> · </span>
+                <span className={colorForTime(rs.setTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                  ↓ {formatTimeShort(rs.setTime)}
+                </span>
               </span>
             )}
-          </div>
-        )}
-
-        {vis && alt != null && (
-          <div className="mt-2 pt-2 border-t border-border/30 flex items-center justify-between text-xs">
-            <span className={`font-medium ${vis.color}`}>{vis.label}</span>
-            <span className="text-muted-foreground font-mono">{alt.toFixed(1)}° alt</span>
+            {!rs.neverRises && (
+              <span className="text-muted-foreground font-mono">peak {Math.round(rs.transitAlt)}°</span>
+            )}
           </div>
         )}
 

@@ -273,7 +273,7 @@ const SkyAtlas = () => {
 
   const filteredData = useMemo(() => {
     if (!sourceData.length) return [];
-    let results: (CelestialObject & { _maxAltInWindow?: number })[] = sourceData;
+    let results: (CelestialObject & { _maxAltInWindow?: number; _hoursVisibleInWindow?: number })[] = sourceData;
 
     if (visibleTonight && windowStart && windowEnd && windowEnd.getTime() > windowStart.getTime()) {
       const startMs = windowStart.getTime();
@@ -283,14 +283,15 @@ const SkyAtlas = () => {
         .map((obj) => {
           if (obj.ra_deg == null || obj.dec_deg == null) return null;
           let maxAlt = -90;
+          let stepsAbove = 0;
           let aboveHorizon = false;
           for (let t = startMs; t <= endMs; t += STEP_MS) {
             const alt = calculateAltitude(obj.ra_deg, obj.dec_deg, userPos.lat, userPos.lng, new Date(t));
             if (alt > maxAlt) maxAlt = alt;
-            if (alt > 0) aboveHorizon = true;
+            if (alt > 0) { aboveHorizon = true; stepsAbove++; }
           }
           if (!aboveHorizon) return null;
-          return { ...obj, _maxAltInWindow: maxAlt };
+          return { ...obj, _maxAltInWindow: maxAlt, _hoursVisibleInWindow: (stepsAbove * 5) / 60 };
         })
         .filter((obj): obj is NonNullable<typeof obj> => obj !== null);
     }
@@ -307,8 +308,14 @@ const SkyAtlas = () => {
       });
     }
 
+    if (visibleTonight && filters.sortBy === "tonight_duration") {
+      results = [...results].sort(
+        (a, b) => (b._hoursVisibleInWindow ?? 0) - (a._hoursVisibleInWindow ?? 0),
+      );
+    }
+
     return results;
-  }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, windowStart, windowEnd]);
+  }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, windowStart, windowEnd, filters.sortBy]);
 
   // Initialize / reset window when Visible Tonight is toggled or presets change
   useEffect(() => {

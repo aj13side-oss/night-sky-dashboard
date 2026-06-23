@@ -317,28 +317,42 @@ const SkyAtlas = () => {
     return results;
   }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, windowStart, windowEnd, filters.sortBy]);
 
-  // Initialize / reset window when Visible Tonight is toggled or presets change
+  // Initialize / re-sync window when Visible Tonight is enabled or presets become available.
+  // Re-applies the active preset whenever its bounds change (e.g. astronomy data loads after first render).
   useEffect(() => {
     if (!visibleTonight) return;
-    if (windowStart && windowEnd) return;
-    if (presets.astro) {
-      setWindowStart(presets.astro.start);
-      setWindowEnd(presets.astro.end);
-      setActivePreset("astro");
-    } else if (presets.nautical) {
-      setWindowStart(presets.nautical.start);
-      setWindowEnd(presets.nautical.end);
-      setActivePreset("nautical");
-    } else if (presets.civil) {
-      setWindowStart(presets.civil.start);
-      setWindowEnd(presets.civil.end);
-      setActivePreset("civil");
-    } else {
-      setWindowStart(presets.bounds.start);
-      setWindowEnd(presets.bounds.end);
-      setActivePreset("custom");
+    const pickFallback = () => {
+      if (presets.astro) return { key: "astro" as const, p: presets.astro };
+      if (presets.nautical) return { key: "nautical" as const, p: presets.nautical };
+      if (presets.civil) return { key: "civil" as const, p: presets.civil };
+      return { key: "custom" as const, p: presets.bounds };
+    };
+    if (activePreset === "custom") {
+      if (!windowStart || !windowEnd) {
+        const { key, p } = pickFallback();
+        setWindowStart(p.start);
+        setWindowEnd(p.end);
+        setActivePreset(key);
+      }
+      return;
     }
-  }, [visibleTonight, presets, windowStart, windowEnd]);
+    const current = presets[activePreset];
+    if (current) {
+      if (
+        !windowStart || !windowEnd ||
+        windowStart.getTime() !== current.start.getTime() ||
+        windowEnd.getTime() !== current.end.getTime()
+      ) {
+        setWindowStart(current.start);
+        setWindowEnd(current.end);
+      }
+    } else {
+      const { key, p } = pickFallback();
+      setWindowStart(p.start);
+      setWindowEnd(p.end);
+      setActivePreset(key);
+    }
+  }, [visibleTonight, presets, activePreset, windowStart, windowEnd]);
 
   const selectPreset = useCallback((key: "astro" | "nautical" | "civil") => {
     const p = presets[key];

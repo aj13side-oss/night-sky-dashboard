@@ -270,29 +270,26 @@ const SkyAtlas = () => {
 
   const filteredData = useMemo(() => {
     if (!sourceData.length) return [];
-    let results: (CelestialObject & { _hoursVisible?: number })[] = sourceData;
+    let results: (CelestialObject & { _maxAltInWindow?: number })[] = sourceData;
 
-    if (visibleTonight) {
-      const night = getAstroTwilightWindow(new Date(), userPos.lat, userPos.lng);
-      const nightDurationH = night.hasTrueNight && night.start && night.end
-        ? Math.max(0, (night.end.getTime() - night.start.getTime()) / 3600000)
-        : 12;
+    if (visibleTonight && windowStart && windowEnd && windowEnd.getTime() > windowStart.getTime()) {
+      const startMs = windowStart.getTime();
+      const endMs = windowEnd.getTime();
+      const STEP_MS = 5 * 60 * 1000;
       results = results
         .map((obj) => {
           if (obj.ra_deg == null || obj.dec_deg == null) return null;
-          const rs = getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, userPos.lat, userPos.lng, new Date());
-          if (rs.neverRises) return null;
-          let hoursVisible = 0;
-          if (rs.isCircumpolar) {
-            hoursVisible = nightDurationH;
-          } else if (rs.riseTime || rs.setTime) {
-            const startMs = rs.riseTime?.getTime() ?? 0;
-            const endMs = rs.setTime?.getTime() ?? 0;
-            hoursVisible = Math.max(0, (endMs - startMs) / 3600000);
+          let maxAlt = -90;
+          let aboveHorizon = false;
+          for (let t = startMs; t <= endMs; t += STEP_MS) {
+            const alt = calculateAltitude(obj.ra_deg, obj.dec_deg, userPos.lat, userPos.lng, new Date(t));
+            if (alt > maxAlt) maxAlt = alt;
+            if (alt > 0) aboveHorizon = true;
           }
-          return { ...obj, _hoursVisible: hoursVisible };
+          if (!aboveHorizon) return null;
+          return { ...obj, _maxAltInWindow: maxAlt };
         })
-        .filter((obj): obj is NonNullable<typeof obj> => obj !== null && (obj._hoursVisible ?? 0) >= minHoursVisible);
+        .filter((obj): obj is NonNullable<typeof obj> => obj !== null);
     }
 
     if (filterMode === "rgb") {
@@ -308,12 +305,41 @@ const SkyAtlas = () => {
     }
 
     return results;
-  }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, minHoursVisible]);
+  }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, windowStart, windowEnd]);
 
-  const hasTrueNightTonight = useMemo(
-    () => getAstroTwilightWindow(new Date(), userPos.lat, userPos.lng).hasTrueNight,
-    [userPos.lat, userPos.lng]
-  );
+  // Initialize / reset window when Visible Tonight is toggled or presets change
+  useEffect(() => {
+    if (!visibleTonight) return;
+    if (windowStart && windowEnd) return;
+    if (presets.astro) {
+      setWindowStart(presets.astro.start);
+      setWindowEnd(presets.astro.end);
+      setActivePreset("astro");
+    } else if (presets.nautical) {
+      setWindowStart(presets.nautical.start);
+      setWindowEnd(presets.nautical.end);
+      setActivePreset("nautical");
+    } else if (presets.civil) {
+      setWindowStart(presets.civil.start);
+      setWindowEnd(presets.civil.end);
+      setActivePreset("civil");
+    } else {
+      setWindowStart(presets.bounds.start);
+      setWindowEnd(presets.bounds.end);
+      setActivePreset("custom");
+    }
+  }, [visibleTonight, presets, windowStart, windowEnd]);
+
+  const selectPreset = useCallback((key: "astro" | "nautical" | "civil") => {
+    const p = presets[key];
+    if (!p) return;
+    setWindowStart(p.start);
+    setWindowEnd(p.end);
+    setActivePreset(key);
+  }, [presets]);
+
+  const showNoAstroNote = visibleTonight && activePreset === "astro" && !presets.astro;
+
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 

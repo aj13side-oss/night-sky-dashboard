@@ -21,6 +21,10 @@ interface Props {
   onClick: () => void;
   isTopPick?: boolean;
   maxAltInWindow?: number;
+  sunset?: Date | null;
+  astroDuskEnd?: Date | null;
+  astroDawnBegin?: Date | null;
+  sunrise?: Date | null;
 }
 
 const typeEmoji: Record<string, string> = {

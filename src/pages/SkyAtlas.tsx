@@ -388,6 +388,15 @@ const SkyAtlas = () => {
               ))}
             </div>
           </div>
+        ) : visibleTonight && !hasTrueNightTonight ? (
+          <div className="text-center py-16 text-muted-foreground max-w-xl mx-auto">
+            <Telescope className="w-10 h-10 mx-auto mb-3 opacity-40" />
+            <h2 className="text-lg font-semibold text-foreground mb-2">No astronomical night tonight</h2>
+            <p className="text-sm leading-relaxed">
+              At your latitude the Sun does not drop below −18° tonight, so the sky never reaches full
+              darkness. Deep sky imaging is not possible — check back later in the season.
+            </p>
+          </div>
         ) : filteredData.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">
             <Telescope className="w-10 h-10 mx-auto mb-3 opacity-40" />

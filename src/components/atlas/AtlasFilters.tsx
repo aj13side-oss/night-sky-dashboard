@@ -14,6 +14,11 @@ interface NightWindow {
   maxMs: number;
   activePreset: "astro" | "nautical" | "civil" | "custom";
   presetAvail: { astro: boolean; nautical: boolean; civil: boolean };
+  presetTimes: {
+    astro: { startMs: number; endMs: number } | null;
+    nautical: { startMs: number; endMs: number } | null;
+    civil: { startMs: number; endMs: number } | null;
+  };
   onPresetSelect: (key: "astro" | "nautical" | "civil") => void;
   onWindowChange: (startMs: number, endMs: number) => void;
   formatMs: (ms: number) => string;

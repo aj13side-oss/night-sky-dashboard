@@ -1,5 +1,4 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
-import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { computeDynamicScore, getSeasonEmoji, getSeasonLabel } from "@/lib/dynamic-score";
@@ -22,6 +21,10 @@ interface Props {
   onClick: () => void;
   isTopPick?: boolean;
   maxAltInWindow?: number;
+  sunset?: Date | null;
+  astroDuskEnd?: Date | null;
+  astroDawnBegin?: Date | null;
+  sunrise?: Date | null;
 }
 
 const typeEmoji: Record<string, string> = {
@@ -37,14 +40,45 @@ const typeEmoji: Record<string, string> = {
   Planet: "🪐",
 };
 
-const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false, maxAltInWindow }: Props) => {
+// Returns a tailwind text color class for a given time based on solar context.
+function colorForTime(
+  t: Date | null,
+  sunset?: Date | null,
+  astroDuskEnd?: Date | null,
+  astroDawnBegin?: Date | null,
+  sunrise?: Date | null,
+): string {
+  if (!t) return "text-muted-foreground";
+  const toMin = (d: Date) => d.getHours() * 60 + d.getMinutes();
+  const tm = toMin(t);
+  // Helper: is tm in cyclic range [a, b) (minutes 0..1440), inclusive a, exclusive b
+  const inRange = (a: number, b: number) => {
+    if (a === b) return false;
+    if (a < b) return tm >= a && tm < b;
+    return tm >= a || tm < b;
+  };
+  if (sunset && sunrise) {
+    const ss = toMin(sunset);
+    const sr = toMin(sunrise);
+    if (astroDuskEnd && astroDawnBegin) {
+      const de = toMin(astroDuskEnd);
+      const db = toMin(astroDawnBegin);
+      // astronomical night: from de to db (cyclic)
+      if (inRange(de, db)) return "text-emerald-400";
+      // dusk/dawn (sun down but not astro night)
+      if (inRange(ss, de) || inRange(db, sr)) return "text-orange-400";
+      return "text-red-400";
+    }
+    // Fallback without astro bounds: night green between sunset and sunrise, else red
+    if (inRange(ss, sr)) return "text-emerald-400";
+    return "text-red-400";
+  }
+  return "text-muted-foreground";
+}
+
+const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false, maxAltInWindow, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
   const navigate = useNavigate();
   const { isInList, addObject, removeObject } = useTonightList();
-  const alt =
-    obj.ra_deg != null && obj.dec_deg != null
-      ? calculateAltitude(obj.ra_deg, obj.dec_deg, lat, lng)
-      : null;
-  const vis = alt != null ? getVisibilityLabel(alt) : null;
 
   const rs = useMemo(() => {
     if (obj.ra_deg == null || obj.dec_deg == null) return null;
@@ -233,25 +267,26 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
           )}
         </div>
 
-        {/* Rise/Set times */}
-        {rs && !rs.neverRises && (
-          <div className="mt-2 text-[10px] text-muted-foreground font-mono">
+        {rs && (
+          <div className="mt-2 pt-2 border-t border-border/30 flex items-center justify-between text-xs">
             {rs.isCircumpolar ? (
-              <span>Up all night</span>
+              <span className="font-medium text-emerald-400">Always visible</span>
+            ) : rs.neverRises ? (
+              <span className="font-medium text-red-400/80">Not visible tonight</span>
             ) : (
-              <span>
-                {rs.riseTime && `↑ ${formatTimeShort(rs.riseTime)}`}
-                {rs.riseTime && rs.setTime && " · "}
-                {rs.setTime && `↓ ${formatTimeShort(rs.setTime)}`}
+              <span className="font-mono">
+                <span className={colorForTime(rs.riseTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                  ↑ {formatTimeShort(rs.riseTime)}
+                </span>
+                <span className="text-muted-foreground"> · </span>
+                <span className={colorForTime(rs.setTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                  ↓ {formatTimeShort(rs.setTime)}
+                </span>
               </span>
             )}
-          </div>
-        )}
-
-        {vis && alt != null && (
-          <div className="mt-2 pt-2 border-t border-border/30 flex items-center justify-between text-xs">
-            <span className={`font-medium ${vis.color}`}>{vis.label}</span>
-            <span className="text-muted-foreground font-mono">{alt.toFixed(1)}° alt</span>
+            {!rs.neverRises && (
+              <span className="text-muted-foreground font-mono">peak {Math.round(rs.transitAlt)}°</span>
+            )}
           </div>
         )}
 

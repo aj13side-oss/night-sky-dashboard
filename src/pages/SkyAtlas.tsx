@@ -515,35 +515,37 @@ const SkyAtlas = () => {
               ))}
             </div>
           </div>
-        ) : visibleTonight && !hasTrueNightTonight ? (
-          <div className="text-center py-16 text-muted-foreground max-w-xl mx-auto">
-            <Telescope className="w-10 h-10 mx-auto mb-3 opacity-40" />
-            <h2 className="text-lg font-semibold text-foreground mb-2">No astronomical night tonight</h2>
-            <p className="text-sm leading-relaxed">
-              At your latitude the Sun does not drop below −18° tonight, so the sky never reaches full
-              darkness. Deep sky imaging is not possible — check back later in the season.
-            </p>
-          </div>
-        ) : filteredData.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">
-            <Telescope className="w-10 h-10 mx-auto mb-3 opacity-40" />
-            <p>No objects match your filters</p>
-          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {(isClientFiltered ? paginatedData : allLoadedData).map((obj, i) => (
-              <ObjectCard
-                key={obj.id}
-                obj={obj}
-                index={i}
-                lat={userPos.lat}
-                lng={userPos.lng}
-                searchQuery={filters.search}
-                onClick={() => setSelected(obj)}
-                isTopPick={topPickIds?.has(obj.catalog_id) ?? false}
-              />
-            ))}
-          </div>
+          <>
+            {showNoAstroNote && (
+              <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90">
+                <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                <span>No full astronomical night tonight — try <strong>Nautical</strong> or <strong>Civil</strong>.</span>
+              </div>
+            )}
+            {filteredData.length === 0 ? (
+              <div className="text-center py-16 text-muted-foreground">
+                <Telescope className="w-10 h-10 mx-auto mb-3 opacity-40" />
+                <p>No objects match your filters</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {(isClientFiltered ? paginatedData : allLoadedData).map((obj, i) => (
+                  <ObjectCard
+                    key={obj.id}
+                    obj={obj}
+                    index={i}
+                    lat={userPos.lat}
+                    lng={userPos.lng}
+                    searchQuery={filters.search}
+                    onClick={() => setSelected(obj)}
+                    isTopPick={topPickIds?.has(obj.catalog_id) ?? false}
+                    maxAltInWindow={(obj as CelestialObject & { _maxAltInWindow?: number })._maxAltInWindow}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         {/* Load more button */}

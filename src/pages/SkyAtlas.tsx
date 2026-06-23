@@ -197,9 +197,10 @@ const SkyAtlas = () => {
     let results: (CelestialObject & { _hoursVisible?: number })[] = sourceData;
 
     if (visibleTonight) {
-      const night = getAstronomicalNight(new Date(), userPos.lat, userPos.lng);
-      const nightStart = night.start;
-      const nightEnd = night.end;
+      const night = getAstroTwilightWindow(new Date(), userPos.lat, userPos.lng);
+      const nightDurationH = night.hasTrueNight && night.start && night.end
+        ? Math.max(0, (night.end.getTime() - night.start.getTime()) / 3600000)
+        : 12;
       results = results
         .map((obj) => {
           if (obj.ra_deg == null || obj.dec_deg == null) return null;
@@ -207,11 +208,11 @@ const SkyAtlas = () => {
           if (rs.neverRises) return null;
           let hoursVisible = 0;
           if (rs.isCircumpolar) {
-            hoursVisible = Math.max(0, (nightEnd.getTime() - nightStart.getTime()) / 3600000);
+            hoursVisible = nightDurationH;
           } else if (rs.riseTime || rs.setTime) {
-            const start = rs.riseTime && rs.riseTime > nightStart ? rs.riseTime : nightStart;
-            const end = rs.setTime && rs.setTime < nightEnd ? rs.setTime : nightEnd;
-            hoursVisible = Math.max(0, (end.getTime() - start.getTime()) / 3600000);
+            const startMs = rs.riseTime?.getTime() ?? 0;
+            const endMs = rs.setTime?.getTime() ?? 0;
+            hoursVisible = Math.max(0, (endMs - startMs) / 3600000);
           }
           return { ...obj, _hoursVisible: hoursVisible };
         })

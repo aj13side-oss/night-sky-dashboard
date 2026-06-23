@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useObjectImage } from "@/hooks/useObjectImage";
-import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
+import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { calculateFov } from "@/lib/sky-images";
 import { formatRA, formatDec } from "@/lib/format-coords";
 import {

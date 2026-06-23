@@ -16,17 +16,37 @@ import {
   CelestialObject,
   PAGE_SIZE,
 } from "@/hooks/useCelestialObjects";
-import { getObjectRiseSetTransit } from "@/lib/rise-set";
 import { getAstroTwilightWindow } from "@/lib/astronomy";
+import { calculateAltitude } from "@/lib/visibility";
+import { useAstronomyData } from "@/hooks/useAstronomyData";
+import { useObservation } from "@/contexts/ObservationContext";
+import { utcToLocal } from "@/lib/timezone";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";
+import { ChevronLeft, ChevronRight, Telescope, MapPin, Info } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { SolarSystemObject } from "@/hooks/useSolarSystemObjects";
 
 import TonightTopPicks from "@/components/atlas/TonightTopPicks";
 import { useTopPhotoTargets } from "@/hooks/useTopPhotoTargets";
+
+type PresetKey = "astro" | "nautical" | "civil" | "custom";
+
+/** Anchor a local HH:MM string to today (>=12:00) or tomorrow (<12:00). */
+function hhmmToDateTonight(hhmm: string, baseDate: Date): Date {
+  const [h, m] = hhmm.split(":").map(Number);
+  const d = new Date(baseDate);
+  d.setSeconds(0, 0);
+  d.setMilliseconds(0);
+  if (h >= 12) {
+    d.setHours(h, m, 0, 0);
+  } else {
+    d.setDate(d.getDate() + 1);
+    d.setHours(h, m, 0, 0);
+  }
+  return d;
+}
 
 const DEFAULT_EXCLUDE_TYPES = ["Star", "Double Star"];
 

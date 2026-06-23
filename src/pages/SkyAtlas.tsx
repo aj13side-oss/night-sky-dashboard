@@ -76,7 +76,7 @@ const SkyAtlas = () => {
   const [filterMode, setFilterMode] = useState("all");
   const [windowStart, setWindowStart] = useState<Date | null>(null);
   const [windowEnd, setWindowEnd] = useState<Date | null>(null);
-  const [activePreset, setActivePreset] = useState<PresetKey>("astro");
+  const [activePreset, setActivePreset] = useState<PresetKey>("civil");
   const [clientPage, setClientPage] = useState(0);
   const CLIENT_PAGE_SIZE = 20;
   

@@ -125,6 +125,39 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
       }
     }
 
+    // Sort by relevance, using photo_score as a tiebreaker.
+    function normalizeSearch(s: string): string {
+      return s.toLowerCase().trim();
+    }
+    function compactSearch(s: string): string {
+      return normalizeSearch(s).replace(/\s+/g, "");
+    }
+    function relevanceScore(o: CelestialObject): number {
+      const termNorm = normalizeSearch(term);
+      const termCompact = compactSearch(term);
+      const catalogIdNorm = normalizeSearch(o.catalog_id);
+      const commonNameNorm = o.common_name ? normalizeSearch(o.common_name) : "";
+      const sciNotNorm = o.scientific_notation ? normalizeSearch(o.scientific_notation) : "";
+      const aliasesNorm = o.search_aliases ? normalizeSearch(o.search_aliases) : "";
+
+      if (catalogIdNorm === termNorm || compactSearch(o.catalog_id) === termCompact) return 100;
+      if (commonNameNorm === termNorm) return 95;
+      if (sciNotNorm === termNorm || compactSearch(o.scientific_notation ?? "") === termCompact) return 90;
+      if (catalogIdNorm.startsWith(termNorm) || compactSearch(o.catalog_id).startsWith(termCompact)) return 70;
+      if (commonNameNorm.startsWith(termNorm)) return 65;
+      if (sciNotNorm.startsWith(termNorm) || compactSearch(o.scientific_notation ?? "").startsWith(termCompact)) return 60;
+      if (catalogIdNorm.includes(termNorm) || compactSearch(o.catalog_id).includes(termCompact)) return 40;
+      if (commonNameNorm.includes(termNorm)) return 35;
+      if (sciNotNorm.includes(termNorm) || compactSearch(o.scientific_notation ?? "").includes(termCompact) || aliasesNorm.includes(termNorm)) return 30;
+      return 0;
+    }
+    results.sort((a, b) => {
+      const scoreA = relevanceScore(a);
+      const scoreB = relevanceScore(b);
+      if (scoreA !== scoreB) return scoreB - scoreA;
+      return (b.photo_score ?? 0) - (a.photo_score ?? 0);
+    });
+
     // Apply client-side filters on fuzzy results
     if (catalogIds) {
       const idSet = new Set(catalogIds);

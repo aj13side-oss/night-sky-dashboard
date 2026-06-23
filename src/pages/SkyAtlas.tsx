@@ -74,7 +74,9 @@ const SkyAtlas = () => {
   const [geoStatus, setGeoStatus] = useState<'default' | 'requesting' | 'granted' | 'denied'>('default');
   const [visibleTonight, setVisibleTonight] = useState(false);
   const [filterMode, setFilterMode] = useState("all");
-  const [minHoursVisible, setMinHoursVisible] = useState(0);
+  const [windowStart, setWindowStart] = useState<Date | null>(null);
+  const [windowEnd, setWindowEnd] = useState<Date | null>(null);
+  const [activePreset, setActivePreset] = useState<PresetKey>("astro");
   const [clientPage, setClientPage] = useState(0);
   const CLIENT_PAGE_SIZE = 20;
   

@@ -91,8 +91,62 @@ const SkyAtlas = () => {
   const { data, isLoading } = useCelestialObjects(filters, page);
   const { data: typeCounts } = useCatalogTypeCounts(filters);
   const { data: topPickIds } = useTopPhotoTargets();
+  const { data: astronomy } = useAstronomyData();
+  const { location } = useObservation();
 
   const isClientFiltered = visibleTonight || filterMode !== "all";
+
+  // Compute tonight's twilight presets (preset window endpoints as absolute Dates).
+  const presets = useMemo(() => {
+    const today = new Date();
+    const tz = location.timezone;
+    const sun = astronomy?.sun;
+    const astroFallback = getAstroTwilightWindow(today, userPos.lat, userPos.lng);
+
+    const fromUtcPair = (utcEnd: string | null, utcBegin: string | null) => {
+      if (!utcEnd || !utcBegin) return null;
+      const localEnd = utcToLocal(utcEnd, today, tz);
+      const localBegin = utcToLocal(utcBegin, today, tz);
+      if (!/^\d{2}:\d{2}$/.test(localEnd) || !/^\d{2}:\d{2}$/.test(localBegin)) return null;
+      return {
+        start: hhmmToDateTonight(localEnd, today),
+        end: hhmmToDateTonight(localBegin, today),
+      };
+    };
+
+    const astroFromApi = fromUtcPair(sun?.astronomicalTwilightEnd ?? null, sun?.astronomicalTwilightBegin ?? null);
+    const nauticalFromApi = fromUtcPair(sun?.nauticalTwilightEnd ?? null, sun?.nauticalTwilightBegin ?? null);
+    const civilFromApi = fromUtcPair(sun?.civilTwilightEnd ?? null, sun?.civilTwilightBegin ?? null);
+
+    const astro = astroFromApi
+      ?? (astroFallback.hasTrueNight && astroFallback.start && astroFallback.end
+        ? { start: astroFallback.start, end: astroFallback.end }
+        : null);
+
+    // Sunset / sunrise as slider bounds
+    let bounds: { start: Date; end: Date } | null = null;
+    if (sun?.sunset && sun?.sunrise) {
+      const ls = utcToLocal(sun.sunset, today, tz);
+      const lr = utcToLocal(sun.sunrise, today, tz);
+      if (/^\d{2}:\d{2}$/.test(ls) && /^\d{2}:\d{2}$/.test(lr)) {
+        bounds = { start: hhmmToDateTonight(ls, today), end: hhmmToDateTonight(lr, today) };
+      }
+    }
+    if (!bounds) {
+      const s = new Date(today); s.setHours(18, 0, 0, 0);
+      const e = new Date(today); e.setDate(e.getDate() + 1); e.setHours(6, 0, 0, 0);
+      bounds = { start: s, end: e };
+    }
+
+    return {
+      astro,
+      nautical: nauticalFromApi,
+      civil: civilFromApi,
+      bounds,
+      hasTrueNight: astro != null,
+    };
+  }, [astronomy, location.timezone, userPos.lat, userPos.lng]);
+
 
   // Larger working set fetched when a client-side filter is active, so the
   // visibility computation can evaluate the whole catalog, not just page 0.

@@ -76,7 +76,7 @@ const SkyAtlas = () => {
   const [filterMode, setFilterMode] = useState("all");
   const [windowStart, setWindowStart] = useState<Date | null>(null);
   const [windowEnd, setWindowEnd] = useState<Date | null>(null);
-  const [activePreset, setActivePreset] = useState<PresetKey>("astro");
+  const [activePreset, setActivePreset] = useState<PresetKey>("civil");
   const [clientPage, setClientPage] = useState(0);
   const CLIENT_PAGE_SIZE = 20;
   
@@ -328,9 +328,9 @@ const SkyAtlas = () => {
   useEffect(() => {
     if (!visibleTonight) return;
     const pickFallback = () => {
-      if (presets.astro) return { key: "astro" as const, p: presets.astro };
-      if (presets.nautical) return { key: "nautical" as const, p: presets.nautical };
       if (presets.civil) return { key: "civil" as const, p: presets.civil };
+      if (presets.nautical) return { key: "nautical" as const, p: presets.nautical };
+      if (presets.astro) return { key: "astro" as const, p: presets.astro };
       return { key: "custom" as const, p: presets.bounds };
     };
     if (activePreset === "custom") {
@@ -395,9 +395,11 @@ const SkyAtlas = () => {
   const clientTotalPages = Math.ceil(filteredData.length / CLIENT_PAGE_SIZE);
 
   const nightWindow = useMemo(() => {
-    const fallback = presets.astro ?? presets.nautical ?? presets.civil ?? presets.bounds;
+    const fallback = presets.civil ?? presets.nautical ?? presets.astro ?? presets.bounds;
     const start = windowStart ?? fallback.start;
     const end = windowEnd ?? fallback.end;
+    const toMs = (p: { start: Date; end: Date } | null | undefined) =>
+      p ? { startMs: p.start.getTime(), endMs: p.end.getTime() } : null;
     return {
       startMs: Math.max(
         Math.min(start.getTime(), presets.bounds.end.getTime()),
@@ -414,6 +416,11 @@ const SkyAtlas = () => {
         astro: !!presets.astro,
         nautical: !!presets.nautical,
         civil: !!presets.civil,
+      },
+      presetTimes: {
+        astro: toMs(presets.astro),
+        nautical: toMs(presets.nautical),
+        civil: toMs(presets.civil),
       },
       onPresetSelect: selectPreset,
       onWindowChange: (s: number, e: number) => {
@@ -506,7 +513,7 @@ const SkyAtlas = () => {
           visibleTonightEnabled={visibleTonight}
           onToggleVisibleTonight={() => {
             setVisibleTonight((v) => !v);
-            setActivePreset("astro");
+            setActivePreset("civil");
           }}
           filterMode={filterMode}
           onFilterModeChange={setFilterMode}

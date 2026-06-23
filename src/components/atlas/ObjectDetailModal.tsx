@@ -164,14 +164,13 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
     return `https://sky.esa.int/?target=${obj.ra_deg}%20${obj.dec_deg}&hips=DSS2%20color&fov=${fov}&reticle=true`;
   }, [obj]);
 
+  // Rise / set / transit for the current date
+  const rs = useMemo(() => {
+    if (!obj || obj.ra_deg == null || obj.dec_deg == null) return null;
+    return getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, lat, lng, new Date());
+  }, [obj, lat, lng]);
 
   if (!obj) return null;
-
-  const alt =
-    obj.ra_deg != null && obj.dec_deg != null
-      ? calculateAltitude(obj.ra_deg, obj.dec_deg, lat, lng)
-      : null;
-  const vis = alt != null ? getVisibilityLabel(alt) : null;
 
   const formatExposure = (minutes: number | null) => {
     if (minutes == null) return null;

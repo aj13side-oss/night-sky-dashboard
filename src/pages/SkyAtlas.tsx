@@ -16,17 +16,37 @@ import {
   CelestialObject,
   PAGE_SIZE,
 } from "@/hooks/useCelestialObjects";
-import { getObjectRiseSetTransit } from "@/lib/rise-set";
 import { getAstroTwilightWindow } from "@/lib/astronomy";
+import { calculateAltitude } from "@/lib/visibility";
+import { useAstronomyData } from "@/hooks/useAstronomyData";
+import { useObservation } from "@/contexts/ObservationContext";
+import { utcToLocal } from "@/lib/timezone";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";
+import { ChevronLeft, ChevronRight, Telescope, MapPin, Info } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { SolarSystemObject } from "@/hooks/useSolarSystemObjects";
 
 import TonightTopPicks from "@/components/atlas/TonightTopPicks";
 import { useTopPhotoTargets } from "@/hooks/useTopPhotoTargets";
+
+type PresetKey = "astro" | "nautical" | "civil" | "custom";
+
+/** Anchor a local HH:MM string to today (>=12:00) or tomorrow (<12:00). */
+function hhmmToDateTonight(hhmm: string, baseDate: Date): Date {
+  const [h, m] = hhmm.split(":").map(Number);
+  const d = new Date(baseDate);
+  d.setSeconds(0, 0);
+  d.setMilliseconds(0);
+  if (h >= 12) {
+    d.setHours(h, m, 0, 0);
+  } else {
+    d.setDate(d.getDate() + 1);
+    d.setHours(h, m, 0, 0);
+  }
+  return d;
+}
 
 const DEFAULT_EXCLUDE_TYPES = ["Star", "Double Star"];
 
@@ -54,7 +74,9 @@ const SkyAtlas = () => {
   const [geoStatus, setGeoStatus] = useState<'default' | 'requesting' | 'granted' | 'denied'>('default');
   const [visibleTonight, setVisibleTonight] = useState(false);
   const [filterMode, setFilterMode] = useState("all");
-  const [minHoursVisible, setMinHoursVisible] = useState(0);
+  const [windowStart, setWindowStart] = useState<Date | null>(null);
+  const [windowEnd, setWindowEnd] = useState<Date | null>(null);
+  const [activePreset, setActivePreset] = useState<PresetKey>("astro");
   const [clientPage, setClientPage] = useState(0);
   const CLIENT_PAGE_SIZE = 20;
   
@@ -69,8 +91,62 @@ const SkyAtlas = () => {
   const { data, isLoading } = useCelestialObjects(filters, page);
   const { data: typeCounts } = useCatalogTypeCounts(filters);
   const { data: topPickIds } = useTopPhotoTargets();
+  const { data: astronomy } = useAstronomyData();
+  const { location } = useObservation();
 
   const isClientFiltered = visibleTonight || filterMode !== "all";
+
+  // Compute tonight's twilight presets (preset window endpoints as absolute Dates).
+  const presets = useMemo(() => {
+    const today = new Date();
+    const tz = location.timezone;
+    const sun = astronomy?.sun;
+    const astroFallback = getAstroTwilightWindow(today, userPos.lat, userPos.lng);
+
+    const fromUtcPair = (utcEnd: string | null, utcBegin: string | null) => {
+      if (!utcEnd || !utcBegin) return null;
+      const localEnd = utcToLocal(utcEnd, today, tz);
+      const localBegin = utcToLocal(utcBegin, today, tz);
+      if (!/^\d{2}:\d{2}$/.test(localEnd) || !/^\d{2}:\d{2}$/.test(localBegin)) return null;
+      return {
+        start: hhmmToDateTonight(localEnd, today),
+        end: hhmmToDateTonight(localBegin, today),
+      };
+    };
+
+    const astroFromApi = fromUtcPair(sun?.astronomicalTwilightEnd ?? null, sun?.astronomicalTwilightBegin ?? null);
+    const nauticalFromApi = fromUtcPair(sun?.nauticalTwilightEnd ?? null, sun?.nauticalTwilightBegin ?? null);
+    const civilFromApi = fromUtcPair(sun?.civilTwilightEnd ?? null, sun?.civilTwilightBegin ?? null);
+
+    const astro = astroFromApi
+      ?? (astroFallback.hasTrueNight && astroFallback.start && astroFallback.end
+        ? { start: astroFallback.start, end: astroFallback.end }
+        : null);
+
+    // Sunset / sunrise as slider bounds
+    let bounds: { start: Date; end: Date } | null = null;
+    if (sun?.sunset && sun?.sunrise) {
+      const ls = utcToLocal(sun.sunset, today, tz);
+      const lr = utcToLocal(sun.sunrise, today, tz);
+      if (/^\d{2}:\d{2}$/.test(ls) && /^\d{2}:\d{2}$/.test(lr)) {
+        bounds = { start: hhmmToDateTonight(ls, today), end: hhmmToDateTonight(lr, today) };
+      }
+    }
+    if (!bounds) {
+      const s = new Date(today); s.setHours(18, 0, 0, 0);
+      const e = new Date(today); e.setDate(e.getDate() + 1); e.setHours(6, 0, 0, 0);
+      bounds = { start: s, end: e };
+    }
+
+    return {
+      astro,
+      nautical: nauticalFromApi,
+      civil: civilFromApi,
+      bounds,
+      hasTrueNight: astro != null,
+    };
+  }, [astronomy, location.timezone, userPos.lat, userPos.lng]);
+
 
   // Larger working set fetched when a client-side filter is active, so the
   // visibility computation can evaluate the whole catalog, not just page 0.
@@ -184,7 +260,7 @@ const SkyAtlas = () => {
     handleGeolocation();
   }, [handleGeolocation]);
 
-  useEffect(() => { setPage(0); setClientPage(0); setAllLoadedData([]); }, [filters, visibleTonight, filterMode]);
+  useEffect(() => { setPage(0); setClientPage(0); setAllLoadedData([]); }, [filters, visibleTonight, filterMode, windowStart, windowEnd]);
 
   // Client-side filters: visible tonight + filter mode
   const sourceData = useMemo<CelestialObject[]>(() => {
@@ -194,29 +270,26 @@ const SkyAtlas = () => {
 
   const filteredData = useMemo(() => {
     if (!sourceData.length) return [];
-    let results: (CelestialObject & { _hoursVisible?: number })[] = sourceData;
+    let results: (CelestialObject & { _maxAltInWindow?: number })[] = sourceData;
 
-    if (visibleTonight) {
-      const night = getAstroTwilightWindow(new Date(), userPos.lat, userPos.lng);
-      const nightDurationH = night.hasTrueNight && night.start && night.end
-        ? Math.max(0, (night.end.getTime() - night.start.getTime()) / 3600000)
-        : 12;
+    if (visibleTonight && windowStart && windowEnd && windowEnd.getTime() > windowStart.getTime()) {
+      const startMs = windowStart.getTime();
+      const endMs = windowEnd.getTime();
+      const STEP_MS = 5 * 60 * 1000;
       results = results
         .map((obj) => {
           if (obj.ra_deg == null || obj.dec_deg == null) return null;
-          const rs = getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, userPos.lat, userPos.lng, new Date());
-          if (rs.neverRises) return null;
-          let hoursVisible = 0;
-          if (rs.isCircumpolar) {
-            hoursVisible = nightDurationH;
-          } else if (rs.riseTime || rs.setTime) {
-            const startMs = rs.riseTime?.getTime() ?? 0;
-            const endMs = rs.setTime?.getTime() ?? 0;
-            hoursVisible = Math.max(0, (endMs - startMs) / 3600000);
+          let maxAlt = -90;
+          let aboveHorizon = false;
+          for (let t = startMs; t <= endMs; t += STEP_MS) {
+            const alt = calculateAltitude(obj.ra_deg, obj.dec_deg, userPos.lat, userPos.lng, new Date(t));
+            if (alt > maxAlt) maxAlt = alt;
+            if (alt > 0) aboveHorizon = true;
           }
-          return { ...obj, _hoursVisible: hoursVisible };
+          if (!aboveHorizon) return null;
+          return { ...obj, _maxAltInWindow: maxAlt };
         })
-        .filter((obj): obj is NonNullable<typeof obj> => obj !== null && (obj._hoursVisible ?? 0) >= minHoursVisible);
+        .filter((obj): obj is NonNullable<typeof obj> => obj !== null);
     }
 
     if (filterMode === "rgb") {
@@ -232,12 +305,41 @@ const SkyAtlas = () => {
     }
 
     return results;
-  }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, minHoursVisible]);
+  }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, windowStart, windowEnd]);
 
-  const hasTrueNightTonight = useMemo(
-    () => getAstroTwilightWindow(new Date(), userPos.lat, userPos.lng).hasTrueNight,
-    [userPos.lat, userPos.lng]
-  );
+  // Initialize / reset window when Visible Tonight is toggled or presets change
+  useEffect(() => {
+    if (!visibleTonight) return;
+    if (windowStart && windowEnd) return;
+    if (presets.astro) {
+      setWindowStart(presets.astro.start);
+      setWindowEnd(presets.astro.end);
+      setActivePreset("astro");
+    } else if (presets.nautical) {
+      setWindowStart(presets.nautical.start);
+      setWindowEnd(presets.nautical.end);
+      setActivePreset("nautical");
+    } else if (presets.civil) {
+      setWindowStart(presets.civil.start);
+      setWindowEnd(presets.civil.end);
+      setActivePreset("civil");
+    } else {
+      setWindowStart(presets.bounds.start);
+      setWindowEnd(presets.bounds.end);
+      setActivePreset("custom");
+    }
+  }, [visibleTonight, presets, windowStart, windowEnd]);
+
+  const selectPreset = useCallback((key: "astro" | "nautical" | "civil") => {
+    const p = presets[key];
+    if (!p) return;
+    setWindowStart(p.start);
+    setWindowEnd(p.end);
+    setActivePreset(key);
+  }, [presets]);
+
+  const showNoAstroNote = visibleTonight && activePreset === "astro" && !presets.astro;
+
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 
@@ -337,11 +439,36 @@ const SkyAtlas = () => {
           constellations={constellations}
           totalCount={displayedTotal}
           visibleTonightEnabled={visibleTonight}
-          onToggleVisibleTonight={() => { setVisibleTonight((v) => !v); setMinHoursVisible(0); }}
+          onToggleVisibleTonight={() => {
+            setVisibleTonight((v) => !v);
+            setWindowStart(null);
+            setWindowEnd(null);
+            setActivePreset("astro");
+          }}
           filterMode={filterMode}
           onFilterModeChange={setFilterMode}
-          minHoursVisible={minHoursVisible}
-          onMinHoursVisibleChange={setMinHoursVisible}
+          nightWindow={visibleTonight && windowStart && windowEnd ? {
+            startMs: windowStart.getTime(),
+            endMs: windowEnd.getTime(),
+            minMs: presets.bounds.start.getTime(),
+            maxMs: presets.bounds.end.getTime(),
+            activePreset,
+            presetAvail: {
+              astro: !!presets.astro,
+              nautical: !!presets.nautical,
+              civil: !!presets.civil,
+            },
+            onPresetSelect: selectPreset,
+            onWindowChange: (s, e) => {
+              setWindowStart(new Date(s));
+              setWindowEnd(new Date(e));
+              setActivePreset("custom");
+            },
+            formatMs: (ms: number) => {
+              const d = new Date(ms);
+              return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+            },
+          } : undefined}
           typeCounts={clientTypeCounts ?? typeCounts}
         />
 
@@ -388,35 +515,37 @@ const SkyAtlas = () => {
               ))}
             </div>
           </div>
-        ) : visibleTonight && !hasTrueNightTonight ? (
-          <div className="text-center py-16 text-muted-foreground max-w-xl mx-auto">
-            <Telescope className="w-10 h-10 mx-auto mb-3 opacity-40" />
-            <h2 className="text-lg font-semibold text-foreground mb-2">No astronomical night tonight</h2>
-            <p className="text-sm leading-relaxed">
-              At your latitude the Sun does not drop below −18° tonight, so the sky never reaches full
-              darkness. Deep sky imaging is not possible — check back later in the season.
-            </p>
-          </div>
-        ) : filteredData.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">
-            <Telescope className="w-10 h-10 mx-auto mb-3 opacity-40" />
-            <p>No objects match your filters</p>
-          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {(isClientFiltered ? paginatedData : allLoadedData).map((obj, i) => (
-              <ObjectCard
-                key={obj.id}
-                obj={obj}
-                index={i}
-                lat={userPos.lat}
-                lng={userPos.lng}
-                searchQuery={filters.search}
-                onClick={() => setSelected(obj)}
-                isTopPick={topPickIds?.has(obj.catalog_id) ?? false}
-              />
-            ))}
-          </div>
+          <>
+            {showNoAstroNote && (
+              <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90">
+                <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                <span>No full astronomical night tonight — try <strong>Nautical</strong> or <strong>Civil</strong>.</span>
+              </div>
+            )}
+            {filteredData.length === 0 ? (
+              <div className="text-center py-16 text-muted-foreground">
+                <Telescope className="w-10 h-10 mx-auto mb-3 opacity-40" />
+                <p>No objects match your filters</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {(isClientFiltered ? paginatedData : allLoadedData).map((obj, i) => (
+                  <ObjectCard
+                    key={obj.id}
+                    obj={obj}
+                    index={i}
+                    lat={userPos.lat}
+                    lng={userPos.lng}
+                    searchQuery={filters.search}
+                    onClick={() => setSelected(obj)}
+                    isTopPick={topPickIds?.has(obj.catalog_id) ?? false}
+                    maxAltInWindow={(obj as CelestialObject & { _maxAltInWindow?: number })._maxAltInWindow}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         {/* Load more button */}

@@ -7,6 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Search, X, Trophy, Star, Moon, Camera } from "lucide-react";
 import { useMemo, useState } from "react";
 
+interface NightWindow {
+  startMs: number;
+  endMs: number;
+  minMs: number;
+  maxMs: number;
+  activePreset: "astro" | "nautical" | "civil" | "custom";
+  presetAvail: { astro: boolean; nautical: boolean; civil: boolean };
+  onPresetSelect: (key: "astro" | "nautical" | "civil") => void;
+  onWindowChange: (startMs: number, endMs: number) => void;
+  formatMs: (ms: number) => string;
+}
+
 interface Props {
   filters: CelestialFilters;
   onChange: (f: CelestialFilters) => void;
@@ -18,12 +30,11 @@ interface Props {
   onToggleVisibleTonight?: () => void;
   filterMode?: string;
   onFilterModeChange?: (mode: string) => void;
-  minHoursVisible?: number;
-  onMinHoursVisibleChange?: (hours: number) => void;
+  nightWindow?: NightWindow;
   typeCounts?: CatalogTypeCount[];
 }
 
-const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, minHoursVisible, onMinHoursVisibleChange, typeCounts }: Props) => {
+const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, nightWindow, typeCounts }: Props) => {
 
   const isTop50 = filters.limitResults === 50;
 
@@ -257,17 +268,40 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
           />
         </div>
 
-        {visibleTonightEnabled && onMinHoursVisibleChange != null && (
-          <div className="space-y-1 min-w-[180px] flex-1">
-            <label className="text-xs text-muted-foreground">
-              🕐 Min hours visible: {(minHoursVisible ?? 0) > 0 ? `${(minHoursVisible ?? 0)}h+` : "All"}
-            </label>
+        {visibleTonightEnabled && nightWindow && (
+          <div className="space-y-2 w-full">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-muted-foreground">Visible between:</span>
+              {([
+                { key: "astro", label: "Astro" },
+                { key: "nautical", label: "Nautical" },
+                { key: "civil", label: "Civil" },
+              ] as const).map((p) => {
+                const available = nightWindow.presetAvail[p.key];
+                const active = nightWindow.activePreset === p.key;
+                return (
+                  <Button
+                    key={p.key}
+                    variant={active ? "default" : "outline"}
+                    size="sm"
+                    disabled={!available}
+                    onClick={() => nightWindow.onPresetSelect(p.key)}
+                    className={`text-xs h-7 px-2.5 ${active ? "bg-primary text-primary-foreground" : ""}`}
+                  >
+                    {p.label}
+                  </Button>
+                );
+              })}
+              <span className="text-xs font-mono text-foreground/80 ml-auto tabular-nums">
+                {nightWindow.formatMs(nightWindow.startMs)} → {nightWindow.formatMs(nightWindow.endMs)}
+              </span>
+            </div>
             <Slider
-              value={[minHoursVisible ?? 0]}
-              onValueChange={([v]) => onMinHoursVisibleChange(v)}
-              min={0}
-              max={10}
-              step={1}
+              value={[nightWindow.startMs, nightWindow.endMs]}
+              onValueChange={([s, e]) => nightWindow.onWindowChange(s, e)}
+              min={nightWindow.minMs}
+              max={nightWindow.maxMs}
+              step={5 * 60 * 1000}
               className="py-2"
             />
           </div>

@@ -21,6 +21,7 @@ interface Props {
   searchQuery?: string;
   onClick: () => void;
   isTopPick?: boolean;
+  maxAltInWindow?: number;
 }
 
 const typeEmoji: Record<string, string> = {
@@ -36,7 +37,7 @@ const typeEmoji: Record<string, string> = {
   Planet: "🪐",
 };
 
-const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false }: Props) => {
+const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false, maxAltInWindow }: Props) => {
   const navigate = useNavigate();
   const { isInList, addObject, removeObject } = useTonightList();
   const alt =
@@ -251,6 +252,12 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
           <div className="mt-2 pt-2 border-t border-border/30 flex items-center justify-between text-xs">
             <span className={`font-medium ${vis.color}`}>{vis.label}</span>
             <span className="text-muted-foreground font-mono">{alt.toFixed(1)}° alt</span>
+          </div>
+        )}
+
+        {maxAltInWindow != null && maxAltInWindow < 30 && (
+          <div className="mt-1.5 text-[10px] text-muted-foreground/80 italic">
+            Low — best above 30° (peak {maxAltInWindow.toFixed(0)}°)
           </div>
         )}
 

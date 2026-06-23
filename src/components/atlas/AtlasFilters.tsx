@@ -225,47 +225,119 @@ const AtlasFilters = ({
             </Button>
           )}
 
-          {nightWindow && (
-            <div
-              className={`flex items-center gap-2 flex-1 min-w-[280px] ${nightDisabled ? "opacity-50 pointer-events-none select-none" : ""}`}
-              aria-disabled={nightDisabled}
-            >
-              <div className="flex items-center gap-1">
-                {([
-                  { key: "astro", label: "Astro" },
-                  { key: "nautical", label: "Nautical" },
-                  { key: "civil", label: "Civil" },
-                ] as const).map((p) => {
-                  const available = nightWindow.presetAvail[p.key];
-                  const active = nightWindow.activePreset === p.key;
-                  return (
-                    <Button
-                      key={p.key}
-                      variant={active ? "default" : "outline"}
-                      size="sm"
-                      disabled={nightDisabled || !available}
-                      onClick={() => nightWindow.onPresetSelect(p.key)}
-                      className={`text-xs h-8 px-2 ${active ? "bg-primary text-primary-foreground" : ""}`}
-                    >
-                      {p.label}
-                    </Button>
-                  );
-                })}
+          {nightWindow && (() => {
+            const fmt = nightWindow.formatMs;
+            const presetLabel = (k: "astro" | "nautical" | "civil") =>
+              k === "astro" ? "Astro" : k === "nautical" ? "Nautical" : "Civil";
+            const triggerText = (() => {
+              if (nightWindow.activePreset === "custom") {
+                return `Custom ${fmt(nightWindow.startMs)} – ${fmt(nightWindow.endMs)}`;
+              }
+              const t = nightWindow.presetTimes[nightWindow.activePreset];
+              return t
+                ? `${presetLabel(nightWindow.activePreset)} ${fmt(t.startMs)} – ${fmt(t.endMs)}`
+                : presetLabel(nightWindow.activePreset);
+            })();
+
+            // Hour ticks (round hours) between minMs and maxMs.
+            const ticks: { ms: number; pct: number; label: string }[] = [];
+            const targetHours = [21, 0, 3, 6];
+            const span = nightWindow.maxMs - nightWindow.minMs;
+            if (span > 0) {
+              const startDate = new Date(nightWindow.minMs);
+              // Walk hour by hour from the hour AFTER minMs to before maxMs.
+              const startHourMark = new Date(startDate);
+              startHourMark.setMinutes(0, 0, 0);
+              if (startHourMark.getTime() <= nightWindow.minMs) {
+                startHourMark.setHours(startHourMark.getHours() + 1);
+              }
+              for (let t = startHourMark.getTime(); t <= nightWindow.maxMs; t += 3600_000) {
+                const d = new Date(t);
+                const h = d.getHours();
+                if (!targetHours.includes(h)) continue;
+                const pct = ((t - nightWindow.minMs) / span) * 100;
+                ticks.push({
+                  ms: t,
+                  pct,
+                  label: `${String(h).padStart(2, "0")}:00`,
+                });
+              }
+            }
+
+            return (
+              <div
+                className={`flex items-center gap-2 flex-1 min-w-[280px] ${nightDisabled ? "opacity-50 pointer-events-none select-none" : ""}`}
+                aria-disabled={nightDisabled}
+              >
+                <Select
+                  value={nightWindow.activePreset}
+                  onValueChange={(v) => {
+                    if (v === "custom") return;
+                    nightWindow.onPresetSelect(v as "astro" | "nautical" | "civil");
+                  }}
+                  disabled={nightDisabled}
+                >
+                  <SelectTrigger className="bg-secondary/50 border-primary/30 h-8 text-xs w-[200px] text-primary">
+                    <SelectValue>{triggerText}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(["civil", "nautical", "astro"] as const).map((k) => {
+                      const t = nightWindow.presetTimes[k];
+                      const avail = nightWindow.presetAvail[k];
+                      return (
+                        <SelectItem key={k} value={k} disabled={!avail}>
+                          <span className="flex items-center gap-2">
+                            <span className="font-medium">{presetLabel(k)}</span>
+                            <span className="text-xs text-muted-foreground tabular-nums">
+                              {avail && t ? `${fmt(t.startMs)} – ${fmt(t.endMs)}` : "unavailable"}
+                            </span>
+                          </span>
+                        </SelectItem>
+                      );
+                    })}
+                    {nightWindow.activePreset === "custom" && (
+                      <SelectItem value="custom" disabled>
+                        <span className="flex items-center gap-2">
+                          <span className="font-medium">Custom</span>
+                          <span className="text-xs text-muted-foreground tabular-nums">
+                            {fmt(nightWindow.startMs)} – {fmt(nightWindow.endMs)}
+                          </span>
+                        </span>
+                      </SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+
+                <div className="flex-1 min-w-[140px]">
+                  <Slider
+                    value={[nightWindow.startMs, nightWindow.endMs]}
+                    onValueChange={([s, e]) => nightWindow.onWindowChange(s, e)}
+                    min={nightWindow.minMs}
+                    max={nightWindow.maxMs}
+                    step={5 * 60 * 1000}
+                    disabled={nightDisabled}
+                    className="w-full"
+                  />
+                  {ticks.length > 0 && (
+                    <div className="relative h-4 mt-1">
+                      {ticks.map((t) => (
+                        <div
+                          key={t.ms}
+                          className="absolute top-0 flex flex-col items-center"
+                          style={{ left: `${t.pct}%`, transform: "translateX(-50%)" }}
+                        >
+                          <div className="w-px h-1.5 bg-muted-foreground/40" />
+                          <span className="text-[9px] text-muted-foreground/70 tabular-nums leading-none mt-0.5">
+                            {t.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-              <Slider
-                value={[nightWindow.startMs, nightWindow.endMs]}
-                onValueChange={([s, e]) => nightWindow.onWindowChange(s, e)}
-                min={nightWindow.minMs}
-                max={nightWindow.maxMs}
-                step={5 * 60 * 1000}
-                disabled={nightDisabled}
-                className="flex-1 min-w-[120px]"
-              />
-              <span className="text-[11px] font-mono text-foreground/80 tabular-nums whitespace-nowrap">
-                {nightWindow.formatMs(nightWindow.startMs)} → {nightWindow.formatMs(nightWindow.endMs)}
-              </span>
-            </div>
-          )}
+            );
+          })()}
         </div>
 
         {/* Line 3: object-type category tags */}

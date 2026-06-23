@@ -1,5 +1,4 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
-import { calculateAltitude, getVisibilityLabel } from "@/lib/visibility";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { computeDynamicScore, getSeasonEmoji, getSeasonLabel } from "@/lib/dynamic-score";

@@ -64,7 +64,7 @@ export interface CelestialFilters {
   constellation: string;
   maxMagnitude: number;
   minPhotoScore: number;
-  sortBy: "photo_score" | "magnitude" | "size_max" | "catalog_id" | "tonight_best";
+  sortBy: "photo_score" | "magnitude" | "size_max" | "catalog_id" | "tonight_best" | "tonight_duration";
   minSize: number;
   maxSize: number;
   limitResults?: number;

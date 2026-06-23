@@ -198,6 +198,7 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
   switch (filters.sortBy) {
     case "photo_score":
     case "tonight_best":
+    case "tonight_duration":
       query = query.order("photo_score", { ascending: false, nullsFirst: false });
       break;
     case "magnitude":

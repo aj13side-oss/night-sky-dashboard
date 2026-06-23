@@ -350,9 +350,6 @@ const SkyAtlas = () => {
     return results;
   }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, windowStart, windowEnd, filters.sortBy, filters.limitResults]);
 
-  // Track previous visibleTonight value to detect off->on transitions.
-  const prevVisibleTonightRef = useRef(visibleTonight);
-
   // Initialize / re-sync window when Visible Tonight is enabled or presets become available.
   // When Visible Tonight transitions off->on, reset to civil preset by default.
   useEffect(() => {

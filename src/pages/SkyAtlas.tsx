@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 
 import AppNav from "@/components/AppNav";
@@ -77,6 +77,7 @@ const SkyAtlas = () => {
   const [windowStart, setWindowStart] = useState<Date | null>(null);
   const [windowEnd, setWindowEnd] = useState<Date | null>(null);
   const [activePreset, setActivePreset] = useState<PresetKey>("civil");
+  const prevVisibleTonightRef = useRef(visibleTonight);
   const [clientPage, setClientPage] = useState(0);
   const CLIENT_PAGE_SIZE = 20;
   
@@ -350,15 +351,31 @@ const SkyAtlas = () => {
   }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, windowStart, windowEnd, filters.sortBy, filters.limitResults]);
 
   // Initialize / re-sync window when Visible Tonight is enabled or presets become available.
-  // Re-applies the active preset whenever its bounds change (e.g. astronomy data loads after first render).
+  // When Visible Tonight transitions off->on, reset to civil preset by default.
   useEffect(() => {
-    if (!visibleTonight) return;
+    if (!visibleTonight) {
+      prevVisibleTonightRef.current = visibleTonight;
+      return;
+    }
+
+    const justTurnedOn = prevVisibleTonightRef.current === false;
+
     const pickFallback = () => {
       if (presets.civil) return { key: "civil" as const, p: presets.civil };
       if (presets.nautical) return { key: "nautical" as const, p: presets.nautical };
       if (presets.astro) return { key: "astro" as const, p: presets.astro };
       return { key: "custom" as const, p: presets.bounds };
     };
+
+    if (justTurnedOn) {
+      const { key, p } = pickFallback();
+      setWindowStart(p.start);
+      setWindowEnd(p.end);
+      setActivePreset(key);
+      prevVisibleTonightRef.current = visibleTonight;
+      return;
+    }
+
     if (activePreset === "custom") {
       if (!windowStart || !windowEnd) {
         const { key, p } = pickFallback();
@@ -366,8 +383,10 @@ const SkyAtlas = () => {
         setWindowEnd(p.end);
         setActivePreset(key);
       }
+      prevVisibleTonightRef.current = visibleTonight;
       return;
     }
+
     const current = presets[activePreset];
     if (current) {
       if (
@@ -384,6 +403,8 @@ const SkyAtlas = () => {
       setWindowEnd(p.end);
       setActivePreset(key);
     }
+
+    prevVisibleTonightRef.current = visibleTonight;
   }, [visibleTonight, presets, activePreset, windowStart, windowEnd]);
 
   const selectPreset = useCallback((key: "astro" | "nautical" | "civil") => {

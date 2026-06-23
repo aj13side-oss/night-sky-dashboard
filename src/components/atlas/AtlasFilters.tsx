@@ -109,6 +109,7 @@ const AtlasFilters = ({
 
   const activeFilterCount = useMemo(() => {
     let n = 0;
+    if (filters.catalog) n++;
     if (filters.constellation) n++;
     if (filters.minSize > 0 || filters.maxSize < 300) n++;
     if (filters.maxMagnitude < 20) n++;
@@ -204,97 +205,62 @@ const AtlasFilters = ({
           </div>
         </div>
 
-        {/* Line 2: catalogs (left) | Visible Tonight + presets + slider (right) */}
-        <div className="flex flex-wrap gap-3 items-center justify-between">
-          <div className="flex flex-wrap gap-1.5 items-center">
-            {([
-              { key: "M", label: "M", fullLabel: "Messier" },
-              { key: "NGC", label: "NGC", fullLabel: "NGC" },
-              { key: "IC", label: "IC", fullLabel: "IC" },
-              { key: "SH", label: "Sh", fullLabel: "Sharpless" },
-              { key: "B", label: "B", fullLabel: "Barnard" },
-              { key: "ACO", label: "Abell", fullLabel: "Abell" },
-              { key: "C", label: "C", fullLabel: "Caldwell" },
-              { key: "OTHER", label: "Other", fullLabel: "Other" },
-            ] as const).map((cat) => {
-              const active = filters.catalog === cat.key;
-              return (
-                <Button
-                  key={cat.key}
-                  variant={active ? "default" : "outline"}
-                  size="sm"
-                  onClick={() =>
-                    onChange({
-                      ...filters,
-                      catalog: active ? "" : cat.key,
-                      limitResults: undefined,
-                    })
-                  }
-                  className={`text-xs h-7 px-2.5 ${active ? "bg-primary text-primary-foreground" : ""}`}
-                >
-                  {active ? cat.fullLabel : cat.label}
-                  {active && <X className="w-3 h-3 ml-1" />}
-                </Button>
-              );
-            })}
-          </div>
+        {/* Line 2: Visible Tonight + presets + slider */}
+        <div className="flex flex-wrap gap-2 items-center">
+          {onToggleVisibleTonight && (
+            <Button
+              variant={visibleTonightEnabled ? "default" : "outline"}
+              size="sm"
+              onClick={onToggleVisibleTonight}
+              className={`gap-1.5 text-xs h-9 ${visibleTonightEnabled ? "bg-primary text-primary-foreground" : ""}`}
+            >
+              <Moon className="w-3.5 h-3.5" />
+              Visible Tonight
+              {visibleTonightEnabled && <X className="w-3 h-3 ml-1" />}
+            </Button>
+          )}
 
-          <div className="flex flex-wrap items-center gap-2 flex-1 min-w-[320px] justify-end">
-            {onToggleVisibleTonight && (
-              <Button
-                variant={visibleTonightEnabled ? "default" : "outline"}
-                size="sm"
-                onClick={onToggleVisibleTonight}
-                className={`gap-1.5 text-xs h-9 ${visibleTonightEnabled ? "bg-primary text-primary-foreground" : ""}`}
-              >
-                <Moon className="w-3.5 h-3.5" />
-                Visible Tonight
-                {visibleTonightEnabled && <X className="w-3 h-3 ml-1" />}
-              </Button>
-            )}
-
-            {nightWindow && (
-              <div
-                className={`flex items-center gap-2 flex-1 min-w-[280px] ${nightDisabled ? "opacity-50 pointer-events-none select-none" : ""}`}
-                aria-disabled={nightDisabled}
-              >
-                <div className="flex items-center gap-1">
-                  {([
-                    { key: "astro", label: "Astro" },
-                    { key: "nautical", label: "Nautical" },
-                    { key: "civil", label: "Civil" },
-                  ] as const).map((p) => {
-                    const available = nightWindow.presetAvail[p.key];
-                    const active = nightWindow.activePreset === p.key;
-                    return (
-                      <Button
-                        key={p.key}
-                        variant={active ? "default" : "outline"}
-                        size="sm"
-                        disabled={nightDisabled || !available}
-                        onClick={() => nightWindow.onPresetSelect(p.key)}
-                        className={`text-xs h-8 px-2 ${active ? "bg-primary text-primary-foreground" : ""}`}
-                      >
-                        {p.label}
-                      </Button>
-                    );
-                  })}
-                </div>
-                <Slider
-                  value={[nightWindow.startMs, nightWindow.endMs]}
-                  onValueChange={([s, e]) => nightWindow.onWindowChange(s, e)}
-                  min={nightWindow.minMs}
-                  max={nightWindow.maxMs}
-                  step={5 * 60 * 1000}
-                  disabled={nightDisabled}
-                  className="flex-1 min-w-[120px]"
-                />
-                <span className="text-[11px] font-mono text-foreground/80 tabular-nums whitespace-nowrap">
-                  {nightWindow.formatMs(nightWindow.startMs)} → {nightWindow.formatMs(nightWindow.endMs)}
-                </span>
+          {nightWindow && (
+            <div
+              className={`flex items-center gap-2 flex-1 min-w-[280px] ${nightDisabled ? "opacity-50 pointer-events-none select-none" : ""}`}
+              aria-disabled={nightDisabled}
+            >
+              <div className="flex items-center gap-1">
+                {([
+                  { key: "astro", label: "Astro" },
+                  { key: "nautical", label: "Nautical" },
+                  { key: "civil", label: "Civil" },
+                ] as const).map((p) => {
+                  const available = nightWindow.presetAvail[p.key];
+                  const active = nightWindow.activePreset === p.key;
+                  return (
+                    <Button
+                      key={p.key}
+                      variant={active ? "default" : "outline"}
+                      size="sm"
+                      disabled={nightDisabled || !available}
+                      onClick={() => nightWindow.onPresetSelect(p.key)}
+                      className={`text-xs h-8 px-2 ${active ? "bg-primary text-primary-foreground" : ""}`}
+                    >
+                      {p.label}
+                    </Button>
+                  );
+                })}
               </div>
-            )}
-          </div>
+              <Slider
+                value={[nightWindow.startMs, nightWindow.endMs]}
+                onValueChange={([s, e]) => nightWindow.onWindowChange(s, e)}
+                min={nightWindow.minMs}
+                max={nightWindow.maxMs}
+                step={5 * 60 * 1000}
+                disabled={nightDisabled}
+                className="flex-1 min-w-[120px]"
+              />
+              <span className="text-[11px] font-mono text-foreground/80 tabular-nums whitespace-nowrap">
+                {nightWindow.formatMs(nightWindow.startMs)} → {nightWindow.formatMs(nightWindow.endMs)}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Line 3: object-type category tags */}
@@ -345,6 +311,43 @@ const AtlasFilters = ({
             >
               <X className="w-3.5 h-3.5" />
             </Button>
+          </div>
+
+          {/* Catalogs */}
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground">Catalog</label>
+            <div className="flex flex-wrap gap-1.5">
+              {([
+                { key: "M", label: "M", fullLabel: "Messier" },
+                { key: "NGC", label: "NGC", fullLabel: "NGC" },
+                { key: "IC", label: "IC", fullLabel: "IC" },
+                { key: "SH", label: "Sh", fullLabel: "Sharpless" },
+                { key: "B", label: "B", fullLabel: "Barnard" },
+                { key: "ACO", label: "Abell", fullLabel: "Abell" },
+                { key: "C", label: "C", fullLabel: "Caldwell" },
+                { key: "OTHER", label: "Other", fullLabel: "Other" },
+              ] as const).map((cat) => {
+                const active = filters.catalog === cat.key;
+                return (
+                  <Button
+                    key={cat.key}
+                    variant={active ? "default" : "outline"}
+                    size="sm"
+                    onClick={() =>
+                      onChange({
+                        ...filters,
+                        catalog: active ? "" : cat.key,
+                        limitResults: undefined,
+                      })
+                    }
+                    className={`text-xs h-7 px-2.5 ${active ? "bg-primary text-primary-foreground" : ""}`}
+                  >
+                    {active ? cat.fullLabel : cat.label}
+                    {active && <X className="w-3 h-3 ml-1" />}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

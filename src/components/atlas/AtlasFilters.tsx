@@ -201,6 +201,9 @@ const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, t
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="tonight_best">⭐ Tonight's Best</SelectItem>
+              {visibleTonightEnabled && (
+                <SelectItem value="tonight_duration">🌙 Visibility duration ↓</SelectItem>
+              )}
               <SelectItem value="photo_score">Photo Score ↓</SelectItem>
               <SelectItem value="magnitude">Magnitude ↑</SelectItem>
               <SelectItem value="size_max">Size ↓</SelectItem>

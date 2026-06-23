@@ -64,7 +64,7 @@ export interface CelestialFilters {
   constellation: string;
   maxMagnitude: number;
   minPhotoScore: number;
-  sortBy: "photo_score" | "magnitude" | "size_max" | "catalog_id" | "tonight_best";
+  sortBy: "photo_score" | "magnitude" | "size_max" | "catalog_id" | "tonight_best" | "tonight_duration";
   minSize: number;
   maxSize: number;
   limitResults?: number;
@@ -198,6 +198,7 @@ async function fetchObjects(filters: CelestialFilters, page: number) {
   switch (filters.sortBy) {
     case "photo_score":
     case "tonight_best":
+    case "tonight_duration":
       query = query.order("photo_score", { ascending: false, nullsFirst: false });
       break;
     case "magnitude":

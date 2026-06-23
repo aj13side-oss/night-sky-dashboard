@@ -72,7 +72,7 @@ const SkyAtlas = () => {
   const [selected, setSelected] = useState<CelestialObject | null>(null);
   const [userPos, setUserPos] = useState({ lat: 45.7347, lng: 4.4931 });
   const [geoStatus, setGeoStatus] = useState<'default' | 'requesting' | 'granted' | 'denied'>('default');
-  const [visibleTonight, setVisibleTonight] = useState(false);
+  const [visibleTonight, setVisibleTonight] = useState(true);
   const [filterMode, setFilterMode] = useState("all");
   const [windowStart, setWindowStart] = useState<Date | null>(null);
   const [windowEnd, setWindowEnd] = useState<Date | null>(null);
@@ -260,7 +260,10 @@ const SkyAtlas = () => {
     handleGeolocation();
   }, [handleGeolocation]);
 
-  useEffect(() => { setPage(0); setClientPage(0); setAllLoadedData([]); }, [filters, visibleTonight, filterMode, windowStart, windowEnd]);
+  // Only reset the server-paginated accumulated list when server-query inputs change.
+  useEffect(() => { setPage(0); setAllLoadedData([]); }, [filters]);
+  // Client-side pagination resets when client filters/time window change.
+  useEffect(() => { setClientPage(0); }, [visibleTonight, filterMode, windowStart, windowEnd]);
 
   // Client-side filters: visible tonight + filter mode
   const sourceData = useMemo<CelestialObject[]>(() => {
@@ -270,7 +273,7 @@ const SkyAtlas = () => {
 
   const filteredData = useMemo(() => {
     if (!sourceData.length) return [];
-    let results: (CelestialObject & { _maxAltInWindow?: number })[] = sourceData;
+    let results: (CelestialObject & { _maxAltInWindow?: number; _hoursVisibleInWindow?: number })[] = sourceData;
 
     if (visibleTonight && windowStart && windowEnd && windowEnd.getTime() > windowStart.getTime()) {
       const startMs = windowStart.getTime();
@@ -280,14 +283,15 @@ const SkyAtlas = () => {
         .map((obj) => {
           if (obj.ra_deg == null || obj.dec_deg == null) return null;
           let maxAlt = -90;
+          let stepsAbove = 0;
           let aboveHorizon = false;
           for (let t = startMs; t <= endMs; t += STEP_MS) {
             const alt = calculateAltitude(obj.ra_deg, obj.dec_deg, userPos.lat, userPos.lng, new Date(t));
             if (alt > maxAlt) maxAlt = alt;
-            if (alt > 0) aboveHorizon = true;
+            if (alt > 0) { aboveHorizon = true; stepsAbove++; }
           }
           if (!aboveHorizon) return null;
-          return { ...obj, _maxAltInWindow: maxAlt };
+          return { ...obj, _maxAltInWindow: maxAlt, _hoursVisibleInWindow: (stepsAbove * 5) / 60 };
         })
         .filter((obj): obj is NonNullable<typeof obj> => obj !== null);
     }
@@ -304,31 +308,51 @@ const SkyAtlas = () => {
       });
     }
 
-    return results;
-  }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, windowStart, windowEnd]);
+    if (visibleTonight && filters.sortBy === "tonight_duration") {
+      results = [...results].sort(
+        (a, b) => (b._hoursVisibleInWindow ?? 0) - (a._hoursVisibleInWindow ?? 0),
+      );
+    }
 
-  // Initialize / reset window when Visible Tonight is toggled or presets change
+    return results;
+  }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, windowStart, windowEnd, filters.sortBy]);
+
+  // Initialize / re-sync window when Visible Tonight is enabled or presets become available.
+  // Re-applies the active preset whenever its bounds change (e.g. astronomy data loads after first render).
   useEffect(() => {
     if (!visibleTonight) return;
-    if (windowStart && windowEnd) return;
-    if (presets.astro) {
-      setWindowStart(presets.astro.start);
-      setWindowEnd(presets.astro.end);
-      setActivePreset("astro");
-    } else if (presets.nautical) {
-      setWindowStart(presets.nautical.start);
-      setWindowEnd(presets.nautical.end);
-      setActivePreset("nautical");
-    } else if (presets.civil) {
-      setWindowStart(presets.civil.start);
-      setWindowEnd(presets.civil.end);
-      setActivePreset("civil");
-    } else {
-      setWindowStart(presets.bounds.start);
-      setWindowEnd(presets.bounds.end);
-      setActivePreset("custom");
+    const pickFallback = () => {
+      if (presets.astro) return { key: "astro" as const, p: presets.astro };
+      if (presets.nautical) return { key: "nautical" as const, p: presets.nautical };
+      if (presets.civil) return { key: "civil" as const, p: presets.civil };
+      return { key: "custom" as const, p: presets.bounds };
+    };
+    if (activePreset === "custom") {
+      if (!windowStart || !windowEnd) {
+        const { key, p } = pickFallback();
+        setWindowStart(p.start);
+        setWindowEnd(p.end);
+        setActivePreset(key);
+      }
+      return;
     }
-  }, [visibleTonight, presets, windowStart, windowEnd]);
+    const current = presets[activePreset];
+    if (current) {
+      if (
+        !windowStart || !windowEnd ||
+        windowStart.getTime() !== current.start.getTime() ||
+        windowEnd.getTime() !== current.end.getTime()
+      ) {
+        setWindowStart(current.start);
+        setWindowEnd(current.end);
+      }
+    } else {
+      const { key, p } = pickFallback();
+      setWindowStart(p.start);
+      setWindowEnd(p.end);
+      setActivePreset(key);
+    }
+  }, [visibleTonight, presets, activePreset, windowStart, windowEnd]);
 
   const selectPreset = useCallback((key: "astro" | "nautical" | "civil") => {
     const p = presets[key];
@@ -448,8 +472,14 @@ const SkyAtlas = () => {
           filterMode={filterMode}
           onFilterModeChange={setFilterMode}
           nightWindow={visibleTonight && windowStart && windowEnd ? {
-            startMs: windowStart.getTime(),
-            endMs: windowEnd.getTime(),
+            startMs: Math.max(
+              Math.min(windowStart.getTime(), presets.bounds.end.getTime()),
+              presets.bounds.start.getTime(),
+            ),
+            endMs: Math.min(
+              Math.max(windowEnd.getTime(), presets.bounds.start.getTime()),
+              presets.bounds.end.getTime(),
+            ),
             minMs: presets.bounds.start.getTime(),
             maxMs: presets.bounds.end.getTime(),
             activePreset,

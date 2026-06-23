@@ -322,6 +322,22 @@ const SkyAtlas = () => {
       results = [...results].sort(
         (a, b) => (b._hoursVisibleInWindow ?? 0) - (a._hoursVisibleInWindow ?? 0),
       );
+    } else if (filters.sortBy === "magnitude") {
+      results = [...results].sort(
+        (a, b) => (a.magnitude ?? Infinity) - (b.magnitude ?? Infinity),
+      );
+    } else if (filters.sortBy === "size_max") {
+      results = [...results].sort(
+        (a, b) => (b.size_max ?? -Infinity) - (a.size_max ?? -Infinity),
+      );
+    } else if (filters.sortBy === "photo_score") {
+      results = [...results].sort(
+        (a, b) => (b.photo_score ?? -Infinity) - (a.photo_score ?? -Infinity),
+      );
+    } else if (filters.sortBy === "catalog_id") {
+      results = [...results].sort((a, b) =>
+        (a.catalog_id || "").localeCompare(b.catalog_id || "", undefined, { numeric: true }),
+      );
     }
 
     // Cap to limitResults (e.g. Top 50) on the client path so it applies even

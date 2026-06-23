@@ -260,7 +260,10 @@ const SkyAtlas = () => {
     handleGeolocation();
   }, [handleGeolocation]);
 
-  useEffect(() => { setPage(0); setClientPage(0); setAllLoadedData([]); }, [filters, visibleTonight, filterMode, windowStart, windowEnd]);
+  // Only reset the server-paginated accumulated list when server-query inputs change.
+  useEffect(() => { setPage(0); setAllLoadedData([]); }, [filters]);
+  // Client-side pagination resets when client filters/time window change.
+  useEffect(() => { setClientPage(0); }, [visibleTonight, filterMode, windowStart, windowEnd]);
 
   // Client-side filters: visible tonight + filter mode
   const sourceData = useMemo<CelestialObject[]>(() => {

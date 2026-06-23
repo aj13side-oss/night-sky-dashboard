@@ -1,4 +1,5 @@
 import { calculateAltitude } from "./visibility";
+import { getAstroTwilightWindow } from "./astronomy";
 
 export interface RiseSetTransit {
   riseTime: Date | null;
@@ -24,12 +25,21 @@ export function getObjectRiseSetTransit(
   twilightStartHour = 18,
   twilightEndHour = 6
 ): RiseSetTransit {
-  const baseDate = new Date(date);
-  baseDate.setHours(twilightStartHour, 0, 0, 0);
-
-  const endDate = new Date(date);
-  endDate.setDate(endDate.getDate() + 1);
-  endDate.setHours(twilightEndHour, 0, 0, 0);
+  const window = getAstroTwilightWindow(date, lat, lng);
+  if (!window.hasTrueNight || !window.start || !window.end) {
+    return {
+      riseTime: null,
+      setTime: null,
+      transitTime: null,
+      transitAlt: -999,
+      bestWindowStart: null,
+      bestWindowEnd: null,
+      isCircumpolar: false,
+      neverRises: true,
+    };
+  }
+  const baseDate = window.start;
+  const endDate = window.end;
 
   const stepMinutes = 5;
   let maxAlt = -999;

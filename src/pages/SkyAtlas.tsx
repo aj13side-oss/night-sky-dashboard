@@ -17,7 +17,7 @@ import {
   PAGE_SIZE,
 } from "@/hooks/useCelestialObjects";
 import { getObjectRiseSetTransit } from "@/lib/rise-set";
-import { getAstronomicalNight } from "@/lib/astronomy";
+import { getAstroTwilightWindow } from "@/lib/astronomy";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";
@@ -197,9 +197,10 @@ const SkyAtlas = () => {
     let results: (CelestialObject & { _hoursVisible?: number })[] = sourceData;
 
     if (visibleTonight) {
-      const night = getAstronomicalNight(new Date(), userPos.lat, userPos.lng);
-      const nightStart = night.start;
-      const nightEnd = night.end;
+      const night = getAstroTwilightWindow(new Date(), userPos.lat, userPos.lng);
+      const nightDurationH = night.hasTrueNight && night.start && night.end
+        ? Math.max(0, (night.end.getTime() - night.start.getTime()) / 3600000)
+        : 12;
       results = results
         .map((obj) => {
           if (obj.ra_deg == null || obj.dec_deg == null) return null;
@@ -207,11 +208,11 @@ const SkyAtlas = () => {
           if (rs.neverRises) return null;
           let hoursVisible = 0;
           if (rs.isCircumpolar) {
-            hoursVisible = Math.max(0, (nightEnd.getTime() - nightStart.getTime()) / 3600000);
+            hoursVisible = nightDurationH;
           } else if (rs.riseTime || rs.setTime) {
-            const start = rs.riseTime && rs.riseTime > nightStart ? rs.riseTime : nightStart;
-            const end = rs.setTime && rs.setTime < nightEnd ? rs.setTime : nightEnd;
-            hoursVisible = Math.max(0, (end.getTime() - start.getTime()) / 3600000);
+            const startMs = rs.riseTime?.getTime() ?? 0;
+            const endMs = rs.setTime?.getTime() ?? 0;
+            hoursVisible = Math.max(0, (endMs - startMs) / 3600000);
           }
           return { ...obj, _hoursVisible: hoursVisible };
         })
@@ -232,6 +233,11 @@ const SkyAtlas = () => {
 
     return results;
   }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, minHoursVisible]);
+
+  const hasTrueNightTonight = useMemo(
+    () => getAstroTwilightWindow(new Date(), userPos.lat, userPos.lng).hasTrueNight,
+    [userPos.lat, userPos.lng]
+  );
 
   const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 
@@ -381,6 +387,15 @@ const SkyAtlas = () => {
                 <div key={i} className="glass-card rounded-2xl p-4 h-40 animate-pulse" />
               ))}
             </div>
+          </div>
+        ) : visibleTonight && !hasTrueNightTonight ? (
+          <div className="text-center py-16 text-muted-foreground max-w-xl mx-auto">
+            <Telescope className="w-10 h-10 mx-auto mb-3 opacity-40" />
+            <h2 className="text-lg font-semibold text-foreground mb-2">No astronomical night tonight</h2>
+            <p className="text-sm leading-relaxed">
+              At your latitude the Sun does not drop below −18° tonight, so the sky never reaches full
+              darkness. Deep sky imaging is not possible — check back later in the season.
+            </p>
           </div>
         ) : filteredData.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">

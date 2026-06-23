@@ -70,68 +70,56 @@ export function getSunTimes(date: Date = new Date(), lat = 48.8566, lng = 2.3522
 }
 
 /**
- * Sun altitude in degrees at the given moment for an observer at (lat, lng).
- * Low-precision NOAA-style formula — accurate to ~0.1°, plenty for twilight detection.
+ * Returns the astronomical night window (Sun below -18°) for the night that
+ * begins on the given `date`. Reuses the same low-precision math as
+ * getSunTimes (cos(108°) → Sun at -18°). If the Sun never reaches -18°
+ * (high-latitude summer), returns hasTrueNight=false with null bounds.
  */
-export function getSunAltitude(date: Date, lat: number, lng: number): number {
-  const rad = Math.PI / 180;
-  const jd = date.getTime() / 86400000 + 2440587.5;
-  const n = jd - 2451545.0;
-  const L = (280.460 + 0.9856474 * n) % 360;
-  const g = (((357.528 + 0.9856003 * n) % 360)) * rad;
-  const lambda = (L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * rad;
-  const epsilon = (23.439 - 0.0000004 * n) * rad;
-  const ra = Math.atan2(Math.cos(epsilon) * Math.sin(lambda), Math.cos(lambda));
-  const dec = Math.asin(Math.sin(epsilon) * Math.sin(lambda));
-  const gmstHours = (18.697374558 + 24.06570982441908 * n) % 24;
-  const lst = ((gmstHours * 15 + lng) % 360) * rad;
-  const ha = lst - ra;
-  const alt = Math.asin(
-    Math.sin(lat * rad) * Math.sin(dec) +
-    Math.cos(lat * rad) * Math.cos(dec) * Math.cos(ha)
-  );
-  return alt / rad;
-}
-
-/**
- * Returns the astronomical night window (Sun below -18°) bracketing the night
- * that begins on `date`. Scans local 12:00 → next-day 12:00 in 5-min steps.
- * Falls back to a wider civil/nautical window if astro darkness never occurs
- * (high-latitude summer); finally falls back to 18:00 → 06:00 local.
- */
-export function getAstronomicalNight(
+export function getAstroTwilightWindow(
   date: Date,
   lat: number,
   lng: number
-): { start: Date; end: Date; isAstroDark: boolean } {
-  const noon = new Date(date);
-  noon.setHours(12, 0, 0, 0);
-  const endScan = new Date(noon.getTime() + 24 * 3600 * 1000);
-  const stepMs = 5 * 60 * 1000;
+): { start: Date | null; end: Date | null; hasTrueNight: boolean } {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const toDeg = (r: number) => (r * 180) / Math.PI;
 
-  const findWindow = (threshold: number): { start: Date; end: Date } | null => {
-    let start: Date | null = null;
-    let end: Date | null = null;
-    let prev = getSunAltitude(noon, lat, lng);
-    for (let t = noon.getTime() + stepMs; t <= endScan.getTime(); t += stepMs) {
-      const cur = getSunAltitude(new Date(t), lat, lng);
-      if (!start && prev > threshold && cur <= threshold) start = new Date(t);
-      if (start && !end && prev <= threshold && cur > threshold) end = new Date(t);
-      prev = cur;
-    }
-    return start && end ? { start, end } : null;
+  const computeForDay = (d: Date): { solarNoon: number; astroHourAngle: number } | null => {
+    const dayOfYear = Math.floor(
+      (d.getTime() - new Date(d.getFullYear(), 0, 0).getTime()) / 86400000
+    );
+    const declination = -23.45 * Math.cos(toRad((360 / 365) * (dayOfYear + 10)));
+    const solarNoon = 720 - 4 * lng - d.getTimezoneOffset();
+    const arg =
+      (Math.cos(toRad(108)) / (Math.cos(toRad(lat)) * Math.cos(toRad(declination)))) -
+      Math.tan(toRad(lat)) * Math.tan(toRad(declination));
+    const astroHourAngle = toDeg(Math.acos(arg));
+    if (!isFinite(astroHourAngle) || isNaN(astroHourAngle)) return null;
+    return { solarNoon, astroHourAngle };
   };
 
-  const astro = findWindow(-18);
-  if (astro) return { ...astro, isAstroDark: true };
-  const nautical = findWindow(-12);
-  if (nautical) return { ...nautical, isAstroDark: false };
-  const civil = findWindow(-6);
-  if (civil) return { ...civil, isAstroDark: false };
+  const today = computeForDay(date);
+  const nextDay = new Date(date);
+  nextDay.setDate(nextDay.getDate() + 1);
+  const tomorrow = computeForDay(nextDay);
 
-  const fallbackStart = new Date(date); fallbackStart.setHours(18, 0, 0, 0);
-  const fallbackEnd = new Date(date); fallbackEnd.setDate(fallbackEnd.getDate() + 1); fallbackEnd.setHours(6, 0, 0, 0);
-  return { start: fallbackStart, end: fallbackEnd, isAstroDark: false };
+  if (!today || !tomorrow) {
+    return { start: null, end: null, hasTrueNight: false };
+  }
+
+  // Evening astronomical dusk (full darkness begins): solarNoon + HA*4 minutes
+  const eveningDuskMin = today.solarNoon + today.astroHourAngle * 4;
+  // Morning astronomical dawn (full darkness ends): next day's solarNoon - HA*4
+  const morningDawnMin = tomorrow.solarNoon - tomorrow.astroHourAngle * 4;
+
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+  start.setMinutes(eveningDuskMin);
+
+  const end = new Date(nextDay);
+  end.setHours(0, 0, 0, 0);
+  end.setMinutes(morningDawnMin);
+
+  return { start, end, hasTrueNight: true };
 }
 
 export interface PlanetEphemeris {

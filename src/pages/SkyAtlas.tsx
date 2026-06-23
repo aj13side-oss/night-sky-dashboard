@@ -17,6 +17,7 @@ import {
   PAGE_SIZE,
 } from "@/hooks/useCelestialObjects";
 import { getObjectRiseSetTransit } from "@/lib/rise-set";
+import { getAstronomicalNight } from "@/lib/astronomy";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";
@@ -196,6 +197,9 @@ const SkyAtlas = () => {
     let results: (CelestialObject & { _hoursVisible?: number })[] = sourceData;
 
     if (visibleTonight) {
+      const night = getAstronomicalNight(new Date(), userPos.lat, userPos.lng);
+      const nightStart = night.start;
+      const nightEnd = night.end;
       results = results
         .map((obj) => {
           if (obj.ra_deg == null || obj.dec_deg == null) return null;
@@ -203,10 +207,8 @@ const SkyAtlas = () => {
           if (rs.neverRises) return null;
           let hoursVisible = 0;
           if (rs.isCircumpolar) {
-            hoursVisible = 12;
+            hoursVisible = Math.max(0, (nightEnd.getTime() - nightStart.getTime()) / 3600000);
           } else if (rs.riseTime || rs.setTime) {
-            const nightStart = new Date(); nightStart.setHours(18, 0, 0, 0);
-            const nightEnd = new Date(); nightEnd.setDate(nightEnd.getDate() + 1); nightEnd.setHours(6, 0, 0, 0);
             const start = rs.riseTime && rs.riseTime > nightStart ? rs.riseTime : nightStart;
             const end = rs.setTime && rs.setTime < nightEnd ? rs.setTime : nightEnd;
             hoursVisible = Math.max(0, (end.getTime() - start.getTime()) / 3600000);

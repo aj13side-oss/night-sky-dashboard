@@ -292,7 +292,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
 
         {maxAltInWindow != null && maxAltInWindow < 30 && (
           <div className="mt-1.5 text-[10px] text-muted-foreground/80 italic">
-            Low — best above 30° (peak {maxAltInWindow.toFixed(0)}°)
+            Low — best above 30°
           </div>
         )}
 

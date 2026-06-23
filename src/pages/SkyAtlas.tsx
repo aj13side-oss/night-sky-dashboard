@@ -498,7 +498,15 @@ const SkyAtlas = () => {
           </p>
         </motion.div>
 
-        <TonightTopPicks lat={userPos.lat} lng={userPos.lng} onSelect={setSelected} />
+        <TonightTopPicks
+          lat={userPos.lat}
+          lng={userPos.lng}
+          onSelect={setSelected}
+          sunset={presets.bounds?.start ?? null}
+          sunrise={presets.bounds?.end ?? null}
+          astroDuskEnd={presets.astro?.start ?? null}
+          astroDawnBegin={presets.astro?.end ?? null}
+        />
 
         <AtlasFilters
           filters={filters}

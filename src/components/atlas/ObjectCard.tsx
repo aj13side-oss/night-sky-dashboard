@@ -255,6 +255,12 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
           </div>
         )}
 
+        {maxAltInWindow != null && maxAltInWindow < 30 && (
+          <div className="mt-1.5 text-[10px] text-muted-foreground/80 italic">
+            Low — best above 30° (peak {maxAltInWindow.toFixed(0)}°)
+          </div>
+        )}
+
         {/* Action buttons */}
         <div className="mt-2 pt-2 border-t border-border/30 flex gap-1.5">
           <Button

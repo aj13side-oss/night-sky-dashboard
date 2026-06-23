@@ -77,6 +77,7 @@ const SkyAtlas = () => {
   const [windowStart, setWindowStart] = useState<Date | null>(null);
   const [windowEnd, setWindowEnd] = useState<Date | null>(null);
   const [activePreset, setActivePreset] = useState<PresetKey>("civil");
+  const prevVisibleTonightRef = useRef(visibleTonight);
   const [clientPage, setClientPage] = useState(0);
   const CLIENT_PAGE_SIZE = 20;
   

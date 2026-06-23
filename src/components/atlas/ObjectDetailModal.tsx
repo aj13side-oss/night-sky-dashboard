@@ -227,12 +227,28 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
                 )}
               </div>
 
-              {/* Current Visibility - compact in info column */}
-              {vis && alt != null && (
+              {/* Rise / set badge - compact in info column */}
+              {rs && (
                 <div className="flex items-center gap-2 text-xs">
                   <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="font-mono font-semibold">{alt.toFixed(1)}°</span>
-                  <span className={`font-medium ${vis.color}`}>{vis.label}</span>
+                  {rs.isCircumpolar ? (
+                    <span className="font-medium text-emerald-400">Always visible</span>
+                  ) : rs.neverRises ? (
+                    <span className="font-medium text-red-400/80">Not visible tonight</span>
+                  ) : (
+                    <span className="font-mono">
+                      <span className={colorForTime(rs.riseTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                        ↑ {formatTimeShort(rs.riseTime)}
+                      </span>
+                      <span className="text-muted-foreground"> · </span>
+                      <span className={colorForTime(rs.setTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                        ↓ {formatTimeShort(rs.setTime)}
+                      </span>
+                    </span>
+                  )}
+                  {!rs.neverRises && (
+                    <span className="text-muted-foreground font-mono">peak {Math.round(rs.transitAlt)}°</span>
+                  )}
                 </div>
               )}
             </div>

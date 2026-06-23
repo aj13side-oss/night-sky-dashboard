@@ -439,11 +439,36 @@ const SkyAtlas = () => {
           constellations={constellations}
           totalCount={displayedTotal}
           visibleTonightEnabled={visibleTonight}
-          onToggleVisibleTonight={() => { setVisibleTonight((v) => !v); setMinHoursVisible(0); }}
+          onToggleVisibleTonight={() => {
+            setVisibleTonight((v) => !v);
+            setWindowStart(null);
+            setWindowEnd(null);
+            setActivePreset("astro");
+          }}
           filterMode={filterMode}
           onFilterModeChange={setFilterMode}
-          minHoursVisible={minHoursVisible}
-          onMinHoursVisibleChange={setMinHoursVisible}
+          nightWindow={visibleTonight && windowStart && windowEnd ? {
+            startMs: windowStart.getTime(),
+            endMs: windowEnd.getTime(),
+            minMs: presets.bounds.start.getTime(),
+            maxMs: presets.bounds.end.getTime(),
+            activePreset,
+            presetAvail: {
+              astro: !!presets.astro,
+              nautical: !!presets.nautical,
+              civil: !!presets.civil,
+            },
+            onPresetSelect: selectPreset,
+            onWindowChange: (s, e) => {
+              setWindowStart(new Date(s));
+              setWindowEnd(new Date(e));
+              setActivePreset("custom");
+            },
+            formatMs: (ms: number) => {
+              const d = new Date(ms);
+              return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+            },
+          } : undefined}
           typeCounts={clientTypeCounts ?? typeCounts}
         />
 

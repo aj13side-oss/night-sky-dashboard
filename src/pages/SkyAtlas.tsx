@@ -209,6 +209,16 @@ const SkyAtlas = () => {
     setTotalCount(data.count ?? 0);
   }, [data, page]);
 
+  // Rehydrate server-mode list when filters change emptied allLoadedData but the
+  // current query already has data (e.g. turning off Visible Tonight).
+  useEffect(() => {
+    if (isClientFiltered) return;
+    if (allLoadedData.length > 0) return;
+    if (!data?.data || data.data.length === 0) return;
+    setAllLoadedData(data.data);
+    setTotalCount(data.count ?? 0);
+  }, [isClientFiltered, allLoadedData.length, data]);
+
   // Solar system search
   const { data: solarResults = [] } = useQuery({
     queryKey: ["solar-atlas-search", filters.search],

@@ -395,9 +395,11 @@ const SkyAtlas = () => {
   const clientTotalPages = Math.ceil(filteredData.length / CLIENT_PAGE_SIZE);
 
   const nightWindow = useMemo(() => {
-    const fallback = presets.astro ?? presets.nautical ?? presets.civil ?? presets.bounds;
+    const fallback = presets.civil ?? presets.nautical ?? presets.astro ?? presets.bounds;
     const start = windowStart ?? fallback.start;
     const end = windowEnd ?? fallback.end;
+    const toMs = (p: { start: Date; end: Date } | null | undefined) =>
+      p ? { startMs: p.start.getTime(), endMs: p.end.getTime() } : null;
     return {
       startMs: Math.max(
         Math.min(start.getTime(), presets.bounds.end.getTime()),
@@ -414,6 +416,11 @@ const SkyAtlas = () => {
         astro: !!presets.astro,
         nautical: !!presets.nautical,
         civil: !!presets.civil,
+      },
+      presetTimes: {
+        astro: toMs(presets.astro),
+        nautical: toMs(presets.nautical),
+        civil: toMs(presets.civil),
       },
       onPresetSelect: selectPreset,
       onWindowChange: (s: number, e: number) => {

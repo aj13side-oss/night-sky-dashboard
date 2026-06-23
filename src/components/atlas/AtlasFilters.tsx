@@ -7,6 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Search, X, Trophy, Star, Moon, Camera } from "lucide-react";
 import { useMemo, useState } from "react";
 
+interface NightWindow {
+  startMs: number;
+  endMs: number;
+  minMs: number;
+  maxMs: number;
+  activePreset: "astro" | "nautical" | "civil" | "custom";
+  presetAvail: { astro: boolean; nautical: boolean; civil: boolean };
+  onPresetSelect: (key: "astro" | "nautical" | "civil") => void;
+  onWindowChange: (startMs: number, endMs: number) => void;
+  formatMs: (ms: number) => string;
+}
+
 interface Props {
   filters: CelestialFilters;
   onChange: (f: CelestialFilters) => void;
@@ -18,12 +30,11 @@ interface Props {
   onToggleVisibleTonight?: () => void;
   filterMode?: string;
   onFilterModeChange?: (mode: string) => void;
-  minHoursVisible?: number;
-  onMinHoursVisibleChange?: (hours: number) => void;
+  nightWindow?: NightWindow;
   typeCounts?: CatalogTypeCount[];
 }
 
-const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, minHoursVisible, onMinHoursVisibleChange, typeCounts }: Props) => {
+const AtlasFilters = ({ filters, onChange, types, typeBuckets, constellations, totalCount, visibleTonightEnabled, onToggleVisibleTonight, filterMode, onFilterModeChange, nightWindow, typeCounts }: Props) => {
 
   const isTop50 = filters.limitResults === 50;
 

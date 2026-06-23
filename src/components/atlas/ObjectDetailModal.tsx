@@ -485,13 +485,28 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
           {/* Setup Assistant */}
           <SetupAssistant obj={obj} userFocalLength={focalLength} />
 
-          {/* Current Visibility */}
-          {vis && alt != null && (
+          {/* Rise / set badge */}
+          {rs && (
             <div className="flex items-center gap-3 p-3 rounded-xl bg-secondary/30">
               <MapPin className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Current altitude:</span>
-              <span className="font-mono text-sm font-semibold">{alt.toFixed(1)}°</span>
-              <span className={`text-sm font-medium ${vis.color}`}>{vis.label}</span>
+              {rs.isCircumpolar ? (
+                <span className="font-medium text-emerald-400">Always visible</span>
+              ) : rs.neverRises ? (
+                <span className="font-medium text-red-400/80">Not visible tonight</span>
+              ) : (
+                <span className="font-mono text-sm">
+                  <span className={colorForTime(rs.riseTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                    ↑ {formatTimeShort(rs.riseTime)}
+                  </span>
+                  <span className="text-muted-foreground"> · </span>
+                  <span className={colorForTime(rs.setTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
+                    ↓ {formatTimeShort(rs.setTime)}
+                  </span>
+                </span>
+              )}
+              {!rs.neverRises && (
+                <span className="text-muted-foreground font-mono text-sm">peak {Math.round(rs.transitAlt)}°</span>
+              )}
             </div>
           )}
 

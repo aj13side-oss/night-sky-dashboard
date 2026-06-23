@@ -314,8 +314,14 @@ const SkyAtlas = () => {
       );
     }
 
+    // Cap to limitResults (e.g. Top 50) on the client path so it applies even
+    // when Visible Tonight is on (server-side limit is bypassed via largeSet).
+    if (filters.limitResults && results.length > filters.limitResults) {
+      results = results.slice(0, filters.limitResults);
+    }
+
     return results;
-  }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, windowStart, windowEnd, filters.sortBy]);
+  }, [sourceData, visibleTonight, filterMode, userPos.lat, userPos.lng, windowStart, windowEnd, filters.sortBy, filters.limitResults]);
 
   // Initialize / re-sync window when Visible Tonight is enabled or presets become available.
   // Re-applies the active preset whenever its bounds change (e.g. astronomy data loads after first render).

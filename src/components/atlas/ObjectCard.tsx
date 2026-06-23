@@ -40,14 +40,45 @@ const typeEmoji: Record<string, string> = {
   Planet: "🪐",
 };
 
-const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false, maxAltInWindow }: Props) => {
+// Returns a tailwind text color class for a given time based on solar context.
+function colorForTime(
+  t: Date | null,
+  sunset?: Date | null,
+  astroDuskEnd?: Date | null,
+  astroDawnBegin?: Date | null,
+  sunrise?: Date | null,
+): string {
+  if (!t) return "text-muted-foreground";
+  const toMin = (d: Date) => d.getHours() * 60 + d.getMinutes();
+  const tm = toMin(t);
+  // Helper: is tm in cyclic range [a, b) (minutes 0..1440), inclusive a, exclusive b
+  const inRange = (a: number, b: number) => {
+    if (a === b) return false;
+    if (a < b) return tm >= a && tm < b;
+    return tm >= a || tm < b;
+  };
+  if (sunset && sunrise) {
+    const ss = toMin(sunset);
+    const sr = toMin(sunrise);
+    if (astroDuskEnd && astroDawnBegin) {
+      const de = toMin(astroDuskEnd);
+      const db = toMin(astroDawnBegin);
+      // astronomical night: from de to db (cyclic)
+      if (inRange(de, db)) return "text-emerald-400";
+      // dusk/dawn (sun down but not astro night)
+      if (inRange(ss, de) || inRange(db, sr)) return "text-orange-400";
+      return "text-red-400";
+    }
+    // Fallback without astro bounds: night green between sunset and sunrise, else red
+    if (inRange(ss, sr)) return "text-emerald-400";
+    return "text-red-400";
+  }
+  return "text-muted-foreground";
+}
+
+const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false, maxAltInWindow, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
   const navigate = useNavigate();
   const { isInList, addObject, removeObject } = useTonightList();
-  const alt =
-    obj.ra_deg != null && obj.dec_deg != null
-      ? calculateAltitude(obj.ra_deg, obj.dec_deg, lat, lng)
-      : null;
-  const vis = alt != null ? getVisibilityLabel(alt) : null;
 
   const rs = useMemo(() => {
     if (obj.ra_deg == null || obj.dec_deg == null) return null;

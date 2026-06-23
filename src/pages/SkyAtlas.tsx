@@ -328,9 +328,9 @@ const SkyAtlas = () => {
   useEffect(() => {
     if (!visibleTonight) return;
     const pickFallback = () => {
-      if (presets.astro) return { key: "astro" as const, p: presets.astro };
-      if (presets.nautical) return { key: "nautical" as const, p: presets.nautical };
       if (presets.civil) return { key: "civil" as const, p: presets.civil };
+      if (presets.nautical) return { key: "nautical" as const, p: presets.nautical };
+      if (presets.astro) return { key: "astro" as const, p: presets.astro };
       return { key: "custom" as const, p: presets.bounds };
     };
     if (activePreset === "custom") {

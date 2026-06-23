@@ -1,5 +1,4 @@
 import { calculateAltitude } from "./visibility";
-import { getAstroTwilightWindow } from "./astronomy";
 
 export interface RiseSetTransit {
   riseTime: Date | null;

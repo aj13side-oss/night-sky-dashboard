@@ -17,7 +17,7 @@ import {
   PAGE_SIZE,
 } from "@/hooks/useCelestialObjects";
 import { getObjectRiseSetTransit } from "@/lib/rise-set";
-import { getAstronomicalNight } from "@/lib/astronomy";
+import { getAstroTwilightWindow } from "@/lib/astronomy";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Telescope, MapPin } from "lucide-react";

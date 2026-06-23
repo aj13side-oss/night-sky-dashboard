@@ -260,7 +260,7 @@ const SkyAtlas = () => {
     handleGeolocation();
   }, [handleGeolocation]);
 
-  useEffect(() => { setPage(0); setClientPage(0); setAllLoadedData([]); }, [filters, visibleTonight, filterMode]);
+  useEffect(() => { setPage(0); setClientPage(0); setAllLoadedData([]); }, [filters, visibleTonight, filterMode, windowStart, windowEnd]);
 
   // Client-side filters: visible tonight + filter mode
   const sourceData = useMemo<CelestialObject[]>(() => {

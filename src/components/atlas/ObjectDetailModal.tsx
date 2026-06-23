@@ -34,9 +34,45 @@ interface Props {
   focalLength?: number;
   sensorWidth?: number;
   sensorHeight?: number;
+  sunset?: Date | null;
+  astroDuskEnd?: Date | null;
+  astroDawnBegin?: Date | null;
+  sunrise?: Date | null;
 }
 
-const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0 }: Props) => {
+// Returns a tailwind text color class for a given time based on solar context.
+function colorForTime(
+  t: Date | null,
+  sunset?: Date | null,
+  astroDuskEnd?: Date | null,
+  astroDawnBegin?: Date | null,
+  sunrise?: Date | null,
+): string {
+  if (!t) return "text-muted-foreground";
+  const toMin = (d: Date) => d.getHours() * 60 + d.getMinutes();
+  const tm = toMin(t);
+  const inRange = (a: number, b: number) => {
+    if (a === b) return false;
+    if (a < b) return tm >= a && tm < b;
+    return tm >= a || tm < b;
+  };
+  if (sunset && sunrise) {
+    const ss = toMin(sunset);
+    const sr = toMin(sunrise);
+    if (astroDuskEnd && astroDawnBegin) {
+      const de = toMin(astroDuskEnd);
+      const db = toMin(astroDawnBegin);
+      if (inRange(de, db)) return "text-emerald-400";
+      if (inRange(ss, de) || inRange(db, sr)) return "text-orange-400";
+      return "text-red-400";
+    }
+    if (inRange(ss, sr)) return "text-emerald-400";
+    return "text-red-400";
+  }
+  return "text-muted-foreground";
+}
+
+const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
   const navigate = useNavigate();
   const [showExposureInfo, setShowExposureInfo] = useState(false);
   const [showCredits, setShowCredits] = useState(false);

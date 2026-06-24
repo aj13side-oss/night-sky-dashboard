@@ -22,7 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Star, Eye, Ruler, Compass, MapPin, Camera, Clock, HelpCircle,
-  Crosshair, Scale, ArrowLeft, ClipboardList, Loader2, Telescope,
+  Crosshair, Scale, ArrowLeft, ClipboardList, Loader2, Telescope, MessageCircle,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
@@ -372,8 +372,32 @@ const ObjectPage = () => {
           </Button>
         </div>
 
+        {/* Community gallery teaser */}
+        <div className="rounded-xl border border-border/30 bg-secondary/20 p-5 block space-y-3">
+          <div className="flex items-center gap-2">
+            <Camera className="w-5 h-5 text-primary" />
+            <h2 className="text-xl font-semibold text-foreground">See what others capture</h2>
+          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Browse real images of this target from astrophotographers using gear like yours. Coming soon.
+          </p>
+          <Badge variant="secondary" className="text-[10px]">Coming soon</Badge>
+        </div>
+
         {/* Similar Objects */}
         <SimilarObjects obj={obj} />
+
+        {/* Community contributions teaser */}
+        <div className="rounded-xl border border-border/30 bg-secondary/20 p-5 block space-y-3">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="w-5 h-5 text-primary" />
+            <h2 className="text-xl font-semibold text-foreground">Community contributions</h2>
+          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Share your shots, tips and notes on this target. Coming soon.
+          </p>
+          <Badge variant="secondary" className="text-[10px]">Coming soon</Badge>
+        </div>
       </main>
 
       <Footer />

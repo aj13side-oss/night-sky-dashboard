@@ -550,7 +550,15 @@ const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
             <div>
               <p className="text-xs font-semibold text-foreground truncate">{s.catalog_id}</p>
               {s.common_name && <p className="text-[10px] text-primary truncate">{s.common_name}</p>}
-              <div className="flex items-center gap-1.5 mt-1">
+              <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                {s.rarity && (
+                  <Badge
+                    className="text-[9px] px-1 py-0 border-0"
+                    style={{ backgroundColor: getRarityColor(s.rarity), color: "#0F172A" }}
+                  >
+                    {s.rarity}
+                  </Badge>
+                )}
                 {s.photo_score && (
                   <Badge variant="secondary" className="text-[9px] px-1 py-0">⭐ {s.photo_score}</Badge>
                 )}

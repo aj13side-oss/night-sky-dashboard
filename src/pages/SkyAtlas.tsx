@@ -23,7 +23,8 @@ import { useObservation } from "@/contexts/ObservationContext";
 import { utcToLocal } from "@/lib/timezone";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Telescope, MapPin, Info } from "lucide-react";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
+import { ChevronLeft, ChevronRight, ChevronDown, Telescope, MapPin, Info } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { SolarSystemObject } from "@/hooks/useSolarSystemObjects";
@@ -79,6 +80,7 @@ const SkyAtlas = () => {
   const [activePreset, setActivePreset] = useState<PresetKey>("civil");
   const prevVisibleTonightRef = useRef(visibleTonight);
   const [clientPage, setClientPage] = useState(0);
+  const [scoreInfoOpen, setScoreInfoOpen] = useState(false);
   const CLIENT_PAGE_SIZE = 20;
   
 
@@ -584,6 +586,53 @@ const SkyAtlas = () => {
           nightWindow={nightWindow}
           typeCounts={clientTypeCounts ?? typeCounts}
         />
+
+        {/* Accessibility score explanation */}
+        <Collapsible open={scoreInfoOpen} onOpenChange={setScoreInfoOpen} className="glass-card rounded-2xl border border-primary/20 overflow-hidden">
+          <CollapsibleTrigger asChild>
+            <button
+              type="button"
+              className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-primary/5 transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <Info className="w-4 h-4 text-primary shrink-0" />
+                <h2 className="text-sm font-semibold text-primary">
+                  Comment est calculé le Score d'accessibilité ?
+                </h2>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${scoreInfoOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="px-4 pb-4 pt-1 space-y-3 text-sm text-muted-foreground border-t border-primary/10">
+              <p>
+                Le <span className="text-primary font-medium">Score d'accessibilité</span> (sur 100) estime la facilité à photographier un objet du ciel profond et à en obtenir un résultat satisfaisant. Il ne mesure pas la beauté de l'objet, mais son accessibilité pour l'astrophotographe. Il est calculé à partir de quatre données physiques :
+              </p>
+              <ul className="space-y-2 pl-4 list-disc marker:text-primary/70">
+                <li>
+                  <span className="text-foreground font-medium">Taille apparente :</span> les grands objets sont plus faciles à cadrer et se shootent à courte focale, au téléobjectif, sans monture haut de gamme.
+                </li>
+                <li>
+                  <span className="text-foreground font-medium">Luminosité (magnitude et densité de lumière) :</span> un objet lumineux et concentré demande moins de temps de pose qu'un objet diffus et faible.
+                </li>
+                <li>
+                  <span className="text-foreground font-medium">Type d'objet :</span> galaxies, amas et nébuleuses par réflexion se capturent bien en couleur (RGB) ; les amas et étoiles, plus simples, sont pondérés en conséquence.
+                </li>
+                <li>
+                  <span className="text-foreground font-medium">Accessibilité RGB / narrowband :</span> les nébuleuses à émission, planétaires et rémanents de supernova donnent leur plein potentiel en narrowband ; en RGB simple elles rendent un peu moins, ce qui est pris en compte.
+                </li>
+              </ul>
+              <p>
+                Le score est universel : il ne dépend pas de votre position géographique. Pour savoir ce que vous pouvez réellement photographier ce soir depuis chez vous, utilisez le filtre "Visible Tonight".
+              </p>
+              <p className="text-xs text-muted-foreground/70">
+                Note : une note communautaire de qualité d'image viendra compléter ce score à mesure que la communauté Cosmic Frame grandit.
+              </p>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
         {/* Solar system results */}
         {solarResults.length > 0 && (

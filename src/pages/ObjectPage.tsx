@@ -9,6 +9,7 @@ import { formatCatalogId } from "@/lib/format-catalog";
 import { formatRA, formatDec } from "@/lib/format-coords";
 import { useTonightList } from "@/hooks/useTonightList";
 import { useObservation } from "@/contexts/ObservationContext";
+import { getDisplaySeason } from "@/lib/dynamic-score";
 
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";

@@ -107,8 +107,6 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
     ? searchContext.image
     : useFallback && wikiImage?.fallbackUrl ? wikiImage.fallbackUrl : thumbUrl;
 
-  const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra_deg, obj.dec_deg, lat, lng);
-  const isLegendary = score.total >= 100;
   const season = getDisplaySeason(obj.best_months, obj.dec_deg, lat);
   const currentSeason = (() => {
     const m = new Date().getMonth(); // 0-11
@@ -119,11 +117,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
   })();
   const isPrime = season.isCircumpolar || (season.isSeason && season.label === currentSeason);
 
-  const scoreColor = score.isHighAltitude
-    ? "text-green-400"
-    : score.isSeasonal
-    ? "text-emerald-400"
-    : "text-primary";
+  const scoreColor = "text-primary";
 
   return (
     <motion.div

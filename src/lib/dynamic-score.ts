@@ -28,6 +28,35 @@ export function getSeasonEmoji(season: string): string {
   }
 }
 
+export interface DisplaySeason {
+  label: string | null;
+  isSeason: boolean;
+  isCircumpolar: boolean;
+  isInvisible: boolean;
+}
+
+/**
+ * Compute the season label to show for a user, based on the object's
+ * base culmination season, its declination, and the user's latitude.
+ */
+export function getDisplaySeason(
+  bestMonths: string | null,
+  decDeg: number | null | undefined,
+  userLatitude: number | null | undefined
+): DisplaySeason {
+  const lat = userLatitude ?? 45;
+  if (decDeg != null) {
+    if (decDeg > 90 - lat) {
+      return { label: "Year-round", isSeason: false, isCircumpolar: true, isInvisible: false };
+    }
+    if (decDeg < lat - 90) {
+      return { label: "Not visible from your location", isSeason: false, isCircumpolar: false, isInvisible: true };
+    }
+  }
+  const base = getSeasonLabel(bestMonths);
+  return { label: base, isSeason: base != null, isCircumpolar: false, isInvisible: false };
+}
+
 export interface DynamicScore {
   base: number;
   seasonalBonus: number;

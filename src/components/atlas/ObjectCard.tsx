@@ -1,7 +1,7 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { useObjectImage } from "@/hooks/useObjectImage";
-import { computeDynamicScore, getSeasonEmoji, getSeasonLabel } from "@/lib/dynamic-score";
+import { computeDynamicScore, getSeasonEmoji, getDisplaySeason } from "@/lib/dynamic-score";
 import { getSearchContext } from "@/lib/search-context";
 import { motion } from "framer-motion";
 import { Ruler, Eye, Crown, Award, Sun, Mountain, Link, Lightbulb, Crosshair, BookOpen, ClipboardList } from "lucide-react";
@@ -109,7 +109,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
   const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra_deg, obj.dec_deg, lat, lng);
   const isLegendary = score.total >= 100;
   const isPrime = score.total >= 85 && score.total < 100;
-  const season = getSeasonLabel(obj.best_months);
+  const season = getDisplaySeason(obj.best_months, obj.dec_deg, lat);
 
   const scoreColor = score.isHighAltitude
     ? "text-green-400"
@@ -173,9 +173,9 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
             </div>
           )}
 
-          {season && (
+          {season.label && (
             <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-background/70 backdrop-blur-sm text-[10px] text-foreground font-medium">
-              {getSeasonEmoji(season)} {season}
+              {season.isSeason ? `${getSeasonEmoji(season.label)} ${season.label}` : season.label}
             </div>
           )}
         </div>

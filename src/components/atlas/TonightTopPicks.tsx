@@ -1,7 +1,7 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useTonightTopPicks } from "@/hooks/useTonightTopPicks";
 import { getSkyImageUrl } from "@/lib/sky-images";
-import { getSeasonEmoji, getSeasonLabel, getCurrentSeason } from "@/lib/dynamic-score";
+import { getSeasonEmoji, getDisplaySeason, getCurrentSeason } from "@/lib/dynamic-score";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { motion } from "framer-motion";
 import { Sparkles, Sun, Mountain } from "lucide-react";
@@ -93,7 +93,7 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
           const rs = obj.ra_deg != null && obj.dec_deg != null
             ? getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, lat, lng, new Date())
             : null;
-          const season = getSeasonLabel(obj.best_months);
+          const season = getDisplaySeason(obj.best_months, obj.dec_deg, lat);
 
           return (
             <motion.div
@@ -152,9 +152,9 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
 
                 {/* Season + visibility */}
                 <div className="flex items-center justify-between text-[10px] gap-2">
-                  {season && (
+                  {season.label && (
                     <span className="text-muted-foreground truncate">
-                      {getSeasonEmoji(season)} Best in {season}
+                      {season.isSeason ? `${getSeasonEmoji(season.label)} Best in ${season.label}` : season.label}
                     </span>
                   )}
                   {rs && (

@@ -185,7 +185,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
                 <Crown className="w-3 h-3" /> Legendary
               </div>
             )}
-            {isPrime && !isLegendary && (
+            {isPrime && (
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-300/90 text-slate-900 text-[10px] font-bold uppercase tracking-wider shadow-lg">
                 <Award className="w-3 h-3" /> Prime
               </div>

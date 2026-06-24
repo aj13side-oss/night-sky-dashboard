@@ -26,11 +26,18 @@ export function useTonightTopPicks(lat: number, lng: number, count = 3) {
   const topPicks = useMemo(() => {
     if (!candidates) return [];
     return candidates
-      .filter((obj) => obj.photo_score != null)
-      .sort((a, b) => (b.photo_score ?? 0) - (a.photo_score ?? 0))
-      .slice(0, count)
-      .map((obj) => ({ obj }));
-  }, [candidates, count]);
+      .map((obj) => ({
+        obj,
+        score: {
+          total: obj.photo_score ?? 0,
+          isHighAltitude: false,
+          isSeasonal: false,
+          altitudeBonus: 0,
+        },
+      }))
+      .sort((a, b) => b.score.total - a.score.total)
+      .slice(0, count);
+  }, [candidates, lat, lng, count]);
 
   return { topPicks, isLoading };
 }

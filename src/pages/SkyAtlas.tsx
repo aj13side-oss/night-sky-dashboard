@@ -597,7 +597,7 @@ const SkyAtlas = () => {
               <div className="flex items-center gap-2">
                 <Info className="w-4 h-4 text-primary shrink-0" />
                 <h2 className="text-sm font-semibold text-primary">
-                  Comment est calculé le Score d'accessibilité ?
+                  How is the Accessibility Score calculated?
                 </h2>
               </div>
               <ChevronDown
@@ -608,31 +608,32 @@ const SkyAtlas = () => {
           <CollapsibleContent>
             <div className="px-4 pb-4 pt-1 space-y-3 text-sm text-muted-foreground border-t border-primary/10">
               <p>
-                Le <span className="text-primary font-medium">Score d'accessibilité</span> (sur 100) estime la facilité à photographier un objet du ciel profond et à en obtenir un résultat satisfaisant. Il ne mesure pas la beauté de l'objet, mais son accessibilité pour l'astrophotographe. Il est calculé à partir de quatre données physiques :
+                The <span className="text-primary font-medium">Accessibility Score</span> (out of 100) estimates how easy a deep-sky object is to photograph and to get a satisfying result from. It does not measure the object's beauty, but its accessibility for the astrophotographer. It is based on four physical properties:
               </p>
               <ul className="space-y-2 pl-4 list-disc marker:text-primary/70">
                 <li>
-                  <span className="text-foreground font-medium">Taille apparente :</span> les grands objets sont plus faciles à cadrer et se shootent à courte focale, au téléobjectif, sans monture haut de gamme.
+                  <span className="text-foreground font-medium">Apparent size:</span> larger objects are easier to frame and can be shot at short focal length, with a telephoto lens, without a high-end mount.
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">Luminosité (magnitude et densité de lumière) :</span> un objet lumineux et concentré demande moins de temps de pose qu'un objet diffus et faible.
+                  <span className="text-foreground font-medium">Brightness (magnitude and light density):</span> a bright, concentrated object needs less exposure time than a faint, diffuse one.
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">Type d'objet :</span> galaxies, amas et nébuleuses par réflexion se capturent bien en couleur (RGB) ; les amas et étoiles, plus simples, sont pondérés en conséquence.
+                  <span className="text-foreground font-medium">Object type:</span> galaxies, clusters and reflection nebulae image well in colour (RGB); emission-line targets are weighted accordingly.
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">Accessibilité RGB / narrowband :</span> les nébuleuses à émission, planétaires et rémanents de supernova donnent leur plein potentiel en narrowband ; en RGB simple elles rendent un peu moins, ce qui est pris en compte.
+                  <span className="text-foreground font-medium">RGB / narrowband accessibility:</span> emission nebulae, planetary nebulae and supernova remnants reach their full potential in narrowband; in plain RGB they render a little less, which is taken into account.
                 </li>
               </ul>
               <p>
-                Le score est universel : il ne dépend pas de votre position géographique. Pour savoir ce que vous pouvez réellement photographier ce soir depuis chez vous, utilisez le filtre "Visible Tonight".
+                The score is universal: it does not depend on your location. To see what you can actually photograph tonight from your location, use the "Visible Tonight" filter.
               </p>
               <p className="text-xs text-muted-foreground/70">
-                Note : une note communautaire de qualité d'image viendra compléter ce score à mesure que la communauté Cosmic Frame grandit.
+                Note: a community image-quality rating will complement this score as the Cosmic Frame community grows.
               </p>
             </div>
           </CollapsibleContent>
         </Collapsible>
+
 
         {/* Solar system results */}
         {solarResults.length > 0 && (

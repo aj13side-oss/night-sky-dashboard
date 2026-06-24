@@ -2,6 +2,7 @@ import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useTonightTopPicks } from "@/hooks/useTonightTopPicks";
 import { getSkyImageUrl } from "@/lib/sky-images";
 import { getSeasonEmoji, getDisplaySeason, getCurrentSeason } from "@/lib/dynamic-score";
+import { getRarityColor } from "@/lib/rarity";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { motion } from "framer-motion";
 import { Sparkles, Sun, Mountain } from "lucide-react";

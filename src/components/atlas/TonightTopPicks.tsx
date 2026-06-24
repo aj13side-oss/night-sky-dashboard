@@ -2,6 +2,7 @@ import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useTonightTopPicks } from "@/hooks/useTonightTopPicks";
 import { getSkyImageUrl } from "@/lib/sky-images";
 import { getSeasonEmoji, getDisplaySeason, getCurrentSeason } from "@/lib/dynamic-score";
+import { getRarityColor } from "@/lib/rarity";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { motion } from "framer-motion";
 import { Sparkles, Sun, Mountain } from "lucide-react";
@@ -124,6 +125,16 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
               <div className="absolute top-2 left-2 w-7 h-7 rounded-full bg-primary/90 flex items-center justify-center text-primary-foreground text-xs font-bold shadow-lg">
                 #{i + 1}
               </div>
+
+              {/* Rarity badge */}
+              {obj.rarity && (
+                <div
+                  className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg"
+                  style={{ backgroundColor: getRarityColor(obj.rarity), color: "#0F172A" }}
+                >
+                  {obj.rarity}
+                </div>
+              )}
 
               {/* Content */}
               <div className="relative p-4 pt-12 space-y-2">

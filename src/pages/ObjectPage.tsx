@@ -10,6 +10,7 @@ import { formatRA, formatDec } from "@/lib/format-coords";
 import { useTonightList } from "@/hooks/useTonightList";
 import { useObservation } from "@/contexts/ObservationContext";
 import { getDisplaySeason } from "@/lib/dynamic-score";
+import { getRarityColor } from "@/lib/rarity";
 
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
@@ -202,6 +203,16 @@ const ObjectPage = () => {
             </Button>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{formatCatalogId(obj)}</h1>
             {obj.common_name && <p className="text-primary text-lg">{obj.common_name}</p>}
+            {obj.rarity && (
+              <div className="flex items-center gap-2 mt-2">
+                <div
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow"
+                  style={{ backgroundColor: getRarityColor(obj.rarity), color: "#0F172A" }}
+                >
+                  {obj.rarity}
+                </div>
+              </div>
+            )}
           </div>
           <div className="flex gap-2 mt-8">
             <Button variant="outline" size="sm" onClick={handleTonightList} className={`gap-1 ${inList ? "text-primary border-primary/30" : ""}`}>
@@ -496,7 +507,7 @@ const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
     queryFn: async () => {
       let { data } = await (supabase as any)
         .from("celestial_objects")
-        .select("id, catalog_id, common_name, obj_type, constellation, photo_score, forced_image_url, magnitude")
+        .select("id, catalog_id, common_name, obj_type, constellation, photo_score, forced_image_url, magnitude, rarity")
         .eq("obj_type", obj.obj_type)
         .eq("constellation", obj.constellation)
         .neq("id", obj.id)
@@ -505,7 +516,7 @@ const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
       if (!data || data.length < 4) {
         const { data: broader } = await (supabase as any)
           .from("celestial_objects")
-          .select("id, catalog_id, common_name, obj_type, constellation, photo_score, forced_image_url, magnitude")
+          .select("id, catalog_id, common_name, obj_type, constellation, photo_score, forced_image_url, magnitude, rarity")
           .eq("obj_type", obj.obj_type)
           .neq("id", obj.id)
           .order("photo_score", { ascending: false })
@@ -539,7 +550,15 @@ const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
             <div>
               <p className="text-xs font-semibold text-foreground truncate">{s.catalog_id}</p>
               {s.common_name && <p className="text-[10px] text-primary truncate">{s.common_name}</p>}
-              <div className="flex items-center gap-1.5 mt-1">
+              <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                {s.rarity && (
+                  <Badge
+                    className="text-[9px] px-1 py-0 border-0"
+                    style={{ backgroundColor: getRarityColor(s.rarity), color: "#0F172A" }}
+                  >
+                    {s.rarity}
+                  </Badge>
+                )}
                 {s.photo_score && (
                   <Badge variant="secondary" className="text-[9px] px-1 py-0">⭐ {s.photo_score}</Badge>
                 )}

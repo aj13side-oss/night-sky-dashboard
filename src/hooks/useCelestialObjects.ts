@@ -30,6 +30,7 @@ export interface CelestialObject {
   relation_note: string | null;
   search_aliases: string | null;
   seo_description: string | null;
+  rarity: string | null;
   alias_details: Record<string, { desc: string; img?: string | null }> | null;
 }
 

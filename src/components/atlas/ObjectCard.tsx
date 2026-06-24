@@ -2,6 +2,7 @@ import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { computeDynamicScore, getSeasonEmoji, getDisplaySeason } from "@/lib/dynamic-score";
+import { getRarityColor } from "@/lib/rarity";
 import { getSearchContext } from "@/lib/search-context";
 import { motion } from "framer-motion";
 import { Ruler, Eye, Crown, Award, Sun, Mountain, Link, Lightbulb, Crosshair, BookOpen, ClipboardList } from "lucide-react";
@@ -162,16 +163,27 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
             </span>
           )}
 
-          {isLegendary && (
-            <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/90 text-yellow-950 text-[10px] font-bold uppercase tracking-wider shadow-lg">
-              <Crown className="w-3 h-3" /> Legendary
-            </div>
-          )}
-          {isPrime && !isLegendary && (
-            <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-300/90 text-slate-900 text-[10px] font-bold uppercase tracking-wider shadow-lg">
-              <Award className="w-3 h-3" /> Prime
-            </div>
-          )}
+          {/* Badges */}
+          <div className="absolute top-2 left-2 flex flex-wrap items-center gap-1.5">
+            {obj.rarity && (
+              <div
+                className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg"
+                style={{ backgroundColor: getRarityColor(obj.rarity), color: "#0F172A" }}
+              >
+                {obj.rarity}
+              </div>
+            )}
+            {isLegendary && (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/90 text-yellow-950 text-[10px] font-bold uppercase tracking-wider shadow-lg">
+                <Crown className="w-3 h-3" /> Legendary
+              </div>
+            )}
+            {isPrime && !isLegendary && (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-300/90 text-slate-900 text-[10px] font-bold uppercase tracking-wider shadow-lg">
+                <Award className="w-3 h-3" /> Prime
+              </div>
+            )}
+          </div>
 
           {season.label && (
             <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-background/70 backdrop-blur-sm text-[10px] text-foreground font-medium">

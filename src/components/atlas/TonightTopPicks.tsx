@@ -93,7 +93,7 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
           const rs = obj.ra_deg != null && obj.dec_deg != null
             ? getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, lat, lng, new Date())
             : null;
-          const season = getSeasonLabel(obj.best_months);
+          const season = getDisplaySeason(obj.best_months, obj.dec_deg, lat);
 
           return (
             <motion.div

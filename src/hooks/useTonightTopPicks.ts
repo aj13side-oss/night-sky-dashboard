@@ -26,13 +26,11 @@ export function useTonightTopPicks(lat: number, lng: number, count = 3) {
   const topPicks = useMemo(() => {
     if (!candidates) return [];
     return candidates
-      .map((obj) => ({
-        obj,
-        score: computeDynamicScore(obj.photo_score, obj.best_months, obj.ra_deg, obj.dec_deg, lat, lng),
-      }))
-      .sort((a, b) => b.score.total - a.score.total)
-      .slice(0, count);
-  }, [candidates, lat, lng, count]);
+      .filter((obj) => obj.photo_score != null)
+      .sort((a, b) => (b.photo_score ?? 0) - (a.photo_score ?? 0))
+      .slice(0, count)
+      .map((obj) => ({ obj }));
+  }, [candidates, count]);
 
   return { topPicks, isLoading };
 }

@@ -516,7 +516,7 @@ const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
       if (!data || data.length < 4) {
         const { data: broader } = await (supabase as any)
           .from("celestial_objects")
-          .select("id, catalog_id, common_name, obj_type, constellation, photo_score, forced_image_url, magnitude")
+          .select("id, catalog_id, common_name, obj_type, constellation, photo_score, forced_image_url, magnitude, rarity")
           .eq("obj_type", obj.obj_type)
           .neq("id", obj.id)
           .order("photo_score", { ascending: false })

@@ -1,7 +1,7 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useTonightTopPicks } from "@/hooks/useTonightTopPicks";
 import { getSkyImageUrl } from "@/lib/sky-images";
-import { getSeasonEmoji, getSeasonLabel, getCurrentSeason } from "@/lib/dynamic-score";
+import { getSeasonEmoji, getDisplaySeason, getCurrentSeason } from "@/lib/dynamic-score";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { motion } from "framer-motion";
 import { Sparkles, Sun, Mountain } from "lucide-react";

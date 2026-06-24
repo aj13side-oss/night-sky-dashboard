@@ -80,6 +80,7 @@ const SkyAtlas = () => {
   const [activePreset, setActivePreset] = useState<PresetKey>("civil");
   const prevVisibleTonightRef = useRef(visibleTonight);
   const [clientPage, setClientPage] = useState(0);
+  const [scoreInfoOpen, setScoreInfoOpen] = useState(false);
   const CLIENT_PAGE_SIZE = 20;
   
 

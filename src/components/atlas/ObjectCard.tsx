@@ -184,18 +184,19 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
       <div className="p-4">
         {/* Dynamic Score */}
         {obj.photo_score != null && (
-          <div className="mb-3 space-y-1">
-            <div className="flex items-center justify-between text-[10px]">
-              <span className="text-muted-foreground font-medium uppercase tracking-wider">Accessibility Score</span>
+          <div className="mb-3 space-y-1.5">
+            <div className="flex items-end justify-between">
+              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Accessibility Score</span>
               <div className="flex items-center gap-1.5">
                 {score.altitudeBonus > 0 && (
-                  <span className="flex items-center gap-0.5 px-1 py-0.5 rounded bg-green-500/20 text-green-400 font-medium">
+                  <span className="flex items-center gap-0.5 px-1 py-0.5 rounded bg-green-500/20 text-green-400 text-[10px] font-medium">
                     <Mountain className="w-2.5 h-2.5" /> +{score.altitudeBonus}
                   </span>
                 )}
-                <span className={`font-mono font-bold ${scoreColor}`}>{score.total}</span>
+                <span className={`font-mono font-bold text-xl leading-none ${scoreColor}`}>{score.total}</span>
               </div>
             </div>
+
             <div className="h-1.5 rounded-full bg-secondary/50 overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-700"

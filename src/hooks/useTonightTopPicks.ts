@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CelestialObject } from "./useCelestialObjects";
 
-
 /**
  * Fetches top photo-scored DSOs and re-ranks by dynamic score (base + seasonal + altitude).
  */

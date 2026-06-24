@@ -1,5 +1,3 @@
-
-
 const MONTH_TO_SEASON: Record<number, string> = {
   0: "Winter", 1: "Winter", 2: "Spring",
   3: "Spring", 4: "Spring", 5: "Summer",

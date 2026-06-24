@@ -1,7 +1,7 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { useObjectImage } from "@/hooks/useObjectImage";
-import { computeDynamicScore, getSeasonEmoji, getSeasonLabel } from "@/lib/dynamic-score";
+import { computeDynamicScore, getSeasonEmoji, getDisplaySeason } from "@/lib/dynamic-score";
 import { getSearchContext } from "@/lib/search-context";
 import { motion } from "framer-motion";
 import { Ruler, Eye, Crown, Award, Sun, Mountain, Link, Lightbulb, Crosshair, BookOpen, ClipboardList } from "lucide-react";

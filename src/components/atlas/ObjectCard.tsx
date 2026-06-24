@@ -173,9 +173,9 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
             </div>
           )}
 
-          {season && (
+          {season.label && (
             <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-background/70 backdrop-blur-sm text-[10px] text-foreground font-medium">
-              {getSeasonEmoji(season)} {season}
+              {season.isSeason ? `${getSeasonEmoji(season.label)} ${season.label}` : season.label}
             </div>
           )}
         </div>

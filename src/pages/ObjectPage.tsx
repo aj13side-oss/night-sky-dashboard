@@ -203,6 +203,16 @@ const ObjectPage = () => {
             </Button>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{formatCatalogId(obj)}</h1>
             {obj.common_name && <p className="text-primary text-lg">{obj.common_name}</p>}
+            {obj.rarity && (
+              <div className="flex items-center gap-2 mt-2">
+                <div
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow"
+                  style={{ backgroundColor: getRarityColor(obj.rarity), color: "#0F172A" }}
+                >
+                  {obj.rarity}
+                </div>
+              </div>
+            )}
           </div>
           <div className="flex gap-2 mt-8">
             <Button variant="outline" size="sm" onClick={handleTonightList} className={`gap-1 ${inList ? "text-primary border-primary/30" : ""}`}>

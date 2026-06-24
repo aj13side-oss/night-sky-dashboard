@@ -126,6 +126,16 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
                 #{i + 1}
               </div>
 
+              {/* Rarity badge */}
+              {obj.rarity && (
+                <div
+                  className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg"
+                  style={{ backgroundColor: getRarityColor(obj.rarity), color: "#0F172A" }}
+                >
+                  {obj.rarity}
+                </div>
+              )}
+
               {/* Content */}
               <div className="relative p-4 pt-12 space-y-2">
                 <p className="text-sm font-bold text-foreground truncate">

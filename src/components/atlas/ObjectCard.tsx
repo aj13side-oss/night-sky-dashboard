@@ -109,8 +109,15 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
 
   const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra_deg, obj.dec_deg, lat, lng);
   const isLegendary = score.total >= 100;
-  const isPrime = score.total >= 85 && score.total < 100;
   const season = getDisplaySeason(obj.best_months, obj.dec_deg, lat);
+  const currentSeason = (() => {
+    const m = new Date().getMonth(); // 0-11
+    if (m === 11 || m <= 1) return "Winter";
+    if (m <= 4) return "Spring";
+    if (m <= 7) return "Summer";
+    return "Autumn";
+  })();
+  const isPrime = season.isCircumpolar || (season.isSeason && season.label === currentSeason);
 
   const scoreColor = score.isHighAltitude
     ? "text-green-400"
@@ -178,7 +185,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
                 <Crown className="w-3 h-3" /> Legendary
               </div>
             )}
-            {isPrime && !isLegendary && (
+            {isPrime && (
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-300/90 text-slate-900 text-[10px] font-bold uppercase tracking-wider shadow-lg">
                 <Award className="w-3 h-3" /> Prime
               </div>

@@ -109,8 +109,15 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
 
   const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra_deg, obj.dec_deg, lat, lng);
   const isLegendary = score.total >= 100;
-  const isPrime = score.total >= 85 && score.total < 100;
   const season = getDisplaySeason(obj.best_months, obj.dec_deg, lat);
+  const currentSeason = (() => {
+    const m = new Date().getMonth(); // 0-11
+    if (m === 11 || m <= 1) return "Winter";
+    if (m <= 4) return "Spring";
+    if (m <= 7) return "Summer";
+    return "Autumn";
+  })();
+  const isPrime = season.isCircumpolar || (season.isSeason && season.label === currentSeason);
 
   const scoreColor = score.isHighAltitude
     ? "text-green-400"

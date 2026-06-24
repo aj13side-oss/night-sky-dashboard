@@ -152,9 +152,9 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
 
                 {/* Season + visibility */}
                 <div className="flex items-center justify-between text-[10px] gap-2">
-                  {season && (
+                  {season.label && (
                     <span className="text-muted-foreground truncate">
-                      {getSeasonEmoji(season)} Best in {season}
+                      {season.isSeason ? `${getSeasonEmoji(season.label)} Best in ${season.label}` : season.label}
                     </span>
                   )}
                   {rs && (

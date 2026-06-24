@@ -80,28 +80,12 @@ export function computeDynamicScore(
   lng: number
 ): DynamicScore {
   const base = photoScore ?? 0;
-  const currentSeason = getCurrentSeason();
-  const objectSeason = getSeasonLabel(bestMonths);
-
-  const isSeasonal = objectSeason != null && objectSeason === currentSeason;
-  const seasonalBonus = isSeasonal ? 10 : 0;
-
-  let altitudeBonus = 0;
-  let isHighAltitude = false;
-  if (ra != null && dec != null) {
-    const alt = calculateAltitude(ra, dec, lat, lng);
-    if (alt > 45) {
-      altitudeBonus = 10;
-      isHighAltitude = true;
-    }
-  }
-
   return {
     base,
-    seasonalBonus,
-    altitudeBonus,
-    total: base + seasonalBonus + altitudeBonus,
-    isSeasonal,
-    isHighAltitude,
+    seasonalBonus: 0,
+    altitudeBonus: 0,
+    total: base,
+    isSeasonal: false,
+    isHighAltitude: false,
   };
 }

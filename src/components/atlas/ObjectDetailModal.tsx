@@ -211,7 +211,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
               <div className="grid grid-cols-2 gap-2">
                 <InfoItem icon={<Eye className="w-3.5 h-3.5" />} label="Type" value={obj.obj_type} />
                 <InfoItem icon={<Compass className="w-3.5 h-3.5" />} label="Constellation" value={obj.constellation ?? "—"} />
-                <InfoItem icon={<Star className="w-3.5 h-3.5" />} label="Photo Score" value={obj.photo_score?.toString() ?? "—"} />
+                <InfoItem icon={<Star className="w-3.5 h-3.5" />} label="Accessibility Score" value={obj.photo_score?.toString() ?? "—"} />
                 <InfoItem icon={<Eye className="w-3.5 h-3.5" />} label="Magnitude" value={obj.magnitude?.toFixed(1) ?? "—"} />
                 <InfoItem icon={<Ruler className="w-3.5 h-3.5" />} label="Size" value={obj.size_max ? `${obj.size_max.toFixed(1)}'` : "—"} />
                 <InfoItem icon={<Eye className="w-3.5 h-3.5" />} label="Surf. Bright." value={obj.surf_brightness?.toFixed(1) ?? "—"} />

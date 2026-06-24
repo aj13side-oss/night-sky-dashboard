@@ -197,7 +197,7 @@ const AtlasFilters = ({
                 {visibleTonightEnabled && (
                   <SelectItem value="tonight_duration">🌙 Visibility duration ↓</SelectItem>
                 )}
-                <SelectItem value="photo_score">Photo Score ↓</SelectItem>
+                <SelectItem value="photo_score">Accessibility Score ↓</SelectItem>
                 <SelectItem value="magnitude">Magnitude ↑</SelectItem>
                 <SelectItem value="size_max">Size ↓</SelectItem>
                 <SelectItem value="catalog_id">Catalog ID</SelectItem>
@@ -514,7 +514,7 @@ const AtlasFilters = ({
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground flex items-center gap-1">
                 <Star className="w-3 h-3 text-primary" />
-                Min Photo Score: {filters.minPhotoScore > 0 ? filters.minPhotoScore : "All"}
+                Min Accessibility Score: {filters.minPhotoScore > 0 ? filters.minPhotoScore : "All"}
               </label>
               <Slider
                 value={[filters.minPhotoScore]}

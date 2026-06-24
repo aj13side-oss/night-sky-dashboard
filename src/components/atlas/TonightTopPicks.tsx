@@ -143,11 +143,6 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
                   </span>
                   <span className="text-[10px] text-muted-foreground">pts</span>
 
-                  {score.seasonalBonus > 0 && (
-                    <span className="flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">
-                      <Sun className="w-2.5 h-2.5" /> +{score.seasonalBonus}
-                    </span>
-                  )}
                   {score.altitudeBonus > 0 && (
                     <span className="flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-medium">
                       <Mountain className="w-2.5 h-2.5" /> +{score.altitudeBonus}

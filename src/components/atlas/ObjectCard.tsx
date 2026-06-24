@@ -163,8 +163,6 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
             </span>
           )}
 
-import { getRarityColor } from "@/lib/rarity";
-
           {/* Badges */}
           <div className="absolute top-2 left-2 flex flex-wrap items-center gap-1.5">
             {obj.rarity && (

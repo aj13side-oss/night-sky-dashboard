@@ -186,13 +186,8 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
         {obj.photo_score != null && (
           <div className="mb-3 space-y-1">
             <div className="flex items-center justify-between text-[10px]">
-              <span className="text-muted-foreground font-medium uppercase tracking-wider">Tonight Score</span>
+              <span className="text-muted-foreground font-medium uppercase tracking-wider">Accessibility Score</span>
               <div className="flex items-center gap-1.5">
-                {score.seasonalBonus > 0 && (
-                  <span className="flex items-center gap-0.5 px-1 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium">
-                    <Sun className="w-2.5 h-2.5" /> +{score.seasonalBonus}
-                  </span>
-                )}
                 {score.altitudeBonus > 0 && (
                   <span className="flex items-center gap-0.5 px-1 py-0.5 rounded bg-green-500/20 text-green-400 font-medium">
                     <Mountain className="w-2.5 h-2.5" /> +{score.altitudeBonus}

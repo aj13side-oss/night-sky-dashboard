@@ -1,4 +1,4 @@
-import { calculateAltitude } from "./visibility";
+
 
 const MONTH_TO_SEASON: Record<number, string> = {
   0: "Winter", 1: "Winter", 2: "Spring",
@@ -57,35 +57,3 @@ export function getDisplaySeason(
   return { label: base, isSeason: base != null, isCircumpolar: false, isInvisible: false };
 }
 
-export interface DynamicScore {
-  base: number;
-  seasonalBonus: number;
-  altitudeBonus: number;
-  total: number;
-  isSeasonal: boolean;
-  isHighAltitude: boolean;
-}
-
-/**
- * Compute dynamic score for a celestial object.
- * @param ra - RA in degrees (0-360). Callers must pass ra_deg from CelestialObject.
- * @param dec - Dec in degrees. Callers must pass dec_deg from CelestialObject.
- */
-export function computeDynamicScore(
-  photoScore: number | null,
-  bestMonths: string | null,
-  ra: number | null,
-  dec: number | null,
-  lat: number,
-  lng: number
-): DynamicScore {
-  const base = photoScore ?? 0;
-  return {
-    base,
-    seasonalBonus: 0,
-    altitudeBonus: 0,
-    total: base,
-    isSeasonal: false,
-    isHighAltitude: false,
-  };
-}

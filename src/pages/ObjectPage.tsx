@@ -10,6 +10,7 @@ import { formatRA, formatDec } from "@/lib/format-coords";
 import { useTonightList } from "@/hooks/useTonightList";
 import { useObservation } from "@/contexts/ObservationContext";
 import { getDisplaySeason } from "@/lib/dynamic-score";
+import { getRarityColor } from "@/lib/rarity";
 
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";

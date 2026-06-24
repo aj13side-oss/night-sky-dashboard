@@ -561,10 +561,15 @@ const SkyAtlas = () => {
 
         <AtlasFilters
           filters={filters}
-          onChange={(f) => setFilters({
-            ...f,
-            excludeTypes: f.search.trim() || f.catalog ? [] : DEFAULT_EXCLUDE_TYPES,
-          })}
+          onChange={(f) => {
+            if (f.search.trim() && visibleTonight) {
+              setVisibleTonight(false);
+            }
+            setFilters({
+              ...f,
+              excludeTypes: f.search.trim() || f.catalog ? [] : DEFAULT_EXCLUDE_TYPES,
+            });
+          }}
           types={types}
           typeBuckets={typeBuckets}
           constellations={constellations}

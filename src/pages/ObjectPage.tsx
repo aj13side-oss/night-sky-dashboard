@@ -228,13 +228,23 @@ const ObjectPage = () => {
             {obj.magnitude != null ? ` Visual magnitude: ${obj.magnitude.toFixed(1)}.` : ''}
             {obj.size_max != null && obj.size_max > 0 ? ` Angular size: ${obj.size_max.toFixed(0)}′.` : ''}
           </p>
-          {(obj.best_months || obj.recommended_filter) && (
-            <p>
-              {obj.best_months ? `Best season for astrophotography: ${obj.best_months}.` : ''}
-              {obj.recommended_filter ? ` Recommended filter: ${obj.recommended_filter}.` : ''}
-              {obj.ideal_resolution ? ` Ideal sampling: ${obj.ideal_resolution}.` : ''}
-            </p>
-          )}
+          {(obj.best_months || obj.recommended_filter) && (() => {
+            const season = getDisplaySeason(obj.best_months, obj.dec_deg, pos.lat);
+            const seasonSentence = season.isCircumpolar
+              ? `Visible year-round from your location.`
+              : season.isInvisible
+              ? `Not visible from your location.`
+              : season.label
+              ? `Best season for astrophotography: ${season.label}.`
+              : '';
+            return (
+              <p>
+                {seasonSentence}
+                {obj.recommended_filter ? ` Recommended filter: ${obj.recommended_filter}.` : ''}
+                {obj.ideal_resolution ? ` Ideal sampling: ${obj.ideal_resolution}.` : ''}
+              </p>
+            );
+          })()}
           {(obj.exposure_guide_fast || obj.exposure_guide_deep) && (
             <p>
               Suggested total integration time:

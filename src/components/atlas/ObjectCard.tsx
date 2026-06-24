@@ -1,11 +1,11 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { useObjectImage } from "@/hooks/useObjectImage";
-import { computeDynamicScore, getSeasonEmoji, getDisplaySeason } from "@/lib/dynamic-score";
+import { getSeasonEmoji, getDisplaySeason } from "@/lib/dynamic-score";
 import { getRarityColor } from "@/lib/rarity";
 import { getSearchContext } from "@/lib/search-context";
 import { motion } from "framer-motion";
-import { Ruler, Eye, Crown, Award, Sun, Mountain, Link, Lightbulb, Crosshair, BookOpen, ClipboardList } from "lucide-react";
+import { Ruler, Eye, Award, Link, Lightbulb, Crosshair, BookOpen, ClipboardList } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatCatalogId } from "@/lib/format-catalog";
@@ -107,8 +107,6 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
     ? searchContext.image
     : useFallback && wikiImage?.fallbackUrl ? wikiImage.fallbackUrl : thumbUrl;
 
-  const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra_deg, obj.dec_deg, lat, lng);
-  const isLegendary = score.total >= 100;
   const season = getDisplaySeason(obj.best_months, obj.dec_deg, lat);
   const currentSeason = (() => {
     const m = new Date().getMonth(); // 0-11
@@ -119,11 +117,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
   })();
   const isPrime = season.isCircumpolar || (season.isSeason && season.label === currentSeason);
 
-  const scoreColor = score.isHighAltitude
-    ? "text-green-400"
-    : score.isSeasonal
-    ? "text-emerald-400"
-    : "text-primary";
+  const scoreColor = "text-primary";
 
   return (
     <motion.div
@@ -132,7 +126,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
       transition={{ delay: index * 0.02, duration: 0.3 }}
       onClick={onClick}
       className={`glass-card rounded-2xl overflow-hidden cursor-pointer transition-all group ${
-        isLegendary ? "ring-1 ring-yellow-500/40 hover:ring-yellow-500/60" : isPrime ? "ring-1 ring-slate-300/20 hover:ring-slate-300/40" : "hover:border-primary/30"
+        isPrime ? "ring-1 ring-slate-300/20 hover:ring-slate-300/40" : "hover:border-primary/30"
       }`}
     >
       {/* Thumbnail — object-cover to fill frame */}
@@ -180,11 +174,6 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
                 {obj.rarity}
               </div>
             )}
-            {isLegendary && (
-              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/90 text-yellow-950 text-[10px] font-bold uppercase tracking-wider shadow-lg">
-                <Crown className="w-3 h-3" /> Legendary
-              </div>
-            )}
             {isPrime && (
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-300/90 text-slate-900 text-[10px] font-bold uppercase tracking-wider shadow-lg">
                 <Award className="w-3 h-3" /> Prime
@@ -206,26 +195,17 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
           <div className="mb-3 space-y-1.5">
             <div className="flex items-end justify-between">
               <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Accessibility Score</span>
-              <div className="flex items-center gap-1.5">
-                {score.altitudeBonus > 0 && (
-                  <span className="flex items-center gap-0.5 px-1 py-0.5 rounded bg-green-500/20 text-green-400 text-[10px] font-medium">
-                    <Mountain className="w-2.5 h-2.5" /> +{score.altitudeBonus}
-                  </span>
-                )}
-                <span className={`font-mono font-bold text-xl leading-none ${scoreColor}`}>{score.total}</span>
-              </div>
+              <span className={`font-mono font-bold text-xl leading-none ${scoreColor}`}>{obj.photo_score}</span>
             </div>
 
             <div className="h-1.5 rounded-full bg-secondary/50 overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{
-                  width: `${Math.min(score.total, 120) / 1.2}%`,
-                  background: score.isHighAltitude
-                    ? "linear-gradient(90deg, hsl(142 71% 45%), hsl(160 60% 45%))"
-                    : score.total >= 80
+                  width: `${Math.min(obj.photo_score, 100)}%`,
+                  background: obj.photo_score >= 80
                     ? "linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)))"
-                    : score.total >= 50
+                    : obj.photo_score >= 50
                     ? "hsl(var(--primary) / 0.7)"
                     : "hsl(var(--muted-foreground) / 0.5)",
                 }}

@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CelestialObject } from "./useCelestialObjects";
-import { computeDynamicScore } from "@/lib/dynamic-score";
 
 /**
  * Fetches top photo-scored DSOs and re-ranks by dynamic score (base + seasonal + altitude).
@@ -28,7 +27,12 @@ export function useTonightTopPicks(lat: number, lng: number, count = 3) {
     return candidates
       .map((obj) => ({
         obj,
-        score: computeDynamicScore(obj.photo_score, obj.best_months, obj.ra_deg, obj.dec_deg, lat, lng),
+        score: {
+          total: obj.photo_score ?? 0,
+          isHighAltitude: false,
+          isSeasonal: false,
+          altitudeBonus: 0,
+        },
       }))
       .sort((a, b) => b.score.total - a.score.total)
       .slice(0, count);

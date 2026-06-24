@@ -1,11 +1,11 @@
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { useObjectImage } from "@/hooks/useObjectImage";
-import { computeDynamicScore, getSeasonEmoji, getDisplaySeason } from "@/lib/dynamic-score";
+import { getSeasonEmoji, getDisplaySeason } from "@/lib/dynamic-score";
 import { getRarityColor } from "@/lib/rarity";
 import { getSearchContext } from "@/lib/search-context";
 import { motion } from "framer-motion";
-import { Ruler, Eye, Crown, Award, Sun, Mountain, Link, Lightbulb, Crosshair, BookOpen, ClipboardList } from "lucide-react";
+import { Ruler, Eye, Award, Link, Lightbulb, Crosshair, BookOpen, ClipboardList } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatCatalogId } from "@/lib/format-catalog";

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CelestialObject } from "./useCelestialObjects";
-import { computeDynamicScore } from "@/lib/dynamic-score";
+
 
 /**
  * Fetches top photo-scored DSOs and re-ranks by dynamic score (base + seasonal + altitude).

@@ -109,7 +109,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
   const score = computeDynamicScore(obj.photo_score, obj.best_months, obj.ra_deg, obj.dec_deg, lat, lng);
   const isLegendary = score.total >= 100;
   const isPrime = score.total >= 85 && score.total < 100;
-  const season = getSeasonLabel(obj.best_months);
+  const season = getDisplaySeason(obj.best_months, obj.dec_deg, lat);
 
   const scoreColor = score.isHighAltitude
     ? "text-green-400"

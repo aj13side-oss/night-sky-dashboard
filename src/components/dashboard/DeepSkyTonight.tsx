@@ -114,12 +114,12 @@ const DeepSkyTonight = () => {
       )}
 
       <div className="flex gap-2 mt-1">
-        <Link to="/sky-atlas" className="flex-1">
+        <Link to={lp("/sky-atlas")} className="flex-1">
           <Button variant="default" size="sm" className="w-full gap-2 text-xs">
             Browse Sky Atlas <ArrowRight className="w-3 h-3" />
           </Button>
         </Link>
-        <Link to="/sky-atlas" className="flex-1">
+        <Link to={lp("/sky-atlas")} className="flex-1">
           <Button variant="outline" size="sm" className="w-full gap-2 text-xs">
             Full Atlas <ArrowRight className="w-3 h-3" />
           </Button>

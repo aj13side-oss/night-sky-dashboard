@@ -18,6 +18,7 @@ const DeepSkyTonight = () => {
   const { location, date } = useObservation();
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const navigate = useLocalizedNavigate();
+  const lp = useLocalizedPath();
 
   const { data: objects, isLoading } = useQuery({
     queryKey: ["deep-sky-tonight", location.lat, location.lng, date.toDateString()],

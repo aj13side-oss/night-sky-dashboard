@@ -568,6 +568,7 @@ const FallbackProse = ({
 };
 
 const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
+  const { t } = useTranslation("object");
   const lp = useLocalizedPath();
   const { data: similar } = useQuery({
     queryKey: ["similar-objects", obj.id, obj.obj_type, obj.constellation],

@@ -396,7 +396,7 @@ const AtlasFilters = ({
 
           {/* Catalogs */}
           <div className="space-y-1.5">
-            <label className="text-xs text-muted-foreground">Catalog</label>
+            <label className="text-xs text-muted-foreground">{tr("filters.catalogLabel")}</label>
             <div className="flex flex-wrap gap-1.5">
               {([
                 { key: "M", label: "M", fullLabel: "Messier" },

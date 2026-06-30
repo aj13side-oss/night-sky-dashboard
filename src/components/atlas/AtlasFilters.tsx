@@ -222,7 +222,7 @@ const AtlasFilters = ({
               className={`gap-1.5 text-xs h-9 ${visibleTonightEnabled ? "bg-primary text-primary-foreground" : ""}`}
             >
               <Moon className="w-3.5 h-3.5" />
-              Visible Tonight
+              {tr("filters.visibleTonight")}
               {visibleTonightEnabled && <X className="w-3 h-3 ml-1" />}
             </Button>
           )}

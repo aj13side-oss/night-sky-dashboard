@@ -19,6 +19,7 @@ interface ShowerRow {
 
 const EventBanner = () => {
   const { date } = useObservation();
+  const { t } = useTranslation("dashboard");
   const [dismissed, setDismissed] = useState<string | null>(() => {
     const key = `cosmicframe_dismiss_${date.toISOString().split("T")[0]}`;
     return localStorage.getItem(key);
@@ -53,8 +54,8 @@ const EventBanner = () => {
 
     const moon = getMoonPhase(now);
     const illum = moon.illumination;
-    if (illum <= 10) return { id: "newmoon", text: "🌑 Near New Moon — perfect conditions for deep sky imaging tonight!", type: "moon" };
-    if (illum >= 90) return { id: "fullmoon", text: "🌕 Near Full Moon — poor conditions for deep sky imaging. Try bright targets or narrowband filters.", type: "moon" };
+    if (illum <= 10) return { id: "newmoon", text: t("eventBanner.newMoon"), type: "moon" };
+    if (illum >= 90) return { id: "fullmoon", text: t("eventBanner.fullMoon"), type: "moon" };
 
     const aurora = getAuroraForecast();
     const highKp = aurora.find((a) => a.kpIndex >= 5);

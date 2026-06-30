@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Trans, useTranslation } from "react-i18next";
 import { useLocalizedPath } from "@/lib/localized-nav";
 import { ObservationProvider, useObservation } from "@/contexts/ObservationContext";
 import AppNav from "@/components/AppNav";
@@ -22,6 +23,7 @@ import { motion } from "framer-motion";
 const DashboardContent = () => {
   const { location } = useObservation();
   const lp = useLocalizedPath();
+  const { t } = useTranslation("dashboard");
 
   return (
     <div className="min-h-screen bg-background star-field">

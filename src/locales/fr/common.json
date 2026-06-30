@@ -1,0 +1,13 @@
+{
+  "brand": "Cosmic Frame",
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "atlas": "Atlas",
+    "fov": "Champ",
+    "lightPollution": "Pollution lumineuse",
+    "equipment": "Équipement"
+  },
+  "actions": {
+    "useMyLocation": "Utiliser ma position"
+  }
+}

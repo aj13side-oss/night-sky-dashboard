@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useLocalizedPath } from "@/lib/localized-nav";
 import { ObservationProvider, useObservation } from "@/contexts/ObservationContext";
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";

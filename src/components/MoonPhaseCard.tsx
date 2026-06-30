@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import { useMemo } from "react";
 import * as Astronomy from "astronomy-engine";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
 
 const FULL_MOON_NAMES: Record<number, string> = {
   0: "Wolf Moon", 1: "Snow Moon", 2: "Worm Moon", 3: "Pink Moon",
@@ -154,6 +155,7 @@ function useEnhancedMoon(date: Date, lat: number, lng: number) {
 const MoonPhaseCard = () => {
   const { date, location } = useObservation();
   const { data, isLoading } = useAstronomyData();
+  const { t } = useTranslation("dashboard");
   const tz = location.timezone;
   const enhanced = useEnhancedMoon(date, location.lat, location.lng);
 
@@ -189,7 +191,7 @@ const MoonPhaseCard = () => {
   return (
     <div className="glass-card rounded-2xl p-6 flex flex-col items-center gap-4">
       <div className="flex items-center justify-between w-full">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Moon Phase</h3>
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t("moonPhase.title")}</h3>
         {isLoading ? (
           <Loader2 className="w-3 h-3 text-muted-foreground animate-spin" />
         ) : data?.moon ? (

@@ -5,6 +5,7 @@ import { useObservation } from "@/contexts/ObservationContext";
 import { X, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 
 interface ShowerRow {
   id: string;
@@ -18,6 +19,7 @@ interface ShowerRow {
 
 const EventBanner = () => {
   const { date } = useObservation();
+  const { t } = useTranslation("dashboard");
   const [dismissed, setDismissed] = useState<string | null>(() => {
     const key = `cosmicframe_dismiss_${date.toISOString().split("T")[0]}`;
     return localStorage.getItem(key);
@@ -52,15 +54,15 @@ const EventBanner = () => {
 
     const moon = getMoonPhase(now);
     const illum = moon.illumination;
-    if (illum <= 10) return { id: "newmoon", text: "🌑 Near New Moon — perfect conditions for deep sky imaging tonight!", type: "moon" };
-    if (illum >= 90) return { id: "fullmoon", text: "🌕 Near Full Moon — poor conditions for deep sky imaging. Try bright targets or narrowband filters.", type: "moon" };
+    if (illum <= 10) return { id: "newmoon", text: t("eventBanner.newMoon"), type: "moon" };
+    if (illum >= 90) return { id: "fullmoon", text: t("eventBanner.fullMoon"), type: "moon" };
 
     const aurora = getAuroraForecast();
     const highKp = aurora.find((a) => a.kpIndex >= 5);
     if (highKp) return { id: "aurora", text: `🌌 Geomagnetic storm alert! Kp ${highKp.kpIndex} — aurora possible at ${highKp.bestLatitude}.`, type: "aurora" };
 
     return null;
-  }, [date, showers]);
+  }, [date, showers, t]);
 
   if (!event || dismissed === event.id) return null;
 

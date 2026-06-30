@@ -291,7 +291,7 @@ const AtlasFilters = ({
                           <span className="flex items-center gap-2">
                             <span className="font-medium">{presetLabel(k)}</span>
                             <span className="text-xs text-muted-foreground tabular-nums">
-                              {avail && t ? `${fmt(t.startMs)} – ${fmt(t.endMs)}` : "unavailable"}
+                              {avail && t ? `${fmt(t.startMs)} – ${fmt(t.endMs)}` : tr("filters.presets.unavailable")}
                             </span>
                           </span>
                         </SelectItem>

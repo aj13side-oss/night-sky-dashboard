@@ -1,5 +1,93 @@
 {
   "accessibilityScore": "Accessibility Score",
   "rarity": "Rarity",
-  "season": "Season"
+  "season": "Season",
+  "breadcrumb": {
+    "home": "Home",
+    "atlas": "Sky Atlas"
+  },
+  "backToAtlas": "Back to Atlas",
+  "notFound": {
+    "title": "Object not found",
+    "desc": "\"{{id}}\" doesn't match any object in the catalog."
+  },
+  "tonightBtn": {
+    "listed": "Listed",
+    "tonight": "Tonight"
+  },
+  "info": {
+    "type": "Type",
+    "constellation": "Constellation",
+    "magnitude": "Magnitude",
+    "size": "Size",
+    "surfBright": "Surf. Bright."
+  },
+  "upAllNight": "Up all night",
+  "exposure": {
+    "title": "Recommended exposure & settings",
+    "fast": "Fast",
+    "deep": "Deep"
+  },
+  "howToPhotograph": "How to photograph {{name}}",
+  "sections": {
+    "bestEquipment": "Best equipment for {{name}}",
+    "recommendedGear": "Recommended gear for {{name}}",
+    "frameInFov": "Frame in FOV Calculator",
+    "compareInRig": "Compare in Rig Builder",
+    "seeOthers": "See what others capture",
+    "seeOthersDesc": "Browse real images of this target from astrophotographers using gear like yours. Coming soon.",
+    "comingSoon": "Coming soon",
+    "similar": "Similar Objects",
+    "community": "Community contributions",
+    "communityDesc": "Share your shots, tips and notes on this target. Coming soon."
+  },
+  "toast": {
+    "removed": "Removed from tonight's list",
+    "added": "Added to tonight's list!"
+  },
+  "equipment": {
+    "scope": {
+      "standard": "Standard refractor or small Newtonian",
+      "wide": "Wide-field short focal length refractor",
+      "long": "Long focal length SCT or large Newtonian",
+      "standardDesc": "{{name}} sits in the mid-range angular size — a 400–800mm focal length refractor or small Newtonian frames it nicely.",
+      "wideDesc": "{{name}} spans a large area of sky ({{size}}′). A short focal length refractor (200–500mm) is required to fit it in the frame.",
+      "longDesc": "{{name}} is small ({{size}}′). A long focal length scope (1200mm+) like an SCT or large Newtonian reveals its details."
+    },
+    "camera": {
+      "label": "Cooled dedicated astro camera",
+      "desc": "For long exposures on {{name}}, a cooled astrophotography camera (mono or one-shot color) keeps thermal noise low."
+    },
+    "mount": {
+      "label": "Tracking equatorial mount",
+      "desc": "{{name}} requires accurate tracking — an equatorial mount sized for your scope's weight is essential."
+    },
+    "filter": {
+      "fallback": "Light pollution filter",
+      "narrowDesc": "{{name}} responds well to narrowband filters ({{filter}}) — they isolate emission lines and cut through moonlight.",
+      "broadDesc": "{{name}} benefits from a broadband light-pollution filter ({{filter}}) to boost contrast under city skies.",
+      "defaultWithFilter": "For {{name}}, the recommended filter is {{filter}}. Browse compatible options in the catalog.",
+      "defaultNoFilter": "A light pollution filter improves contrast on {{name}} from suburban skies."
+    }
+  },
+  "fallback": {
+    "intro": "{{subject}} is a {{type}}{{inConstellation}}.",
+    "subjectWithName": "The {{name}} ({{id}})",
+    "inConstellation": " in the constellation {{constellation}}",
+    "magnitude": " Visual magnitude: {{mag}}.",
+    "size": " Angular size: {{size}}′.",
+    "seasonYearRound": "Visible year-round from your location.",
+    "seasonInvisible": "Not visible from your location.",
+    "seasonBest": "Best season for astrophotography: {{season}}.",
+    "filterLine": " Recommended filter: {{filter}}.",
+    "samplingLine": " Ideal sampling: {{sampling}}.",
+    "integration": "Suggested total integration time:",
+    "fastSession": " {{exposure}} for a quick session",
+    "deepSession": " {{exposure}} for a deep image",
+    "matchEquipmentPrefix": "Match your ",
+    "matchEquipmentLink": "astrophotography equipment",
+    "matchEquipmentMiddle": " to this target, then check focal length and sampling in the ",
+    "matchEquipmentFovLink": "field of view & arcsec/pixel calculator",
+    "matchEquipmentSuffix": "."
+  }
 }

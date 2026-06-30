@@ -1,5 +1,93 @@
 {
   "accessibilityScore": "Score d'accessibilité",
   "rarity": "Rareté",
-  "season": "Saison"
+  "season": "Saison",
+  "breadcrumb": {
+    "home": "Accueil",
+    "atlas": "Atlas du ciel"
+  },
+  "backToAtlas": "Retour à l'Atlas",
+  "notFound": {
+    "title": "Objet introuvable",
+    "desc": "« {{id}} » ne correspond à aucun objet du catalogue."
+  },
+  "tonightBtn": {
+    "listed": "Dans la liste",
+    "tonight": "Ce soir"
+  },
+  "info": {
+    "type": "Type",
+    "constellation": "Constellation",
+    "magnitude": "Magnitude",
+    "size": "Taille",
+    "surfBright": "Brillance surf."
+  },
+  "upAllNight": "Visible toute la nuit",
+  "exposure": {
+    "title": "Exposition et réglages recommandés",
+    "fast": "Rapide",
+    "deep": "Profond"
+  },
+  "howToPhotograph": "Comment photographier {{name}}",
+  "sections": {
+    "bestEquipment": "Meilleur matériel pour {{name}}",
+    "recommendedGear": "Matériel recommandé pour {{name}}",
+    "frameInFov": "Cadrer dans le calculateur de champ",
+    "compareInRig": "Comparer dans le configurateur",
+    "seeOthers": "Voir les images de la communauté",
+    "seeOthersDesc": "Parcourez de vraies images de cette cible prises par des astrophotographes avec un matériel comme le vôtre. Bientôt disponible.",
+    "comingSoon": "Bientôt disponible",
+    "similar": "Objets similaires",
+    "community": "Contributions de la communauté",
+    "communityDesc": "Partagez vos images, astuces et notes sur cette cible. Bientôt disponible."
+  },
+  "toast": {
+    "removed": "Retiré de la liste de ce soir",
+    "added": "Ajouté à la liste de ce soir"
+  },
+  "equipment": {
+    "scope": {
+      "standard": "Lunette standard ou petit Newton",
+      "wide": "Lunette grand champ à courte focale",
+      "long": "SCT à longue focale ou grand Newton",
+      "standardDesc": "{{name}} se situe dans une taille angulaire moyenne — une lunette ou un petit Newton de 400 à 800 mm de focale le cadre parfaitement.",
+      "wideDesc": "{{name}} couvre une grande portion de ciel ({{size}}′). Une lunette à courte focale (200 à 500 mm) est nécessaire pour le faire tenir dans le champ.",
+      "longDesc": "{{name}} est de petite taille ({{size}}′). Une longue focale (1200 mm et plus) comme un SCT ou un grand Newton en révèle les détails."
+    },
+    "camera": {
+      "label": "Caméra astro refroidie dédiée",
+      "desc": "Pour les longues poses sur {{name}}, une caméra astrophoto refroidie (mono ou couleur one-shot) maintient un faible bruit thermique."
+    },
+    "mount": {
+      "label": "Monture équatoriale de suivi",
+      "desc": "{{name}} demande un suivi précis — une monture équatoriale adaptée au poids de votre instrument est indispensable."
+    },
+    "filter": {
+      "fallback": "Filtre anti-pollution lumineuse",
+      "narrowDesc": "{{name}} réagit bien aux filtres à bande étroite ({{filter}}) — ils isolent les raies d'émission et coupent la lumière lunaire.",
+      "broadDesc": "{{name}} bénéficie d'un filtre anti-pollution lumineuse à large bande ({{filter}}) pour gagner en contraste sous un ciel urbain.",
+      "defaultWithFilter": "Pour {{name}}, le filtre recommandé est {{filter}}. Parcourez les options compatibles dans le catalogue.",
+      "defaultNoFilter": "Un filtre anti-pollution lumineuse améliore le contraste sur {{name}} depuis un ciel péri-urbain."
+    }
+  },
+  "fallback": {
+    "intro": "{{subject}} est un {{type}}{{inConstellation}}.",
+    "subjectWithName": "{{name}} ({{id}})",
+    "inConstellation": " dans la constellation {{constellation}}",
+    "magnitude": " Magnitude visuelle : {{mag}}.",
+    "size": " Taille angulaire : {{size}}′.",
+    "seasonYearRound": "Visible toute l'année depuis votre position.",
+    "seasonInvisible": "Non visible depuis votre position.",
+    "seasonBest": "Meilleure saison pour l'astrophotographie : {{season}}.",
+    "filterLine": " Filtre recommandé : {{filter}}.",
+    "samplingLine": " Échantillonnage idéal : {{sampling}}.",
+    "integration": "Temps d'intégration total suggéré :",
+    "fastSession": " {{exposure}} pour une session rapide",
+    "deepSession": " {{exposure}} pour une image profonde",
+    "matchEquipmentPrefix": "Associez votre ",
+    "matchEquipmentLink": "matériel d'astrophotographie",
+    "matchEquipmentMiddle": " à cette cible, puis vérifiez la focale et l'échantillonnage dans le ",
+    "matchEquipmentFovLink": "calculateur de champ et d'arcsec/pixel",
+    "matchEquipmentSuffix": "."
+  }
 }

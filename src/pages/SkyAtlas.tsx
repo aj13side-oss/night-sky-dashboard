@@ -529,7 +529,7 @@ const SkyAtlas = () => {
           </p>
           <p className="text-sm text-muted-foreground/60 mt-1 flex flex-wrap items-center gap-2">
             <MapPin className="w-3.5 h-3.5" />
-            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — {tAtlas("objectsCount", { count: displayedTotal > 0 ? displayedTotal : 0, replace: { count: displayedTotal > 0 ? displayedTotal.toLocaleString() : "..." } })}
+            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — {tAtlas("objectsCount", { count: displayedTotal > 0 ? displayedTotal.toLocaleString() : "..." })}
             {(geoStatus === "default" || geoStatus === "denied") && (
               <button
                 type="button"

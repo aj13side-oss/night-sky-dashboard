@@ -723,10 +723,10 @@ const SkyAtlas = () => {
         {!isClientFiltered && allLoadedData.length < totalCount && (
           <div className="flex flex-col items-center gap-2 pt-4">
             <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} className="gap-1">
-              Load more (30)
+              {tAtlas("loadMore")}
             </Button>
             <span className="text-xs text-muted-foreground font-mono">
-              Showing {allLoadedData.length} of {totalCount.toLocaleString()}
+              {tAtlas("showingOf", { loaded: allLoadedData.length, total: totalCount.toLocaleString() })}
             </span>
           </div>
         )}

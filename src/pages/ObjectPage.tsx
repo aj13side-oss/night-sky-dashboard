@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useLocalizedPath, useLocalizedNavigate } from "@/lib/localized-nav";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CelestialObject } from "@/hooks/useCelestialObjects";

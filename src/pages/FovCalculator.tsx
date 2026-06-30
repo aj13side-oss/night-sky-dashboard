@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { useLocalizedNavigate } from "@/lib/localized-nav";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";

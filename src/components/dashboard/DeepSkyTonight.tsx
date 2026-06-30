@@ -9,6 +9,7 @@ import { formatCatalogId } from "@/lib/format-catalog";
 import { motion } from "framer-motion";
 import { Sparkles, Loader2, ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLocalizedPath, useLocalizedNavigate } from "@/lib/localized-nav";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";

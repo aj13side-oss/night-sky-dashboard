@@ -305,7 +305,7 @@ const ObjectPage = () => {
             {/* Rise/Set */}
             {rs && !rs.neverRises && (
               <div className="text-xs text-muted-foreground font-mono p-3 rounded-xl bg-secondary/30">
-                {rs.isCircumpolar ? "Up all night" : (
+                {rs.isCircumpolar ? t("upAllNight") : (
                   <>
                     {rs.riseTime && `↑ ${formatTimeShort(rs.riseTime)}`}
                     {rs.riseTime && rs.setTime && " · "}

@@ -47,15 +47,16 @@ function formatDec(decDeg: number | null | undefined): string | null {
 
 function formatSeason(obj: CelestialObject, userLat: number | null, maps: LabelMaps, lang: Lang): string | null {
   const s = getDisplaySeason(obj.best_months, obj.dec_deg, userLat);
+  if (s.isCircumpolar || s.isInvisible) return null;
   if (!s.label) return null;
   if (lang === "en") return s.label;
   // French - translate via season dictionary, fallback to label
   return maps.season[s.label] ?? s.label;
 }
 
-function formatSharpless(v: number | null | undefined, lang: Lang): string | null {
+function formatSharpless(v: number | null | undefined, _lang: Lang): string | null {
   if (v == null) return null;
-  return lang === "fr" ? `classe ${v}` : `class ${v}`;
+  return `${v}`;
 }
 
 /**

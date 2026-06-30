@@ -71,7 +71,7 @@
     }
   },
   "fallback": {
-    "intro": "{{subject}} is a {{type}}{{inConstellation}}.",
+    "intro": "{{subject}} is {{typeWithArticle}}{{inConstellation}}.",
     "subjectWithName": "The {{name}} ({{id}})",
     "inConstellation": " in the constellation {{constellation}}",
     "magnitude": " Visual magnitude: {{mag}}.",

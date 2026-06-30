@@ -749,23 +749,23 @@ const SkyAtlas = () => {
         {/* About the Catalog */}
         <details className="space-y-6 pt-8 border-t border-border/20 mt-10">
           <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
-            About the Deep Sky Object Catalog
+            {tAtlas("about.summary")}
           </summary>
           <div className="space-y-4 pt-4">
             <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-              This catalog contains over 4,800 deep sky objects spanning the complete
-              <span className="text-foreground/80 font-medium"> Messier catalog</span> (110 objects), the
-              <span className="text-foreground/80 font-medium"> NGC</span> and
-              <span className="text-foreground/80 font-medium"> IC</span> catalogs, plus the
-              <span className="text-foreground/80 font-medium"> Sharpless</span> catalog of H-II regions.
-              You can filter by object type — galaxies, emission nebulae, planetary nebulae, open clusters, globular clusters, dark nebulae and more —
-              or narrow results by constellation, magnitude, angular size and best observation season.
+              <Trans
+                i18nKey="about.p1"
+                t={tAtlas}
+                components={[
+                  <span key="0" className="text-foreground/80 font-medium" />,
+                  <span key="1" className="text-foreground/80 font-medium" />,
+                  <span key="2" className="text-foreground/80 font-medium" />,
+                  <span key="3" className="text-foreground/80 font-medium" />,
+                ]}
+              />
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-              Every object includes an exposure guide with recommended fast and deep integration times,
-              a photogenicity score that ranks how rewarding a target is to photograph, and a framing preview
-              that shows how the object fits in your telescope and camera field of view. Use these tools to plan
-              your next deep sky imaging session with confidence.
+              {tAtlas("about.p2")}
             </p>
           </div>
         </details>

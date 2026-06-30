@@ -603,7 +603,7 @@ const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
     <section className="space-y-3">
       <div className="flex items-center gap-2">
         <Telescope className="w-4 h-4 text-primary" />
-        <h2 className="text-sm font-semibold text-foreground">Similar Objects</h2>
+        <h2 className="text-sm font-semibold text-foreground">{t("sections.similar")}</h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {similar.map((s: any) => (

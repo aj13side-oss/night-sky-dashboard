@@ -525,33 +525,33 @@ const SkyAtlas = () => {
             {tAtlas("title")}
           </h1>
           <p className="text-muted-foreground mt-2 max-w-3xl">
-            Browse 4,800+ deep sky objects — filter Messier, NGC and IC catalogs by type, constellation, magnitude and best season.
+            {tAtlas("subtitle")}
           </p>
           <p className="text-sm text-muted-foreground/60 mt-1 flex flex-wrap items-center gap-2">
             <MapPin className="w-3.5 h-3.5" />
-            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — {displayedTotal > 0 ? displayedTotal.toLocaleString() : "..."} objects
+            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — {tAtlas("objectsCount", { count: displayedTotal > 0 ? displayedTotal : 0, replace: { count: displayedTotal > 0 ? displayedTotal.toLocaleString() : "..." } })}
             {(geoStatus === "default" || geoStatus === "denied") && (
               <button
                 type="button"
                 onClick={handleGeolocation}
                 className="text-xs text-primary hover:underline focus:outline-none focus:underline"
               >
-                Using default location Lyon — Use my location
+                {tAtlas("location.useMyLocation")}
               </button>
             )}
             {geoStatus === "granted" && (
-              <span className="text-xs text-primary">Your location</span>
+              <span className="text-xs text-primary">{tAtlas("location.yourLocation")}</span>
             )}
             {geoStatus === "requesting" && (
-              <span className="text-xs text-muted-foreground">Requesting location...</span>
+              <span className="text-xs text-muted-foreground">{tAtlas("location.requesting")}</span>
             )}
           </p>
           <p className="text-sm text-muted-foreground mt-3">
-            Popular targets:{' '}
-            <Link to={lp(`/object/${encodeURIComponent('M 42')}`)} className="text-primary hover:underline">Orion Nebula (M42) astrophotography</Link>{' · '}
-            <Link to={lp(`/object/${encodeURIComponent('M 31')}`)} className="text-primary hover:underline">Andromeda Galaxy (M31) astrophotography</Link>{' · '}
-            <Link to={lp(`/object/${encodeURIComponent('M 45')}`)} className="text-primary hover:underline">Pleiades (M45) astrophotography</Link>{' · '}
-            <Link to={lp(`/object/${encodeURIComponent('M 51')}`)} className="text-primary hover:underline">Whirlpool Galaxy (M51) astrophotography</Link>
+            {tAtlas("popularTargets.label")}{' '}
+            <Link to={lp(`/object/${encodeURIComponent('M 42')}`)} className="text-primary hover:underline">{tAtlas("popularTargets.orion")}</Link>{' · '}
+            <Link to={lp(`/object/${encodeURIComponent('M 31')}`)} className="text-primary hover:underline">{tAtlas("popularTargets.andromeda")}</Link>{' · '}
+            <Link to={lp(`/object/${encodeURIComponent('M 45')}`)} className="text-primary hover:underline">{tAtlas("popularTargets.pleiades")}</Link>{' · '}
+            <Link to={lp(`/object/${encodeURIComponent('M 51')}`)} className="text-primary hover:underline">{tAtlas("popularTargets.whirlpool")}</Link>
           </p>
         </motion.div>
 

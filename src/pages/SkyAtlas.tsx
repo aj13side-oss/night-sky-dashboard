@@ -687,7 +687,7 @@ const SkyAtlas = () => {
             {showNoAstroNote && (
               <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90">
                 <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                <span>No full astronomical night tonight — try <strong>Nautical</strong> or <strong>Civil</strong>.</span>
+                <span><Trans i18nKey="noAstroNight" t={tAtlas} components={[<strong key="0" />, <strong key="1" />]} /></span>
               </div>
             )}
             {filteredData.length === 0 ? (

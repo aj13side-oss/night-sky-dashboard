@@ -83,10 +83,10 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-primary" />
-          Top Recommendations for Your Sky
+          {tr("topPicks.heading")}
         </h2>
         <span className="text-xs text-muted-foreground">
-          {getSeasonEmoji(currentSeason)} {currentSeason} · Dynamic ranking
+          {getSeasonEmoji(currentSeason)} {tr(`seasons.${currentSeason}`, { defaultValue: currentSeason })} · {tr("topPicks.dynamicRanking")}
         </span>
       </div>
 

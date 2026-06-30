@@ -73,5 +73,29 @@
     "any": "Any",
     "maxMagnitude": "Max magnitude",
     "minAccessibility": "Min Accessibility Score"
+  },
+  "topPicks": {
+    "loading": "Tonight's Top Picks",
+    "heading": "Top Recommendations for Your Sky",
+    "dynamicRanking": "Dynamic ranking"
+  },
+  "seasons": {
+    "Winter": "Winter",
+    "Spring": "Spring",
+    "Summer": "Summer",
+    "Autumn": "Autumn"
+  },
+  "types": {
+    "Galaxy": "Galaxy",
+    "Open Cluster": "Open Cluster",
+    "Emission Nebula": "Emission Nebula",
+    "Globular Cluster": "Globular Cluster",
+    "Dark Nebula": "Dark Nebula",
+    "Cluster Of Galaxies": "Cluster of Galaxies",
+    "Planetary Nebula": "Planetary Nebula",
+    "Stars & Asterisms": "Stars & Asterisms",
+    "Cluster + Nebula": "Cluster + Nebula",
+    "Reflection Nebula": "Reflection Nebula",
+    "Other": "Other"
   }
 }

@@ -155,6 +155,7 @@ function useEnhancedMoon(date: Date, lat: number, lng: number) {
 const MoonPhaseCard = () => {
   const { date, location } = useObservation();
   const { data, isLoading } = useAstronomyData();
+  const { t } = useTranslation("dashboard");
   const tz = location.timezone;
   const enhanced = useEnhancedMoon(date, location.lat, location.lng);
 

@@ -1,0 +1,17 @@
+{
+  "columns": {
+    "tools": "Tools",
+    "popularObjects": "Popular Objects",
+    "equipment": "Equipment"
+  },
+  "tools": {
+    "dashboard": "Astro Weather & Dashboard",
+    "atlas": "Sky Atlas (4,800+ objects)",
+    "equipment": "Astrophotography Gear Comparator",
+    "fov": "FOV & Sampling Calculator",
+    "lightPollution": "Light Pollution Map"
+  },
+  "equipmentText": "Newton Telescopes, APO Refractors, Schmidt-Cassegrain. ZWO, QHY, Player One Cameras. Sky-Watcher, ZWO, iOptron Mounts. Optolong, Baader, Astronomik Filters.",
+  "disclaimer": "Links to third-party stores are provided for convenience. We are not affiliated with any retailer.",
+  "privacy": "Privacy Policy"
+}

@@ -1,0 +1,17 @@
+{
+  "columns": {
+    "tools": "Outils",
+    "popularObjects": "Objets populaires",
+    "equipment": "Équipement"
+  },
+  "tools": {
+    "dashboard": "Météo astro et tableau de bord",
+    "atlas": "Atlas du ciel (plus de 4800 objets)",
+    "equipment": "Comparateur de matériel astrophoto",
+    "fov": "Calculateur de champ et échantillonnage",
+    "lightPollution": "Carte de pollution lumineuse"
+  },
+  "equipmentText": "Télescopes Newton, lunettes APO, Schmidt-Cassegrain. Caméras ZWO, QHY, Player One. Montures Sky-Watcher, ZWO, iOptron. Filtres Optolong, Baader, Astronomik.",
+  "disclaimer": "Les liens vers des boutiques tierces sont fournis pour votre confort. Nous ne sommes affiliés à aucun revendeur.",
+  "privacy": "Politique de confidentialité"
+}

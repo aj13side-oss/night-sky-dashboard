@@ -10,11 +10,11 @@ import { useLocalizedPath } from "@/lib/localized-nav";
 
 
 const navItems = [
-  { to: "/", label: "Dashboard", icon: Home, group: "plan" },
-  { to: "/sky-atlas", label: "Atlas", icon: Map, group: "plan" },
-  { to: "/fov-calculator", label: "FOV", icon: Crosshair, group: "plan" },
-  { to: "/light-pollution", label: "Light Pollution", icon: Eclipse, group: "tools" },
-  { to: "/equipment", label: "Equipment", icon: Settings, group: "tools" },
+  { to: "/", labelKey: "nav.dashboard", icon: Home, group: "plan" },
+  { to: "/sky-atlas", labelKey: "nav.atlas", icon: Map, group: "plan" },
+  { to: "/fov-calculator", labelKey: "nav.fov", icon: Crosshair, group: "plan" },
+  { to: "/light-pollution", labelKey: "nav.lightPollution", icon: Eclipse, group: "tools" },
+  { to: "/equipment", labelKey: "nav.equipment", icon: Settings, group: "tools" },
 ];
 
 const AppNav = () => {
@@ -56,7 +56,7 @@ const AppNav = () => {
                       pathname === lp(item.to) ? "bg-primary/15 text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                     )}>
                     <item.icon className="w-4 h-4" />
-                    {item.label}
+                    {t(item.labelKey)}
                   </Link>
                 ))}
               </nav>
@@ -67,7 +67,7 @@ const AppNav = () => {
                     nightVision ? "bg-red-900/30 text-red-400" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                   )}>
                   {nightVision ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  {nightVision ? "Normal Mode" : "Night Vision"}
+                  {nightVision ? t("nightVision.normalMode") : t("nightVision.nightVision")}
                 </button>
               </div>
             </SheetContent>
@@ -86,7 +86,7 @@ const AppNav = () => {
                   pathname === lp(item.to) ? "bg-primary/15 text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                 )}>
                 <item.icon className="w-3.5 h-3.5" />
-                <span>{item.label}</span>
+                <span>{t(item.labelKey)}</span>
               </Link>
             </span>
           ))}
@@ -106,9 +106,9 @@ const AppNav = () => {
             className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors",
               nightVision ? "bg-red-900/30 text-red-400" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
             )}
-            title={nightVision ? "Disable night vision" : "Enable night vision"}>
+            title={nightVision ? t("nightVision.disableTitle") : t("nightVision.enableTitle")}>
             {nightVision ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-            <span className="text-xs">{nightVision ? "Normal" : "Night"}</span>
+            <span className="text-xs">{nightVision ? t("nightVision.normalShort") : t("nightVision.nightShort")}</span>
           </button>
 
         </nav>

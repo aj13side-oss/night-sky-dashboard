@@ -9,5 +9,13 @@
   },
   "actions": {
     "useMyLocation": "Utiliser ma position"
+  },
+  "nightVision": {
+    "normalMode": "Mode normal",
+    "nightVision": "Vision nocturne",
+    "normalShort": "Normal",
+    "nightShort": "Nuit",
+    "disableTitle": "Désactiver la vision nocturne",
+    "enableTitle": "Activer la vision nocturne"
   }
 }

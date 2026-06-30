@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, X, Trophy, Star, Moon, Camera, SlidersHorizontal, ArrowUpDown, ChevronDown, Sparkles, Orbit } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface NightWindow {
   startMs: number;

@@ -545,7 +545,7 @@ const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
         {similar.map((s: any) => (
           <Link
             key={s.id}
-            to={`/object/${encodeURIComponent(s.catalog_id)}`}
+            to={lp(`/object/${encodeURIComponent(s.catalog_id)}`)}
             className="glass-card rounded-xl p-3 hover:bg-secondary/50 transition-colors space-y-2"
           >
             {s.forced_image_url && (

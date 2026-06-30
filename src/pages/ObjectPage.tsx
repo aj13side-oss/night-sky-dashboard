@@ -203,7 +203,10 @@ const ObjectPage = () => {
               <ArrowLeft className="w-4 h-4" /> Back to Atlas
             </Button>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{formatCatalogId(obj)}</h1>
-            {obj.common_name && <p className="text-primary text-lg">{obj.common_name}</p>}
+            {(() => {
+              const displayName = isFr ? (obj.common_name_fr ?? obj.common_name) : obj.common_name;
+              return displayName ? <p className="text-primary text-lg">{displayName}</p> : null;
+            })()}
             {obj.rarity && (
               <div className="flex items-center gap-2 mt-2">
                 <div

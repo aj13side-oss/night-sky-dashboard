@@ -601,7 +601,7 @@ const SkyAtlas = () => {
               <div className="flex items-center gap-2">
                 <Info className="w-4 h-4 text-primary shrink-0" />
                 <h2 className="text-sm font-semibold text-primary">
-                  How is the Accessibility Score calculated?
+                  {tAtlas("score.heading")}
                 </h2>
               </div>
               <ChevronDown
@@ -612,27 +612,27 @@ const SkyAtlas = () => {
           <CollapsibleContent>
             <div className="px-4 pb-4 pt-1 space-y-3 text-sm text-muted-foreground border-t border-primary/10">
               <p>
-                The <span className="text-primary font-medium">Accessibility Score</span> (out of 100) estimates how easy a deep-sky object is to photograph and to get a satisfying result from. It does not measure the object's beauty, but its accessibility for the astrophotographer. It is based on four physical properties:
+                <Trans i18nKey="score.intro" t={tAtlas} components={[<span key="0" className="text-primary font-medium" />]} />
               </p>
               <ul className="space-y-2 pl-4 list-disc marker:text-primary/70">
                 <li>
-                  <span className="text-foreground font-medium">Apparent size:</span> larger objects are easier to frame and can be shot at short focal length, with a telephoto lens, without a high-end mount.
+                  <Trans i18nKey="score.size" t={tAtlas} components={[<span key="0" className="text-foreground font-medium" />]} />
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">Brightness (magnitude and light density):</span> a bright, concentrated object needs less exposure time than a faint, diffuse one.
+                  <Trans i18nKey="score.brightness" t={tAtlas} components={[<span key="0" className="text-foreground font-medium" />]} />
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">Object type:</span> galaxies, clusters and reflection nebulae image well in colour (RGB); emission-line targets are weighted accordingly.
+                  <Trans i18nKey="score.type" t={tAtlas} components={[<span key="0" className="text-foreground font-medium" />]} />
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">RGB / narrowband accessibility:</span> emission nebulae, planetary nebulae and supernova remnants reach their full potential in narrowband; in plain RGB they render a little less, which is taken into account.
+                  <Trans i18nKey="score.rgb" t={tAtlas} components={[<span key="0" className="text-foreground font-medium" />]} />
                 </li>
               </ul>
               <p>
-                The score is universal: it does not depend on your location. To see what you can actually photograph tonight from your location, use the "Visible Tonight" filter.
+                {tAtlas("score.universal")}
               </p>
               <p className="text-xs text-muted-foreground/70">
-                Note: a community image-quality rating will complement this score as the Cosmic Frame community grows.
+                {tAtlas("score.note")}
               </p>
             </div>
           </CollapsibleContent>

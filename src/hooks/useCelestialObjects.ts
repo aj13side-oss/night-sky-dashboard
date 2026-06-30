@@ -32,6 +32,10 @@ export interface CelestialObject {
   seo_description: string | null;
   rarity: string | null;
   alias_details: Record<string, { desc: string; img?: string | null }> | null;
+  seo_description_fr: string | null;
+  seo_description_en: string | null;
+  common_name_fr: string | null;
+  sharpless_brightness: number | null;
 }
 
 export type CatalogFilter = "" | "M" | "NGC" | "IC" | "SH" | "B" | "ACO" | "C" | "OTHER";

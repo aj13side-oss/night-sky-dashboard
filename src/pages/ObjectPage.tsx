@@ -186,11 +186,11 @@ const ObjectPage = () => {
         <nav aria-label="Breadcrumb">
           <ol className="flex items-center gap-2 text-sm text-muted-foreground">
             <li>
-              <Link to={lp("/")} className="hover:text-foreground transition-colors">Home</Link>
+              <Link to={lp("/")} className="hover:text-foreground transition-colors">{t("breadcrumb.home")}</Link>
             </li>
             <li>/</li>
             <li>
-              <Link to={lp("/sky-atlas")} className="hover:text-foreground transition-colors">Sky Atlas</Link>
+              <Link to={lp("/sky-atlas")} className="hover:text-foreground transition-colors">{t("breadcrumb.atlas")}</Link>
             </li>
             <li>/</li>
             <li className="text-foreground font-medium" aria-current="page">

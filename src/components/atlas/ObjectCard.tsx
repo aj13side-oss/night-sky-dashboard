@@ -7,7 +7,7 @@ import { getSearchContext } from "@/lib/search-context";
 import { motion } from "framer-motion";
 import { Ruler, Eye, Award, Link, Lightbulb, Crosshair, BookOpen, ClipboardList } from "lucide-react";
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocalizedNavigate } from "@/lib/localized-nav";
 import { formatCatalogId } from "@/lib/format-catalog";
 import { Button } from "@/components/ui/button";
 import { useTonightList } from "@/hooks/useTonightList";
@@ -78,7 +78,7 @@ function colorForTime(
 }
 
 const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false, maxAltInWindow, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const { isInList, addObject, removeObject } = useTonightList();
 
   const rs = useMemo(() => {

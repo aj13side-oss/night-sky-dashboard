@@ -16,6 +16,7 @@ import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useLocalizedNavigate } from "@/lib/localized-nav";
 import { supabase } from "@/integrations/supabase/client";
 import AltitudeChart from "./AltitudeChart";
 import ExposureGuideModal from "./ExposureGuideModal";
@@ -73,7 +74,7 @@ function colorForTime(
 }
 
 const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const [showExposureInfo, setShowExposureInfo] = useState(false);
   const [showCredits, setShowCredits] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);

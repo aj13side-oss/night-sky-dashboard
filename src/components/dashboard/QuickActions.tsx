@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocalizedNavigate } from "@/lib/localized-nav";
 import { ClipboardList, Map, Crosshair, Eclipse } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -11,7 +11,7 @@ const actions = [
 ];
 
 const QuickActions = () => {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
 
   return (
     <motion.div

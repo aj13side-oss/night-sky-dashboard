@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import LocationPicker from "@/components/LocationPicker";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useLocalizedPath } from "@/lib/localized-nav";
 
 
 const navItems = [
@@ -19,6 +20,7 @@ const navItems = [
 const AppNav = () => {
   const { pathname } = useLocation();
   const { t } = useTranslation("common");
+  const lp = useLocalizedPath();
   const [nightVision, setNightVision] = useState(() => localStorage.getItem("nightVision") === "true");
   const [open, setOpen] = useState(false);
 
@@ -30,7 +32,7 @@ const AppNav = () => {
   return (
     <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-10 bg-background/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to={lp("/")} className="flex items-center gap-2">
           <img src="/logo.png" alt="Cosmic Frame" width={28} height={28} className="h-7 w-7" />
           <span className="text-xl font-bold text-gradient-gold hidden sm:inline">{t("brand")}</span>
         </Link>
@@ -49,9 +51,9 @@ const AppNav = () => {
               </div>
               <nav className="flex flex-col gap-1 px-3">
                 {navItems.map((item) => (
-                  <Link key={item.to} to={item.to} onClick={() => setOpen(false)}
+                  <Link key={item.to} to={lp(item.to)} onClick={() => setOpen(false)}
                     className={cn("flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors",
-                      pathname === item.to ? "bg-primary/15 text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                      pathname === lp(item.to) ? "bg-primary/15 text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                     )}>
                     <item.icon className="w-4 h-4" />
                     {item.label}
@@ -79,9 +81,9 @@ const AppNav = () => {
               {i > 0 && navItems[i - 1].group !== item.group && (
                 <span className="w-px h-4 bg-border/40 mx-1.5" />
               )}
-              <Link to={item.to}
+              <Link to={lp(item.to)}
                 className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors",
-                  pathname === item.to ? "bg-primary/15 text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  pathname === lp(item.to) ? "bg-primary/15 text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                 )}>
                 <item.icon className="w-3.5 h-3.5" />
                 <span>{item.label}</span>

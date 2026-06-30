@@ -1,16 +1,19 @@
 import { Link } from "react-router-dom";
+import { useLocalizedPath } from "@/lib/localized-nav";
 
-const Footer = () => (
+const Footer = () => {
+  const lp = useLocalizedPath();
+  return (
   <footer className="border-t border-border/30 mt-12 pt-10 pb-6 px-4 sm:px-6">
     <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-xs text-muted-foreground">
       <div>
         <h4 className="font-semibold text-foreground/80 mb-2">Tools</h4>
         <ul className="space-y-1">
-          <li><Link to="/" className="hover:text-foreground transition-colors">Astro Weather & Dashboard</Link></li>
-          <li><Link to="/sky-atlas" className="hover:text-foreground transition-colors">Sky Atlas (4,800+ objects)</Link></li>
-          <li><Link to="/equipment" className="hover:text-foreground transition-colors">Astrophotography Gear Comparator</Link></li>
-          <li><Link to="/fov-calculator" className="hover:text-foreground transition-colors">FOV & Sampling Calculator</Link></li>
-          <li><Link to="/light-pollution" className="hover:text-foreground transition-colors">Light Pollution Map</Link></li>
+          <li><Link to={lp("/")} className="hover:text-foreground transition-colors">Astro Weather & Dashboard</Link></li>
+          <li><Link to={lp("/sky-atlas")} className="hover:text-foreground transition-colors">Sky Atlas (4,800+ objects)</Link></li>
+          <li><Link to={lp("/equipment")} className="hover:text-foreground transition-colors">Astrophotography Gear Comparator</Link></li>
+          <li><Link to={lp("/fov-calculator")} className="hover:text-foreground transition-colors">FOV & Sampling Calculator</Link></li>
+          <li><Link to={lp("/light-pollution")} className="hover:text-foreground transition-colors">Light Pollution Map</Link></li>
         </ul>
       </div>
 
@@ -31,7 +34,7 @@ const Footer = () => (
             {name:"Ring (M57)", id:"M 57"},
             {name:"Dumbbell (M27)", id:"M 27"},
           ].map(o => (
-            <a key={o.id} href={`/object/${encodeURIComponent(o.id)}`}
+            <a key={o.id} href={lp(`/object/${encodeURIComponent(o.id)}`)}
               className="hover:text-foreground transition-colors">
               {o.name}
             </a>
@@ -56,13 +59,14 @@ const Footer = () => (
         <p className="mt-4 text-muted-foreground/60 flex items-center gap-2">
           <img src="/icon-192.png" alt="Cosmic Frame" width={20} height={20} loading="lazy" className="w-5 h-5 rounded-full" />
           © {new Date().getFullYear()} Cosmic Frame
-          <a href="/privacy" className="text-xs text-muted-foreground hover:text-foreground ml-4">
+          <a href={lp("/privacy")} className="text-xs text-muted-foreground hover:text-foreground ml-4">
             Privacy Policy
           </a>
         </p>
       </div>
     </div>
   </footer>
-);
+  );
+};
 
 export default Footer;

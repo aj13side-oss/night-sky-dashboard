@@ -9,6 +9,7 @@ import { formatCatalogId } from "@/lib/format-catalog";
 import { motion } from "framer-motion";
 import { Sparkles, Loader2, ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLocalizedPath, useLocalizedNavigate } from "@/lib/localized-nav";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
@@ -16,7 +17,8 @@ import { useState, useMemo } from "react";
 const DeepSkyTonight = () => {
   const { location, date } = useObservation();
   const [typeFilter, setTypeFilter] = useState<string>("all");
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
+  const lp = useLocalizedPath();
 
   const { data: objects, isLoading } = useQuery({
     queryKey: ["deep-sky-tonight", location.lat, location.lng, date.toDateString()],
@@ -113,12 +115,12 @@ const DeepSkyTonight = () => {
       )}
 
       <div className="flex gap-2 mt-1">
-        <Link to="/sky-atlas" className="flex-1">
+        <Link to={lp("/sky-atlas")} className="flex-1">
           <Button variant="default" size="sm" className="w-full gap-2 text-xs">
             Browse Sky Atlas <ArrowRight className="w-3 h-3" />
           </Button>
         </Link>
-        <Link to="/sky-atlas" className="flex-1">
+        <Link to={lp("/sky-atlas")} className="flex-1">
           <Button variant="outline" size="sm" className="w-full gap-2 text-xs">
             Full Atlas <ArrowRight className="w-3 h-3" />
           </Button>

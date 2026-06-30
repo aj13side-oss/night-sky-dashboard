@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocalizedNavigate } from "@/lib/localized-nav";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,7 +32,7 @@ export function MonRigPanel({
   telescope, camera, mount, filters, accessories,
   onClearTelescope, onClearCamera, onClearMount, onRemoveFilter, onRemoveAccessory,
 }: MonRigPanelProps) {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const { data: rules } = useCompatibilityRules();
 
   const [manualTelescope, setManualTelescope] = useState<ManualTelescope>({ focalLength: 0, aperture: 0 });

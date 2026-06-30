@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import { useLocalizedPath } from "@/lib/localized-nav";
 import { useTranslation } from "react-i18next";
 
 import AppNav from "@/components/AppNav";

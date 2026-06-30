@@ -56,7 +56,7 @@ const AppNav = () => {
                       pathname === lp(item.to) ? "bg-primary/15 text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                     )}>
                     <item.icon className="w-4 h-4" />
-                    {item.label}
+                    {t(item.labelKey)}
                   </Link>
                 ))}
               </nav>

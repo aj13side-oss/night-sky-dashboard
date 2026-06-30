@@ -161,7 +161,7 @@ const AtlasFilters = ({
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Search NGC, IC, Messier, name..."
+              placeholder={tr("filters.searchPlaceholder")}
               value={filters.search}
               onChange={(e) => onChange({ ...filters, search: e.target.value, limitResults: undefined })}
               className="pl-10 bg-secondary/50 border-border/30 h-9"

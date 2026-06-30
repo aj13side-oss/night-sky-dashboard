@@ -693,7 +693,7 @@ const SkyAtlas = () => {
             {filteredData.length === 0 ? (
               <div className="text-center py-16 text-muted-foreground">
                 <Telescope className="w-10 h-10 mx-auto mb-3 opacity-40" />
-                <p>No objects match your filters</p>
+                <p>{tAtlas("noMatches")}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">

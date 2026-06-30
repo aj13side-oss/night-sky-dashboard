@@ -128,9 +128,9 @@ const AtlasFilters = ({
   const nightDisabled = !visibleTonightEnabled;
 
   const top50Buttons: { key: Exclude<Top50Mode, null>; label: string; icon: JSX.Element }[] = [
-    { key: "essentials", label: "Top 50 Essentials", icon: <Trophy className="w-3.5 h-3.5" /> },
-    { key: "nebulas", label: "Top 50 Nebulas", icon: <Sparkles className="w-3.5 h-3.5" /> },
-    { key: "galaxies", label: "Top 50 Galaxies", icon: <Orbit className="w-3.5 h-3.5" /> },
+    { key: "essentials", label: tr("filters.top50.essentials"), icon: <Trophy className="w-3.5 h-3.5" /> },
+    { key: "nebulas", label: tr("filters.top50.nebulas"), icon: <Sparkles className="w-3.5 h-3.5" /> },
+    { key: "galaxies", label: tr("filters.top50.galaxies"), icon: <Orbit className="w-3.5 h-3.5" /> },
   ];
 
   return (

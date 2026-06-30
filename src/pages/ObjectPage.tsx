@@ -82,13 +82,6 @@ const ObjectPage = () => {
 
   const imageUrl = wikiImage?.url || null;
 
-  const formatExposure = (minutes: number | null) => {
-    if (minutes == null) return null;
-    if (minutes < 60) return `${minutes} min`;
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return m > 0 ? `${h}h ${m}m` : `${h}h`;
-  };
 
   const handleTonightList = () => {
     if (!obj) return;

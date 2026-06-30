@@ -224,7 +224,7 @@ const ObjectPage = () => {
           <div className="flex gap-2 mt-8">
             <Button variant="outline" size="sm" onClick={handleTonightList} className={`gap-1 ${inList ? "text-primary border-primary/30" : ""}`}>
               <ClipboardList className="w-4 h-4" />
-              {inList ? "Listed" : "Tonight"}
+              {inList ? t("tonightBtn.listed") : t("tonightBtn.tonight")}
             </Button>
           </div>
         </div>

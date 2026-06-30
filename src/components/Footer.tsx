@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import { useLocalizedPath } from "@/lib/localized-nav";
 
-const Footer = () => (
+const Footer = () => {
+  const lp = useLocalizedPath();
+  return (
   <footer className="border-t border-border/30 mt-12 pt-10 pb-6 px-4 sm:px-6">
     <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-xs text-muted-foreground">
       <div>

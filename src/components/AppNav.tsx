@@ -106,9 +106,9 @@ const AppNav = () => {
             className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors",
               nightVision ? "bg-red-900/30 text-red-400" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
             )}
-            title={nightVision ? "Disable night vision" : "Enable night vision"}>
+            title={nightVision ? t("nightVision.disableTitle") : t("nightVision.enableTitle")}>
             {nightVision ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-            <span className="text-xs">{nightVision ? "Normal" : "Night"}</span>
+            <span className="text-xs">{nightVision ? t("nightVision.normalShort") : t("nightVision.nightShort")}</span>
           </button>
 
         </nav>

@@ -195,20 +195,20 @@ const AtlasFilters = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="tonight_best">⭐ Tonight's Best</SelectItem>
+                <SelectItem value="tonight_best">{tr("filters.sort.tonightBest")}</SelectItem>
                 {visibleTonightEnabled && (
-                  <SelectItem value="tonight_duration">🌙 Visibility duration ↓</SelectItem>
+                  <SelectItem value="tonight_duration">{tr("filters.sort.tonightDuration")}</SelectItem>
                 )}
-                <SelectItem value="photo_score">Accessibility Score ↓</SelectItem>
-                <SelectItem value="magnitude">Magnitude ↑</SelectItem>
-                <SelectItem value="size_max">Size ↓</SelectItem>
-                <SelectItem value="catalog_id">Catalog ID</SelectItem>
+                <SelectItem value="photo_score">{tr("filters.sort.photoScore")}</SelectItem>
+                <SelectItem value="magnitude">{tr("filters.sort.magnitude")}</SelectItem>
+                <SelectItem value="size_max">{tr("filters.sort.size")}</SelectItem>
+                <SelectItem value="catalog_id">{tr("filters.sort.catalogId")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="text-xs text-muted-foreground whitespace-nowrap ml-auto">
-            {totalCount.toLocaleString()} objects
+            {tr("objectsCount", { count: totalCount.toLocaleString() })}
           </div>
         </div>
 

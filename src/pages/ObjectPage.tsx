@@ -367,10 +367,10 @@ const ObjectPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Button variant="outline" className="gap-2 border-primary/30 hover:bg-primary/10"
             onClick={() => navigate(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`)}>
-            <Crosshair className="w-4 h-4" /> Frame in FOV Calculator
+            <Crosshair className="w-4 h-4" /> {t("sections.frameInFov")}
           </Button>
           <Button variant="outline" className="gap-2" onClick={() => navigate("/equipment")}>
-            <Scale className="w-4 h-4" /> Compare in Rig Builder
+            <Scale className="w-4 h-4" /> {t("sections.compareInRig")}
           </Button>
         </div>
 
@@ -378,12 +378,12 @@ const ObjectPage = () => {
         <div className="rounded-xl border border-border/30 bg-secondary/20 p-5 block space-y-3">
           <div className="flex items-center gap-2">
             <Camera className="w-5 h-5 text-primary" />
-            <h2 className="text-xl font-semibold text-foreground">See what others capture</h2>
+            <h2 className="text-xl font-semibold text-foreground">{t("sections.seeOthers")}</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Browse real images of this target from astrophotographers using gear like yours. Coming soon.
+            {t("sections.seeOthersDesc")}
           </p>
-          <Badge variant="secondary" className="text-[10px]">Coming soon</Badge>
+          <Badge variant="secondary" className="text-[10px]">{t("sections.comingSoon")}</Badge>
         </div>
 
         {/* Similar Objects */}
@@ -393,12 +393,12 @@ const ObjectPage = () => {
         <div className="rounded-xl border border-border/30 bg-secondary/20 p-5 block space-y-3">
           <div className="flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-primary" />
-            <h2 className="text-xl font-semibold text-foreground">Community contributions</h2>
+            <h2 className="text-xl font-semibold text-foreground">{t("sections.community")}</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Share your shots, tips and notes on this target. Coming soon.
+            {t("sections.communityDesc")}
           </p>
-          <Badge variant="secondary" className="text-[10px]">Coming soon</Badge>
+          <Badge variant="secondary" className="text-[10px]">{t("sections.comingSoon")}</Badge>
         </div>
       </main>
 

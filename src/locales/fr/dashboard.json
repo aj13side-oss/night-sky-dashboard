@@ -1,0 +1,73 @@
+{
+  "hero": {
+    "title": "Que photographier ce soir",
+    "subtitle": "Votre assistant d'astrophotographie — météo astro en temps réel, phase de la Lune et les meilleurs objets Messier, NGC et du ciel profond pour cette nuit, que vous soyez débutant ou astronome confirmé.",
+    "tonightSky": "Ciel de cette nuit — {{location}}"
+  },
+  "about": {
+    "toggle": "À propos de Cosmic Frame — Fonctionnalités & Catalogue",
+    "heading": "Votre assistant complet d'astrophotographie",
+    "intro": "Cosmic Frame est un outil gratuit de planification d'astrophotographie. Consultez la météo astro en temps réel (couverture nuageuse, seeing, transparence, humidité), les éphémérides astronomiques (lever/coucher du Soleil, crépuscule astronomique, phase de la Lune), et découvrez les meilleurs objets à photographier ce soir depuis votre position.",
+    "features": {
+      "catalog": {
+        "title": "📡 Catalogue du ciel",
+        "body": "Plus de 4 800 objets du ciel profond : galaxies, nébuleuses en émission, nébuleuses planétaires, amas ouverts, amas globulaires, nébuleuses obscures, rémanents de supernova. Catalogues Messier complet (110 objets), NGC, IC, Sharpless, Abell."
+      },
+      "gear": {
+        "title": "🔭 Matériel d'astrophotographie",
+        "body": "Comparez plus de 360 équipements : télescopes (Newton, lunette, Schmidt-Cassegrain), caméras astro (ZWO, QHY, Player One, Moravian), montures équatoriales (Sky-Watcher HEQ5, EQM-35, ZWO AM5, iOptron), filtres et accessoires."
+      },
+      "calculators": {
+        "title": "⚙️ Calculateurs",
+        "body": "Calculez l'échantillonnage (arcsec/pixel), le champ de vision (FOV), la compatibilité capteur / cercle image, le ratio charge/monture, le backfocus du train optique."
+      },
+      "weather": {
+        "title": "🌙 Météo & éphémérides",
+        "body": "Prévisions météo astronomiques heure par heure, phase de la Lune précise, horaires du crépuscule astronomique, lever et coucher de la Lune."
+      },
+      "lightPollution": {
+        "title": "🗺️ Pollution lumineuse",
+        "body": "Carte interactive de la pollution lumineuse. Trouvez les meilleurs sites d'observation : zones Bortle 1–4, réserves de ciel étoilé, parcs naturels."
+      },
+      "exposure": {
+        "title": "📸 Guide d'exposition",
+        "body": "Chaque objet céleste dispose d'un guide d'exposition : temps d'intégration rapide et profond, filtre recommandé (L-Pro, Ha, OIII, SII), tolérance à la Lune, meilleurs mois d'observation et score de photogénie."
+      }
+    },
+    "brands": {
+      "title": "Marques et revendeurs mis en avant",
+      "body": "Télescopes : Sky-Watcher, Takahashi, William Optics, Askar, Celestron, Meade, Explore Scientific, SharpStar, TS-Optics, Samyang, Sigma, Orion, SVBONY, GSO. Caméras astro : ZWO (ASI2600MC Pro, ASI533MC Pro, ASI585MC, ASI294MC Pro), QHY (QHY268M, QHY600M), Player One (Poseidon, Uranus, Ares), Moravian, Altair, ToupTek, Rising Cam. Montures : Sky-Watcher (HEQ5, EQM-35, EQ6-R), ZWO (AM3, AM5), iOptron (CEM26, CEM40, GEM45), Takahashi, Losmandy, 10Micron, Pegasus Astro, Rainbow Astro, Avalon. Filtres : Optolong, ZWO, Baader, Astronomik, IDAS, Antlia, Chroma, STC."
+    },
+    "types": {
+      "title": "Types d'objets dans le catalogue",
+      "body": "Galaxies spirales et elliptiques (3 300+), nébuleuses en émission (260+), amas ouverts (480+), amas globulaires (179), nébuleuses obscures et nuages moléculaires (155+), amas de galaxies (144), nébuleuses planétaires (140), nébuleuses par réflexion, rémanents de supernova, associations stellaires.",
+      "popularPrefix": "Cibles populaires : ",
+      "links": {
+        "m42": "Nébuleuse d'Orion (M42) en astrophoto",
+        "m31": "Galaxie d'Andromède (M31) en astrophoto",
+        "m45": "Pléiades (M45) en astrophoto",
+        "m51": "Galaxie du Tourbillon (M51) en astrophoto"
+      },
+      "otherNotable": "Autres incontournables : Nébuleuse de l'Aigle (M16, Piliers de la Création), Nébuleuse du Voile (NGC 6960/6992), Nébuleuse de l'Amérique du Nord (NGC 7000), Nébuleuse de la Rosette (NGC 2244), Nébuleuse de la Lagune (M8), Nébuleuse du Crabe (M1), Nébuleuse de la Carène (NGC 3372)."
+    }
+  },
+  "faq": {
+    "toggle": "Questions fréquentes",
+    "q1": {
+      "q": "Que photographier ce soir quand on débute ?",
+      "a": "Les débutants devraient commencer par des cibles brillantes et étendues, tolérantes aux erreurs de suivi et d'exposition. Ce soir, consultez le tableau de bord pour voir les meilleurs objets Messier visibles, comme la nébuleuse d'Orion (M42) ou la galaxie d'Andromède (M31). Ils sont faciles à trouver, se photographient magnifiquement même avec de courtes poses et donnent de superbes résultats aux nouveaux astrophotographes."
+    },
+    "q2": {
+      "q": "Qu'est-ce qu'un débutant peut photographier ce soir ?",
+      "a": "Les débutants devraient commencer par des cibles brillantes et étendues, tolérantes aux erreurs de suivi et d'exposition. Ce soir, consultez le tableau de bord pour voir les meilleurs objets Messier visibles, comme la nébuleuse d'Orion (M42) ou la galaxie d'Andromède (M31). Ils sont faciles à trouver, se photographient magnifiquement même avec de courtes poses et donnent de superbes résultats aux nouveaux astrophotographes."
+    },
+    "q3": {
+      "q": "Comment fonctionnent les prévisions météo astro ?",
+      "a": "Cosmic Frame combine la couverture nuageuse horaire, le seeing, la transparence et l'humidité pour vous donner un score en temps réel des conditions d'astrophotographie. Les prévisions se mettent à jour en direct pour le lieu choisi afin de planifier la nuit idéale sous les étoiles."
+    },
+    "q4": {
+      "q": "Quel matériel pour l'astrophotographie du ciel profond ?",
+      "a": "Au minimum, il vous faut un télescope ou un téléobjectif, une monture à suivi (équatoriale ou alt-az avec dérotateur de champ), une caméra astro ou un reflex, et un ordinateur portable ou un ASIAIR pour le contrôle. Utilisez notre catalogue de matériel et le calculateur FOV pour trouver des configurations compatibles avec votre budget et vos cibles."
+    }
+  }
+}

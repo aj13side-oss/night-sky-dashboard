@@ -2,16 +2,18 @@ import { useLocalizedNavigate } from "@/lib/localized-nav";
 import { ClipboardList, Map, Crosshair, Eclipse } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-
-const actions = [
-  { label: "Tonight's Best", icon: ClipboardList, to: "/sky-atlas?filter=tonight" },
-  { label: "Open Atlas", icon: Map, to: "/sky-atlas" },
-  { label: "Frame Object", icon: Crosshair, to: "/fov-calculator" },
-  { label: "Check Light Pollution", icon: Eclipse, to: "/light-pollution" },
-];
+import { useTranslation } from "react-i18next";
 
 const QuickActions = () => {
   const navigate = useLocalizedNavigate();
+  const { t } = useTranslation("dashboard");
+
+  const actions = [
+    { label: t("quickActions.tonightsBest"), icon: ClipboardList, to: "/sky-atlas?filter=tonight" },
+    { label: t("quickActions.openAtlas"), icon: Map, to: "/sky-atlas" },
+    { label: t("quickActions.frameObject"), icon: Crosshair, to: "/fov-calculator" },
+    { label: t("quickActions.checkLightPollution"), icon: Eclipse, to: "/light-pollution" },
+  ];
 
   return (
     <motion.div

@@ -5,6 +5,7 @@ import { useObservation } from "@/contexts/ObservationContext";
 import { X, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 
 interface ShowerRow {
   id: string;

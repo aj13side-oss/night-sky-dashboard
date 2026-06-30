@@ -44,6 +44,7 @@ const ObjectPage = () => {
   const isFr = useIsFrench();
   const lang: "fr" | "en" = isFr ? "fr" : "en";
   const { data: labelMaps } = useLabelMaps();
+  const { t } = useTranslation("object");
 
   const { isInList, addObject, removeObject } = useTonightList();
   const [showExposureInfo, setShowExposureInfo] = useState(false);

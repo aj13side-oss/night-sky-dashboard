@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Map, Crosshair, Home, Eclipse, Settings, EyeOff, Eye, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import LocationPicker from "@/components/LocationPicker";
 
@@ -16,6 +17,7 @@ const navItems = [
 
 const AppNav = () => {
   const { pathname } = useLocation();
+  const { t } = useTranslation("common");
   const [nightVision, setNightVision] = useState(() => localStorage.getItem("nightVision") === "true");
   const [open, setOpen] = useState(false);
 

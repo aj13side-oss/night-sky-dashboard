@@ -119,19 +119,27 @@ export function resolvePlaceholders(
     return v == null || v === "" ? SENTINEL : v;
   });
 
-  // Cleanup: remove whitespace before/around sentinel, then drop space-before-punct and double spaces.
-  // Repeatedly collapse "word SENTINEL" / "SENTINEL word" patterns.
+  // Cleanup: absorb a small linking word immediately preceding an empty sentinel
+  // (only when directly followed by the sentinel — never elsewhere in the text).
+  // French: d', au, aux, en, du, de, des. English: in, during, of.
+  out = out.replace(
+    /(^|[\s(])(?:d['’]|au|aux|en|du|de|des|in|during|of)\s*\u0000MISSING\u0000/gi,
+    "$1\u0000MISSING\u0000",
+  );
   // Step 1: drop sentinel together with one adjacent space when present.
   out = out.replace(/\s*\u0000MISSING\u0000\s*/g, " ");
   // Step 2: tidy space before punctuation.
   out = out.replace(/\s+([,.;:!?\)])/g, "$1");
   // Step 3: tidy space after opening bracket.
   out = out.replace(/([\(])\s+/g, "$1");
-  // Step 4: collapse multiple spaces.
+  // Step 4: collapse duplicated punctuation like ",." or ",,".
+  out = out.replace(/,\s*\./g, ".");
+  out = out.replace(/,+/g, ",");
+  // Step 5: collapse multiple spaces.
   out = out.replace(/[ \t]{2,}/g, " ");
-  // Step 5: clean empty parentheses.
+  // Step 6: clean empty parentheses.
   out = out.replace(/\(\s*\)/g, "");
-  // Step 6: trim spaces at line boundaries.
+  // Step 7: trim spaces at line boundaries.
   out = out.replace(/[ \t]+\n/g, "\n").replace(/\n[ \t]+/g, "\n");
   return out.trim();
 }

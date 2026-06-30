@@ -66,11 +66,12 @@
     "allConstellations": "Toutes les constellations",
     "all": "Toutes",
     "imagingMode": "Mode d'imagerie",
-    "rgbBroadband": "RVB / Large bande",
-    "narrowbandSho": "Narrowband (SHO)",
-    "sizeLabel": "Taille : {{min}} — {{max}} (minutes d'arc)",
+    "rgb": "RVB / Large bande",
+    "narrowband": "Narrowband (SHO)",
+    "size": "Taille",
+    "arcminutes": "minutes d'arc",
     "any": "Toutes",
-    "maxMagnitude": "Magnitude max : {{value}}",
-    "minAccessibilityScore": "Score d'accessibilité min : {{value}}"
+    "maxMagnitude": "Magnitude max",
+    "minAccessibility": "Score d'accessibilité min"
   }
 }

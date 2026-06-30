@@ -10,11 +10,11 @@ import { useLocalizedPath } from "@/lib/localized-nav";
 
 
 const navItems = [
-  { to: "/", label: "Dashboard", icon: Home, group: "plan" },
-  { to: "/sky-atlas", label: "Atlas", icon: Map, group: "plan" },
-  { to: "/fov-calculator", label: "FOV", icon: Crosshair, group: "plan" },
-  { to: "/light-pollution", label: "Light Pollution", icon: Eclipse, group: "tools" },
-  { to: "/equipment", label: "Equipment", icon: Settings, group: "tools" },
+  { to: "/", labelKey: "nav.dashboard", icon: Home, group: "plan" },
+  { to: "/sky-atlas", labelKey: "nav.atlas", icon: Map, group: "plan" },
+  { to: "/fov-calculator", labelKey: "nav.fov", icon: Crosshair, group: "plan" },
+  { to: "/light-pollution", labelKey: "nav.lightPollution", icon: Eclipse, group: "tools" },
+  { to: "/equipment", labelKey: "nav.equipment", icon: Settings, group: "tools" },
 ];
 
 const AppNav = () => {

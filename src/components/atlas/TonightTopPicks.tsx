@@ -59,7 +59,7 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
       <div className="space-y-3">
         <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-primary" />
-          Tonight's Top Picks
+          {tr("topPicks.loading")}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[0, 1, 2].map((i) => (

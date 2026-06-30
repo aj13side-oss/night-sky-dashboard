@@ -673,7 +673,7 @@ const SkyAtlas = () => {
           <div className="space-y-3">
             {isClientFiltered && largeSetLoading && (
               <p className="text-xs text-muted-foreground text-center">
-                Loading candidate objects for visibility computation…
+                {tAtlas("loadingCandidates")}
               </p>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">

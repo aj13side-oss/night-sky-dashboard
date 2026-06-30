@@ -363,7 +363,7 @@ const AtlasFilters = ({
                     className={`cursor-pointer text-[10px] px-2 py-0.5 transition-colors inline-flex items-center gap-1 ${dimmed ? "opacity-40" : ""}`}
                     onClick={() => toggleBucket(b)}
                   >
-                    <span>{b.label}</span>
+                    <span>{tr(`types.${b.label}`, { defaultValue: b.label })}</span>
                     <span className={`text-[9px] tabular-nums ${active ? "opacity-80" : "text-muted-foreground"}`}>
                       {n.toLocaleString()}
                     </span>

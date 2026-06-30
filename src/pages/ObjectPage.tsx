@@ -113,10 +113,10 @@ const ObjectPage = () => {
       <div className="min-h-screen bg-background">
         <AppNav />
         <div className="max-w-3xl mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Object not found</h1>
-          <p className="text-muted-foreground mb-6">"{decodedId}" doesn't match any object in the catalog.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-2">{t("notFound.title")}</h1>
+          <p className="text-muted-foreground mb-6">{t("notFound.desc", { id: decodedId })}</p>
           <Button onClick={() => navigate("/sky-atlas")}>
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Atlas
+            <ArrowLeft className="w-4 h-4 mr-2" /> {t("backToAtlas")}
           </Button>
         </div>
         <Footer />

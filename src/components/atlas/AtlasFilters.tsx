@@ -382,7 +382,7 @@ const AtlasFilters = ({
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <SlidersHorizontal className="w-4 h-4 text-primary" />
-              Advanced Filters
+              {tr("filters.advanced")}
             </h3>
             <Button
               variant="ghost"

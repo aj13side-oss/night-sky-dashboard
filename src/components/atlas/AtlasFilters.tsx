@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, X, Trophy, Star, Moon, Camera, SlidersHorizontal, ArrowUpDown, ChevronDown, Sparkles, Orbit } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface NightWindow {
   startMs: number;
@@ -67,6 +68,7 @@ const AtlasFilters = ({
   nightWindow,
   typeCounts,
 }: Props) => {
+  const { t: tr } = useTranslation("atlas");
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
   const top50Mode: Top50Mode = useMemo(() => {
@@ -126,9 +128,9 @@ const AtlasFilters = ({
   const nightDisabled = !visibleTonightEnabled;
 
   const top50Buttons: { key: Exclude<Top50Mode, null>; label: string; icon: JSX.Element }[] = [
-    { key: "essentials", label: "Top 50 Essentials", icon: <Trophy className="w-3.5 h-3.5" /> },
-    { key: "nebulas", label: "Top 50 Nebulas", icon: <Sparkles className="w-3.5 h-3.5" /> },
-    { key: "galaxies", label: "Top 50 Galaxies", icon: <Orbit className="w-3.5 h-3.5" /> },
+    { key: "essentials", label: tr("filters.top50.essentials"), icon: <Trophy className="w-3.5 h-3.5" /> },
+    { key: "nebulas", label: tr("filters.top50.nebulas"), icon: <Sparkles className="w-3.5 h-3.5" /> },
+    { key: "galaxies", label: tr("filters.top50.galaxies"), icon: <Orbit className="w-3.5 h-3.5" /> },
   ];
 
   return (
@@ -159,7 +161,7 @@ const AtlasFilters = ({
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Search NGC, IC, Messier, name..."
+              placeholder={tr("filters.searchPlaceholder")}
               value={filters.search}
               onChange={(e) => onChange({ ...filters, search: e.target.value, limitResults: undefined })}
               className="pl-10 bg-secondary/50 border-border/30 h-9"
@@ -174,7 +176,7 @@ const AtlasFilters = ({
             aria-expanded={advancedOpen}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
-            Advanced Filters
+            {tr("filters.advanced")}
             {activeFilterCount > 0 && (
               <Badge className="ml-1 h-4 min-w-4 px-1 text-[10px] bg-primary text-primary-foreground">
                 {activeFilterCount}
@@ -193,20 +195,20 @@ const AtlasFilters = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="tonight_best">⭐ Tonight's Best</SelectItem>
+                <SelectItem value="tonight_best">{tr("filters.sort.tonightBest")}</SelectItem>
                 {visibleTonightEnabled && (
-                  <SelectItem value="tonight_duration">🌙 Visibility duration ↓</SelectItem>
+                  <SelectItem value="tonight_duration">{tr("filters.sort.tonightDuration")}</SelectItem>
                 )}
-                <SelectItem value="photo_score">Accessibility Score ↓</SelectItem>
-                <SelectItem value="magnitude">Magnitude ↑</SelectItem>
-                <SelectItem value="size_max">Size ↓</SelectItem>
-                <SelectItem value="catalog_id">Catalog ID</SelectItem>
+                <SelectItem value="photo_score">{tr("filters.sort.photoScore")}</SelectItem>
+                <SelectItem value="magnitude">{tr("filters.sort.magnitude")}</SelectItem>
+                <SelectItem value="size_max">{tr("filters.sort.size")}</SelectItem>
+                <SelectItem value="catalog_id">{tr("filters.sort.catalogId")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="text-xs text-muted-foreground whitespace-nowrap ml-auto">
-            {totalCount.toLocaleString()} objects
+            {tr("objectsCount", { count: totalCount.toLocaleString() })}
           </div>
         </div>
 
@@ -220,7 +222,7 @@ const AtlasFilters = ({
               className={`gap-1.5 text-xs h-9 ${visibleTonightEnabled ? "bg-primary text-primary-foreground" : ""}`}
             >
               <Moon className="w-3.5 h-3.5" />
-              Visible Tonight
+              {tr("filters.visibleTonight")}
               {visibleTonightEnabled && <X className="w-3 h-3 ml-1" />}
             </Button>
           )}
@@ -228,10 +230,10 @@ const AtlasFilters = ({
           {nightWindow && (() => {
             const fmt = nightWindow.formatMs;
             const presetLabel = (k: "astro" | "nautical" | "civil") =>
-              k === "astro" ? "Astro" : k === "nautical" ? "Nautical" : "Civil";
+              tr(`filters.presets.${k}`);
             const triggerText = (() => {
               if (nightWindow.activePreset === "custom") {
-                return `Custom ${fmt(nightWindow.startMs)} – ${fmt(nightWindow.endMs)}`;
+                return `${tr("filters.presets.custom")} ${fmt(nightWindow.startMs)} – ${fmt(nightWindow.endMs)}`;
               }
               const t = nightWindow.presetTimes[nightWindow.activePreset];
               return t
@@ -289,7 +291,7 @@ const AtlasFilters = ({
                           <span className="flex items-center gap-2">
                             <span className="font-medium">{presetLabel(k)}</span>
                             <span className="text-xs text-muted-foreground tabular-nums">
-                              {avail && t ? `${fmt(t.startMs)} – ${fmt(t.endMs)}` : "unavailable"}
+                              {avail && t ? `${fmt(t.startMs)} – ${fmt(t.endMs)}` : tr("filters.presets.unavailable")}
                             </span>
                           </span>
                         </SelectItem>
@@ -298,7 +300,7 @@ const AtlasFilters = ({
                     {nightWindow.activePreset === "custom" && (
                       <SelectItem value="custom" disabled>
                         <span className="flex items-center gap-2">
-                          <span className="font-medium">Custom</span>
+                          <span className="font-medium">{tr("filters.presets.custom")}</span>
                           <span className="text-xs text-muted-foreground tabular-nums">
                             {fmt(nightWindow.startMs)} – {fmt(nightWindow.endMs)}
                           </span>
@@ -380,7 +382,7 @@ const AtlasFilters = ({
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <SlidersHorizontal className="w-4 h-4 text-primary" />
-              Advanced Filters
+              {tr("filters.advanced")}
             </h3>
             <Button
               variant="ghost"
@@ -394,7 +396,7 @@ const AtlasFilters = ({
 
           {/* Catalogs */}
           <div className="space-y-1.5">
-            <label className="text-xs text-muted-foreground">Catalog</label>
+            <label className="text-xs text-muted-foreground">{tr("filters.catalogLabel")}</label>
             <div className="flex flex-wrap gap-1.5">
               {([
                 { key: "M", label: "M", fullLabel: "Messier" },
@@ -432,16 +434,16 @@ const AtlasFilters = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {/* Constellation */}
             <div className="space-y-1.5">
-              <label className="text-xs text-muted-foreground">Constellation</label>
+              <label className="text-xs text-muted-foreground">{tr("filters.constellation")}</label>
               <Select
                 value={filters.constellation || "__all__"}
                 onValueChange={(v) => onChange({ ...filters, constellation: v === "__all__" ? "" : v })}
               >
                 <SelectTrigger className="bg-secondary/50 border-border/30 h-9 text-xs">
-                  <SelectValue placeholder="All" />
+                  <SelectValue placeholder={tr("filters.all")} />
                 </SelectTrigger>
                 <SelectContent className="max-h-60">
-                  <SelectItem value="__all__">All constellations</SelectItem>
+                  <SelectItem value="__all__">{tr("filters.allConstellations")}</SelectItem>
                   {constellations.map((c) => (
                     <SelectItem key={c} value={c}>{c}</SelectItem>
                   ))}
@@ -452,7 +454,7 @@ const AtlasFilters = ({
             {/* Imaging mode */}
             {onFilterModeChange && (
               <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground">Imaging mode</label>
+                <label className="text-xs text-muted-foreground">{tr("filters.imagingMode")}</label>
                 <div className="flex flex-wrap gap-2">
                   <Button
                     variant={filterMode === "rgb" ? "default" : "outline"}
@@ -461,7 +463,7 @@ const AtlasFilters = ({
                     className={`gap-1.5 text-xs ${filterMode === "rgb" ? "bg-primary text-primary-foreground" : ""}`}
                   >
                     <Camera className="w-3.5 h-3.5" />
-                    RGB/Broadband
+                    {tr("filters.rgb")}
                     {filterMode === "rgb" && <X className="w-3 h-3 ml-1" />}
                   </Button>
                   <Button
@@ -471,7 +473,7 @@ const AtlasFilters = ({
                     className={`gap-1.5 text-xs ${filterMode === "narrowband" ? "bg-primary text-primary-foreground" : ""}`}
                   >
                     <Camera className="w-3.5 h-3.5" />
-                    Narrowband (SHO)
+                    {tr("filters.narrowband")}
                     {filterMode === "narrowband" && <X className="w-3 h-3 ml-1" />}
                   </Button>
                 </div>
@@ -481,7 +483,7 @@ const AtlasFilters = ({
             {/* Size range */}
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground">
-                Size: {filters.minSize > 0 ? `${filters.minSize}'` : "0'"} — {filters.maxSize < 300 ? `${filters.maxSize}'` : "Any"} (arcminutes)
+                {tr("filters.size")}: {filters.minSize > 0 ? `${filters.minSize}'` : "0'"} — {filters.maxSize < 300 ? `${filters.maxSize}'` : tr("filters.any")} ({tr("filters.arcminutes")})
               </label>
               <Slider
                 value={[filters.minSize, filters.maxSize]}
@@ -498,7 +500,7 @@ const AtlasFilters = ({
             {/* Magnitude */}
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground">
-                Max magnitude: {filters.maxMagnitude < 20 ? filters.maxMagnitude.toFixed(1) : "All"}
+                {tr("filters.maxMagnitude")}: {filters.maxMagnitude < 20 ? filters.maxMagnitude.toFixed(1) : tr("filters.all")}
               </label>
               <Slider
                 value={[filters.maxMagnitude]}
@@ -514,7 +516,7 @@ const AtlasFilters = ({
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground flex items-center gap-1">
                 <Star className="w-3 h-3 text-primary" />
-                Min Accessibility Score: {filters.minPhotoScore > 0 ? filters.minPhotoScore : "All"}
+                {tr("filters.minAccessibility")}: {filters.minPhotoScore > 0 ? filters.minPhotoScore : tr("filters.all")}
               </label>
               <Slider
                 value={[filters.minPhotoScore]}

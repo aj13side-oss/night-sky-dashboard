@@ -1,4 +1,77 @@
 {
   "title": "Atlas du ciel profond",
-  "subtitle": "Parcourez plus de 4 800 objets du ciel profond — filtrez les catalogues Messier, NGC et IC par type, constellation, magnitude et meilleure saison."
+  "subtitle": "Parcourez plus de 4 800 objets du ciel profond — filtrez les catalogues Messier, NGC et IC par type, constellation, magnitude et meilleure saison.",
+  "objectsCount": "{{count}} objets",
+  "location": {
+    "useMyLocation": "Position par défaut Lyon — Utiliser ma position",
+    "yourLocation": "Votre position",
+    "requesting": "Demande de localisation…"
+  },
+  "popularTargets": {
+    "label": "Cibles populaires :",
+    "orion": "Nébuleuse d'Orion (M42) en astrophoto",
+    "andromeda": "Galaxie d'Andromède (M31) en astrophoto",
+    "pleiades": "Pléiades (M45) en astrophoto",
+    "whirlpool": "Galaxie du Tourbillon (M51) en astrophoto"
+  },
+  "score": {
+    "heading": "Comment est calculé le Score d'Accessibilité ?",
+    "intro": "Le <0>Score d'Accessibilité</0> (sur 100) estime à quel point un objet du ciel profond est facile à photographier et à obtenir un résultat satisfaisant. Il ne mesure pas la beauté de l'objet, mais son accessibilité pour l'astrophotographe. Il repose sur quatre propriétés physiques :",
+    "size": "<0>Taille apparente :</0> les objets plus grands sont plus faciles à cadrer et peuvent être photographiés à courte focale, avec un téléobjectif, sans monture haut de gamme.",
+    "brightness": "<0>Luminosité (magnitude et densité lumineuse) :</0> un objet brillant et concentré demande moins de temps de pose qu'un objet faible et diffus.",
+    "type": "<0>Type d'objet :</0> galaxies, amas et nébuleuses par réflexion s'imagent bien en couleurs (RVB) ; les cibles à raies d'émission sont pondérées en conséquence.",
+    "rgb": "<0>Accessibilité RVB / narrowband :</0> les nébuleuses en émission, planétaires et rémanents de supernova atteignent leur plein potentiel en narrowband ; en RVB classique elles rendent un peu moins, ce qui est pris en compte.",
+    "universal": "Le score est universel : il ne dépend pas de votre position. Pour voir ce que vous pouvez réellement photographier cette nuit depuis chez vous, utilisez le filtre « Visible ce soir ».",
+    "note": "Note : une note communautaire sur la qualité des images viendra compléter ce score à mesure que la communauté Cosmic Frame grandit."
+  },
+  "solarSystem": "Système solaire",
+  "loadingCandidates": "Chargement des objets candidats pour le calcul de visibilité…",
+  "noAstroNight": "Pas de nuit astronomique complète ce soir — essayez <0>Nautique</0> ou <1>Civil</1>.",
+  "noMatches": "Aucun objet ne correspond à vos filtres",
+  "loadMore": "Charger plus (30)",
+  "showingOf": "Affichage de {{loaded}} sur {{total}}",
+  "prev": "Préc.",
+  "next": "Suiv.",
+  "about": {
+    "summary": "À propos du catalogue d'objets du ciel profond",
+    "p1": "Ce catalogue contient plus de 4 800 objets du ciel profond couvrant l'intégralité du <0>catalogue Messier</0> (110 objets), des catalogues <1>NGC</1> et <2>IC</2>, ainsi que le catalogue <3>Sharpless</3> des régions H-II. Vous pouvez filtrer par type d'objet — galaxies, nébuleuses en émission, nébuleuses planétaires, amas ouverts, amas globulaires, nébuleuses obscures et plus encore — ou affiner les résultats par constellation, magnitude, taille angulaire et meilleure saison d'observation.",
+    "p2": "Chaque objet est accompagné d'un guide d'exposition avec des temps d'intégration rapides et profonds recommandés, d'un score de photogénie qui indique à quel point une cible est gratifiante à photographier, et d'un aperçu de cadrage qui montre comment l'objet s'inscrit dans le champ de votre télescope et de votre capteur. Utilisez ces outils pour planifier votre prochaine session d'imagerie du ciel profond en toute confiance."
+  },
+  "filters": {
+    "searchPlaceholder": "Rechercher NGC, IC, Messier, nom…",
+    "advanced": "Filtres avancés",
+    "sort": {
+      "tonightBest": "⭐ Meilleurs ce soir",
+      "tonightDuration": "🌙 Durée de visibilité ↓",
+      "photoScore": "Score d'accessibilité ↓",
+      "magnitude": "Magnitude ↑",
+      "size": "Taille ↓",
+      "catalogId": "ID catalogue"
+    },
+    "visibleTonight": "Visible ce soir",
+    "presets": {
+      "astro": "Astro",
+      "nautical": "Nautique",
+      "civil": "Civil",
+      "custom": "Personnalisé",
+      "unavailable": "indisponible"
+    },
+    "top50": {
+      "essentials": "Top 50 Essentiels",
+      "nebulas": "Top 50 Nébuleuses",
+      "galaxies": "Top 50 Galaxies"
+    },
+    "catalogLabel": "Catalogue",
+    "constellation": "Constellation",
+    "allConstellations": "Toutes les constellations",
+    "all": "Toutes",
+    "imagingMode": "Mode d'imagerie",
+    "rgb": "RVB / Large bande",
+    "narrowband": "Narrowband (SHO)",
+    "size": "Taille",
+    "arcminutes": "minutes d'arc",
+    "any": "Toutes",
+    "maxMagnitude": "Magnitude max",
+    "minAccessibility": "Score d'accessibilité min"
+  }
 }

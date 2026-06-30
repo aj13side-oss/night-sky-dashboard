@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useLocalizedPath } from "@/lib/localized-nav";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
@@ -525,33 +525,33 @@ const SkyAtlas = () => {
             {tAtlas("title")}
           </h1>
           <p className="text-muted-foreground mt-2 max-w-3xl">
-            Browse 4,800+ deep sky objects — filter Messier, NGC and IC catalogs by type, constellation, magnitude and best season.
+            {tAtlas("subtitle")}
           </p>
           <p className="text-sm text-muted-foreground/60 mt-1 flex flex-wrap items-center gap-2">
             <MapPin className="w-3.5 h-3.5" />
-            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — {displayedTotal > 0 ? displayedTotal.toLocaleString() : "..."} objects
+            {userPos.lat.toFixed(2)}°, {userPos.lng.toFixed(2)}° — {tAtlas("objectsCount", { count: displayedTotal > 0 ? displayedTotal.toLocaleString() : "..." })}
             {(geoStatus === "default" || geoStatus === "denied") && (
               <button
                 type="button"
                 onClick={handleGeolocation}
                 className="text-xs text-primary hover:underline focus:outline-none focus:underline"
               >
-                Using default location Lyon — Use my location
+                {tAtlas("location.useMyLocation")}
               </button>
             )}
             {geoStatus === "granted" && (
-              <span className="text-xs text-primary">Your location</span>
+              <span className="text-xs text-primary">{tAtlas("location.yourLocation")}</span>
             )}
             {geoStatus === "requesting" && (
-              <span className="text-xs text-muted-foreground">Requesting location...</span>
+              <span className="text-xs text-muted-foreground">{tAtlas("location.requesting")}</span>
             )}
           </p>
           <p className="text-sm text-muted-foreground mt-3">
-            Popular targets:{' '}
-            <Link to={lp(`/object/${encodeURIComponent('M 42')}`)} className="text-primary hover:underline">Orion Nebula (M42) astrophotography</Link>{' · '}
-            <Link to={lp(`/object/${encodeURIComponent('M 31')}`)} className="text-primary hover:underline">Andromeda Galaxy (M31) astrophotography</Link>{' · '}
-            <Link to={lp(`/object/${encodeURIComponent('M 45')}`)} className="text-primary hover:underline">Pleiades (M45) astrophotography</Link>{' · '}
-            <Link to={lp(`/object/${encodeURIComponent('M 51')}`)} className="text-primary hover:underline">Whirlpool Galaxy (M51) astrophotography</Link>
+            {tAtlas("popularTargets.label")}{' '}
+            <Link to={lp(`/object/${encodeURIComponent('M 42')}`)} className="text-primary hover:underline">{tAtlas("popularTargets.orion")}</Link>{' · '}
+            <Link to={lp(`/object/${encodeURIComponent('M 31')}`)} className="text-primary hover:underline">{tAtlas("popularTargets.andromeda")}</Link>{' · '}
+            <Link to={lp(`/object/${encodeURIComponent('M 45')}`)} className="text-primary hover:underline">{tAtlas("popularTargets.pleiades")}</Link>{' · '}
+            <Link to={lp(`/object/${encodeURIComponent('M 51')}`)} className="text-primary hover:underline">{tAtlas("popularTargets.whirlpool")}</Link>
           </p>
         </motion.div>
 
@@ -601,7 +601,7 @@ const SkyAtlas = () => {
               <div className="flex items-center gap-2">
                 <Info className="w-4 h-4 text-primary shrink-0" />
                 <h2 className="text-sm font-semibold text-primary">
-                  How is the Accessibility Score calculated?
+                  {tAtlas("score.heading")}
                 </h2>
               </div>
               <ChevronDown
@@ -612,27 +612,27 @@ const SkyAtlas = () => {
           <CollapsibleContent>
             <div className="px-4 pb-4 pt-1 space-y-3 text-sm text-muted-foreground border-t border-primary/10">
               <p>
-                The <span className="text-primary font-medium">Accessibility Score</span> (out of 100) estimates how easy a deep-sky object is to photograph and to get a satisfying result from. It does not measure the object's beauty, but its accessibility for the astrophotographer. It is based on four physical properties:
+                <Trans i18nKey="score.intro" t={tAtlas} components={[<span key="0" className="text-primary font-medium" />]} />
               </p>
               <ul className="space-y-2 pl-4 list-disc marker:text-primary/70">
                 <li>
-                  <span className="text-foreground font-medium">Apparent size:</span> larger objects are easier to frame and can be shot at short focal length, with a telephoto lens, without a high-end mount.
+                  <Trans i18nKey="score.size" t={tAtlas} components={[<span key="0" className="text-foreground font-medium" />]} />
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">Brightness (magnitude and light density):</span> a bright, concentrated object needs less exposure time than a faint, diffuse one.
+                  <Trans i18nKey="score.brightness" t={tAtlas} components={[<span key="0" className="text-foreground font-medium" />]} />
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">Object type:</span> galaxies, clusters and reflection nebulae image well in colour (RGB); emission-line targets are weighted accordingly.
+                  <Trans i18nKey="score.type" t={tAtlas} components={[<span key="0" className="text-foreground font-medium" />]} />
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">RGB / narrowband accessibility:</span> emission nebulae, planetary nebulae and supernova remnants reach their full potential in narrowband; in plain RGB they render a little less, which is taken into account.
+                  <Trans i18nKey="score.rgb" t={tAtlas} components={[<span key="0" className="text-foreground font-medium" />]} />
                 </li>
               </ul>
               <p>
-                The score is universal: it does not depend on your location. To see what you can actually photograph tonight from your location, use the "Visible Tonight" filter.
+                {tAtlas("score.universal")}
               </p>
               <p className="text-xs text-muted-foreground/70">
-                Note: a community image-quality rating will complement this score as the Cosmic Frame community grows.
+                {tAtlas("score.note")}
               </p>
             </div>
           </CollapsibleContent>
@@ -642,7 +642,7 @@ const SkyAtlas = () => {
         {/* Solar system results */}
         {solarResults.length > 0 && (
           <div className="space-y-3">
-            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Solar System</h3>
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{tAtlas("solarSystem")}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {solarResults.map(obj => (
                 <div key={obj.id} className="glass-card rounded-2xl p-4 flex items-center gap-3 border border-primary/20">
@@ -673,7 +673,7 @@ const SkyAtlas = () => {
           <div className="space-y-3">
             {isClientFiltered && largeSetLoading && (
               <p className="text-xs text-muted-foreground text-center">
-                Loading candidate objects for visibility computation…
+                {tAtlas("loadingCandidates")}
               </p>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -687,13 +687,13 @@ const SkyAtlas = () => {
             {showNoAstroNote && (
               <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90">
                 <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                <span>No full astronomical night tonight — try <strong>Nautical</strong> or <strong>Civil</strong>.</span>
+                <span><Trans i18nKey="noAstroNight" t={tAtlas} components={[<strong key="0" />, <strong key="1" />]} /></span>
               </div>
             )}
             {filteredData.length === 0 ? (
               <div className="text-center py-16 text-muted-foreground">
                 <Telescope className="w-10 h-10 mx-auto mb-3 opacity-40" />
-                <p>No objects match your filters</p>
+                <p>{tAtlas("noMatches")}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -723,10 +723,10 @@ const SkyAtlas = () => {
         {!isClientFiltered && allLoadedData.length < totalCount && (
           <div className="flex flex-col items-center gap-2 pt-4">
             <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} className="gap-1">
-              Load more (30)
+              {tAtlas("loadMore")}
             </Button>
             <span className="text-xs text-muted-foreground font-mono">
-              Showing {allLoadedData.length} of {totalCount.toLocaleString()}
+              {tAtlas("showingOf", { loaded: allLoadedData.length, total: totalCount.toLocaleString() })}
             </span>
           </div>
         )}
@@ -735,13 +735,13 @@ const SkyAtlas = () => {
         {isClientFiltered && clientTotalPages > 1 && (
           <div className="flex items-center justify-center gap-4 pt-4">
             <Button variant="outline" size="sm" disabled={clientPage === 0} onClick={() => setClientPage((p) => p - 1)} className="gap-1">
-              <ChevronLeft className="w-4 h-4" /> Prev
+              <ChevronLeft className="w-4 h-4" /> {tAtlas("prev")}
             </Button>
             <span className="text-sm text-muted-foreground font-mono">
               {clientPage + 1} / {clientTotalPages}
             </span>
             <Button variant="outline" size="sm" disabled={clientPage >= clientTotalPages - 1} onClick={() => setClientPage((p) => p + 1)} className="gap-1">
-              Next <ChevronRight className="w-4 h-4" />
+              {tAtlas("next")} <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         )}
@@ -749,23 +749,23 @@ const SkyAtlas = () => {
         {/* About the Catalog */}
         <details className="space-y-6 pt-8 border-t border-border/20 mt-10">
           <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
-            About the Deep Sky Object Catalog
+            {tAtlas("about.summary")}
           </summary>
           <div className="space-y-4 pt-4">
             <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-              This catalog contains over 4,800 deep sky objects spanning the complete
-              <span className="text-foreground/80 font-medium"> Messier catalog</span> (110 objects), the
-              <span className="text-foreground/80 font-medium"> NGC</span> and
-              <span className="text-foreground/80 font-medium"> IC</span> catalogs, plus the
-              <span className="text-foreground/80 font-medium"> Sharpless</span> catalog of H-II regions.
-              You can filter by object type — galaxies, emission nebulae, planetary nebulae, open clusters, globular clusters, dark nebulae and more —
-              or narrow results by constellation, magnitude, angular size and best observation season.
+              <Trans
+                i18nKey="about.p1"
+                t={tAtlas}
+                components={[
+                  <span key="0" className="text-foreground/80 font-medium" />,
+                  <span key="1" className="text-foreground/80 font-medium" />,
+                  <span key="2" className="text-foreground/80 font-medium" />,
+                  <span key="3" className="text-foreground/80 font-medium" />,
+                ]}
+              />
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-              Every object includes an exposure guide with recommended fast and deep integration times,
-              a photogenicity score that ranks how rewarding a target is to photograph, and a framing preview
-              that shows how the object fits in your telescope and camera field of view. Use these tools to plan
-              your next deep sky imaging session with confidence.
+              {tAtlas("about.p2")}
             </p>
           </div>
         </details>

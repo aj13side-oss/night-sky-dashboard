@@ -454,7 +454,7 @@ const AtlasFilters = ({
             {/* Imaging mode */}
             {onFilterModeChange && (
               <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground">Imaging mode</label>
+                <label className="text-xs text-muted-foreground">{tr("filters.imagingMode")}</label>
                 <div className="flex flex-wrap gap-2">
                   <Button
                     variant={filterMode === "rgb" ? "default" : "outline"}
@@ -463,7 +463,7 @@ const AtlasFilters = ({
                     className={`gap-1.5 text-xs ${filterMode === "rgb" ? "bg-primary text-primary-foreground" : ""}`}
                   >
                     <Camera className="w-3.5 h-3.5" />
-                    RGB/Broadband
+                    {tr("filters.rgb")}
                     {filterMode === "rgb" && <X className="w-3 h-3 ml-1" />}
                   </Button>
                   <Button
@@ -473,7 +473,7 @@ const AtlasFilters = ({
                     className={`gap-1.5 text-xs ${filterMode === "narrowband" ? "bg-primary text-primary-foreground" : ""}`}
                   >
                     <Camera className="w-3.5 h-3.5" />
-                    Narrowband (SHO)
+                    {tr("filters.narrowband")}
                     {filterMode === "narrowband" && <X className="w-3 h-3 ml-1" />}
                   </Button>
                 </div>

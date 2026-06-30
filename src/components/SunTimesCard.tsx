@@ -6,12 +6,14 @@ import { Sunrise, Sunset, Sun, Loader2, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 const SunTimesCard = () => {
   const { date, location } = useObservation();
   const { data, isLoading } = useAstronomyData();
   const tz = location.timezone;
   const [showInfo, setShowInfo] = useState(false);
+  const { t } = useTranslation("dashboard");
 
   const localSun = getSunTimes(date, location.lat, location.lng);
 
@@ -73,7 +75,7 @@ const SunTimesCard = () => {
   return (
     <div className="glass-card rounded-2xl p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Sun & Twilight</h3>
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t("sunTimes.title")}</h3>
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-muted-foreground font-mono">{tzAbbr}</span>
           {isLoading ? (
@@ -89,9 +91,9 @@ const SunTimesCard = () => {
       {/* Sun core times */}
       <div className="space-y-3">
         {[
-          { icon: Sunrise, label: "Sunrise", value: sunrise, color: "text-primary" },
-          { icon: Sun, label: "Solar Noon", value: solarNoon, color: "text-primary" },
-          { icon: Sunset, label: "Sunset", value: sunset, color: "text-primary" },
+          { icon: Sunrise, label: t("sunTimes.sunrise"), value: sunrise, color: "text-primary" },
+          { icon: Sun, label: t("sunTimes.solarNoon"), value: solarNoon, color: "text-primary" },
+          { icon: Sunset, label: t("sunTimes.sunset"), value: sunset, color: "text-primary" },
         ].map((item, i) => (
           <motion.div
             key={item.label}
@@ -112,7 +114,7 @@ const SunTimesCard = () => {
       {/* Twilight table */}
       <div className="pt-3 border-t border-border space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Twilight phases</span>
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("sunTimes.twilightPhases")}</span>
           <button
             onClick={() => setShowInfo(!showInfo)}
             className="text-muted-foreground hover:text-foreground transition-colors"

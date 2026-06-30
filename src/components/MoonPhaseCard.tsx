@@ -191,7 +191,7 @@ const MoonPhaseCard = () => {
   return (
     <div className="glass-card rounded-2xl p-6 flex flex-col items-center gap-4">
       <div className="flex items-center justify-between w-full">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Moon Phase</h3>
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t("moonPhase.title")}</h3>
         {isLoading ? (
           <Loader2 className="w-3 h-3 text-muted-foreground animate-spin" />
         ) : data?.moon ? (

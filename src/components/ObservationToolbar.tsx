@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const PRESET_LOCATIONS = [
   { name: "Paris, FR", lat: 48.8566, lng: 2.3522, timezone: "Europe/Paris" },
@@ -26,6 +27,7 @@ interface NominatimResult {
 
 const ObservationToolbar = () => {
   const { date, setDate, time, setTime, location, setLocation } = useObservation();
+  const { t } = useTranslation("dashboard");
   const [locationSearch, setLocationSearch] = useState("");
   const [showLocations, setShowLocations] = useState(false);
   const [latInput, setLatInput] = useState(String(location.lat));
@@ -130,7 +132,7 @@ const ObservationToolbar = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleNominatimSearch()}
-              placeholder="Search a location…"
+              placeholder={t("observationToolbar.searchPlaceholder")}
               className="pl-9 h-10 bg-secondary/50 text-base"
             />
           </div>
@@ -141,7 +143,7 @@ const ObservationToolbar = () => {
             disabled={isSearching}
             className="h-10 px-3"
           >
-            {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : "Search"}
+            {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : t("observationToolbar.search")}
           </Button>
           <Popover open={showLocations} onOpenChange={setShowLocations}>
             <PopoverTrigger asChild>

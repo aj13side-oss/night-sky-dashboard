@@ -32,6 +32,8 @@ import {
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import type { LabelMaps } from "@/hooks/useLabelMaps";
 
 
 const ObjectPage = () => {

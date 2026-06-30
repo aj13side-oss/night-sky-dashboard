@@ -237,9 +237,8 @@ const ObjectPage = () => {
 
         {(() => {
           const displayName = isFr ? (obj.common_name_fr ?? obj.common_name) : obj.common_name;
-          const heading = isFr
-            ? `Comment photographier ${displayName ?? obj.catalog_id}`
-            : `How to photograph ${displayName ?? obj.catalog_id}`;
+          const headingName = displayName ?? obj.catalog_id;
+          const heading = t("howToPhotograph", { name: headingName });
           const ficheRaw = isFr ? obj.seo_description_fr : obj.seo_description_en;
           const hasFiche = !!(ficheRaw && ficheRaw.trim() && labelMaps);
           const ficheResolved = hasFiche
@@ -254,47 +253,7 @@ const ObjectPage = () => {
                   {ficheResolved}
                 </div>
               ) : (
-                <div className="text-sm text-muted-foreground leading-relaxed space-y-1 max-w-2xl">
-                  <p>
-                    {obj.common_name ? `The ${obj.common_name} (${obj.catalog_id})` : obj.catalog_id} is
-                    a{/^[aeiou]/i.test(obj.obj_type ?? '') ? 'n' : ''} {obj.obj_type?.toLowerCase() ?? 'deep sky object'}
-                    {obj.constellation ? ` in the constellation ${obj.constellation}` : ''}.
-                    {obj.magnitude != null ? ` Visual magnitude: ${obj.magnitude.toFixed(1)}.` : ''}
-                    {obj.size_max != null && obj.size_max > 0 ? ` Angular size: ${obj.size_max.toFixed(0)}′.` : ''}
-                  </p>
-                  {(obj.best_months || obj.recommended_filter) && (() => {
-                    const season = getDisplaySeason(obj.best_months, obj.dec_deg, pos.lat);
-                    const seasonSentence = season.isCircumpolar
-                      ? `Visible year-round from your location.`
-                      : season.isInvisible
-                      ? `Not visible from your location.`
-                      : season.label
-                      ? `Best season for astrophotography: ${season.label}.`
-                      : '';
-                    return (
-                      <p>
-                        {seasonSentence}
-                        {obj.recommended_filter ? ` Recommended filter: ${obj.recommended_filter}.` : ''}
-                        {obj.ideal_resolution ? ` Ideal sampling: ${obj.ideal_resolution}.` : ''}
-                      </p>
-                    );
-                  })()}
-                  {(obj.exposure_guide_fast || obj.exposure_guide_deep) && (
-                    <p>
-                      Suggested total integration time:
-                      {obj.exposure_guide_fast ? ` ${formatExposure(obj.exposure_guide_fast)} for a quick session` : ''}
-                      {obj.exposure_guide_fast && obj.exposure_guide_deep ? ',' : ''}
-                      {obj.exposure_guide_deep ? ` ${formatExposure(obj.exposure_guide_deep)} for a deep image` : ''}.
-                    </p>
-                  )}
-                  <p>
-                    Match your <Link to={lp("/equipment")} className="text-primary hover:underline">astrophotography equipment</Link> to this target,
-                    then check focal length and sampling in the{' '}
-                    <Link to={lp(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`)} className="text-primary hover:underline">
-                      field of view &amp; arcsec/pixel calculator
-                    </Link>.
-                  </p>
-                </div>
+                <FallbackProse obj={obj} isFr={isFr} labelMaps={labelMaps} lat={pos.lat} lp={lp} />
               )}
             </>
           );

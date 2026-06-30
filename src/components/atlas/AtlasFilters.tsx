@@ -500,7 +500,7 @@ const AtlasFilters = ({
             {/* Magnitude */}
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground">
-                Max magnitude: {filters.maxMagnitude < 20 ? filters.maxMagnitude.toFixed(1) : "All"}
+                {tr("filters.maxMagnitude")}: {filters.maxMagnitude < 20 ? filters.maxMagnitude.toFixed(1) : tr("filters.all")}
               </label>
               <Slider
                 value={[filters.maxMagnitude]}

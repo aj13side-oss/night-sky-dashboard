@@ -78,7 +78,7 @@ function colorForTime(
 }
 
 const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false, maxAltInWindow, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const { isInList, addObject, removeObject } = useTonightList();
 
   const rs = useMemo(() => {

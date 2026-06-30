@@ -31,7 +31,7 @@ export function MonRigPanel({
   telescope, camera, mount, filters, accessories,
   onClearTelescope, onClearCamera, onClearMount, onRemoveFilter, onRemoveAccessory,
 }: MonRigPanelProps) {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const { data: rules } = useCompatibilityRules();
 
   const [manualTelescope, setManualTelescope] = useState<ManualTelescope>({ focalLength: 0, aperture: 0 });

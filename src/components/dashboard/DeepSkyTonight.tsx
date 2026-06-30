@@ -16,7 +16,7 @@ import { useState, useMemo } from "react";
 const DeepSkyTonight = () => {
   const { location, date } = useObservation();
   const [typeFilter, setTypeFilter] = useState<string>("all");
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
 
   const { data: objects, isLoading } = useQuery({
     queryKey: ["deep-sky-tonight", location.lat, location.lng, date.toDateString()],

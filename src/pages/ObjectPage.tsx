@@ -32,7 +32,7 @@ import { toast } from "sonner";
 
 const ObjectPage = () => {
   const { catalogId } = useParams<{ catalogId: string }>();
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const decodedId = decodeURIComponent(catalogId ?? "");
   
   const { isInList, addObject, removeObject } = useTonightList();

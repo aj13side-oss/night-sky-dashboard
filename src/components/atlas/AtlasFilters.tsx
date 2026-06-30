@@ -176,7 +176,7 @@ const AtlasFilters = ({
             aria-expanded={advancedOpen}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
-            Advanced Filters
+            {tr("filters.advanced")}
             {activeFilterCount > 0 && (
               <Badge className="ml-1 h-4 min-w-4 px-1 text-[10px] bg-primary text-primary-foreground">
                 {activeFilterCount}

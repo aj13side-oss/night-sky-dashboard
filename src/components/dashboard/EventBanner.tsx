@@ -62,7 +62,7 @@ const EventBanner = () => {
     if (highKp) return { id: "aurora", text: `🌌 Geomagnetic storm alert! Kp ${highKp.kpIndex} — aurora possible at ${highKp.bestLatitude}.`, type: "aurora" };
 
     return null;
-  }, [date, showers]);
+  }, [date, showers, t]);
 
   if (!event || dismissed === event.id) return null;
 

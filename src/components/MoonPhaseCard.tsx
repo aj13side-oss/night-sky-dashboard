@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import { useMemo } from "react";
 import * as Astronomy from "astronomy-engine";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
 
 const FULL_MOON_NAMES: Record<number, string> = {
   0: "Wolf Moon", 1: "Snow Moon", 2: "Worm Moon", 3: "Pink Moon",

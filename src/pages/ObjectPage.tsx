@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useLocalizedPath, useLocalizedNavigate } from "@/lib/localized-nav";
+import { useLocalizedPath, useLocalizedNavigate, useIsFrench } from "@/lib/localized-nav";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CelestialObject } from "@/hooks/useCelestialObjects";
@@ -12,6 +12,9 @@ import { useTonightList } from "@/hooks/useTonightList";
 import { useObservation } from "@/contexts/ObservationContext";
 import { getDisplaySeason } from "@/lib/dynamic-score";
 import { getRarityColor } from "@/lib/rarity";
+import { useLabelMaps } from "@/hooks/useLabelMaps";
+import { resolvePlaceholders } from "@/lib/resolve-placeholders";
+import { formatExposure } from "@/lib/format-exposure";
 
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";

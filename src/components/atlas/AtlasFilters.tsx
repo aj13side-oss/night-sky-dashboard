@@ -230,10 +230,10 @@ const AtlasFilters = ({
           {nightWindow && (() => {
             const fmt = nightWindow.formatMs;
             const presetLabel = (k: "astro" | "nautical" | "civil") =>
-              k === "astro" ? "Astro" : k === "nautical" ? "Nautical" : "Civil";
+              tr(`filters.presets.${k}`);
             const triggerText = (() => {
               if (nightWindow.activePreset === "custom") {
-                return `Custom ${fmt(nightWindow.startMs)} – ${fmt(nightWindow.endMs)}`;
+                return `${tr("filters.presets.custom")} ${fmt(nightWindow.startMs)} – ${fmt(nightWindow.endMs)}`;
               }
               const t = nightWindow.presetTimes[nightWindow.activePreset];
               return t

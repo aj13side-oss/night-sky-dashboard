@@ -203,7 +203,7 @@ const ObjectPage = () => {
         <div className="flex items-start justify-between gap-4">
           <div>
             <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground mb-2" onClick={() => navigate("/sky-atlas")}>
-              <ArrowLeft className="w-4 h-4" /> Back to Atlas
+              <ArrowLeft className="w-4 h-4" /> {t("backToAtlas")}
             </Button>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{formatCatalogId(obj)}</h1>
             {(() => {

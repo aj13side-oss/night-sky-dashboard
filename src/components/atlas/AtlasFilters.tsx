@@ -434,16 +434,16 @@ const AtlasFilters = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {/* Constellation */}
             <div className="space-y-1.5">
-              <label className="text-xs text-muted-foreground">Constellation</label>
+              <label className="text-xs text-muted-foreground">{tr("filters.constellation")}</label>
               <Select
                 value={filters.constellation || "__all__"}
                 onValueChange={(v) => onChange({ ...filters, constellation: v === "__all__" ? "" : v })}
               >
                 <SelectTrigger className="bg-secondary/50 border-border/30 h-9 text-xs">
-                  <SelectValue placeholder="All" />
+                  <SelectValue placeholder={tr("filters.all")} />
                 </SelectTrigger>
                 <SelectContent className="max-h-60">
-                  <SelectItem value="__all__">All constellations</SelectItem>
+                  <SelectItem value="__all__">{tr("filters.allConstellations")}</SelectItem>
                   {constellations.map((c) => (
                     <SelectItem key={c} value={c}>{c}</SelectItem>
                   ))}

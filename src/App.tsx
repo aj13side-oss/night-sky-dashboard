@@ -14,8 +14,24 @@ import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import PrivacyPage from "./pages/PrivacyPage";
 import NotFound from "./pages/NotFound";
+import LanguageRouteSync from "./components/LanguageRouteSync";
 
 const queryClient = new QueryClient();
+
+const localizedRoutes = (
+  <>
+    <Route index element={<Index />} />
+    <Route path="sky-atlas" element={<SkyAtlas />} />
+    <Route path="fov-calculator" element={<FovCalculator />} />
+    <Route path="equipment" element={<EquipmentProfile />} />
+    <Route path="rig-builder" element={<Navigate to="../equipment" replace />} />
+    <Route path="light-pollution" element={<LightPollutionMap />} />
+    <Route path="object/:catalogId" element={<ObjectPage />} />
+    <Route path="privacy" element={<PrivacyPage />} />
+    <Route path="admin" element={<Admin />} />
+    <Route path="admin/login" element={<AdminLogin />} />
+  </>
+);
 
 const App = () => (
   <HelmetProvider>
@@ -24,17 +40,10 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <LanguageRouteSync />
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/sky-atlas" element={<SkyAtlas />} />
-            <Route path="/fov-calculator" element={<FovCalculator />} />
-            <Route path="/equipment" element={<EquipmentProfile />} />
-            <Route path="/rig-builder" element={<Navigate to="/equipment" replace />} />
-            <Route path="/light-pollution" element={<LightPollutionMap />} />
-            <Route path="/object/:catalogId" element={<ObjectPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/">{localizedRoutes}</Route>
+            <Route path="/fr">{localizedRoutes}</Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

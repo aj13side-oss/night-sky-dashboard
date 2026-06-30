@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import LocationPicker from "@/components/LocationPicker";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 
 const navItems = [
@@ -58,6 +59,7 @@ const AppNav = () => {
                 ))}
               </nav>
               <div className="px-3 pt-6 space-y-1">
+                <LanguageSwitcher className="w-full" />
                 <button onClick={() => setNightVision((v) => !v)}
                   className={cn("flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors w-full",
                     nightVision ? "bg-red-900/30 text-red-400" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
@@ -92,6 +94,11 @@ const AppNav = () => {
           <LocationPicker />
 
           <span className="w-px h-4 bg-border/40 mx-1.5" />
+
+          <LanguageSwitcher />
+
+          <span className="w-px h-4 bg-border/40 mx-1.5" />
+
 
           <button onClick={() => setNightVision((v) => !v)}
             className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors",

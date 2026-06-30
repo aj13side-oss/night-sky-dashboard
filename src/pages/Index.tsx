@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { useLocalizedPath } from "@/lib/localized-nav";
 import { ObservationProvider, useObservation } from "@/contexts/ObservationContext";
 import AppNav from "@/components/AppNav";

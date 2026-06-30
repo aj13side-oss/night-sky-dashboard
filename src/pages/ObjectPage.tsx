@@ -323,20 +323,20 @@ const ObjectPage = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Camera className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-semibold text-foreground">Recommended exposure &amp; settings</span>
+                    <span className="text-sm font-semibold text-foreground">{t("exposure.title")}</span>
                   </div>
                   <button onClick={() => setShowExposureInfo(true)} className="text-muted-foreground hover:text-foreground"><HelpCircle className="w-4 h-4" /></button>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {(obj.exposure_guide_fast ?? 0) > 0 && (
                     <div className="p-3 rounded-lg bg-accent/10 border border-accent/20">
-                      <div className="flex items-center gap-1.5 text-xs text-accent font-medium mb-1"><Clock className="w-3 h-3" /> Fast</div>
+                      <div className="flex items-center gap-1.5 text-xs text-accent font-medium mb-1"><Clock className="w-3 h-3" /> {t("exposure.fast")}</div>
                       <p className="text-lg font-bold font-mono text-foreground">{formatExposure(obj.exposure_guide_fast)}</p>
                     </div>
                   )}
                   {(obj.exposure_guide_deep ?? 0) > 0 && (
                     <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
-                      <div className="flex items-center gap-1.5 text-xs text-primary font-medium mb-1"><Clock className="w-3 h-3" /> Deep</div>
+                      <div className="flex items-center gap-1.5 text-xs text-primary font-medium mb-1"><Clock className="w-3 h-3" /> {t("exposure.deep")}</div>
                       <p className="text-lg font-bold font-mono text-foreground">{formatExposure(obj.exposure_guide_deep)}</p>
                     </div>
                   )}

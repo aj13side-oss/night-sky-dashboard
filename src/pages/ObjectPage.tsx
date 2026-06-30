@@ -351,7 +351,7 @@ const ObjectPage = () => {
 
         {/* Setup Assistant */}
         <h2 className="text-xl font-semibold text-foreground pt-2">
-          Best equipment for {obj.common_name ?? obj.catalog_id}
+          {t("sections.bestEquipment", { name: obj.common_name ?? obj.catalog_id })}
         </h2>
         <SetupAssistant obj={obj} userFocalLength={0} />
 

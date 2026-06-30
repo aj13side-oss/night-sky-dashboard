@@ -300,7 +300,7 @@ const AtlasFilters = ({
                     {nightWindow.activePreset === "custom" && (
                       <SelectItem value="custom" disabled>
                         <span className="flex items-center gap-2">
-                          <span className="font-medium">Custom</span>
+                          <span className="font-medium">{tr("filters.presets.custom")}</span>
                           <span className="text-xs text-muted-foreground tabular-nums">
                             {fmt(nightWindow.startMs)} – {fmt(nightWindow.endMs)}
                           </span>

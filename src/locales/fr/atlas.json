@@ -41,7 +41,7 @@
     "searchPlaceholder": "Rechercher NGC, IC, Messier, nom…",
     "advanced": "Filtres avancés",
     "sort": {
-      "tonightBest": "⭐ Meilleurs ce soir",
+      "tonightBest": "⭐ A photographier ce soir",
       "tonightDuration": "🌙 Durée de visibilité ↓",
       "photoScore": "Score d'accessibilité ↓",
       "magnitude": "Magnitude ↑",
@@ -76,7 +76,7 @@
   },
   "topPicks": {
     "loading": "Sélection de ce soir",
-    "heading": "Meilleures recommandations pour votre ciel",
+    "heading": "A photographier ce soir",
     "dynamicRanking": "Classement dynamique"
   },
   "seasons": {

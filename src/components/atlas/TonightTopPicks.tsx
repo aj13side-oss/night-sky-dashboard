@@ -7,6 +7,7 @@ import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
 import { motion } from "framer-motion";
 import { Sparkles, Sun, Mountain } from "lucide-react";
 import { formatCatalogId } from "@/lib/format-catalog";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   lat: number;

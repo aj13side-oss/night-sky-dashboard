@@ -483,7 +483,7 @@ const AtlasFilters = ({
             {/* Size range */}
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground">
-                Size: {filters.minSize > 0 ? `${filters.minSize}'` : "0'"} — {filters.maxSize < 300 ? `${filters.maxSize}'` : "Any"} (arcminutes)
+                {tr("filters.size")}: {filters.minSize > 0 ? `${filters.minSize}'` : "0'"} — {filters.maxSize < 300 ? `${filters.maxSize}'` : tr("filters.any")} ({tr("filters.arcminutes")})
               </label>
               <Slider
                 value={[filters.minSize, filters.maxSize]}

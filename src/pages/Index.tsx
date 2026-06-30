@@ -80,13 +80,13 @@ const DashboardContent = () => {
           transition={{ delay: 0.1 }}
         >
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
-            What to Photograph Tonight
+            {t("hero.title")}
           </h1>
           <p className="text-muted-foreground mt-2 max-w-3xl leading-relaxed">
-            Your astrophotography planner — real-time astro weather, moon phase and the best Messier, NGC and deep sky targets for tonight, whether you're a beginner or seasoned astronomer.
+            {t("hero.subtitle")}
           </p>
           <p className="text-sm text-muted-foreground/60 mt-1">
-            Tonight's Sky — {location.name}
+            {t("hero.tonightSky", { location: location.name })}
           </p>
         </motion.div>
 

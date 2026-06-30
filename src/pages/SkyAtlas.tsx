@@ -66,6 +66,7 @@ const defaultFilters: CelestialFilters = {
 };
 
 const SkyAtlas = () => {
+  const { t: tAtlas } = useTranslation("atlas");
   const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState<CelestialFilters>(defaultFilters);
   const [page, setPage] = useState(0);

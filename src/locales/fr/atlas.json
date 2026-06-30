@@ -73,5 +73,29 @@
     "any": "Toutes",
     "maxMagnitude": "Magnitude max",
     "minAccessibility": "Score d'accessibilité min"
+  },
+  "topPicks": {
+    "loading": "Sélection de ce soir",
+    "heading": "Meilleures recommandations pour votre ciel",
+    "dynamicRanking": "Classement dynamique"
+  },
+  "seasons": {
+    "Winter": "Hiver",
+    "Spring": "Printemps",
+    "Summer": "Été",
+    "Autumn": "Automne"
+  },
+  "types": {
+    "Galaxy": "Galaxie",
+    "Open Cluster": "Amas ouvert",
+    "Emission Nebula": "Nébuleuse en émission",
+    "Globular Cluster": "Amas globulaire",
+    "Dark Nebula": "Nébuleuse obscure",
+    "Cluster Of Galaxies": "Amas de galaxies",
+    "Planetary Nebula": "Nébuleuse planétaire",
+    "Stars & Asterisms": "Étoiles et astérismes",
+    "Cluster + Nebula": "Amas et nébuleuse",
+    "Reflection Nebula": "Nébuleuse par réflexion",
+    "Other": "Autre"
   }
 }

@@ -90,10 +90,10 @@ const ObjectPage = () => {
     if (!obj) return;
     if (isInList(obj.catalog_id)) {
       removeObject(obj.catalog_id);
-      toast("Removed from tonight's list");
+      toast(t("toast.removed"));
     } else {
       addObject(obj.catalog_id);
-      toast.success("Added to tonight's list!");
+      toast.success(t("toast.added"));
     }
   };
 

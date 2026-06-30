@@ -1,4 +1,28 @@
 {
+  "quickActions": {
+    "tonightsBest": "Meilleurs ce soir",
+    "openAtlas": "Ouvrir l'Atlas",
+    "frameObject": "Cadrer un objet",
+    "checkLightPollution": "Pollution lumineuse"
+  },
+  "eventBanner": {
+    "newMoon": "🌑 Proche de la nouvelle Lune — conditions idéales pour le ciel profond ce soir !",
+    "fullMoon": "🌕 Proche de la pleine Lune — conditions médiocres pour le ciel profond. Préférez les cibles brillantes ou des filtres à bande étroite."
+  },
+  "moonPhase": {
+    "title": "Phase lunaire"
+  },
+  "sunTimes": {
+    "title": "Soleil & crépuscules",
+    "sunrise": "Lever du soleil",
+    "solarNoon": "Midi solaire",
+    "sunset": "Coucher du soleil",
+    "twilightPhases": "Phases du crépuscule"
+  },
+  "observationToolbar": {
+    "searchPlaceholder": "Rechercher un lieu…",
+    "search": "Rechercher"
+  },
   "hero": {
     "title": "Que photographier ce soir",
     "subtitle": "Votre assistant d'astrophotographie — météo astro en temps réel, phase de la Lune et les meilleurs objets Messier, NGC et du ciel profond pour cette nuit, que vous soyez débutant ou astronome confirmé.",

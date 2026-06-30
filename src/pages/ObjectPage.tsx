@@ -34,6 +34,7 @@ import { toast } from "sonner";
 const ObjectPage = () => {
   const { catalogId } = useParams<{ catalogId: string }>();
   const navigate = useLocalizedNavigate();
+  const lp = useLocalizedPath();
   const decodedId = decodeURIComponent(catalogId ?? "");
   
   const { isInList, addObject, removeObject } = useTonightList();
@@ -183,11 +184,11 @@ const ObjectPage = () => {
         <nav aria-label="Breadcrumb">
           <ol className="flex items-center gap-2 text-sm text-muted-foreground">
             <li>
-              <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+              <Link to={lp("/")} className="hover:text-foreground transition-colors">Home</Link>
             </li>
             <li>/</li>
             <li>
-              <Link to="/sky-atlas" className="hover:text-foreground transition-colors">Sky Atlas</Link>
+              <Link to={lp("/sky-atlas")} className="hover:text-foreground transition-colors">Sky Atlas</Link>
             </li>
             <li>/</li>
             <li className="text-foreground font-medium" aria-current="page">
@@ -267,9 +268,9 @@ const ObjectPage = () => {
             </p>
           )}
           <p>
-            Match your <Link to="/equipment" className="text-primary hover:underline">astrophotography equipment</Link> to this target,
+            Match your <Link to={lp("/equipment")} className="text-primary hover:underline">astrophotography equipment</Link> to this target,
             then check focal length and sampling in the{' '}
-            <Link to={`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`} className="text-primary hover:underline">
+            <Link to={lp(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`)} className="text-primary hover:underline">
               field of view &amp; arcsec/pixel calculator
             </Link>.
           </p>
@@ -437,6 +438,7 @@ const InfoItem = ({ icon, label, value }: { icon: React.ReactNode; label: string
 );
 
 const EquipmentRecommendations = ({ obj }: { obj: CelestialObject }) => {
+  const lp = useLocalizedPath();
   const name = obj.common_name ?? obj.catalog_id;
   const size = obj.size_max ?? 0;
   const filter = obj.recommended_filter?.toLowerCase() ?? "";
@@ -491,7 +493,7 @@ const EquipmentRecommendations = ({ obj }: { obj: CelestialObject }) => {
       <ul className="space-y-2">
         {recs.map((r, i) => (
           <li key={i} className="p-3 rounded-xl bg-secondary/30 border border-border/30">
-            <Link to={r.href} className="text-primary hover:underline font-medium text-sm">
+            <Link to={lp(r.href)} className="text-primary hover:underline font-medium text-sm">
               {r.label} →
             </Link>
             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{r.desc}</p>
@@ -503,6 +505,7 @@ const EquipmentRecommendations = ({ obj }: { obj: CelestialObject }) => {
 };
 
 const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
+  const lp = useLocalizedPath();
   const { data: similar } = useQuery({
     queryKey: ["similar-objects", obj.id, obj.obj_type, obj.constellation],
     queryFn: async () => {

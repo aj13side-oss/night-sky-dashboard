@@ -1,4 +1,76 @@
 {
   "title": "Deep Sky Object Atlas",
-  "subtitle": "Browse 4,800+ deep sky objects — filter Messier, NGC and IC catalogs by type, constellation, magnitude and best season."
+  "subtitle": "Browse 4,800+ deep sky objects — filter Messier, NGC and IC catalogs by type, constellation, magnitude and best season.",
+  "objectsCount": "{{count}} objects",
+  "location": {
+    "useMyLocation": "Using default location Lyon — Use my location",
+    "yourLocation": "Your location",
+    "requesting": "Requesting location..."
+  },
+  "popularTargets": {
+    "label": "Popular targets:",
+    "orion": "Orion Nebula (M42) astrophotography",
+    "andromeda": "Andromeda Galaxy (M31) astrophotography",
+    "pleiades": "Pleiades (M45) astrophotography",
+    "whirlpool": "Whirlpool Galaxy (M51) astrophotography"
+  },
+  "score": {
+    "heading": "How is the Accessibility Score calculated?",
+    "intro": "The <0>Accessibility Score</0> (out of 100) estimates how easy a deep-sky object is to photograph and to get a satisfying result from. It does not measure the object's beauty, but its accessibility for the astrophotographer. It is based on four physical properties:",
+    "size": "<0>Apparent size:</0> larger objects are easier to frame and can be shot at short focal length, with a telephoto lens, without a high-end mount.",
+    "brightness": "<0>Brightness (magnitude and light density):</0> a bright, concentrated object needs less exposure time than a faint, diffuse one.",
+    "type": "<0>Object type:</0> galaxies, clusters and reflection nebulae image well in colour (RGB); emission-line targets are weighted accordingly.",
+    "rgb": "<0>RGB / narrowband accessibility:</0> emission nebulae, planetary nebulae and supernova remnants reach their full potential in narrowband; in plain RGB they render a little less, which is taken into account.",
+    "universal": "The score is universal: it does not depend on your location. To see what you can actually photograph tonight from your location, use the \"Visible Tonight\" filter.",
+    "note": "Note: a community image-quality rating will complement this score as the Cosmic Frame community grows."
+  },
+  "solarSystem": "Solar System",
+  "loadingCandidates": "Loading candidate objects for visibility computation…",
+  "noAstroNight": "No full astronomical night tonight — try <0>Nautical</0> or <1>Civil</1>.",
+  "noMatches": "No objects match your filters",
+  "loadMore": "Load more (30)",
+  "showingOf": "Showing {{loaded}} of {{total}}",
+  "prev": "Prev",
+  "next": "Next",
+  "about": {
+    "summary": "About the Deep Sky Object Catalog",
+    "p1": "This catalog contains over 4,800 deep sky objects spanning the complete <0>Messier catalog</0> (110 objects), the <1>NGC</1> and <2>IC</2> catalogs, plus the <3>Sharpless</3> catalog of H-II regions. You can filter by object type — galaxies, emission nebulae, planetary nebulae, open clusters, globular clusters, dark nebulae and more — or narrow results by constellation, magnitude, angular size and best observation season.",
+    "p2": "Every object includes an exposure guide with recommended fast and deep integration times, a photogenicity score that ranks how rewarding a target is to photograph, and a framing preview that shows how the object fits in your telescope and camera field of view. Use these tools to plan your next deep sky imaging session with confidence."
+  },
+  "filters": {
+    "searchPlaceholder": "Search NGC, IC, Messier, name...",
+    "advanced": "Advanced Filters",
+    "sort": {
+      "tonightBest": "⭐ Tonight's Best",
+      "tonightDuration": "🌙 Visibility duration ↓",
+      "photoScore": "Accessibility Score ↓",
+      "magnitude": "Magnitude ↑",
+      "size": "Size ↓",
+      "catalogId": "Catalog ID"
+    },
+    "visibleTonight": "Visible Tonight",
+    "presets": {
+      "astro": "Astro",
+      "nautical": "Nautical",
+      "civil": "Civil",
+      "custom": "Custom",
+      "unavailable": "unavailable"
+    },
+    "top50": {
+      "essentials": "Top 50 Essentials",
+      "nebulas": "Top 50 Nebulas",
+      "galaxies": "Top 50 Galaxies"
+    },
+    "catalogLabel": "Catalog",
+    "constellation": "Constellation",
+    "allConstellations": "All constellations",
+    "all": "All",
+    "imagingMode": "Imaging mode",
+    "rgbBroadband": "RGB/Broadband",
+    "narrowbandSho": "Narrowband (SHO)",
+    "sizeLabel": "Size: {{min}} — {{max}} (arcminutes)",
+    "any": "Any",
+    "maxMagnitude": "Max magnitude: {{value}}",
+    "minAccessibilityScore": "Min Accessibility Score: {{value}}"
+  }
 }

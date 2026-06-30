@@ -516,7 +516,7 @@ const AtlasFilters = ({
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground flex items-center gap-1">
                 <Star className="w-3 h-3 text-primary" />
-                Min Accessibility Score: {filters.minPhotoScore > 0 ? filters.minPhotoScore : "All"}
+                {tr("filters.minAccessibility")}: {filters.minPhotoScore > 0 ? filters.minPhotoScore : tr("filters.all")}
               </label>
               <Slider
                 value={[filters.minPhotoScore]}

@@ -735,13 +735,13 @@ const SkyAtlas = () => {
         {isClientFiltered && clientTotalPages > 1 && (
           <div className="flex items-center justify-center gap-4 pt-4">
             <Button variant="outline" size="sm" disabled={clientPage === 0} onClick={() => setClientPage((p) => p - 1)} className="gap-1">
-              <ChevronLeft className="w-4 h-4" /> Prev
+              <ChevronLeft className="w-4 h-4" /> {tAtlas("prev")}
             </Button>
             <span className="text-sm text-muted-foreground font-mono">
               {clientPage + 1} / {clientTotalPages}
             </span>
             <Button variant="outline" size="sm" disabled={clientPage >= clientTotalPages - 1} onClick={() => setClientPage((p) => p + 1)} className="gap-1">
-              Next <ChevronRight className="w-4 h-4" />
+              {tAtlas("next")} <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         )}

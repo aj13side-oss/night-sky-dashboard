@@ -68,6 +68,7 @@ const AtlasFilters = ({
   nightWindow,
   typeCounts,
 }: Props) => {
+  const { t } = useTranslation("atlas");
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
   const top50Mode: Top50Mode = useMemo(() => {

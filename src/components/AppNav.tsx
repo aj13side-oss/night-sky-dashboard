@@ -67,7 +67,7 @@ const AppNav = () => {
                     nightVision ? "bg-red-900/30 text-red-400" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                   )}>
                   {nightVision ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  {nightVision ? "Normal Mode" : "Night Vision"}
+                  {nightVision ? t("nightVision.normalMode") : t("nightVision.nightVision")}
                 </button>
               </div>
             </SheetContent>

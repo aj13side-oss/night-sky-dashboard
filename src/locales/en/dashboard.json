@@ -1,0 +1,73 @@
+{
+  "hero": {
+    "title": "What to Photograph Tonight",
+    "subtitle": "Your astrophotography planner — real-time astro weather, moon phase and the best Messier, NGC and deep sky targets for tonight, whether you're a beginner or seasoned astronomer.",
+    "tonightSky": "Tonight's Sky — {{location}}"
+  },
+  "about": {
+    "toggle": "About Cosmic Frame — Features & Catalog",
+    "heading": "Your complete astrophotography assistant",
+    "intro": "Cosmic Frame is a free astrophotography planning tool. Check real-time astro weather (cloud cover, seeing, transparency, humidity), astronomical ephemerides (sunrise/sunset, astronomical twilight, moon phase), and discover the best targets to photograph tonight from your location.",
+    "features": {
+      "catalog": {
+        "title": "📡 Sky Catalog",
+        "body": "Over 4,800 deep sky objects: galaxies, emission nebulae, planetary nebulae, open clusters, globular clusters, dark nebulae, supernova remnants. Complete Messier (110 objects), NGC, IC, Sharpless, Abell catalogs."
+      },
+      "gear": {
+        "title": "🔭 Astrophotography Gear",
+        "body": "Compare 360+ equipment: telescopes (Newton, refractor, Schmidt-Cassegrain), astro cameras (ZWO, QHY, Player One, Moravian), equatorial mounts (Sky-Watcher HEQ5, EQM-35, ZWO AM5, iOptron), filters and accessories."
+      },
+      "calculators": {
+        "title": "⚙️ Calculators",
+        "body": "Calculate sampling (arcsec/pixel), field of view (FOV), sensor vs image circle compatibility, payload/mount ratio, optical train backfocus."
+      },
+      "weather": {
+        "title": "🌙 Weather & Ephemerides",
+        "body": "Hourly astronomical weather forecasts, precise moon phase, astronomical twilight times, moonrise and moonset."
+      },
+      "lightPollution": {
+        "title": "🗺️ Light Pollution",
+        "body": "Interactive light pollution map. Find the best observation sites: Bortle 1–4 zones, dark sky reserves, natural parks."
+      },
+      "exposure": {
+        "title": "📸 Exposure Guide",
+        "body": "Each celestial object has an exposure guide: fast and deep integration times, recommended filter (L-Pro, Ha, OIII, SII), moon tolerance, best months for observation, and photogenicity score."
+      }
+    },
+    "brands": {
+      "title": "Featured brands and retailers",
+      "body": "Telescopes: Sky-Watcher, Takahashi, William Optics, Askar, Celestron, Meade, Explore Scientific, SharpStar, TS-Optics, Samyang, Sigma, Orion, SVBONY, GSO. Astro cameras: ZWO (ASI2600MC Pro, ASI533MC Pro, ASI585MC, ASI294MC Pro), QHY (QHY268M, QHY600M), Player One (Poseidon, Uranus, Ares), Moravian, Altair, ToupTek, Rising Cam. Mounts: Sky-Watcher (HEQ5, EQM-35, EQ6-R), ZWO (AM3, AM5), iOptron (CEM26, CEM40, GEM45), Takahashi, Losmandy, 10Micron, Pegasus Astro, Rainbow Astro, Avalon. Filters: Optolong, ZWO, Baader, Astronomik, IDAS, Antlia, Chroma, STC."
+    },
+    "types": {
+      "title": "Object types in the catalog",
+      "body": "Spiral and elliptical galaxies (3,300+), emission nebulae (260+), open clusters (480+), globular clusters (179), dark nebulae and molecular clouds (155+), galaxy clusters (144), planetary nebulae (140), reflection nebulae, supernova remnants, stellar associations.",
+      "popularPrefix": "Popular targets: ",
+      "links": {
+        "m42": "Orion Nebula (M42) astrophotography",
+        "m31": "Andromeda Galaxy (M31) astrophotography",
+        "m45": "Pleiades (M45) astrophotography",
+        "m51": "Whirlpool Galaxy (M51) astrophotography"
+      },
+      "otherNotable": "Other notable: Eagle Nebula (M16, Pillars of Creation), Veil Nebula (NGC 6960/6992), North America Nebula (NGC 7000), Rosette Nebula (NGC 2244), Lagoon Nebula (M8), Crab Nebula (M1), Carina Nebula (NGC 3372)."
+    }
+  },
+  "faq": {
+    "toggle": "Frequently Asked Questions",
+    "q1": {
+      "q": "What should I photograph tonight as a beginner?",
+      "a": "Beginners should start with bright, large targets that are forgiving of tracking and exposure errors. Tonight, check our dashboard for the best visible Messier objects like the Orion Nebula (M42) or the Andromeda Galaxy (M31). These are easy to find, photograph beautifully even with short exposures, and provide stunning results for new astrophotographers."
+    },
+    "q2": {
+      "q": "What should a beginner photograph tonight?",
+      "a": "Beginners should start with bright, large targets that are forgiving of tracking and exposure errors. Tonight, check our dashboard for the best visible Messier objects like the Orion Nebula (M42) or the Andromeda Galaxy (M31). These are easy to find, photograph beautifully even with short exposures, and provide stunning results for new astrophotographers."
+    },
+    "q3": {
+      "q": "How does the astro weather forecast work?",
+      "a": "Cosmic Frame combines hourly cloud cover, seeing, transparency and humidity data to give you a real-time score for astrophotography conditions. The forecast updates live for your chosen location so you can plan the perfect night under the stars."
+    },
+    "q4": {
+      "q": "What equipment do I need for deep sky astrophotography?",
+      "a": "At minimum you need a telescope or telephoto lens, a tracking mount (equatorial or alt-az with field derotator), an astro camera or DSLR, and a laptop or ASIAIR for control. Use our gear catalog and FOV calculator to find compatible setups for your budget and targets."
+    }
+  }
+}

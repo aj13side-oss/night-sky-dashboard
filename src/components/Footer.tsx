@@ -1,24 +1,26 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useLocalizedPath } from "@/lib/localized-nav";
 
 const Footer = () => {
   const lp = useLocalizedPath();
+  const { t } = useTranslation("footer");
   return (
   <footer className="border-t border-border/30 mt-12 pt-10 pb-6 px-4 sm:px-6">
     <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-xs text-muted-foreground">
       <div>
-        <h4 className="font-semibold text-foreground/80 mb-2">Tools</h4>
+        <h4 className="font-semibold text-foreground/80 mb-2">{t("columns.tools")}</h4>
         <ul className="space-y-1">
-          <li><Link to={lp("/")} className="hover:text-foreground transition-colors">Astro Weather & Dashboard</Link></li>
-          <li><Link to={lp("/sky-atlas")} className="hover:text-foreground transition-colors">Sky Atlas (4,800+ objects)</Link></li>
-          <li><Link to={lp("/equipment")} className="hover:text-foreground transition-colors">Astrophotography Gear Comparator</Link></li>
-          <li><Link to={lp("/fov-calculator")} className="hover:text-foreground transition-colors">FOV & Sampling Calculator</Link></li>
-          <li><Link to={lp("/light-pollution")} className="hover:text-foreground transition-colors">Light Pollution Map</Link></li>
+          <li><Link to={lp("/")} className="hover:text-foreground transition-colors">{t("tools.dashboard")}</Link></li>
+          <li><Link to={lp("/sky-atlas")} className="hover:text-foreground transition-colors">{t("tools.atlas")}</Link></li>
+          <li><Link to={lp("/equipment")} className="hover:text-foreground transition-colors">{t("tools.equipment")}</Link></li>
+          <li><Link to={lp("/fov-calculator")} className="hover:text-foreground transition-colors">{t("tools.fov")}</Link></li>
+          <li><Link to={lp("/light-pollution")} className="hover:text-foreground transition-colors">{t("tools.lightPollution")}</Link></li>
         </ul>
       </div>
 
       <div>
-        <h4 className="font-semibold text-foreground/80 mb-2">Popular Objects</h4>
+        <h4 className="font-semibold text-foreground/80 mb-2">{t("columns.popularObjects")}</h4>
         <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
           {[
             {name:"Orion Nebula (M42)", id:"M 42"},
@@ -43,24 +45,19 @@ const Footer = () => {
       </div>
 
       <div>
-        <h4 className="font-semibold text-foreground/80 mb-2">Equipment</h4>
-        <p>
-          Newton Telescopes, APO Refractors, Schmidt-Cassegrain.
-          ZWO, QHY, Player One Cameras.
-          Sky-Watcher, ZWO, iOptron Mounts.
-          Optolong, Baader, Astronomik Filters.
-        </p>
+        <h4 className="font-semibold text-foreground/80 mb-2">{t("columns.equipment")}</h4>
+        <p>{t("equipmentText")}</p>
       </div>
 
       <div>
         <p className="text-[10px] text-muted-foreground/50">
-          Links to third-party stores are provided for convenience. We are not affiliated with any retailer.
+          {t("disclaimer")}
         </p>
         <p className="mt-4 text-muted-foreground/60 flex items-center gap-2">
           <img src="/icon-192.png" alt="Cosmic Frame" width={20} height={20} loading="lazy" className="w-5 h-5 rounded-full" />
           © {new Date().getFullYear()} Cosmic Frame
           <a href={lp("/privacy")} className="text-xs text-muted-foreground hover:text-foreground ml-4">
-            Privacy Policy
+            {t("privacy")}
           </a>
         </p>
       </div>

@@ -32,6 +32,8 @@ import {
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import type { LabelMaps } from "@/hooks/useLabelMaps";
 
 
 const ObjectPage = () => {
@@ -42,6 +44,7 @@ const ObjectPage = () => {
   const isFr = useIsFrench();
   const lang: "fr" | "en" = isFr ? "fr" : "en";
   const { data: labelMaps } = useLabelMaps();
+  const { t } = useTranslation("object");
 
   const { isInList, addObject, removeObject } = useTonightList();
   const [showExposureInfo, setShowExposureInfo] = useState(false);
@@ -87,10 +90,10 @@ const ObjectPage = () => {
     if (!obj) return;
     if (isInList(obj.catalog_id)) {
       removeObject(obj.catalog_id);
-      toast("Removed from tonight's list");
+      toast(t("toast.removed"));
     } else {
       addObject(obj.catalog_id);
-      toast.success("Added to tonight's list!");
+      toast.success(t("toast.added"));
     }
   };
 
@@ -110,10 +113,10 @@ const ObjectPage = () => {
       <div className="min-h-screen bg-background">
         <AppNav />
         <div className="max-w-3xl mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Object not found</h1>
-          <p className="text-muted-foreground mb-6">"{decodedId}" doesn't match any object in the catalog.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-2">{t("notFound.title")}</h1>
+          <p className="text-muted-foreground mb-6">{t("notFound.desc", { id: decodedId })}</p>
           <Button onClick={() => navigate("/sky-atlas")}>
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Atlas
+            <ArrowLeft className="w-4 h-4 mr-2" /> {t("backToAtlas")}
           </Button>
         </div>
         <Footer />
@@ -183,11 +186,11 @@ const ObjectPage = () => {
         <nav aria-label="Breadcrumb">
           <ol className="flex items-center gap-2 text-sm text-muted-foreground">
             <li>
-              <Link to={lp("/")} className="hover:text-foreground transition-colors">Home</Link>
+              <Link to={lp("/")} className="hover:text-foreground transition-colors">{t("breadcrumb.home")}</Link>
             </li>
             <li>/</li>
             <li>
-              <Link to={lp("/sky-atlas")} className="hover:text-foreground transition-colors">Sky Atlas</Link>
+              <Link to={lp("/sky-atlas")} className="hover:text-foreground transition-colors">{t("breadcrumb.atlas")}</Link>
             </li>
             <li>/</li>
             <li className="text-foreground font-medium" aria-current="page">
@@ -200,7 +203,7 @@ const ObjectPage = () => {
         <div className="flex items-start justify-between gap-4">
           <div>
             <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground mb-2" onClick={() => navigate("/sky-atlas")}>
-              <ArrowLeft className="w-4 h-4" /> Back to Atlas
+              <ArrowLeft className="w-4 h-4" /> {t("backToAtlas")}
             </Button>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{formatCatalogId(obj)}</h1>
             {(() => {
@@ -221,7 +224,7 @@ const ObjectPage = () => {
           <div className="flex gap-2 mt-8">
             <Button variant="outline" size="sm" onClick={handleTonightList} className={`gap-1 ${inList ? "text-primary border-primary/30" : ""}`}>
               <ClipboardList className="w-4 h-4" />
-              {inList ? "Listed" : "Tonight"}
+              {inList ? t("tonightBtn.listed") : t("tonightBtn.tonight")}
             </Button>
           </div>
         </div>
@@ -234,9 +237,8 @@ const ObjectPage = () => {
 
         {(() => {
           const displayName = isFr ? (obj.common_name_fr ?? obj.common_name) : obj.common_name;
-          const heading = isFr
-            ? `Comment photographier ${displayName ?? obj.catalog_id}`
-            : `How to photograph ${displayName ?? obj.catalog_id}`;
+          const headingName = displayName ?? obj.catalog_id;
+          const heading = t("howToPhotograph", { name: headingName });
           const ficheRaw = isFr ? obj.seo_description_fr : obj.seo_description_en;
           const hasFiche = !!(ficheRaw && ficheRaw.trim() && labelMaps);
           const ficheResolved = hasFiche
@@ -251,47 +253,7 @@ const ObjectPage = () => {
                   {ficheResolved}
                 </div>
               ) : (
-                <div className="text-sm text-muted-foreground leading-relaxed space-y-1 max-w-2xl">
-                  <p>
-                    {obj.common_name ? `The ${obj.common_name} (${obj.catalog_id})` : obj.catalog_id} is
-                    a{/^[aeiou]/i.test(obj.obj_type ?? '') ? 'n' : ''} {obj.obj_type?.toLowerCase() ?? 'deep sky object'}
-                    {obj.constellation ? ` in the constellation ${obj.constellation}` : ''}.
-                    {obj.magnitude != null ? ` Visual magnitude: ${obj.magnitude.toFixed(1)}.` : ''}
-                    {obj.size_max != null && obj.size_max > 0 ? ` Angular size: ${obj.size_max.toFixed(0)}′.` : ''}
-                  </p>
-                  {(obj.best_months || obj.recommended_filter) && (() => {
-                    const season = getDisplaySeason(obj.best_months, obj.dec_deg, pos.lat);
-                    const seasonSentence = season.isCircumpolar
-                      ? `Visible year-round from your location.`
-                      : season.isInvisible
-                      ? `Not visible from your location.`
-                      : season.label
-                      ? `Best season for astrophotography: ${season.label}.`
-                      : '';
-                    return (
-                      <p>
-                        {seasonSentence}
-                        {obj.recommended_filter ? ` Recommended filter: ${obj.recommended_filter}.` : ''}
-                        {obj.ideal_resolution ? ` Ideal sampling: ${obj.ideal_resolution}.` : ''}
-                      </p>
-                    );
-                  })()}
-                  {(obj.exposure_guide_fast || obj.exposure_guide_deep) && (
-                    <p>
-                      Suggested total integration time:
-                      {obj.exposure_guide_fast ? ` ${formatExposure(obj.exposure_guide_fast)} for a quick session` : ''}
-                      {obj.exposure_guide_fast && obj.exposure_guide_deep ? ',' : ''}
-                      {obj.exposure_guide_deep ? ` ${formatExposure(obj.exposure_guide_deep)} for a deep image` : ''}.
-                    </p>
-                  )}
-                  <p>
-                    Match your <Link to={lp("/equipment")} className="text-primary hover:underline">astrophotography equipment</Link> to this target,
-                    then check focal length and sampling in the{' '}
-                    <Link to={lp(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`)} className="text-primary hover:underline">
-                      field of view &amp; arcsec/pixel calculator
-                    </Link>.
-                  </p>
-                </div>
+                <FallbackProse obj={obj} isFr={isFr} labelMaps={labelMaps} lat={pos.lat} lp={lp} />
               )}
             </>
           );
@@ -317,12 +279,12 @@ const ObjectPage = () => {
           {/* Info */}
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-2">
-              <InfoItem icon={<Eye className="w-3.5 h-3.5" />} label="Type" value={obj.obj_type} />
-              <InfoItem icon={<Compass className="w-3.5 h-3.5" />} label="Constellation" value={obj.constellation ?? "—"} />
-              <InfoItem icon={<Star className="w-3.5 h-3.5" />} label="Accessibility Score" value={obj.photo_score?.toString() ?? "—"} />
-              <InfoItem icon={<Eye className="w-3.5 h-3.5" />} label="Magnitude" value={obj.magnitude?.toFixed(1) ?? "—"} />
-              <InfoItem icon={<Ruler className="w-3.5 h-3.5" />} label="Size" value={obj.size_max ? `${obj.size_max.toFixed(1)}'` : "—"} />
-              <InfoItem icon={<Eye className="w-3.5 h-3.5" />} label="Surf. Bright." value={obj.surf_brightness?.toFixed(1) ?? "—"} />
+              <InfoItem icon={<Eye className="w-3.5 h-3.5" />} label={t("info.type")} value={obj.obj_type} />
+              <InfoItem icon={<Compass className="w-3.5 h-3.5" />} label={t("info.constellation")} value={obj.constellation ?? "—"} />
+              <InfoItem icon={<Star className="w-3.5 h-3.5" />} label={t("accessibilityScore")} value={obj.photo_score?.toString() ?? "—"} />
+              <InfoItem icon={<Eye className="w-3.5 h-3.5" />} label={t("info.magnitude")} value={obj.magnitude?.toFixed(1) ?? "—"} />
+              <InfoItem icon={<Ruler className="w-3.5 h-3.5" />} label={t("info.size")} value={obj.size_max ? `${obj.size_max.toFixed(1)}'` : "—"} />
+              <InfoItem icon={<Eye className="w-3.5 h-3.5" />} label={t("info.surfBright")} value={obj.surf_brightness?.toFixed(1) ?? "—"} />
             </div>
 
             {/* Coordinates */}
@@ -343,7 +305,7 @@ const ObjectPage = () => {
             {/* Rise/Set */}
             {rs && !rs.neverRises && (
               <div className="text-xs text-muted-foreground font-mono p-3 rounded-xl bg-secondary/30">
-                {rs.isCircumpolar ? "Up all night" : (
+                {rs.isCircumpolar ? t("upAllNight") : (
                   <>
                     {rs.riseTime && `↑ ${formatTimeShort(rs.riseTime)}`}
                     {rs.riseTime && rs.setTime && " · "}
@@ -361,20 +323,20 @@ const ObjectPage = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Camera className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-semibold text-foreground">Recommended exposure &amp; settings</span>
+                    <span className="text-sm font-semibold text-foreground">{t("exposure.title")}</span>
                   </div>
                   <button onClick={() => setShowExposureInfo(true)} className="text-muted-foreground hover:text-foreground"><HelpCircle className="w-4 h-4" /></button>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {(obj.exposure_guide_fast ?? 0) > 0 && (
                     <div className="p-3 rounded-lg bg-accent/10 border border-accent/20">
-                      <div className="flex items-center gap-1.5 text-xs text-accent font-medium mb-1"><Clock className="w-3 h-3" /> Fast</div>
+                      <div className="flex items-center gap-1.5 text-xs text-accent font-medium mb-1"><Clock className="w-3 h-3" /> {t("exposure.fast")}</div>
                       <p className="text-lg font-bold font-mono text-foreground">{formatExposure(obj.exposure_guide_fast)}</p>
                     </div>
                   )}
                   {(obj.exposure_guide_deep ?? 0) > 0 && (
                     <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
-                      <div className="flex items-center gap-1.5 text-xs text-primary font-medium mb-1"><Clock className="w-3 h-3" /> Deep</div>
+                      <div className="flex items-center gap-1.5 text-xs text-primary font-medium mb-1"><Clock className="w-3 h-3" /> {t("exposure.deep")}</div>
                       <p className="text-lg font-bold font-mono text-foreground">{formatExposure(obj.exposure_guide_deep)}</p>
                     </div>
                   )}
@@ -389,7 +351,7 @@ const ObjectPage = () => {
 
         {/* Setup Assistant */}
         <h2 className="text-xl font-semibold text-foreground pt-2">
-          Best equipment for {obj.common_name ?? obj.catalog_id}
+          {t("sections.bestEquipment", { name: obj.common_name ?? obj.catalog_id })}
         </h2>
         <SetupAssistant obj={obj} userFocalLength={0} />
 
@@ -405,10 +367,10 @@ const ObjectPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Button variant="outline" className="gap-2 border-primary/30 hover:bg-primary/10"
             onClick={() => navigate(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`)}>
-            <Crosshair className="w-4 h-4" /> Frame in FOV Calculator
+            <Crosshair className="w-4 h-4" /> {t("sections.frameInFov")}
           </Button>
           <Button variant="outline" className="gap-2" onClick={() => navigate("/equipment")}>
-            <Scale className="w-4 h-4" /> Compare in Rig Builder
+            <Scale className="w-4 h-4" /> {t("sections.compareInRig")}
           </Button>
         </div>
 
@@ -416,12 +378,12 @@ const ObjectPage = () => {
         <div className="rounded-xl border border-border/30 bg-secondary/20 p-5 block space-y-3">
           <div className="flex items-center gap-2">
             <Camera className="w-5 h-5 text-primary" />
-            <h2 className="text-xl font-semibold text-foreground">See what others capture</h2>
+            <h2 className="text-xl font-semibold text-foreground">{t("sections.seeOthers")}</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Browse real images of this target from astrophotographers using gear like yours. Coming soon.
+            {t("sections.seeOthersDesc")}
           </p>
-          <Badge variant="secondary" className="text-[10px]">Coming soon</Badge>
+          <Badge variant="secondary" className="text-[10px]">{t("sections.comingSoon")}</Badge>
         </div>
 
         {/* Similar Objects */}
@@ -431,12 +393,12 @@ const ObjectPage = () => {
         <div className="rounded-xl border border-border/30 bg-secondary/20 p-5 block space-y-3">
           <div className="flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-primary" />
-            <h2 className="text-xl font-semibold text-foreground">Community contributions</h2>
+            <h2 className="text-xl font-semibold text-foreground">{t("sections.community")}</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Share your shots, tips and notes on this target. Coming soon.
+            {t("sections.communityDesc")}
           </p>
-          <Badge variant="secondary" className="text-[10px]">Coming soon</Badge>
+          <Badge variant="secondary" className="text-[10px]">{t("sections.comingSoon")}</Badge>
         </div>
       </main>
 
@@ -455,48 +417,49 @@ const InfoItem = ({ icon, label, value }: { icon: React.ReactNode; label: string
 
 const EquipmentRecommendations = ({ obj }: { obj: CelestialObject }) => {
   const lp = useLocalizedPath();
+  const { t } = useTranslation("object");
   const name = obj.common_name ?? obj.catalog_id;
   const size = obj.size_max ?? 0;
   const filter = obj.recommended_filter?.toLowerCase() ?? "";
 
   let scopeLink = "/equipment?category=telescopes";
-  let scopeLabel = "Standard refractor or small Newtonian";
-  let scopeDesc = `${name} sits in the mid-range angular size — a 400–800mm focal length refractor or small Newtonian frames it nicely.`;
+  let scopeLabel = t("equipment.scope.standard");
+  let scopeDesc = t("equipment.scope.standardDesc", { name });
 
   if (size > 60) {
     scopeLink = "/equipment?category=telescopes&fov=wide";
-    scopeLabel = "Wide-field short focal length refractor";
-    scopeDesc = `${name} spans a large area of sky (${size.toFixed(0)}′). A short focal length refractor (200–500mm) is required to fit it in the frame.`;
+    scopeLabel = t("equipment.scope.wide");
+    scopeDesc = t("equipment.scope.wideDesc", { name, size: size.toFixed(0) });
   } else if (size > 0 && size < 10) {
     scopeLink = "/equipment?category=telescopes&fov=long";
-    scopeLabel = "Long focal length SCT or large Newtonian";
-    scopeDesc = `${name} is small (${size.toFixed(1)}′). A long focal length scope (1200mm+) like an SCT or large Newtonian reveals its details.`;
+    scopeLabel = t("equipment.scope.long");
+    scopeDesc = t("equipment.scope.longDesc", { name, size: size.toFixed(1) });
   }
 
   const isNarrowband = /ha|h-?alpha|oiii|sii|narrow|dual/.test(filter);
   const isBroadband = /uhc|cls|l-?pro|lps|broadband|light pollution/.test(filter);
-  let filterLink = "/equipment?category=filters";
-  let filterLabel = obj.recommended_filter ?? "Light pollution filter";
+  const filterLink = "/equipment?category=filters";
+  const filterLabel = obj.recommended_filter ?? t("equipment.filter.fallback");
   let filterDesc = obj.recommended_filter
-    ? `For ${name}, the recommended filter is ${obj.recommended_filter}. Browse compatible options in the catalog.`
-    : `A light pollution filter improves contrast on ${name} from suburban skies.`;
+    ? t("equipment.filter.defaultWithFilter", { name, filter: obj.recommended_filter })
+    : t("equipment.filter.defaultNoFilter", { name });
   if (isNarrowband) {
-    filterDesc = `${name} responds well to narrowband filters (${obj.recommended_filter}) — they isolate emission lines and cut through moonlight.`;
+    filterDesc = t("equipment.filter.narrowDesc", { name, filter: obj.recommended_filter });
   } else if (isBroadband) {
-    filterDesc = `${name} benefits from a broadband light-pollution filter (${obj.recommended_filter}) to boost contrast under city skies.`;
+    filterDesc = t("equipment.filter.broadDesc", { name, filter: obj.recommended_filter });
   }
 
   const recs: { href: string; label: string; desc: string }[] = [
     { href: scopeLink, label: scopeLabel, desc: scopeDesc },
     {
       href: "/equipment?category=cameras",
-      label: "Cooled dedicated astro camera",
-      desc: `For long exposures on ${name}, a cooled astrophotography camera (mono or one-shot color) keeps thermal noise low.`,
+      label: t("equipment.camera.label"),
+      desc: t("equipment.camera.desc", { name }),
     },
     {
       href: "/equipment?category=mounts",
-      label: "Tracking equatorial mount",
-      desc: `${name} requires accurate tracking — an equatorial mount sized for your scope's weight is essential.`,
+      label: t("equipment.mount.label"),
+      desc: t("equipment.mount.desc", { name }),
     },
     { href: filterLink, label: filterLabel, desc: filterDesc },
   ];
@@ -504,7 +467,7 @@ const EquipmentRecommendations = ({ obj }: { obj: CelestialObject }) => {
   return (
     <section className="space-y-3 pt-2">
       <h2 className="text-xl font-semibold text-foreground">
-        Recommended gear for {name}
+        {t("sections.recommendedGear", { name })}
       </h2>
       <ul className="space-y-2">
         {recs.map((r, i) => (
@@ -520,7 +483,92 @@ const EquipmentRecommendations = ({ obj }: { obj: CelestialObject }) => {
   );
 };
 
+const FallbackProse = ({
+  obj, isFr, labelMaps, lat, lp,
+}: {
+  obj: CelestialObject;
+  isFr: boolean;
+  labelMaps: LabelMaps | undefined;
+  lat: number;
+  lp: (p: string) => string;
+}) => {
+  const { t } = useTranslation("object");
+  const lang: "fr" | "en" = isFr ? "fr" : "en";
+
+  // Resolve type with article
+  const rawType = obj.obj_type ?? "";
+  let typeWithArticle = "";
+  if (isFr) {
+    const entry = labelMaps?.objType[rawType];
+    const label = entry?.label_fr || rawType.toLowerCase() || "objet du ciel profond";
+    const article = entry?.article_indef_fr || "un";
+    typeWithArticle = `${article} ${label}`;
+  } else {
+    const entry = labelMaps?.objType[rawType];
+    const label = entry?.label_en || rawType.toLowerCase() || "deep sky object";
+    const article = /^[aeiou]/i.test(label) ? "an" : "a";
+    typeWithArticle = `${article} ${label}`;
+  }
+
+  const subject = obj.common_name
+    ? t("fallback.subjectWithName", { name: obj.common_name, id: obj.catalog_id })
+    : obj.catalog_id;
+  const inConstellation = obj.constellation
+    ? t("fallback.inConstellation", { constellation: obj.constellation })
+    : "";
+
+  const intro = t("fallback.intro", { subject, typeWithArticle, inConstellation });
+  const magLine = obj.magnitude != null ? t("fallback.magnitude", { mag: obj.magnitude.toFixed(1) }) : "";
+  const sizeLine = obj.size_max != null && obj.size_max > 0
+    ? t("fallback.size", { size: obj.size_max.toFixed(0) })
+    : "";
+
+  // Season
+  let seasonSentence = "";
+  if (obj.best_months || obj.recommended_filter) {
+    const season = getDisplaySeason(obj.best_months, obj.dec_deg, lat);
+    if (season.isCircumpolar) {
+      seasonSentence = t("fallback.seasonYearRound");
+    } else if (season.isInvisible) {
+      seasonSentence = t("fallback.seasonInvisible");
+    } else if (season.label) {
+      const seasonLabel = isFr ? (labelMaps?.season[season.label] || season.label) : season.label;
+      seasonSentence = t("fallback.seasonBest", { season: seasonLabel });
+    }
+  }
+  const filterLine = obj.recommended_filter ? t("fallback.filterLine", { filter: obj.recommended_filter }) : "";
+  const samplingLine = obj.ideal_resolution ? t("fallback.samplingLine", { sampling: obj.ideal_resolution }) : "";
+
+  return (
+    <div className="text-sm text-muted-foreground leading-relaxed space-y-1 max-w-2xl">
+      <p>{intro}{magLine}{sizeLine}</p>
+      {(seasonSentence || filterLine || samplingLine) && (
+        <p>{seasonSentence}{filterLine}{samplingLine}</p>
+      )}
+      {(obj.exposure_guide_fast || obj.exposure_guide_deep) && (
+        <p>
+          {t("fallback.integration")}
+          {obj.exposure_guide_fast ? t("fallback.fastSession", { exposure: formatExposure(obj.exposure_guide_fast) }) : ""}
+          {obj.exposure_guide_fast && obj.exposure_guide_deep ? "," : ""}
+          {obj.exposure_guide_deep ? t("fallback.deepSession", { exposure: formatExposure(obj.exposure_guide_deep) }) : ""}
+          .
+        </p>
+      )}
+      <p>
+        {t("fallback.matchEquipmentPrefix")}
+        <Link to={lp("/equipment")} className="text-primary hover:underline">{t("fallback.matchEquipmentLink")}</Link>
+        {t("fallback.matchEquipmentMiddle")}
+        <Link to={lp(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`)} className="text-primary hover:underline">
+          {t("fallback.matchEquipmentFovLink")}
+        </Link>
+        {t("fallback.matchEquipmentSuffix")}
+      </p>
+    </div>
+  );
+};
+
 const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
+  const { t } = useTranslation("object");
   const lp = useLocalizedPath();
   const { data: similar } = useQuery({
     queryKey: ["similar-objects", obj.id, obj.obj_type, obj.constellation],
@@ -555,7 +603,7 @@ const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
     <section className="space-y-3">
       <div className="flex items-center gap-2">
         <Telescope className="w-4 h-4 text-primary" />
-        <h2 className="text-sm font-semibold text-foreground">Similar Objects</h2>
+        <h2 className="text-sm font-semibold text-foreground">{t("sections.similar")}</h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {similar.map((s: any) => (

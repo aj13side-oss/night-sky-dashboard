@@ -1,4 +1,28 @@
 {
+  "quickActions": {
+    "tonightsBest": "Tonight's Best",
+    "openAtlas": "Open Atlas",
+    "frameObject": "Frame Object",
+    "checkLightPollution": "Check Light Pollution"
+  },
+  "eventBanner": {
+    "newMoon": "🌑 Near New Moon — perfect conditions for deep sky imaging tonight!",
+    "fullMoon": "🌕 Near Full Moon — poor conditions for deep sky imaging. Try bright targets or narrowband filters."
+  },
+  "moonPhase": {
+    "title": "Moon Phase"
+  },
+  "sunTimes": {
+    "title": "Sun & Twilight",
+    "sunrise": "Sunrise",
+    "solarNoon": "Solar Noon",
+    "sunset": "Sunset",
+    "twilightPhases": "Twilight phases"
+  },
+  "observationToolbar": {
+    "searchPlaceholder": "Search a location…",
+    "search": "Search"
+  },
   "hero": {
     "title": "What to Photograph Tonight",
     "subtitle": "Your astrophotography planner — real-time astro weather, moon phase and the best Messier, NGC and deep sky targets for tonight, whether you're a beginner or seasoned astronomer.",

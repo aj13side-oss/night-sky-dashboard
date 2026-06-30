@@ -417,48 +417,49 @@ const InfoItem = ({ icon, label, value }: { icon: React.ReactNode; label: string
 
 const EquipmentRecommendations = ({ obj }: { obj: CelestialObject }) => {
   const lp = useLocalizedPath();
+  const { t } = useTranslation("object");
   const name = obj.common_name ?? obj.catalog_id;
   const size = obj.size_max ?? 0;
   const filter = obj.recommended_filter?.toLowerCase() ?? "";
 
   let scopeLink = "/equipment?category=telescopes";
-  let scopeLabel = "Standard refractor or small Newtonian";
-  let scopeDesc = `${name} sits in the mid-range angular size — a 400–800mm focal length refractor or small Newtonian frames it nicely.`;
+  let scopeLabel = t("equipment.scope.standard");
+  let scopeDesc = t("equipment.scope.standardDesc", { name });
 
   if (size > 60) {
     scopeLink = "/equipment?category=telescopes&fov=wide";
-    scopeLabel = "Wide-field short focal length refractor";
-    scopeDesc = `${name} spans a large area of sky (${size.toFixed(0)}′). A short focal length refractor (200–500mm) is required to fit it in the frame.`;
+    scopeLabel = t("equipment.scope.wide");
+    scopeDesc = t("equipment.scope.wideDesc", { name, size: size.toFixed(0) });
   } else if (size > 0 && size < 10) {
     scopeLink = "/equipment?category=telescopes&fov=long";
-    scopeLabel = "Long focal length SCT or large Newtonian";
-    scopeDesc = `${name} is small (${size.toFixed(1)}′). A long focal length scope (1200mm+) like an SCT or large Newtonian reveals its details.`;
+    scopeLabel = t("equipment.scope.long");
+    scopeDesc = t("equipment.scope.longDesc", { name, size: size.toFixed(1) });
   }
 
   const isNarrowband = /ha|h-?alpha|oiii|sii|narrow|dual/.test(filter);
   const isBroadband = /uhc|cls|l-?pro|lps|broadband|light pollution/.test(filter);
-  let filterLink = "/equipment?category=filters";
-  let filterLabel = obj.recommended_filter ?? "Light pollution filter";
+  const filterLink = "/equipment?category=filters";
+  const filterLabel = obj.recommended_filter ?? t("equipment.filter.fallback");
   let filterDesc = obj.recommended_filter
-    ? `For ${name}, the recommended filter is ${obj.recommended_filter}. Browse compatible options in the catalog.`
-    : `A light pollution filter improves contrast on ${name} from suburban skies.`;
+    ? t("equipment.filter.defaultWithFilter", { name, filter: obj.recommended_filter })
+    : t("equipment.filter.defaultNoFilter", { name });
   if (isNarrowband) {
-    filterDesc = `${name} responds well to narrowband filters (${obj.recommended_filter}) — they isolate emission lines and cut through moonlight.`;
+    filterDesc = t("equipment.filter.narrowDesc", { name, filter: obj.recommended_filter });
   } else if (isBroadband) {
-    filterDesc = `${name} benefits from a broadband light-pollution filter (${obj.recommended_filter}) to boost contrast under city skies.`;
+    filterDesc = t("equipment.filter.broadDesc", { name, filter: obj.recommended_filter });
   }
 
   const recs: { href: string; label: string; desc: string }[] = [
     { href: scopeLink, label: scopeLabel, desc: scopeDesc },
     {
       href: "/equipment?category=cameras",
-      label: "Cooled dedicated astro camera",
-      desc: `For long exposures on ${name}, a cooled astrophotography camera (mono or one-shot color) keeps thermal noise low.`,
+      label: t("equipment.camera.label"),
+      desc: t("equipment.camera.desc", { name }),
     },
     {
       href: "/equipment?category=mounts",
-      label: "Tracking equatorial mount",
-      desc: `${name} requires accurate tracking — an equatorial mount sized for your scope's weight is essential.`,
+      label: t("equipment.mount.label"),
+      desc: t("equipment.mount.desc", { name }),
     },
     { href: filterLink, label: filterLabel, desc: filterDesc },
   ];
@@ -466,7 +467,7 @@ const EquipmentRecommendations = ({ obj }: { obj: CelestialObject }) => {
   return (
     <section className="space-y-3 pt-2">
       <h2 className="text-xl font-semibold text-foreground">
-        Recommended gear for {name}
+        {t("sections.recommendedGear", { name })}
       </h2>
       <ul className="space-y-2">
         {recs.map((r, i) => (
@@ -479,6 +480,90 @@ const EquipmentRecommendations = ({ obj }: { obj: CelestialObject }) => {
         ))}
       </ul>
     </section>
+  );
+};
+
+const FallbackProse = ({
+  obj, isFr, labelMaps, lat, lp,
+}: {
+  obj: CelestialObject;
+  isFr: boolean;
+  labelMaps: LabelMaps | undefined;
+  lat: number;
+  lp: (p: string) => string;
+}) => {
+  const { t } = useTranslation("object");
+  const lang: "fr" | "en" = isFr ? "fr" : "en";
+
+  // Resolve type with article
+  const rawType = obj.obj_type ?? "";
+  let typeWithArticle = "";
+  if (isFr) {
+    const entry = labelMaps?.objType[rawType];
+    const label = entry?.label_fr || rawType.toLowerCase() || "objet du ciel profond";
+    const article = entry?.article_indef_fr || "un";
+    typeWithArticle = `${article} ${label}`;
+  } else {
+    const entry = labelMaps?.objType[rawType];
+    const label = entry?.label_en || rawType.toLowerCase() || "deep sky object";
+    const article = /^[aeiou]/i.test(label) ? "an" : "a";
+    typeWithArticle = `${article} ${label}`;
+  }
+
+  const subject = obj.common_name
+    ? t("fallback.subjectWithName", { name: obj.common_name, id: obj.catalog_id })
+    : obj.catalog_id;
+  const inConstellation = obj.constellation
+    ? t("fallback.inConstellation", { constellation: obj.constellation })
+    : "";
+
+  const intro = t("fallback.intro", { subject, typeWithArticle, inConstellation });
+  const magLine = obj.magnitude != null ? t("fallback.magnitude", { mag: obj.magnitude.toFixed(1) }) : "";
+  const sizeLine = obj.size_max != null && obj.size_max > 0
+    ? t("fallback.size", { size: obj.size_max.toFixed(0) })
+    : "";
+
+  // Season
+  let seasonSentence = "";
+  if (obj.best_months || obj.recommended_filter) {
+    const season = getDisplaySeason(obj.best_months, obj.dec_deg, lat);
+    if (season.isCircumpolar) {
+      seasonSentence = t("fallback.seasonYearRound");
+    } else if (season.isInvisible) {
+      seasonSentence = t("fallback.seasonInvisible");
+    } else if (season.label) {
+      const seasonLabel = isFr ? (labelMaps?.season[season.label] || season.label) : season.label;
+      seasonSentence = t("fallback.seasonBest", { season: seasonLabel });
+    }
+  }
+  const filterLine = obj.recommended_filter ? t("fallback.filterLine", { filter: obj.recommended_filter }) : "";
+  const samplingLine = obj.ideal_resolution ? t("fallback.samplingLine", { sampling: obj.ideal_resolution }) : "";
+
+  return (
+    <div className="text-sm text-muted-foreground leading-relaxed space-y-1 max-w-2xl">
+      <p>{intro}{magLine}{sizeLine}</p>
+      {(seasonSentence || filterLine || samplingLine) && (
+        <p>{seasonSentence}{filterLine}{samplingLine}</p>
+      )}
+      {(obj.exposure_guide_fast || obj.exposure_guide_deep) && (
+        <p>
+          {t("fallback.integration")}
+          {obj.exposure_guide_fast ? t("fallback.fastSession", { exposure: formatExposure(obj.exposure_guide_fast) }) : ""}
+          {obj.exposure_guide_fast && obj.exposure_guide_deep ? "," : ""}
+          {obj.exposure_guide_deep ? t("fallback.deepSession", { exposure: formatExposure(obj.exposure_guide_deep) }) : ""}
+          .
+        </p>
+      )}
+      <p>
+        {t("fallback.matchEquipmentPrefix")}
+        <Link to={lp("/equipment")} className="text-primary hover:underline">{t("fallback.matchEquipmentLink")}</Link>
+        {t("fallback.matchEquipmentMiddle")}
+        <Link to={lp(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`)} className="text-primary hover:underline">
+          {t("fallback.matchEquipmentFovLink")}
+        </Link>
+        {t("fallback.matchEquipmentSuffix")}
+      </p>
+    </div>
   );
 };
 

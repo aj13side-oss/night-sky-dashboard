@@ -429,8 +429,8 @@ const HourlyWeatherCard = () => {
             columns={[
               { key: "hour", label: "⏰", width: "w-12" },
               { key: "clouds", label: "☁️" },
-              { key: "seeing", label: "Seeing" },
-              { key: "transparency", label: "Transp." },
+              { key: "seeing", label: t("weather.cols.seeing") },
+              { key: "transparency", label: t("weather.cols.transp") },
               { key: "temp", label: "°C" },
             ]}
             rows={alignToHourlyGrid(openMeteoNight, sevenTimerNight).map((h, idx) => {

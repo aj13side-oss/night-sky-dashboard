@@ -447,8 +447,8 @@ const HourlyWeatherCard = () => {
               return {
                 hour: { value: refHour, style: "" },
                 clouds: { value: `${h.clouds}`, style: cloudHeatmap(h.clouds) },
-                seeing: { value: h.seeing, style: seeingHeatmap(h.seeing) },
-                transparency: { value: h.transparency, style: seeingHeatmap(h.transparency) },
+                seeing: { value: seeingVal(h.seeing), style: seeingHeatmap(h.seeing) },
+                transparency: { value: seeingVal(h.transparency), style: seeingHeatmap(h.transparency) },
                 temp: { value: h.temp != null ? `${h.temp}°` : "—", style: h.temp != null ? tempHeatmap(h.temp) : "" },
               };
             })}

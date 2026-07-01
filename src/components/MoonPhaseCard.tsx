@@ -235,8 +235,8 @@ const MoonPhaseCard = () => {
       </motion.div>
 
       <div className="text-center space-y-1">
-        <p className="text-lg font-semibold text-foreground">{phaseName}</p>
-        <p className="text-sm text-muted-foreground">{illumination}% illuminated</p>
+        <p className="text-lg font-semibold text-foreground">{t(`moonPhase.phases.${phaseName}`, { defaultValue: phaseName })}</p>
+        <p className="text-sm text-muted-foreground">{t("moonPhase.illuminated", { pct: illumination })}</p>
         {enhanced?.specialName && (
           <Badge variant="secondary" className="mt-1 text-xs">{enhanced.specialName}</Badge>
         )}
@@ -247,13 +247,13 @@ const MoonPhaseCard = () => {
         <div className="w-full pt-3 border-t border-border space-y-1">
           {moonrise && (
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>🌙 Moonrise</span>
+              <span>🌙 {t("moonPhase.moonrise")}</span>
               <span className="font-mono text-foreground">{moonrise}</span>
             </div>
           )}
           {moonset && (
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>🌙 Moonset</span>
+              <span>🌙 {t("moonPhase.moonset")}</span>
               <span className="font-mono text-foreground">{moonset}</span>
             </div>
           )}
@@ -264,12 +264,12 @@ const MoonPhaseCard = () => {
       {enhanced?.culminationTime && (
         <div className="w-full pt-3 border-t border-border space-y-1">
           <div className="flex justify-between text-xs text-muted-foreground">
-            <span>⬆ Culmination</span>
+            <span>⬆ {t("moonPhase.culmination")}</span>
             <span className="font-mono text-foreground">{enhanced.culminationTime}</span>
           </div>
           {enhanced.culminationAlt !== null && (
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Max altitude</span>
+              <span>{t("moonPhase.maxAltitude")}</span>
               <span className="font-mono text-foreground">{enhanced.culminationAlt}°</span>
             </div>
           )}
@@ -279,22 +279,22 @@ const MoonPhaseCard = () => {
       {/* Seeing Impact */}
       <div className="w-full pt-3 border-t border-border">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">Deep-sky impact</span>
-          <span className={`font-medium ${seeing.color}`}>{seeing.label}</span>
+          <span className="text-muted-foreground">{t("moonPhase.deepSkyImpact")}</span>
+          <span className={`font-medium ${seeing.color}`}>{t(`moonPhase.seeing.${seeing.key}`)}</span>
         </div>
-        <p className="text-[10px] text-muted-foreground/70 mt-0.5">{seeing.desc}</p>
+        <p className="text-[10px] text-muted-foreground/70 mt-0.5">{t(`moonPhase.seeingDesc.${seeing.key}`)}</p>
       </div>
 
       {/* Next Phases Mini-Calendar */}
       {enhanced && enhanced.nextPhases.length > 0 && (
         <div className="w-full pt-3 border-t border-border space-y-1.5">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Upcoming phases</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t("moonPhase.upcomingPhases")}</p>
           {enhanced.nextPhases.slice(0, 4).map((p, i) => (
             <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
               <span>{p.emoji}</span>
-              <span className="text-foreground/80">{p.name}</span>
+              <span className="text-foreground/80">{t(`moonPhase.phases.${p.name}`, { defaultValue: p.name })}</span>
               <span className="ml-auto font-mono text-foreground/60">
-                {p.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                {p.date.toLocaleDateString(i18n.language?.startsWith("fr") ? "fr-FR" : "en-US", { month: "short", day: "numeric" })}
               </span>
             </div>
           ))}

@@ -1,0 +1,52 @@
+{
+  "heading": "Carte de pollution lumineuse",
+  "subheading": "Trouvez des sites au ciel noir près de chez vous, consultez l'échelle de Bortle, les mesures SQM et les niveaux de pollution lumineuse pour de meilleures astrophotos.",
+  "toolbar": {
+    "myLocation": "Ma position",
+    "opacity": "Opacité",
+    "exitFullscreen": "Quitter le plein écran"
+  },
+  "map": {
+    "yourPosition": "Votre position",
+    "locationDenied": "Accès à la position refusé, utilisez plutôt la barre de recherche.",
+    "legendTitle": "Échelle de Bortle"
+  },
+  "bortle": {
+    "sectionTitle": "Échelle de Bortle",
+    "prefix": "Bortle",
+    "sqmPrefix": "SQM",
+    "labels": {
+      "1": "Site très sombre excellent",
+      "2": "Site sombre typique",
+      "3": "Ciel rural",
+      "4": "Transition rural/péri-urbain",
+      "5": "Ciel péri-urbain",
+      "6": "Péri-urbain lumineux",
+      "7": "Transition péri-urbain/urbain",
+      "8": "Ciel urbain",
+      "9": "Ciel de centre-ville"
+    }
+  },
+  "faq": {
+    "title": "Questions fréquentes",
+    "items": {
+      "bortle": {
+        "q": "Qu'est-ce que l'échelle de Bortle ?",
+        "a": "L'échelle de Bortle est une classification numérique à neuf niveaux de l'obscurité du ciel, de la classe 1 (ciels intacts, remplis d'étoiles) à la classe 9 (halo de centre-ville). Elle mesure à quel point la lumière artificielle éclaircit le ciel nocturne, ce qui influe directement sur le nombre d'étoiles visibles et sur la capacité des caméras à capturer les nébuleuses et galaxies faibles."
+      },
+      "findDark": {
+        "q": "Comment trouver un ciel noir près de chez moi ?",
+        "a": "Utilisez notre carte interactive de pollution lumineuse pour repérer des sites Bortle 1 à 4 près de chez vous. Cliquez n'importe où sur la carte pour échantillonner le niveau de pollution lumineuse, ou cherchez des parcs, réserves et sites certifiés ciel étoilé dans le panneau des sites sombres à proximité. Rouler seulement 30 à 60 minutes hors d'une ville peut considérablement améliorer la qualité de vos images."
+      }
+    }
+  },
+  "about": {
+    "title": "Comprendre la pollution lumineuse et les ciels noirs",
+    "p1_before": "La pollution lumineuse est la lumière artificielle qui éclaircit le ciel nocturne et efface les objets célestes faibles. L'",
+    "p1_bortle": "échelle de Bortle",
+    "p1_after": " classe l'obscurité du ciel de la classe 1 (ciels intacts, remplis d'étoiles) à la classe 9 (halo de centre-ville où seules les étoiles les plus brillantes sont visibles). Les sites de classe 1 à 3 sont considérés comme de véritables sites au ciel noir et sont idéaux pour l'astrophotographie du ciel profond.",
+    "p2_sqm": "Le SQM (Sky Quality Meter)",
+    "p2_after": " fournit une mesure précise de la brillance du ciel en magnitudes par seconde d'arc carrée : plus la valeur est élevée, plus le ciel est sombre. Une valeur supérieure à 21,7 est excellente ; en dessous de 18,5, imager les nébuleuses et galaxies faibles devient très difficile sans filtres à bande étroite.",
+    "p3": "La pollution lumineuse impacte directement l'astrophotographie en réduisant le contraste, en augmentant le bruit et en imposant des temps d'intégration plus longs. Photographier depuis un site Bortle 1 à 3 peut diviser par deux ou plus le temps d'exposition nécessaire par rapport à un site péri-urbain Bortle 5. Utilisez la carte ci-dessus pour repérer les sites au ciel noir près de chez vous, puis consultez le panneau des sites sombres à proximité pour trouver parcs, réserves et sites certifiés accessibles en voiture."
+  }
+}

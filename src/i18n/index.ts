@@ -9,6 +9,7 @@ import enDashboard from "@/locales/en/dashboard.json";
 import enFooter from "@/locales/en/footer.json";
 import enFov from "@/locales/en/fov.json";
 import enEquipment from "@/locales/en/equipment.json";
+import enLightPollution from "@/locales/en/lightpollution.json";
 import frCommon from "@/locales/fr/common.json";
 import frAtlas from "@/locales/fr/atlas.json";
 import frObject from "@/locales/fr/object.json";
@@ -16,11 +17,12 @@ import frDashboard from "@/locales/fr/dashboard.json";
 import frFooter from "@/locales/fr/footer.json";
 import frFov from "@/locales/fr/fov.json";
 import frEquipment from "@/locales/fr/equipment.json";
+import frLightPollution from "@/locales/fr/lightpollution.json";
 
 export const defaultNS = "common";
 export const resources = {
-  en: { common: enCommon, atlas: enAtlas, object: enObject, dashboard: enDashboard, footer: enFooter, fov: enFov, equipment: enEquipment },
-  fr: { common: frCommon, atlas: frAtlas, object: frObject, dashboard: frDashboard, footer: frFooter, fov: frFov, equipment: frEquipment },
+  en: { common: enCommon, atlas: enAtlas, object: enObject, dashboard: enDashboard, footer: enFooter, fov: enFov, equipment: enEquipment, lightpollution: enLightPollution },
+  fr: { common: frCommon, atlas: frAtlas, object: frObject, dashboard: frDashboard, footer: frFooter, fov: frFov, equipment: frEquipment, lightpollution: frLightPollution },
 } as const;
 
 i18n
@@ -31,7 +33,7 @@ i18n
     lng: "en",
     fallbackLng: "en",
     defaultNS,
-    ns: ["common", "atlas", "object", "dashboard", "footer", "fov", "equipment"],
+    ns: ["common", "atlas", "object", "dashboard", "footer", "fov", "equipment", "lightpollution"],
     interpolation: { escapeValue: false },
     detection: {
       order: ["localStorage"],

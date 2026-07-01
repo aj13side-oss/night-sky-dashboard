@@ -82,7 +82,7 @@ export function PresetCards({ presets, onLoad, telescopes, cameras, mounts }: Pr
               </div>
               {isFeatured && (
                 <Badge variant="secondary" className="text-[9px] px-1.5 py-0 shrink-0">
-                  Popular
+                  {t("builder.popular")}
                 </Badge>
               )}
             </div>

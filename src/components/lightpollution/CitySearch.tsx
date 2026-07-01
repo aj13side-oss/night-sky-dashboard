@@ -80,7 +80,7 @@ const CitySearch = ({ onSelectCity }: Props) => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Search a city…"
+          placeholder={t("citySearch.placeholder")}
           className="bg-secondary/50 h-9 w-48"
         />
         <Button size="sm" variant="outline" onClick={handleSearch} disabled={isLoading} className="h-9 gap-1.5">

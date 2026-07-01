@@ -94,6 +94,7 @@ const LightPollutionMap = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const markerRef = useRef<L.Marker | null>(null);
   const overlayRef = useRef<L.TileLayer | null>(null);
+  const legendRef = useRef<L.Control | null>(null);
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;

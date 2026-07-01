@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 import { BORTLE_MULTIPLIERS } from "@/lib/dark-sites";
 
 interface Props {
@@ -10,20 +11,22 @@ interface Props {
   onClose: () => void;
 }
 
-const BORTLE_META: Record<number, { label: string; color: string }> = {
-  1: { label: "Excellent dark site", color: "#000000" },
-  2: { label: "Typical dark site", color: "#1a1a2e" },
-  3: { label: "Rural sky", color: "#16213e" },
-  4: { label: "Rural/suburban transition", color: "#0f3460" },
-  5: { label: "Suburban sky", color: "#533483" },
-  6: { label: "Bright suburban", color: "#e94560" },
-  7: { label: "Suburban/urban transition", color: "#ff6b35" },
-  8: { label: "City sky", color: "#ff9f1c" },
-  9: { label: "Inner-city sky", color: "#ffffff" },
+const BORTLE_COLORS: Record<number, string> = {
+  1: "#000000",
+  2: "#1a1a2e",
+  3: "#16213e",
+  4: "#0f3460",
+  5: "#533483",
+  6: "#e94560",
+  7: "#ff6b35",
+  8: "#ff9f1c",
+  9: "#ffffff",
 };
 
 const BortleInfoPanel = ({ lat, lng, bortle, onClose }: Props) => {
-  const meta = BORTLE_META[bortle];
+  const { t } = useTranslation("lightpollution");
+  const color = BORTLE_COLORS[bortle];
+  const label = t(`bortle.labels.${bortle}`);
   const impact = BORTLE_MULTIPLIERS[bortle];
 
   return (
@@ -31,16 +34,16 @@ const BortleInfoPanel = ({ lat, lng, bortle, onClose }: Props) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MapPin className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-foreground">Clicked Location</span>
+          <span className="text-sm font-medium text-foreground">{t("infoPanel.clickedLocation")}</span>
         </div>
         <button onClick={onClose} className="text-muted-foreground hover:text-foreground text-xs">✕</button>
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-lg border border-border" style={{ backgroundColor: meta.color }} />
+        <div className="w-8 h-8 rounded-lg border border-border" style={{ backgroundColor: color }} />
         <div>
-          <p className="text-lg font-bold text-foreground">Bortle {bortle}</p>
-          <p className="text-xs text-muted-foreground">{meta.label}</p>
+          <p className="text-lg font-bold text-foreground">{t("bortle.prefix")} {bortle}</p>
+          <p className="text-xs text-muted-foreground">{label}</p>
         </div>
       </div>
 
@@ -50,12 +53,12 @@ const BortleInfoPanel = ({ lat, lng, bortle, onClose }: Props) => {
 
       <div className="grid grid-cols-2 gap-2">
         <div className="p-2 rounded-lg bg-secondary/30">
-          <p className="text-[10px] text-muted-foreground">Exposure multiplier</p>
+          <p className="text-[10px] text-muted-foreground">{t("infoPanel.exposureMultiplier")}</p>
           <p className="font-mono text-sm font-bold text-foreground">×{impact.multiplier}</p>
         </div>
         <div className="p-2 rounded-lg bg-secondary/30">
-          <p className="text-[10px] text-muted-foreground">Limiting magnitude</p>
-          <p className="font-mono text-sm font-bold text-foreground">{impact.limitingMag} mag</p>
+          <p className="text-[10px] text-muted-foreground">{t("infoPanel.limitingMagnitude")}</p>
+          <p className="font-mono text-sm font-bold text-foreground">{impact.limitingMag} {t("infoPanel.mag")}</p>
         </div>
       </div>
 

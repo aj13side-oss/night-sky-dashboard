@@ -82,7 +82,7 @@ const DarkSitesFinder = ({ userLat, userLng, onSelectSite }: Props) => {
                     }}
                     className="text-[10px] text-primary hover:underline"
                   >
-                    Directions ↗
+                    {t("darkSites.directions")} ↗
                   </button>
                 </div>
               </div>

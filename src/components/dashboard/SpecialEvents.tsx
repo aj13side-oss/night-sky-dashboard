@@ -271,7 +271,7 @@ const SpecialEvents = () => {
         <div className="space-y-1.5">
           <div className="flex items-center gap-1.5 pt-1">
             <Sun className="w-3 h-3 text-green-400" />
-            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Aurora Forecast</span>
+            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t("specialEvents.sections.auroraForecast")}</span>
           </div>
           {aurora.slice(0, 2).map((a) => {
             const i = animIndex++;

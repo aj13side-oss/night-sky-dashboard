@@ -146,8 +146,8 @@ const SunTimesCard = () => {
 
         <div className="grid grid-cols-[auto_1fr_1fr] gap-x-4 gap-y-1.5 text-sm">
           <span className="text-xs text-muted-foreground" />
-          <span className="text-[10px] text-muted-foreground text-center uppercase">Begin</span>
-          <span className="text-[10px] text-muted-foreground text-center uppercase">End</span>
+          <span className="text-[10px] text-muted-foreground text-center uppercase">{t("sunTimes.begin")}</span>
+          <span className="text-[10px] text-muted-foreground text-center uppercase">{t("sunTimes.end")}</span>
 
           {twilightSections.map((t, i) => (
             <motion.div

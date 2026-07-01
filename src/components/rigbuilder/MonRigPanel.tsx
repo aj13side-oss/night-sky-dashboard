@@ -92,8 +92,8 @@ export function MonRigPanel({
       const ratio = (teleW + camW) / mount.payload_kg;
       const ruleErr = getRule("payload_ratio");
       const ruleWarn = getRule("payload_ratio_warning");
-      if (ruleErr && ratio > ruleErr.max_value) triggered.push({ severity: "error", message: ruleErr.message_en });
-      else if (ruleWarn && ratio > ruleWarn.min_value) triggered.push({ severity: "warning", message: ruleWarn.message_en });
+      if (ruleErr && ratio > ruleErr.max_value) triggered.push({ severity: "error", message: msg(ruleErr) });
+      else if (ruleWarn && ratio > ruleWarn.min_value) triggered.push({ severity: "warning", message: msg(ruleWarn) });
     }
 
     // Sampling
@@ -101,9 +101,9 @@ export function MonRigPanel({
       const ruleUnder = getRule("sampling_undersampled");
       const ruleOver = getRule("sampling_oversampled");
       const ruleIdeal = getRule("sampling_ideal_deep_sky");
-      if (ruleUnder && sampling > ruleUnder.max_value) triggered.push({ severity: "warning", message: ruleUnder.message_en });
-      else if (ruleOver && sampling < ruleOver.max_value) triggered.push({ severity: "warning", message: ruleOver.message_en });
-      else if (ruleIdeal && sampling >= ruleIdeal.min_value && sampling <= ruleIdeal.max_value) triggered.push({ severity: "info", message: ruleIdeal.message_en });
+      if (ruleUnder && sampling > ruleUnder.max_value) triggered.push({ severity: "warning", message: msg(ruleUnder) });
+      else if (ruleOver && sampling < ruleOver.max_value) triggered.push({ severity: "warning", message: msg(ruleOver) });
+      else if (ruleIdeal && sampling >= ruleIdeal.min_value && sampling <= ruleIdeal.max_value) triggered.push({ severity: "info", message: msg(ruleIdeal) });
     }
 
     // Sensor vs image circle
@@ -112,16 +112,16 @@ export function MonRigPanel({
       const ic = telescope.image_circle_mm;
       const ruleVig = getRule("sensor_vs_image_circle");
       const ruleWarn = getRule("sensor_illumination_warning");
-      if (ruleVig && diag / ic > ruleVig.max_value) triggered.push({ severity: "error", message: ruleVig.message_en });
-      else if (ruleWarn && diag / ic > (ruleWarn.min_value ?? 0.85)) triggered.push({ severity: "warning", message: ruleWarn.message_en });
+      if (ruleVig && diag / ic > ruleVig.max_value) triggered.push({ severity: "error", message: msg(ruleVig) });
+      else if (ruleWarn && diag / ic > (ruleWarn.min_value ?? 0.85)) triggered.push({ severity: "warning", message: msg(ruleWarn) });
     }
 
     // FOV too narrow / very wide
     if (fovW > 0) {
       const ruleNarrow = getRule("fov_too_narrow");
       const ruleWide = getRule("fov_very_wide");
-      if (ruleNarrow && fovW < (ruleNarrow.max_value ?? 15)) triggered.push({ severity: "info", message: ruleNarrow.message_en });
-      if (ruleWide && fovW > (ruleWide.min_value ?? 300)) triggered.push({ severity: "info", message: ruleWide.message_en });
+      if (ruleNarrow && fovW < (ruleNarrow.max_value ?? 15)) triggered.push({ severity: "info", message: msg(ruleNarrow) });
+      if (ruleWide && fovW > (ruleWide.min_value ?? 300)) triggered.push({ severity: "info", message: msg(ruleWide) });
     }
 
     // Backfocus
@@ -130,11 +130,11 @@ export function MonRigPanel({
     if (reqBF > 0 && camBF > 0) {
       const diff = Math.abs(camBF - reqBF);
       const ruleBF = getRule("backfocus_mismatch");
-      if (ruleBF && diff > (ruleBF.max_value ?? 5)) triggered.push({ severity: "warning", message: ruleBF.message_en });
+      if (ruleBF && diff > (ruleBF.max_value ?? 5)) triggered.push({ severity: "warning", message: msg(ruleBF) });
     }
 
     return triggered;
-  }, [telescope, camera, mount, rules, sampling, fovW, sw, sh]);
+  }, [telescope, camera, mount, rules, sampling, fovW, sw, sh, isFr]);
 
   const hasRig = telescope || camera || mount || (fl > 0 && !telescope) || (sw > 0 && !camera);
 

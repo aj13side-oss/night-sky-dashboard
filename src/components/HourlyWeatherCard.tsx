@@ -479,7 +479,9 @@ interface HeatmapTableProps {
   rows: Record<string, CellInfo>[];
 }
 
-const HeatmapTable = ({ title, color, error, columns, rows }: HeatmapTableProps) => (
+const HeatmapTable = ({ title, color, error, columns, rows }: HeatmapTableProps) => {
+  const { t } = useTranslation("dashboard");
+  return (
   <div className="rounded-xl overflow-hidden border border-border/30" style={{ backgroundColor: "hsl(220, 30%, 8%)" }}>
     <div className="px-3 py-2 flex items-center gap-2 border-b border-border/30" style={{ backgroundColor: "hsl(220, 25%, 12%)" }}>
       <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />

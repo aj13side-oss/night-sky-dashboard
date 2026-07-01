@@ -177,19 +177,25 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
                 className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg"
                 style={{ backgroundColor: getRarityColor(obj.rarity), color: "#0F172A" }}
               >
-                {obj.rarity}
+                {rarityLabel}
               </div>
             )}
             {isPrime && (
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-300/90 text-slate-900 text-[10px] font-bold uppercase tracking-wider shadow-lg">
-                <Award className="w-3 h-3" /> Prime
+                <Award className="w-3 h-3" /> {t("cards.prime")}
               </div>
             )}
           </div>
 
           {season.label && (
             <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-background/70 backdrop-blur-sm text-[10px] text-foreground font-medium">
-              {season.isSeason ? `${getSeasonEmoji(season.label)} ${season.label}` : season.label}
+              {season.isCircumpolar
+                ? t("cards.yearRound")
+                : season.isInvisible
+                ? t("cards.notVisible")
+                : season.isSeason
+                ? `${getSeasonEmoji(season.label)} ${t(`seasons.${season.label}`, { defaultValue: season.label })}`
+                : season.label}
             </div>
           )}
         </div>

@@ -359,16 +359,16 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* TELESCOPES */}
         <TabsContent value="telescopes">
-          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Telescopes for Astrophotography</h2>
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">{t("builder.headings.telescopes")}</h2>
           <EquipmentTab loading={loadingScopes} searchBar={searchBar} resultCount={filteredScopes.length} searchQuery={searchQuery}
             filters={<>
               <div className="grid sm:grid-cols-2 gap-4">
-                <RangeFilter label="Focal Length" unit="mm" min={scopeBoundsFL[0]} max={scopeBoundsFL[1]} value={scopeFL ?? scopeBoundsFL} onChange={setScopeFL} step={10} />
-                <RangeFilter label="Aperture" unit="mm" min={scopeBoundsAp[0]} max={scopeBoundsAp[1]} value={scopeAp ?? scopeBoundsAp} onChange={setScopeAp} step={5} />
+                <RangeFilter label={t("builder.filters.focalLength")} unit="mm" min={scopeBoundsFL[0]} max={scopeBoundsFL[1]} value={scopeFL ?? scopeBoundsFL} onChange={setScopeFL} step={10} />
+                <RangeFilter label={t("builder.filters.aperture")} unit="mm" min={scopeBoundsAp[0]} max={scopeBoundsAp[1]} value={scopeAp ?? scopeBoundsAp} onChange={setScopeAp} step={5} />
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
-                <ChipFilter label="Type" options={scopeTypes} selected={scopeType} onChange={setScopeType} />
-                <ChipFilter label="Brand" options={scopeBrands} selected={scopeBrand} onChange={setScopeBrand} />
+                <ChipFilter label={t("builder.filters.type")} options={scopeTypes} selected={scopeType} onChange={setScopeType} />
+                <ChipFilter label={t("builder.filters.brand")} options={scopeBrands} selected={scopeBrand} onChange={setScopeBrand} />
               </div>
             </>}
             compareTable={compareIds.telescopes.length >= 2 ? (

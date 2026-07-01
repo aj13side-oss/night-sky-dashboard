@@ -78,7 +78,7 @@ export function PresetCards({ presets, onLoad, telescopes, cameras, mounts }: Pr
             </div>
 
             <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-              <span>{USE_CASE_LABELS[p.use_case] ?? p.use_case}</span>
+              <span>{t(`builder.useCases.${p.use_case}`, { defaultValue: p.use_case })}</span>
               <span className="text-primary">
                 {"★".repeat(p.difficulty_level ?? 1)}
               </span>

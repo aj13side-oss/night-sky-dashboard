@@ -10,14 +10,87 @@
     "fullMoon": "🌕 Near Full Moon — poor conditions for deep sky imaging. Try bright targets or narrowband filters."
   },
   "moonPhase": {
-    "title": "Moon Phase"
+    "title": "Moon Phase",
+    "illuminated": "{{pct}}% illuminated",
+    "moonrise": "Moonrise",
+    "moonset": "Moonset",
+    "culmination": "Culmination",
+    "maxAltitude": "Max altitude",
+    "deepSkyImpact": "Deep-sky impact",
+    "upcomingPhases": "Upcoming phases",
+    "phases": {
+      "New Moon": "New Moon",
+      "Waxing Crescent": "Waxing Crescent",
+      "First Quarter": "First Quarter",
+      "Waxing Gibbous": "Waxing Gibbous",
+      "Full Moon": "Full Moon",
+      "Waning Gibbous": "Waning Gibbous",
+      "Last Quarter": "Last Quarter",
+      "Waning Crescent": "Waning Crescent"
+    },
+    "seeing": {
+      "Excellent": "Excellent",
+      "Moderate": "Moderate",
+      "Poor": "Poor"
+    },
+    "seeingDesc": {
+      "Excellent": "Dark skies, ideal for deep-sky",
+      "Moderate": "Partial interference",
+      "Poor": "Strong moonlight, avoid nebulae"
+    }
   },
   "sunTimes": {
     "title": "Sun & Twilight",
     "sunrise": "Sunrise",
     "solarNoon": "Solar Noon",
     "sunset": "Sunset",
-    "twilightPhases": "Twilight phases"
+    "twilightPhases": "Twilight phases",
+    "begin": "Begin",
+    "end": "End",
+    "civilDayLength": "Civil day length",
+    "nightLength": "Night length",
+    "twilight": {
+      "civil": "Civil",
+      "nautical": "Nautical",
+      "astronomical": "Astronomical"
+    },
+    "twilightDesc": {
+      "civil": "Sun is 0–6° below the horizon. Enough light for outdoor activities without artificial lighting.",
+      "nautical": "Sun is 6–12° below. Horizon still visible at sea; bright stars & planets appear.",
+      "astronomical": "Sun is 12–18° below. Sky is dark enough for deep-sky astrophotography — the golden window."
+    }
+  },
+  "weather": {
+    "observationQuality": "Observation Quality",
+    "qualityDesc": "Combined score from clouds, seeing, transparency, wind & humidity across all 5 sources",
+    "title": "Hourly Weather Comparison",
+    "live": "Live",
+    "error": "Error",
+    "refresh": "Refresh",
+    "loading": "Loading weather data...",
+    "loadFailed": "Failed to load weather data.",
+    "noNightData": "No nighttime data",
+    "verdict": {
+      "Excellent": "Excellent",
+      "Good": "Good",
+      "Average": "Average",
+      "Poor": "Poor",
+      "Bad": "Bad"
+    },
+    "cols": {
+      "low": "Low",
+      "mid": "Mid",
+      "high": "High",
+      "dew": "Dew",
+      "seeing": "Seeing",
+      "transp": "Transp."
+    },
+    "seeingVal": {
+      "Excellent": "Excellent",
+      "Good": "Good",
+      "Average": "Average",
+      "Poor": "Poor"
+    }
   },
   "observationToolbar": {
     "searchPlaceholder": "Search a location…",

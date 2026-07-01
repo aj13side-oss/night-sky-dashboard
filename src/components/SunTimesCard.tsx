@@ -50,25 +50,28 @@ const SunTimesCard = () => {
 
   const twilightSections = [
     {
-      label: "Civil",
+      key: "civil" as const,
+      label: t("sunTimes.twilight.civil"),
       nightStart: civilEnd,
       nightEnd: civilBegin,
       color: "bg-amber-400/80",
-      desc: "Sun is 0–6° below the horizon. Enough light for outdoor activities without artificial lighting.",
+      desc: t("sunTimes.twilightDesc.civil"),
     },
     {
-      label: "Nautical",
+      key: "nautical" as const,
+      label: t("sunTimes.twilight.nautical"),
       nightStart: nauticalEnd,
       nightEnd: nauticalBegin,
       color: "bg-blue-400/70",
-      desc: "Sun is 6–12° below. Horizon still visible at sea; bright stars & planets appear.",
+      desc: t("sunTimes.twilightDesc.nautical"),
     },
     {
-      label: "Astronomical",
+      key: "astronomical" as const,
+      label: t("sunTimes.twilight.astronomical"),
       nightStart: astroEnd,
       nightEnd: astroBegin,
       color: "bg-indigo-500/70",
-      desc: "Sun is 12–18° below. Sky is dark enough for deep-sky astrophotography — the golden window.",
+      desc: t("sunTimes.twilightDesc.astronomical"),
     },
   ];
 
@@ -143,8 +146,8 @@ const SunTimesCard = () => {
 
         <div className="grid grid-cols-[auto_1fr_1fr] gap-x-4 gap-y-1.5 text-sm">
           <span className="text-xs text-muted-foreground" />
-          <span className="text-[10px] text-muted-foreground text-center uppercase">Begin</span>
-          <span className="text-[10px] text-muted-foreground text-center uppercase">End</span>
+          <span className="text-[10px] text-muted-foreground text-center uppercase">{t("sunTimes.begin")}</span>
+          <span className="text-[10px] text-muted-foreground text-center uppercase">{t("sunTimes.end")}</span>
 
           {twilightSections.map((t, i) => (
             <motion.div

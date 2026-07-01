@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface OpenMeteoHour {
   time: string;
@@ -228,7 +229,7 @@ function scoreColor(score: number): string {
   return "hsl(0, 60%, 40%)";
 }
 
-function scoreLabel(score: number): string {
+function scoreLabelKey(score: number): "Excellent" | "Good" | "Average" | "Poor" | "Bad" {
   if (score >= 80) return "Excellent";
   if (score >= 65) return "Good";
   if (score >= 45) return "Average";
@@ -237,8 +238,10 @@ function scoreLabel(score: number): string {
 }
 
 const ObservationScore = ({ score }: { score: number }) => {
+  const { t } = useTranslation("dashboard");
   const color = scoreColor(score);
-  const label = scoreLabel(score);
+  const labelKey = scoreLabelKey(score);
+  const label = t(`weather.verdict.${labelKey}`);
 
   return (
     <div className="glass-card rounded-xl p-4 flex items-center gap-5">
@@ -258,10 +261,10 @@ const ObservationScore = ({ score }: { score: number }) => {
         </div>
       </div>
       <div>
-        <div className="text-sm font-semibold text-foreground">Observation Quality</div>
+        <div className="text-sm font-semibold text-foreground">{t("weather.observationQuality")}</div>
         <div className="text-xs font-medium mt-0.5" style={{ color }}>{label}</div>
         <div className="text-[10px] text-muted-foreground mt-1">
-          Combined score from clouds, seeing, transparency, wind & humidity across all 5 sources
+          {t("weather.qualityDesc")}
         </div>
       </div>
     </div>
@@ -269,8 +272,10 @@ const ObservationScore = ({ score }: { score: number }) => {
 };
 
 const HourlyWeatherCard = () => {
+  const { t } = useTranslation("dashboard");
   const { date, location } = useObservation();
   const dateStr = date.toISOString().split("T")[0];
+  const seeingVal = (v: string) => t(`weather.seeingVal.${v}`, { defaultValue: v });
 
   const { data, isLoading, error, refetch, isFetching } = useQuery<WeatherResponse>({
     queryKey: ["weather", location.lat, location.lng, dateStr],
@@ -308,39 +313,39 @@ const HourlyWeatherCard = () => {
       )}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-foreground">Hourly Weather Comparison</h3>
+          <h3 className="text-lg font-semibold text-foreground">{t("weather.title")}</h3>
           <p className="text-xs text-muted-foreground">18h → 09h · {location.name} · {data?.timezone || ""}</p>
         </div>
         <div className="flex items-center gap-2">
           {(isLoading || isFetching) && <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />}
           {!isLoading && !isFetching && !error && (
             <span className="text-xs text-green-400 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" /> Live
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" /> {t("weather.live")}
             </span>
           )}
           {error && (
             <span className="text-xs text-destructive flex items-center gap-1">
-              <AlertTriangle className="w-3 h-3" /> Error
+              <AlertTriangle className="w-3 h-3" /> {t("weather.error")}
             </span>
           )}
           <button
             onClick={() => refetch()}
             disabled={isFetching}
             className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md px-2 py-1 transition-colors disabled:opacity-50"
-            title="Refresh weather data"
+            title={t("weather.refresh")}
           >
             <RefreshCw className={cn("w-3 h-3", isFetching && "animate-spin")} />
-            Refresh
+            {t("weather.refresh")}
           </button>
         </div>
       </div>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-16 text-muted-foreground text-sm gap-2">
-          <Loader2 className="w-4 h-4 animate-spin" /> Loading weather data...
+          <Loader2 className="w-4 h-4 animate-spin" /> {t("weather.loading")}
         </div>
       ) : error ? (
-        <div className="text-sm text-destructive text-center py-8">Failed to load weather data.</div>
+        <div className="text-sm text-destructive text-center py-8">{t("weather.loadFailed")}</div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-3 items-start">
           <HeatmapTable
@@ -350,13 +355,13 @@ const HourlyWeatherCard = () => {
             columns={[
               { key: "hour", label: "⏰", width: "w-12" },
               { key: "clouds", label: "☁️" },
-              { key: "cloudsLow", label: "Low" },
-              { key: "cloudsMid", label: "Mid" },
-              { key: "cloudsHigh", label: "High" },
+              { key: "cloudsLow", label: t("weather.cols.low") },
+              { key: "cloudsMid", label: t("weather.cols.mid") },
+              { key: "cloudsHigh", label: t("weather.cols.high") },
               { key: "temp", label: "°C" },
               { key: "humidity", label: "💧" },
               { key: "wind", label: "💨" },
-              { key: "dewPoint", label: "Dew" },
+              { key: "dewPoint", label: t("weather.cols.dew") },
             ]}
             rows={openMeteoNight.map((h) => ({
               hour: { value: formatHour(h.time), style: "" },
@@ -424,8 +429,8 @@ const HourlyWeatherCard = () => {
             columns={[
               { key: "hour", label: "⏰", width: "w-12" },
               { key: "clouds", label: "☁️" },
-              { key: "seeing", label: "Seeing" },
-              { key: "transparency", label: "Transp." },
+              { key: "seeing", label: t("weather.cols.seeing") },
+              { key: "transparency", label: t("weather.cols.transp") },
               { key: "temp", label: "°C" },
             ]}
             rows={alignToHourlyGrid(openMeteoNight, sevenTimerNight).map((h, idx) => {
@@ -442,8 +447,8 @@ const HourlyWeatherCard = () => {
               return {
                 hour: { value: refHour, style: "" },
                 clouds: { value: `${h.clouds}`, style: cloudHeatmap(h.clouds) },
-                seeing: { value: h.seeing, style: seeingHeatmap(h.seeing) },
-                transparency: { value: h.transparency, style: seeingHeatmap(h.transparency) },
+                seeing: { value: seeingVal(h.seeing), style: seeingHeatmap(h.seeing) },
+                transparency: { value: seeingVal(h.transparency), style: seeingHeatmap(h.transparency) },
                 temp: { value: h.temp != null ? `${h.temp}°` : "—", style: h.temp != null ? tempHeatmap(h.temp) : "" },
               };
             })}
@@ -474,7 +479,9 @@ interface HeatmapTableProps {
   rows: Record<string, CellInfo>[];
 }
 
-const HeatmapTable = ({ title, color, error, columns, rows }: HeatmapTableProps) => (
+const HeatmapTable = ({ title, color, error, columns, rows }: HeatmapTableProps) => {
+  const { t } = useTranslation("dashboard");
+  return (
   <div className="rounded-xl overflow-hidden border border-border/30" style={{ backgroundColor: "hsl(220, 30%, 8%)" }}>
     <div className="px-3 py-2 flex items-center gap-2 border-b border-border/30" style={{ backgroundColor: "hsl(220, 25%, 12%)" }}>
       <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
@@ -529,7 +536,8 @@ const HeatmapTable = ({ title, color, error, columns, rows }: HeatmapTableProps)
       </div>
     )}
   </div>
-);
+  );
+};
 
 function cssStringToObject(css: string): React.CSSProperties {
   const obj: Record<string, string> = {};

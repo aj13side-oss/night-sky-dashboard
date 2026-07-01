@@ -1,0 +1,44 @@
+{
+  "heading": "Matériel d'astrophotographie",
+  "subheading": "Comparez les meilleurs télescopes, caméras d'astrophotographie et montures équatoriales, des configurations débutantes aux setups avancés.",
+  "faq": {
+    "title": "Questions fréquentes",
+    "items": {
+      "beginnerTelescope": {
+        "q": "Quel est le meilleur télescope pour débuter en astrophotographie ?",
+        "a": "Pour débuter, une petite lunette apochromatique (72–80 mm) ou un Newton rapide (150–200 mm) sur une monture équatoriale robuste comme la Sky-Watcher HEQ5 ou la ZWO AM5 est l'idéal. Ces configurations sont tolérantes, relativement abordables, et permettent de capturer de superbes cibles grand champ pendant que vous apprenez le suivi et la mise en station."
+      },
+      "cooledVsUncooled": {
+        "q": "Caméra refroidie ou non refroidie, laquelle choisir ?",
+        "a": "Les caméras refroidies réduisent fortement le bruit thermique, produisant des images plus propres lors des poses longues, essentiel pour les objets faibles du ciel profond. Les caméras non refroidies sont plus abordables et portables, mais accumulent davantage de bruit au fil du temps. Pour du ciel profond exigeant, choisissez une caméra refroidie ; pour des cibles brillantes, le planétaire ou un budget serré, une caméra non refroidie reste parfaitement viable."
+      },
+      "beginnerCamera": {
+        "q": "Quelle est la meilleure caméra d'astrophotographie pour un débutant ?",
+        "a": "Une caméra couleur (OSC) refroidie comme la ZWO ASI533MC Pro ou l'ASI2600MC Pro est un excellent premier choix. Elles sont faciles à utiliser, offrent un faible bruit de lecture et produisent des images propres sans la complexité d'une roue à filtres monochrome. Pour un budget plus serré, des modèles non refroidis comme la ZWO ASI585MC se comportent aussi très bien sur les cibles brillantes."
+      },
+      "equatorialMount": {
+        "q": "Ai-je besoin d'une monture équatoriale pour l'astrophotographie ?",
+        "a": "Oui. Une monture équatoriale tourne sur un axe parallèle à celui de la Terre, ce qui annule le filé d'étoiles lors des poses longues. Les montures alt-az peuvent convenir pour des poses courtes ou avec un dérotateur de champ, mais une monture équatoriale (ou une monture à entraînement harmonique comme la ZWO AM5) reste le standard pour le ciel profond sérieux."
+      }
+    }
+  },
+  "guide": {
+    "title": "À propos du matériel d'astrophotographie — guide d'achat",
+    "telescopes": {
+      "title": "Télescopes pour l'astrophotographie",
+      "body": "Les lunettes, les Newton et les triplets apochromatiques (APO) ont chacun leurs forces. Une petite lunette APO (72–100 mm) est le meilleur télescope pour débuter en astrophotographie : légère, elle demande peu de réglage de backfocus et offre des étoiles piquées sur tout le champ. Les Newton (150–200 mm) offrent plus d'ouverture pour le prix mais exigent une collimation précise et une correction de coma. Les Schmidt-Cassegrain excellent sur les planètes et les petites galaxies mais leurs longues focales exigent un suivi irréprochable."
+    },
+    "cameras": {
+      "title": "Caméras d'astrophotographie",
+      "body": "Les caméras astro dédiées surpassent les reflex grâce au refroidissement, au faible bruit de lecture et à une efficacité quantique élevée. Les modèles couleur (OSC) refroidis comme la ZWO ASI533MC Pro ou l'ASI2600MC Pro sont la porte d'entrée la plus simple. Les caméras monochromes associées à des filtres LRGB ou à bande étroite extraient plus de détails mais nécessitent une roue à filtres. Les modèles non refroidis comme la ZWO ASI585MC ou la Player One Poseidon sont économiques pour les cibles brillantes. QHY et Moravian proposent de plus grands capteurs pour les configurations plein format."
+    },
+    "mounts": {
+      "title": "Montures équatoriales",
+      "body": "La monture est la pièce la plus critique de votre setup. Une bonne monture équatoriale doit supporter au moins 1,5× la charge utile totale (télescope, caméra, lunette guide) pour un suivi stable. Les montures à courroie comme les Sky-Watcher HEQ5 et EQ6-R, ou les montures à entraînement harmonique comme les ZWO AM5 et AM3, sont des choix populaires. Vérifiez l'erreur périodique, la compatibilité du port d'autoguidage, et si la monture prend en charge ASCOM ou INDI pour le pilotage automatisé."
+    },
+    "filters": {
+      "title": "Filtres",
+      "body": "Les filtres anti-pollution lumineuse (Optolong L-Pro, IDAS LPS) aident depuis un ciel de banlieue. Les filtres à bande étroite (Hydrogène-alpha, OIII, SII) isolent des longueurs d'onde spécifiques et sont indispensables pour les nébuleuses en émission sous forte pollution lumineuse. Les filtres dual-band combinent Ha et OIII dans une seule image, offrant un bon compromis entre praticité et signal. Choisissez la taille du filtre (1,25″, 2″ ou filetage M48/M42) selon votre train optique."
+    }
+  }
+}

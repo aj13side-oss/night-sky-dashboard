@@ -1,0 +1,44 @@
+{
+  "heading": "Astrophotography Equipment",
+  "subheading": "Compare the best telescopes, astrophotography cameras and equatorial mounts — from beginner setups to advanced rigs.",
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "items": {
+      "beginnerTelescope": {
+        "q": "What is the best telescope for beginner astrophotography?",
+        "a": "For beginners, a small apochromatic refractor (72–80mm) or a fast Newtonian (150–200mm) on a sturdy equatorial mount like the Sky-Watcher HEQ5 or ZWO AM5 is ideal. These setups are forgiving, relatively affordable, and capture bright wide-field targets beautifully while you learn tracking and polar alignment."
+      },
+      "cooledVsUncooled": {
+        "q": "Cooled vs uncooled astrophotography camera — which to choose?",
+        "a": "Cooled cameras reduce thermal noise significantly, producing cleaner images during long exposures — essential for faint deep sky objects. Uncooled cameras are more affordable and portable, but they accumulate more noise over time. For serious deep sky work, choose cooled; for bright targets, planetary imaging, or a tight budget, uncooled is perfectly viable."
+      },
+      "beginnerCamera": {
+        "q": "What is the best astrophotography camera for a beginner?",
+        "a": "A cooled one-shot color camera such as the ZWO ASI533MC Pro or ASI2600MC Pro is a great first choice. They are easy to use, have low read noise, and deliver clean images without the complexity of mono filter wheels. For a tighter budget, uncooled models like the ZWO ASI585MC also perform well on bright targets."
+      },
+      "equatorialMount": {
+        "q": "Do I need an equatorial mount for astrophotography?",
+        "a": "Yes. An equatorial mount rotates on an axis parallel to Earth's rotation, canceling star trailing during long exposures. Alt-az mounts can work for short exposures or with field derotators, but an equatorial mount (or a harmonic drive mount like the ZWO AM5) is the standard for serious deep sky imaging."
+      }
+    }
+  },
+  "guide": {
+    "title": "About Astrophotography Equipment — Buying Guide",
+    "telescopes": {
+      "title": "Telescopes for astrophotography",
+      "body": "Refractors, Newtonians and apochromatic (APO) triplets each have different strengths. A small APO refractor (72–100mm) is the best beginner astrophotography telescope: it is lightweight, needs little backfocus adjustment, and delivers pinpoint stars across the frame. Newtonian reflectors (150–200mm) offer more aperture per euro but require precise collimation and coma correction. Schmidt-Cassegrains excel at planets and small galaxies but have long focal lengths that demand excellent tracking."
+    },
+    "cameras": {
+      "title": "Astrophotography cameras",
+      "body": "Dedicated astro cameras beat DSLRs thanks to cooling, low read noise and high quantum efficiency. Cooled one-shot color (OSC) models like the ZWO ASI533MC Pro or ASI2600MC Pro are the easiest entry point. Mono cameras paired with LRGB or narrowband filters extract more detail but need a filter wheel. Uncooled options such as the ZWO ASI585MC or Player One Poseidon are budget-friendly for bright targets. QHY and Moravian offer larger sensors for full-frame setups."
+    },
+    "mounts": {
+      "title": "Equatorial mounts",
+      "body": "The mount is the most critical part of your rig. A good equatorial mount must carry at least 1.5× your total payload (telescope, camera, guidescope) for stable tracking. Belt-driven mounts like the Sky-Watcher HEQ5 and EQ6-R, or harmonic drive mounts like the ZWO AM5 and AM3, are popular choices. Check periodic error, guiding port compatibility, and whether the mount supports ASCOM or INDI for automated control."
+    },
+    "filters": {
+      "title": "Filters",
+      "body": "Light pollution filters (Optolong L-Pro, IDAS LPS) help from suburban skies. Narrowband filters (Hydrogen-alpha, OIII, SII) isolate specific wavelengths and are essential for emission nebulae under heavy light pollution. Dual-band filters combine Ha and OIII in a single frame, offering a practical balance between convenience and signal. Choose the filter size (1.25″, 2″ or M48/M42 threaded) to match your optical train."
+    }
+  }
+}

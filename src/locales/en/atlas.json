@@ -79,6 +79,32 @@
     "heading": "Top Recommendations for Your Sky",
     "dynamicRanking": "Dynamic ranking"
   },
+  "cards": {
+    "yearRound": "Year-round",
+    "notVisible": "Not visible",
+    "notVisibleLong": "Not visible from your location",
+    "bestInSeason": "Best in {{season}}",
+    "prime": "Prime",
+    "topPick": "Top Pick",
+    "accessibilityScore": "Accessibility Score",
+    "partOfLargerRegion": "Part of a larger region",
+    "alwaysVisible": "Always visible",
+    "notVisibleTonight": "Not visible tonight",
+    "peak": "peak",
+    "lowBestAbove30": "Low — best above 30°",
+    "more": "More",
+    "frame": "Frame",
+    "pts": "pts",
+    "addedToList": "Added to tonight's list!",
+    "removedFromList": "Removed from tonight's list"
+  },
+  "rarity": {
+    "Legendary": "Legendary",
+    "Epic": "Epic",
+    "Rare": "Rare",
+    "Uncommon": "Uncommon",
+    "Common": "Common"
+  },
   "seasons": {
     "Winter": "Winter",
     "Spring": "Spring",

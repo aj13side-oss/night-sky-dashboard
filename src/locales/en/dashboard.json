@@ -194,5 +194,80 @@
     "rises": "Rises {{time}}",
     "transit": "Transit {{time}}",
     "peakShort": "peak"
+  },
+  "specialEvents": {
+    "title": "☄️ Special Events",
+    "emptyWeek": "No special events this week",
+    "sections": {
+      "meteorShowers": "Meteor Showers",
+      "asteroids": "Asteroids",
+      "recentTransients": "Recent Supernovae & Novae",
+      "auroraForecast": "Aurora Forecast",
+      "satellitePasses": "Satellite Passes"
+    },
+    "showersError": "Failed to load showers",
+    "noMajorShower": "No major shower in the next 30 days",
+    "active": "Active",
+    "inDaysShort": "In {{n}}d",
+    "peakLabel": "Peak: {{range}}",
+    "hemispheres": {
+      "both": "Both hemispheres",
+      "northOnly": "North only",
+      "southOnly": "South only"
+    },
+    "noRecentTransients": "No recent transients reported",
+    "tnsSource": "Transient Name Server (TNS)",
+    "kpProbability": "{{p}}% chance",
+    "satFailed": "Failed to load satellite passes",
+    "noSatPasses": "No satellite passes available",
+    "maxElevation": "Max {{el}}°",
+    "minutes": "{{n}} min",
+    "noPass24h": "No pass in the next 24h",
+    "celestrakSource": "Data from CelesTrak"
+  },
+  "skyEvents": {
+    "title": "🔭 Sky Events",
+    "empty": "No upcoming sky events in the next 30 days"
+  },
+  "comets": {
+    "title": "☄️ Comets",
+    "activeCount": "{{n}} active",
+    "empty": "No notable comets currently visible",
+    "sky": {
+      "favorable": "Favorable",
+      "difficult": "Difficult",
+      "solar_glare": "Solar glare",
+      "unknown": "Unknown"
+    },
+    "category": {
+      "active": "Active",
+      "upcoming": "Upcoming",
+      "recently_ended": "Recently ended"
+    },
+    "skyExplain": {
+      "favorable": "Comet is well placed in the night sky — observable under good conditions.",
+      "difficult": "Low altitude or limited window — observation will be challenging.",
+      "solar_glare": "Too close to the Sun — currently lost in solar glare.",
+      "unknown": "Sky conditions for this comet are not yet evaluated."
+    },
+    "detail": {
+      "perihelionDate": "Perihelion date",
+      "earthDistance": "Earth distance",
+      "constellation": "Constellation",
+      "magnitude": "Magnitude",
+      "skyCondition": "Sky condition",
+      "viewOnTheSkyLive": "View on TheSkyLive"
+    }
+  },
+  "spaceActivities": {
+    "title": "Human Space Activities",
+    "humansInSpace": "Humans in Space",
+    "issPosition": "ISS Position",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "updatedEvery5s": "Updated every 5s",
+    "nasaIssPage": "NASA ISS Page",
+    "upcomingLaunches": "Upcoming Launches",
+    "loadFailed": "Failed to load data"
   }
 }

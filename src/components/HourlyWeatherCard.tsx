@@ -313,39 +313,39 @@ const HourlyWeatherCard = () => {
       )}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-foreground">Hourly Weather Comparison</h3>
+          <h3 className="text-lg font-semibold text-foreground">{t("weather.title")}</h3>
           <p className="text-xs text-muted-foreground">18h → 09h · {location.name} · {data?.timezone || ""}</p>
         </div>
         <div className="flex items-center gap-2">
           {(isLoading || isFetching) && <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />}
           {!isLoading && !isFetching && !error && (
             <span className="text-xs text-green-400 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" /> Live
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" /> {t("weather.live")}
             </span>
           )}
           {error && (
             <span className="text-xs text-destructive flex items-center gap-1">
-              <AlertTriangle className="w-3 h-3" /> Error
+              <AlertTriangle className="w-3 h-3" /> {t("weather.error")}
             </span>
           )}
           <button
             onClick={() => refetch()}
             disabled={isFetching}
             className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md px-2 py-1 transition-colors disabled:opacity-50"
-            title="Refresh weather data"
+            title={t("weather.refresh")}
           >
             <RefreshCw className={cn("w-3 h-3", isFetching && "animate-spin")} />
-            Refresh
+            {t("weather.refresh")}
           </button>
         </div>
       </div>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-16 text-muted-foreground text-sm gap-2">
-          <Loader2 className="w-4 h-4 animate-spin" /> Loading weather data...
+          <Loader2 className="w-4 h-4 animate-spin" /> {t("weather.loading")}
         </div>
       ) : error ? (
-        <div className="text-sm text-destructive text-center py-8">Failed to load weather data.</div>
+        <div className="text-sm text-destructive text-center py-8">{t("weather.loadFailed")}</div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-3 items-start">
           <HeatmapTable

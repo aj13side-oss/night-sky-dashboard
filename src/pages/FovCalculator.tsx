@@ -355,11 +355,11 @@ const FovCalculator = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Focal Length (mm)</Label>
+                <Label className="text-xs text-muted-foreground">{t("form.focalLength")}</Label>
                 <Input type="number" value={focalLength} onChange={(e) => setFocalLength(Number(e.target.value))} className="bg-secondary/50 font-mono" />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Barlow / Reducer</Label>
+                <Label className="text-xs text-muted-foreground">{t("form.barlow")}</Label>
                 <Select value={String(barlow)} onValueChange={(v) => setBarlow(Number(v))}>
                   <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -372,20 +372,20 @@ const FovCalculator = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Camera</Label>
+              <Label className="text-xs text-muted-foreground">{t("form.camera")}</Label>
               <Select value={cameraId} onValueChange={handleCameraChange}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Choose a camera..." /></SelectTrigger>
+                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={t("form.chooseCamera")} /></SelectTrigger>
                 <SelectContent>
                   <div className="p-2 sticky top-0 bg-popover">
                     <Input
-                      placeholder="Search cameras..."
+                      placeholder={t("form.searchCameras")}
                       value={cameraSearch}
                       onChange={(e) => setCameraSearch(e.target.value)}
                       className="h-8 text-xs bg-secondary/50"
                       onClick={(e) => e.stopPropagation()}
                     />
                   </div>
-                  <SelectItem value="custom">✏️ Custom</SelectItem>
+                  <SelectItem value="custom">✏️ {t("form.custom")}</SelectItem>
                   {filteredCameras.map(c => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.brand} {c.model} ({c.pixel_size_um}µm)
@@ -397,22 +397,22 @@ const FovCalculator = () => {
 
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Sensor W (mm)</Label>
+                <Label className="text-xs text-muted-foreground">{t("form.sensorW")}</Label>
                 <Input type="number" step="0.1" value={sensorW} onChange={(e) => setSensorW(Number(e.target.value))} className="bg-secondary/50 font-mono" />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Sensor H (mm)</Label>
+                <Label className="text-xs text-muted-foreground">{t("form.sensorH")}</Label>
                 <Input type="number" step="0.1" value={sensorH} onChange={(e) => setSensorH(Number(e.target.value))} className="bg-secondary/50 font-mono" />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Pixel (µm)</Label>
+                <Label className="text-xs text-muted-foreground">{t("form.pixel")}</Label>
                 <Input type="number" step="0.01" value={pixelSize} onChange={(e) => setPixelSize(Number(e.target.value))} className="bg-secondary/50 font-mono" />
               </div>
             </div>
 
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <Label className="text-xs text-muted-foreground">Sensor Rotation</Label>
+                <Label className="text-xs text-muted-foreground">{t("form.rotation")}</Label>
                 <span className="text-xs font-mono text-foreground">{rotation}°</span>
               </div>
               <Slider

@@ -200,7 +200,7 @@ export function MonRigPanel({
 
       {/* FILTERS */}
       <div className="rounded-lg border border-border/50 p-3">
-        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">Filters</span>
+        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">{t("monRig.slots.filters")}</span>
         {filters.length > 0 ? (
           <div className="flex flex-wrap gap-1 mt-1">
             {filters.map(f => (
@@ -210,12 +210,12 @@ export function MonRigPanel({
               </Badge>
             ))}
           </div>
-        ) : <p className="text-[10px] text-muted-foreground italic mt-1">None</p>}
+        ) : <p className="text-[10px] text-muted-foreground italic mt-1">{t("monRig.none")}</p>}
       </div>
 
       {/* ACCESSORIES */}
       <div className="rounded-lg border border-border/50 p-3">
-        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">Accessories</span>
+        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">{t("monRig.slots.accessories")}</span>
         {accessories.length > 0 ? (
           <div className="flex flex-wrap gap-1 mt-1">
             {accessories.map(a => (
@@ -225,7 +225,7 @@ export function MonRigPanel({
               </Badge>
             ))}
           </div>
-        ) : <p className="text-[10px] text-muted-foreground italic mt-1">None</p>}
+        ) : <p className="text-[10px] text-muted-foreground italic mt-1">{t("monRig.none")}</p>}
       </div>
 
       {/* CALCULATED SETUP */}
@@ -233,16 +233,16 @@ export function MonRigPanel({
         <CardContent className="p-3">
           <div className="grid grid-cols-3 gap-3 text-center">
             <div>
-              <span className="text-[10px] text-muted-foreground block">Sampling</span>
+              <span className="text-[10px] text-muted-foreground block">{t("monRig.calc.sampling")}</span>
               <p className="text-sm font-bold font-mono text-foreground">{sampling > 0 ? `${sampling.toFixed(2)}″/px` : "—"}</p>
               {samplingLabel && <span className={`text-[9px] ${samplingLabel.color}`}>{samplingLabel.text}</span>}
             </div>
             <div>
-              <span className="text-[10px] text-muted-foreground block">FOV</span>
+              <span className="text-[10px] text-muted-foreground block">{t("monRig.calc.fov")}</span>
               <p className="text-sm font-bold font-mono text-foreground">{fovW > 0 ? `${fovW.toFixed(0)}'×${fovH.toFixed(0)}'` : "—"}</p>
             </div>
             <div>
-              <span className="text-[10px] text-muted-foreground block">Focal Length</span>
+              <span className="text-[10px] text-muted-foreground block">{t("monRig.calc.focalLength")}</span>
               <p className="text-sm font-bold font-mono text-foreground">{fl > 0 ? `${fl}mm` : "—"}</p>
             </div>
           </div>
@@ -267,18 +267,18 @@ export function MonRigPanel({
         ) : (
           <div className="h-[160px] flex items-center justify-center bg-secondary/10">
             <p className="text-[10px] text-muted-foreground italic text-center px-4">
-              Configure your rig to see the framing preview
+              {t("monRig.previewEmpty")}
             </p>
           </div>
         )}
-        <p className="text-[9px] text-muted-foreground text-center py-1">M31 — Andromeda Galaxy (190'×60')</p>
+        <p className="text-[9px] text-muted-foreground text-center py-1">{t("monRig.previewCaption")}</p>
       </div>
 
       {/* COMPATIBILITY ALERTS */}
       {hasRig && (
         <div className="space-y-1">
           {alerts.length === 0 && (telescope || camera) && (
-            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px]">✓ Rig compatible</Badge>
+            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px]">{t("monRig.compatible")}</Badge>
           )}
           {alerts.map((a, i) => (
             <Badge
@@ -307,7 +307,7 @@ export function MonRigPanel({
         }}
       >
         <Rocket className="w-4 h-4" />
-        Find targets for this rig →
+        {t("monRig.findTargets")}
       </Button>
     </div>
   );

@@ -331,28 +331,28 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
       }}>
         <TabsList className="grid grid-cols-5 w-full max-w-2xl">
           <TabsTrigger value="telescopes" className="gap-1.5">
-            <Telescope className="w-3.5 h-3.5" /> Optics
+            <Telescope className="w-3.5 h-3.5" /> {t("builder.tabs.optics")}
           </TabsTrigger>
           <TabsTrigger value="cameras" className="gap-1.5">
-            <Camera className="w-3.5 h-3.5" /> Cameras
+            <Camera className="w-3.5 h-3.5" /> {t("builder.tabs.cameras")}
           </TabsTrigger>
           <TabsTrigger value="mounts" className="gap-1.5">
-            <Anchor className="w-3.5 h-3.5" /> Mounts
+            <Anchor className="w-3.5 h-3.5" /> {t("builder.tabs.mounts")}
           </TabsTrigger>
           <TabsTrigger value="filters" className="gap-1.5">
-            <Filter className="w-3.5 h-3.5" /> Filters
+            <Filter className="w-3.5 h-3.5" /> {t("builder.tabs.filters")}
           </TabsTrigger>
           <TabsTrigger value="accessories" className="gap-1.5">
-            <Wrench className="w-3.5 h-3.5" /> Acc.
+            <Wrench className="w-3.5 h-3.5" /> {t("builder.tabs.accessories")}
           </TabsTrigger>
         </TabsList>
 
         {compareCount > 0 && (
           <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-3 mt-4 p-3 rounded-lg border border-primary/30 bg-primary/5">
-            <span className="text-sm font-medium text-foreground">{compareCount} selected</span>
+            <span className="text-sm font-medium text-foreground">{t("builder.selected", { count: compareCount })}</span>
             <Button size="sm" variant="outline" onClick={() => clearCompare(tab)} className="gap-1">
-              <X className="w-3 h-3" /> Clear
+              <X className="w-3 h-3" /> {t("builder.clear")}
             </Button>
           </motion.div>
         )}

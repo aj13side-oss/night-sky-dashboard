@@ -488,16 +488,16 @@ const FovCalculator = () => {
 
             <div className="glass-card rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">FOV Preview</h3>
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t("sections.preview")}</h3>
                 {!isSolar && (
                   <div className="flex rounded-md border border-border overflow-hidden text-[10px]">
                     <button onClick={() => setSurvey("dss2")}
                       className={`px-2.5 py-1 transition-colors ${survey === "dss2" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
-                      📷 Photo
+                      📷 {t("preview.photo")}
                     </button>
                     <button onClick={() => setSurvey("mellinger")}
                       className={`px-2.5 py-1 transition-colors border-l border-border ${survey === "mellinger" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
-                      🔬 Scientific
+                      🔬 {t("preview.scientific")}
                     </button>
                   </div>
                 )}
@@ -509,13 +509,13 @@ const FovCalculator = () => {
                     {!imgLoaded && !imgError && !isTransitioning && (
                       <div className="absolute inset-0 flex items-center justify-center z-10">
                         <div className="h-6 w-6 border-2 border-primary/40 border-t-primary rounded-full animate-spin" />
-                        <span className="text-xs text-muted-foreground ml-2">Loading {isSolar ? "image" : "sky view"}...</span>
+                        <span className="text-xs text-muted-foreground ml-2">{isSolar ? t("preview.loadingImage") : t("preview.loadingSky")}</span>
                       </div>
                     )}
                     {imgError && (
                       <div className="absolute inset-0 flex items-center justify-center z-10">
                         <span className="text-xs text-muted-foreground">
-                          {isSolar ? "Failed to load reference image." : "Failed to load sky image. Try switching to Scientific view."}
+                          {isSolar ? t("preview.errorRef") : t("preview.errorSky")}
                         </span>
                       </div>
                     )}

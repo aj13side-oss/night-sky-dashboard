@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface OpenMeteoHour {
   time: string;

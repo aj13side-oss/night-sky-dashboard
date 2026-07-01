@@ -276,7 +276,7 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
       filterIds: [],
       accessories: preset.accessory_ids ?? [],
     });
-    toast.success(`Configuration "${preset.name}" loaded`);
+    toast.success(t("builder.presetLoaded", { name: preset.name }));
   };
 
   const clearCompare = (cat: Category) => setCompareIds(prev => ({ ...prev, [cat]: [] }));

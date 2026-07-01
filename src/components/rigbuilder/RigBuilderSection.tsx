@@ -454,17 +454,17 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* MOUNTS */}
         <TabsContent value="mounts">
-          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Equatorial Mounts</h2>
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">{t("builder.headings.mounts")}</h2>
           <EquipmentTab loading={loadingMounts} searchBar={searchBar} resultCount={filteredMounts.length} searchQuery={searchQuery}
             filters={<>
               <div className="grid sm:grid-cols-2 gap-4">
-                <RangeFilter label="Payload" unit="kg" min={mntBoundsPayload[0]} max={mntBoundsPayload[1]} value={mntPayload ?? mntBoundsPayload} onChange={setMntPayload} step={1} />
-                <RangeFilter label="Mount Weight" unit="kg" min={mntBoundsWeight[0]} max={mntBoundsWeight[1]} value={mntWeight ?? mntBoundsWeight} onChange={setMntWeight} step={0.5} />
+                <RangeFilter label={t("builder.filters.payload")} unit="kg" min={mntBoundsPayload[0]} max={mntBoundsPayload[1]} value={mntPayload ?? mntBoundsPayload} onChange={setMntPayload} step={1} />
+                <RangeFilter label={t("builder.filters.mountWeight")} unit="kg" min={mntBoundsWeight[0]} max={mntBoundsWeight[1]} value={mntWeight ?? mntBoundsWeight} onChange={setMntWeight} step={0.5} />
               </div>
               <div className="grid sm:grid-cols-3 gap-4">
-                <ChipFilter label="Type" options={mntTypes} selected={mntType} onChange={setMntType} />
-                <ToggleFilter label="GoTo" value={mntGoto} onChange={setMntGoto} />
-                <ChipFilter label="Brand" options={mntBrands} selected={mntBrand} onChange={setMntBrand} />
+                <ChipFilter label={t("builder.filters.type")} options={mntTypes} selected={mntType} onChange={setMntType} />
+                <ToggleFilter label={t("builder.filters.goto")} value={mntGoto} onChange={setMntGoto} />
+                <ChipFilter label={t("builder.filters.brand")} options={mntBrands} selected={mntBrand} onChange={setMntBrand} />
               </div>
             </>}
             compareTable={compareIds.mounts.length >= 2 ? (

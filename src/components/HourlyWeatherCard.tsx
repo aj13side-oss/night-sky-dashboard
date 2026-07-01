@@ -238,8 +238,10 @@ function scoreLabelKey(score: number): "Excellent" | "Good" | "Average" | "Poor"
 }
 
 const ObservationScore = ({ score }: { score: number }) => {
+  const { t } = useTranslation("dashboard");
   const color = scoreColor(score);
-  const label = scoreLabel(score);
+  const labelKey = scoreLabelKey(score);
+  const label = t(`weather.verdict.${labelKey}`);
 
   return (
     <div className="glass-card rounded-xl p-4 flex items-center gap-5">
@@ -259,10 +261,10 @@ const ObservationScore = ({ score }: { score: number }) => {
         </div>
       </div>
       <div>
-        <div className="text-sm font-semibold text-foreground">Observation Quality</div>
+        <div className="text-sm font-semibold text-foreground">{t("weather.observationQuality")}</div>
         <div className="text-xs font-medium mt-0.5" style={{ color }}>{label}</div>
         <div className="text-[10px] text-muted-foreground mt-1">
-          Combined score from clouds, seeing, transparency, wind & humidity across all 5 sources
+          {t("weather.qualityDesc")}
         </div>
       </div>
     </div>

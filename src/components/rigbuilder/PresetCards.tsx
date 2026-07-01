@@ -104,7 +104,7 @@ export function PresetCards({ presets, onLoad, telescopes, cameras, mounts }: Pr
               className="w-full h-7 text-xs border-primary/30 hover:bg-primary/10"
               onClick={() => onLoad(p)}
             >
-              Load this setup
+              {t("builder.loadSetup")}
             </Button>
           </div>
         );

@@ -13,6 +13,7 @@ import { useLocalizedPath, useLocalizedNavigate } from "@/lib/localized-nav";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 const DeepSkyTonight = () => {
   const { location, date } = useObservation();

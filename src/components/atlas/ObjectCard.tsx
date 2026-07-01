@@ -277,9 +277,9 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
         {rs && (
           <div className="mt-2 pt-2 border-t border-border/30 flex items-center justify-between text-xs">
             {rs.isCircumpolar ? (
-              <span className="font-medium text-emerald-400">Always visible</span>
+              <span className="font-medium text-emerald-400">{t("cards.alwaysVisible")}</span>
             ) : rs.neverRises ? (
-              <span className="font-medium text-red-400/80">Not visible tonight</span>
+              <span className="font-medium text-red-400/80">{t("cards.notVisibleTonight")}</span>
             ) : (
               <span className="font-mono">
                 <span className={colorForTime(rs.riseTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
@@ -292,14 +292,14 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
               </span>
             )}
             {!rs.neverRises && (
-              <span className="text-muted-foreground font-mono">peak {Math.round(rs.transitAlt)}°</span>
+              <span className="text-muted-foreground font-mono">{t("cards.peak")} {Math.round(rs.transitAlt)}°</span>
             )}
           </div>
         )}
 
         {maxAltInWindow != null && maxAltInWindow < 30 && (
           <div className="mt-1.5 text-[10px] text-muted-foreground/80 italic">
-            Low — best above 30°
+            {t("cards.lowBestAbove30")}
           </div>
         )}
 

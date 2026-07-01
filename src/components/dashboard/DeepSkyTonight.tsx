@@ -207,7 +207,7 @@ const DeepSkyRow = ({
           {isUp ? `${alt.toFixed(0)}° alt` : `↑${formatTimeShort(rs.riseTime)}`}
         </p>
         <p className="text-[10px] text-muted-foreground font-mono">
-          {rs.isCircumpolar ? "All night" : rs.setTime ? `↓${formatTimeShort(rs.setTime)}` : ""}
+          {rs.isCircumpolar ? t("deepSky.allNight") : rs.setTime ? `↓${formatTimeShort(rs.setTime)}` : ""}
         </p>
       </div>
     </motion.div>

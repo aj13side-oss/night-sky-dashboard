@@ -272,8 +272,10 @@ const ObservationScore = ({ score }: { score: number }) => {
 };
 
 const HourlyWeatherCard = () => {
+  const { t } = useTranslation("dashboard");
   const { date, location } = useObservation();
   const dateStr = date.toISOString().split("T")[0];
+  const seeingVal = (v: string) => t(`weather.seeingVal.${v}`, { defaultValue: v });
 
   const { data, isLoading, error, refetch, isFetching } = useQuery<WeatherResponse>({
     queryKey: ["weather", location.lat, location.lng, dateStr],

@@ -15,6 +15,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const TonightList = () => {
+  const { t } = useTranslation("dashboard");
   const { list, removeObject, clearList } = useTonightList();
   const { location } = useObservation();
   const [collapsed, setCollapsed] = useState(false);

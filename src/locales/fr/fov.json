@@ -1,0 +1,91 @@
+{
+  "seo": {
+    "title": "Calculateur de champ (FOV) et d'échantillonnage",
+    "description": "Calculateur gratuit de champ et d'échantillonnage. Saisissez la focale de votre télescope et le capteur de votre caméra pour calculer le champ, l'échantillonnage en arcsec/pixel et trouver les meilleures cibles du ciel profond."
+  },
+  "heading": "Calculateur de champ (FOV) et d'échantillonnage",
+  "subheading": "Calculez le champ, l'échantillonnage en arcsec/pixel, et vérifiez la compatibilité avec le seeing pour votre télescope et votre caméra.",
+  "sections": {
+    "configuration": "Configuration",
+    "results": "Résultats",
+    "preview": "Aperçu du champ"
+  },
+  "form": {
+    "telescope": "Télescope",
+    "focalLength": "Focale (mm)",
+    "barlow": "Barlow / Reducer",
+    "camera": "Caméra",
+    "sensorW": "Largeur capteur (mm)",
+    "sensorH": "Hauteur capteur (mm)",
+    "pixel": "Pixel (µm)",
+    "rotation": "Rotation du capteur",
+    "chooseTelescope": "Choisir un télescope...",
+    "searchTelescopes": "Rechercher un télescope...",
+    "chooseCamera": "Choisir une caméra...",
+    "searchCameras": "Rechercher une caméra...",
+    "custom": "Personnalisé"
+  },
+  "results": {
+    "fovWidth": "Largeur du champ",
+    "fovHeight": "Hauteur du champ",
+    "effectiveFL": "Focale effective",
+    "sampling": "Échantillonnage (arcsec/pixel)",
+    "samplingQuality": "Qualité d'échantillonnage",
+    "framing": "Cadrage {{name}}",
+    "ofWidth": "de la largeur",
+    "verySmallHint": "très petit, envisagez un Barlow",
+    "badgeMosaic": "Mosaïque nécessaire",
+    "badgeTight": "Cadrage serré",
+    "quality": {
+      "oversampled": "Suréchantillonné (zone planétaire)",
+      "slightlyOver": "Légèrement suréchantillonné",
+      "optimal": "Optimal pour le ciel profond",
+      "undersampled": "Sous-échantillonné",
+      "veryWide": "Champ très large"
+    },
+    "findTargets": "Trouver les meilleures cibles pour cette config",
+    "targetsHint": "Objets entre {{min}}' et {{max}}', cadrage idéal pour votre champ de {{max}}' de large"
+  },
+  "preview": {
+    "photo": "Photo",
+    "scientific": "Scientifique",
+    "loadingSky": "Chargement de la vue du ciel...",
+    "loadingImage": "Chargement de l'image...",
+    "updating": "Mise à jour de la vue...",
+    "errorSky": "Échec du chargement de l'image du ciel. Essayez la vue Scientifique.",
+    "errorRef": "Échec du chargement de l'image de référence.",
+    "noImage": "Aucune image du ciel disponible pour {{name}}",
+    "empty": "Sélectionnez un équipement et une cible pour prévisualiser le cadrage",
+    "sensorFov": "Champ du capteur",
+    "objectSize": "Taille de l'objet",
+    "center": "Centre",
+    "sensorLabel": "Capteur",
+    "framing": {
+      "overflow": " déborde du cadre ({{pct}}% — mosaïque nécessaire)",
+      "good": " bon cadrage ({{pct}}%)",
+      "fits": " tient avec de la marge ({{pct}}%)",
+      "small": " très petit dans le cadre ({{pct}}%)"
+    },
+    "closeup": "gros plan",
+    "enlarged": "agrandi"
+  },
+  "solar": {
+    "technique": "Technique",
+    "filters": "Filtres",
+    "capture": "Capture",
+    "recommendedFocal": "Focale recommandée",
+    "source": "Source"
+  },
+  "about": {
+    "title": "Comment fonctionnent l'échantillonnage et le champ",
+    "p1Label": "Échantillonnage",
+    "p1": "",
+    "samplingParagraph": "<0>L'échantillonnage</0> (ou résolution) indique combien d'arcsecondes de ciel couvre chaque pixel. On le calcule avec la formule : <1>taille du pixel (µm) / focale (mm) × 206,265</1>. Le résultat est en arcsecondes par pixel (″/px). Pour l'astrophotographie du ciel profond, la zone idéale se situe autour de <2>1 à 2,5 arcsec/pixel</2> : en dessous de 1″/px vous risquez le suréchantillonnage (résolution capteur gaspillée et seeing parfait requis), au-dessus de 3″/px vous commencez à perdre les détails fins.",
+    "fovParagraph": "<0>Le champ</0> dépend des dimensions de votre capteur et de la focale. Une focale plus courte ou un capteur plus grand donne un champ plus large ; une focale plus longue ou un capteur plus petit le rétrécit. Un <1>réducteur de focale</1> (par exemple 0,8×) raccourcit la focale effective, élargit le champ et améliore l'échantillonnage — utile lorsqu'un télescope est nativement trop lent pour votre caméra. Un <2>Barlow</2> ou un Powermate fait l'inverse et augmente la focale pour l'imagerie planétaire ou les petites galaxies. Utilisez ce calculateur pour prévisualiser l'impact de ces changements sur l'échantillonnage et le cadrage avant d'acheter."
+  },
+  "faq": {
+    "title": "Questions fréquentes",
+    "q1": "Comment calculer l'échantillonnage en astrophotographie ?",
+    "a1": "L'échantillonnage est la portion angulaire de ciel capturée par chaque pixel, mesurée en arcsecondes par pixel. Calculez-le en divisant la taille du pixel de votre caméra en microns par la focale de votre télescope en millimètres, puis multipliez par 206,265. Par exemple, un pixel de 3,76 µm avec un télescope de 530 mm donne environ 1,46 arcsec/pixel — idéal pour la plupart des cibles du ciel profond."
+  }
+}

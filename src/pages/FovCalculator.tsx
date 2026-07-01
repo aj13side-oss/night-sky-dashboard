@@ -4,6 +4,7 @@ import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect, useRef } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useLocalizedNavigate } from "@/lib/localized-nav";
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,7 @@ const BARLOW_OPTIONS = [
 ];
 
 const FovCalculator = () => {
+  const { t } = useTranslation("fov");
   const [searchParams] = useSearchParams();
   const navigate = useLocalizedNavigate();
   const { data: dbTelescopes } = useTelescopes();
@@ -221,12 +223,12 @@ const FovCalculator = () => {
 
   const samplingLabel = useMemo(() => {
     const r = fov.resolution;
-    if (r < 0.5) return { text: "Oversampled (planetary zone)", ok: false };
-    if (r < 1.0) return { text: "Slightly oversampled", ok: false };
-    if (r < 2.5) return { text: "Optimal for deep sky", ok: true };
-    if (r < 3.5) return { text: "Undersampled", ok: false };
-    return { text: "Very wide field", ok: false };
-  }, [fov.resolution]);
+    if (r < 0.5) return { text: t("results.quality.oversampled"), ok: false };
+    if (r < 1.0) return { text: t("results.quality.slightlyOver"), ok: false };
+    if (r < 2.5) return { text: t("results.quality.optimal"), ok: true };
+    if (r < 3.5) return { text: t("results.quality.undersampled"), ok: false };
+    return { text: t("results.quality.veryWide"), ok: false };
+  }, [fov.resolution, t]);
 
   const imageAspect = fov.h / Math.max(fov.w, 0.001);
 
@@ -293,8 +295,8 @@ const FovCalculator = () => {
   return (
     <div className="min-h-screen bg-background star-field">
       <SEOHead
-        title="Field of View & Sampling Calculator"
-        description="Free telescope FOV and sampling calculator. Enter your telescope focal length and camera sensor to calculate field of view, arcsec/pixel sampling, and find the best matching deep sky objects."
+        title={t("seo.title")}
+        description={t("seo.description")}
         keywords="field of view calculator, FOV calculator, astrophoto sampling, arcsec pixel, nebula framing, astrophotography simulator"
         canonical="https://cosmicframe.app/fov-calculator"
         jsonLd={{
@@ -316,35 +318,35 @@ const FovCalculator = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl font-bold text-foreground">Field of View &amp; Sampling Calculator</h1>
+          <h1 className="text-3xl font-bold text-foreground">{t("heading")}</h1>
           <p className="text-muted-foreground mt-2 max-w-3xl">
-            Calculate field of view, sampling in arcseconds per pixel, and check seeing compatibility for your telescope and camera.
+            {t("subheading")}
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             className="glass-card rounded-2xl p-6 space-y-5">
-            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Configuration</h3>
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t("sections.configuration")}</h3>
 
             <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Telescope</Label>
+              <Label className="text-xs text-muted-foreground">{t("form.telescope")}</Label>
               <Select value={telescopeId} onValueChange={handleTelescopeChange}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Choose a telescope..." /></SelectTrigger>
+                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={t("form.chooseTelescope")} /></SelectTrigger>
                 <SelectContent>
                   <div className="p-2 sticky top-0 bg-popover">
                     <Input
-                      placeholder="Search telescopes..."
+                      placeholder={t("form.searchTelescopes")}
                       value={telescopeSearch}
                       onChange={(e) => setTelescopeSearch(e.target.value)}
                       className="h-8 text-xs bg-secondary/50"
                       onClick={(e) => e.stopPropagation()}
                     />
                   </div>
-                  <SelectItem value="custom">✏️ Custom</SelectItem>
-                  {filteredTelescopes.map(t => (
-                    <SelectItem key={t.id} value={t.id}>
-                      {t.brand} {t.model} ({t.focal_length_mm}mm{t.f_ratio ? ` f/${t.f_ratio}` : ""})
+                  <SelectItem value="custom">✏️ {t("form.custom")}</SelectItem>
+                  {filteredTelescopes.map(t2 => (
+                    <SelectItem key={t2.id} value={t2.id}>
+                      {t2.brand} {t2.model} ({t2.focal_length_mm}mm{t2.f_ratio ? ` f/${t2.f_ratio}` : ""})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -353,11 +355,11 @@ const FovCalculator = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Focal Length (mm)</Label>
+                <Label className="text-xs text-muted-foreground">{t("form.focalLength")}</Label>
                 <Input type="number" value={focalLength} onChange={(e) => setFocalLength(Number(e.target.value))} className="bg-secondary/50 font-mono" />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Barlow / Reducer</Label>
+                <Label className="text-xs text-muted-foreground">{t("form.barlow")}</Label>
                 <Select value={String(barlow)} onValueChange={(v) => setBarlow(Number(v))}>
                   <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -370,20 +372,20 @@ const FovCalculator = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Camera</Label>
+              <Label className="text-xs text-muted-foreground">{t("form.camera")}</Label>
               <Select value={cameraId} onValueChange={handleCameraChange}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Choose a camera..." /></SelectTrigger>
+                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={t("form.chooseCamera")} /></SelectTrigger>
                 <SelectContent>
                   <div className="p-2 sticky top-0 bg-popover">
                     <Input
-                      placeholder="Search cameras..."
+                      placeholder={t("form.searchCameras")}
                       value={cameraSearch}
                       onChange={(e) => setCameraSearch(e.target.value)}
                       className="h-8 text-xs bg-secondary/50"
                       onClick={(e) => e.stopPropagation()}
                     />
                   </div>
-                  <SelectItem value="custom">✏️ Custom</SelectItem>
+                  <SelectItem value="custom">✏️ {t("form.custom")}</SelectItem>
                   {filteredCameras.map(c => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.brand} {c.model} ({c.pixel_size_um}µm)
@@ -395,22 +397,22 @@ const FovCalculator = () => {
 
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Sensor W (mm)</Label>
+                <Label className="text-xs text-muted-foreground">{t("form.sensorW")}</Label>
                 <Input type="number" step="0.1" value={sensorW} onChange={(e) => setSensorW(Number(e.target.value))} className="bg-secondary/50 font-mono" />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Sensor H (mm)</Label>
+                <Label className="text-xs text-muted-foreground">{t("form.sensorH")}</Label>
                 <Input type="number" step="0.1" value={sensorH} onChange={(e) => setSensorH(Number(e.target.value))} className="bg-secondary/50 font-mono" />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Pixel (µm)</Label>
+                <Label className="text-xs text-muted-foreground">{t("form.pixel")}</Label>
                 <Input type="number" step="0.01" value={pixelSize} onChange={(e) => setPixelSize(Number(e.target.value))} className="bg-secondary/50 font-mono" />
               </div>
             </div>
 
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <Label className="text-xs text-muted-foreground">Sensor Rotation</Label>
+                <Label className="text-xs text-muted-foreground">{t("form.rotation")}</Label>
                 <span className="text-xs font-mono text-foreground">{rotation}°</span>
               </div>
               <Slider
@@ -428,27 +430,27 @@ const FovCalculator = () => {
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="space-y-6">
             <div className="glass-card rounded-2xl p-6 space-y-4">
-              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Results</h3>
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t("sections.results")}</h3>
               <div className="grid grid-cols-2 gap-4">
-                <ResultItem label="FOV Width" value={`${fov.w.toFixed(2)}° (${fov.wArcmin.toFixed(1)}')`} />
-                <ResultItem label="FOV Height" value={`${fov.h.toFixed(2)}° (${fov.hArcmin.toFixed(1)}')`} />
-                <ResultItem label="Effective Focal Length" value={`${effectiveFL} mm`} />
-                <ResultItem label="Sampling (arcsec/pixel)" value={`${fov.resolution.toFixed(2)} "/px`} />
-                <ResultItem label="Sampling Quality"
+                <ResultItem label={t("results.fovWidth")} value={`${fov.w.toFixed(2)}° (${fov.wArcmin.toFixed(1)}')`} />
+                <ResultItem label={t("results.fovHeight")} value={`${fov.h.toFixed(2)}° (${fov.hArcmin.toFixed(1)}')`} />
+                <ResultItem label={t("results.effectiveFL")} value={`${effectiveFL} mm`} />
+                <ResultItem label={t("results.sampling")} value={`${fov.resolution.toFixed(2)} "/px`} />
+                <ResultItem label={t("results.samplingQuality")}
                   value={samplingLabel.text}
                   highlight={samplingLabel.ok} />
                 {obj && (() => {
                   const pct = objFractionW * 100;
                   const framingColor = pct > 100 ? "text-red-400" : pct >= 80 ? "text-orange-400" : "";
-                  const framingBadge = pct > 100 ? "Mosaic needed" : pct >= 80 ? "Tight fit" : "";
+                  const framingBadge = pct > 100 ? t("results.badgeMosaic") : pct >= 80 ? t("results.badgeTight") : "";
                   return (
                     <div>
                       <ResultItem
-                        label={`Framing ${obj.name}`}
+                        label={t("results.framing", { name: obj.name })}
                         value={
                           objFractionW >= 0.01
-                            ? `${pct.toFixed(0)}% of width`
-                            : `${pct.toFixed(1)}% of width — very small, consider using a barlow`
+                            ? `${pct.toFixed(0)}% ${t("results.ofWidth")}`
+                            : `${pct.toFixed(1)}% ${t("results.ofWidth")} — ${t("results.verySmallHint")}`
                         }
                         highlight={pct < 80}
                         className={framingColor}
@@ -475,10 +477,10 @@ const FovCalculator = () => {
                     }}
                   >
                     <Telescope className="w-4 h-4" />
-                    Find best targets for this setup
+                    {t("results.findTargets")}
                   </Button>
                   <p className="text-[10px] text-muted-foreground text-center">
-                    Objects between {Math.round(fov.wArcmin * 0.15)}' and {Math.round(fov.wArcmin)}' — ideal framing for your {Math.round(fov.wArcmin)}' wide field
+                    {t("results.targetsHint", { min: Math.round(fov.wArcmin * 0.15), max: Math.round(fov.wArcmin) })}
                   </p>
                 </div>
               )}
@@ -486,16 +488,16 @@ const FovCalculator = () => {
 
             <div className="glass-card rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">FOV Preview</h3>
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t("sections.preview")}</h3>
                 {!isSolar && (
                   <div className="flex rounded-md border border-border overflow-hidden text-[10px]">
                     <button onClick={() => setSurvey("dss2")}
                       className={`px-2.5 py-1 transition-colors ${survey === "dss2" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
-                      📷 Photo
+                      📷 {t("preview.photo")}
                     </button>
                     <button onClick={() => setSurvey("mellinger")}
                       className={`px-2.5 py-1 transition-colors border-l border-border ${survey === "mellinger" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/50"}`}>
-                      🔬 Scientific
+                      🔬 {t("preview.scientific")}
                     </button>
                   </div>
                 )}
@@ -507,13 +509,13 @@ const FovCalculator = () => {
                     {!imgLoaded && !imgError && !isTransitioning && (
                       <div className="absolute inset-0 flex items-center justify-center z-10">
                         <div className="h-6 w-6 border-2 border-primary/40 border-t-primary rounded-full animate-spin" />
-                        <span className="text-xs text-muted-foreground ml-2">Loading {isSolar ? "image" : "sky view"}...</span>
+                        <span className="text-xs text-muted-foreground ml-2">{isSolar ? t("preview.loadingImage") : t("preview.loadingSky")}</span>
                       </div>
                     )}
                     {imgError && (
                       <div className="absolute inset-0 flex items-center justify-center z-10">
                         <span className="text-xs text-muted-foreground">
-                          {isSolar ? "Failed to load reference image." : "Failed to load sky image. Try switching to Scientific view."}
+                          {isSolar ? t("preview.errorRef") : t("preview.errorSky")}
                         </span>
                       </div>
                     )}
@@ -564,7 +566,7 @@ const FovCalculator = () => {
                             />
                             <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-[8px] text-accent text-center py-0.5 font-mono">
                               🔍 {obj.name} — {obj.sizeArcmin >= 1 ? `${obj.sizeArcmin.toFixed(1)}'` : `${(obj.sizeArcmin * 60).toFixed(1)}"`}
-                              {trueSizePercent < 2 && " (enlarged)"}
+                              {trueSizePercent < 2 && ` (${t("preview.enlarged")})`}
                             </div>
                           </div>
                         )}
@@ -584,7 +586,7 @@ const FovCalculator = () => {
                         {isTransitioning && (
                           <div className="absolute inset-0 flex items-center justify-center z-10 bg-black/30">
                             <div className="h-5 w-5 border-2 border-primary/40 border-t-primary rounded-full animate-spin" />
-                            <span className="text-xs text-muted-foreground ml-2">Updating view...</span>
+                            <span className="text-xs text-muted-foreground ml-2">{t("preview.updating")}</span>
                           </div>
                         )}
 
@@ -685,7 +687,7 @@ const FovCalculator = () => {
                           <div className="rounded-full border border-accent/50" style={{ width: '20%', height: '20%' }} />
                         </div>
                         <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-[9px] text-accent text-center py-0.5 font-mono">
-                          🔍 {obj.name} — {obj.sizeArcmin}' closeup
+                          🔍 {obj.name} — {obj.sizeArcmin}' {t("preview.closeup")}
                         </div>
                         <div className="absolute -top-1 -left-1 w-2 h-2 border-l-2 border-t-2 border-accent/50" />
                       </div>
@@ -698,7 +700,7 @@ const FovCalculator = () => {
                           {obj?.name}: {obj?.sizeArcmin != null && obj.sizeArcmin >= 1 ? `${obj.sizeArcmin.toFixed(1)}'` : `${((obj?.sizeArcmin ?? 0) * 60).toFixed(1)}"`}
                         </div>
                         <div className="absolute bottom-2 left-2 bg-black/70 text-[10px] text-muted-foreground font-mono px-2 py-1 rounded z-10">
-                          {fov.wArcmin.toFixed(0)}' × {fov.hArcmin.toFixed(0)}' sensor
+                          {fov.wArcmin.toFixed(0)}' × {fov.hArcmin.toFixed(0)}' {t("preview.sensorLabel").toLowerCase()}
                         </div>
                       </>
                     )}
@@ -706,7 +708,7 @@ const FovCalculator = () => {
                 ) : (
                   <div className="flex items-center justify-center" style={{ minHeight: 400 }}>
                     <span className="text-muted-foreground text-sm">
-                      {obj ? `No sky image available for ${obj.name}` : "Select equipment and a target to preview framing"}
+                      {obj ? t("preview.noImage", { name: obj.name }) : t("preview.empty")}
                     </span>
                   </div>
                 )}
@@ -717,17 +719,17 @@ const FovCalculator = () => {
                 <div className="flex items-center gap-4 mt-2 px-1 text-[10px] text-muted-foreground">
                   <span className="flex items-center gap-1.5">
                     <span className="inline-block w-4 h-3 border border-primary/60 rounded-sm" />
-                    Sensor FOV
+                    {t("preview.sensorFov")}
                   </span>
                   {!isSolar && objFractionW > 0 && (
                     <span className="flex items-center gap-1.5">
                       <span className="inline-block w-3 h-3 rounded-full border border-accent/70" />
-                      Object size
+                      {t("preview.objectSize")}
                     </span>
                   )}
                   <span className="flex items-center gap-1.5">
                     <span className="inline-block w-3 h-0 border-t border-primary/30" />
-                    Center
+                    {t("preview.center")}
                   </span>
                 </div>
               )}
@@ -737,7 +739,7 @@ const FovCalculator = () => {
                 <div className="text-[9px] text-muted-foreground/60 mt-1 px-1">
                   📷 {solarObj.image_credit} · {solarObj.image_license}
                   {solarObj.image_source_url && (
-                    <> · <a href={solarObj.image_source_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-muted-foreground">Source</a></>
+                    <> · <a href={solarObj.image_source_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-muted-foreground">{t("solar.source")}</a></>
                   )}
                 </div>
               )}
@@ -753,36 +755,36 @@ const FovCalculator = () => {
               {isSolar && solarObj && imgLoaded && (
                 <div className="space-y-2 bg-secondary/30 rounded-lg p-3 text-xs">
                   {solarObj.recommended_technique && (
-                    <p className="text-muted-foreground"><span className="text-foreground font-medium">Technique:</span> {solarObj.recommended_technique}</p>
+                    <p className="text-muted-foreground"><span className="text-foreground font-medium">{t("solar.technique")}:</span> {solarObj.recommended_technique}</p>
                   )}
                   {solarObj.recommended_filters && (
-                    <p className="text-muted-foreground"><span className="text-foreground font-medium">Filters:</span> {solarObj.recommended_filters}</p>
+                    <p className="text-muted-foreground"><span className="text-foreground font-medium">{t("solar.filters")}:</span> {solarObj.recommended_filters}</p>
                   )}
                   {solarObj.capture_gain_note && (
-                    <p className="text-muted-foreground"><span className="text-foreground font-medium">Capture:</span> {solarObj.capture_gain_note}</p>
+                    <p className="text-muted-foreground"><span className="text-foreground font-medium">{t("solar.capture")}:</span> {solarObj.capture_gain_note}</p>
                   )}
                   {solarObj.recommended_focal_mm && (
-                    <p className="text-muted-foreground"><span className="text-foreground font-medium">Recommended focal:</span> {solarObj.recommended_focal_mm}mm</p>
+                    <p className="text-muted-foreground"><span className="text-foreground font-medium">{t("solar.recommendedFocal")}:</span> {solarObj.recommended_focal_mm}mm</p>
                   )}
                 </div>
               )}
 
               <div className="flex items-center justify-between text-xs text-muted-foreground mt-2 px-1">
                 <span className="font-mono">
-                  Sensor: {fov.wArcmin.toFixed(0)}' × {fov.hArcmin.toFixed(0)}'
+                  {t("preview.sensorLabel")}: {fov.wArcmin.toFixed(0)}' × {fov.hArcmin.toFixed(0)}'
                 </span>
                 {obj && (
                   <span className="font-mono">
                     {obj.name}: {obj.sizeArcmin >= 1 ? `${obj.sizeArcmin.toFixed(1)}'` : `${(obj.sizeArcmin * 60).toFixed(1)}"`} →
                     {objFractionW > 1
-                      ? ` overflows frame (${(objFractionW * 100).toFixed(0)}% — need mosaic)`
+                      ? t("preview.framing.overflow", { pct: (objFractionW * 100).toFixed(0) })
                       : objFractionW > 0.5
-                      ? ` good framing (${(objFractionW * 100).toFixed(0)}%)`
+                      ? t("preview.framing.good", { pct: (objFractionW * 100).toFixed(0) })
                       : objFractionW > 0.15
-                      ? ` fits with room (${(objFractionW * 100).toFixed(0)}%)`
+                      ? t("preview.framing.fits", { pct: (objFractionW * 100).toFixed(0) })
                       : objFractionW >= 0.01
-                      ? ` very small in frame (${(objFractionW * 100).toFixed(0)}%)`
-                      : ` very small in frame (${(objFractionW * 100).toFixed(1)}%)`}
+                      ? t("preview.framing.small", { pct: (objFractionW * 100).toFixed(0) })
+                      : t("preview.framing.small", { pct: (objFractionW * 100).toFixed(1) })}
                   </span>
                 )}
               </div>
@@ -793,22 +795,30 @@ const FovCalculator = () => {
         {/* About Sampling & FOV */}
         <details className="space-y-4 pt-8 border-t border-border/20 mt-10">
           <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
-            How Sampling & Field of View Work
+            {t("about.title")}
           </summary>
           <div className="space-y-4 pt-4">
             <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-              <span className="text-foreground/80 font-medium">Sampling</span> (or resolution) tells you how many arcseconds of sky each pixel covers.
-              Calculate it with the formula: <span className="font-mono text-foreground/70">pixel size (µm) / focal length (mm) × 206.265</span>.
-              The result is in arcseconds per pixel (″/px). For deep sky astrophotography, the sweet spot is roughly
-              <span className="text-foreground/80 font-medium"> 1–2.5 arcsec/pixel</span>:
-              below 1″/px you risk oversampling (wasting sensor resolution and requiring perfect seeing), while above 3″/px you begin to lose fine detail.
+              <Trans
+                i18nKey="about.samplingParagraph"
+                ns="fov"
+                components={[
+                  <span key="0" className="text-foreground/80 font-medium" />,
+                  <span key="1" className="font-mono text-foreground/70" />,
+                  <span key="2" className="text-foreground/80 font-medium" />,
+                ]}
+              />
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-              <span className="text-foreground/80 font-medium">Field of view</span> depends on your sensor dimensions and focal length.
-              A shorter focal length or a larger sensor gives a wider field; a longer focal length or a smaller sensor narrows it.
-              A <span className="text-foreground/80 font-medium">focal reducer</span> (e.g., 0.8×) shortens the effective focal length, widening the field and improving sampling —
-              useful when a telescope is natively too slow for your camera. A <span className="text-foreground/80 font-medium">Barlow lens</span> or Powermate does the opposite,
-              increasing focal length for planetary imaging or small galaxies. Use this calculator to preview how these changes affect both sampling and framing before you buy.
+              <Trans
+                i18nKey="about.fovParagraph"
+                ns="fov"
+                components={[
+                  <span key="0" className="text-foreground/80 font-medium" />,
+                  <span key="1" className="text-foreground/80 font-medium" />,
+                  <span key="2" className="text-foreground/80 font-medium" />,
+                ]}
+              />
             </p>
           </div>
         </details>
@@ -816,16 +826,16 @@ const FovCalculator = () => {
         {/* FAQ Section */}
         <details className="space-y-4 pt-8 border-t border-border/20 mt-10" itemScope itemType="https://schema.org/FAQPage">
           <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
-            Frequently Asked Questions
+            {t("faq.title")}
           </summary>
           <div className="space-y-4 pt-4">
             <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
               <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
-                How do I calculate sampling in astrophotography?
+                {t("faq.q1")}
               </h3>
               <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
                 <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
-                  Sampling is the angular size of sky each pixel captures, measured in arcseconds per pixel. Calculate it by dividing your camera's pixel size in microns by your telescope's focal length in millimeters, then multiplying by 206.265. For example, a 3.76µm pixel with a 530mm telescope gives about 1.46 arcsec/pixel — ideal for most deep sky targets.
+                  {t("faq.a1")}
                 </p>
               </div>
             </div>

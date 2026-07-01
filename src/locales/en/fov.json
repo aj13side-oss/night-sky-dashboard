@@ -1,0 +1,91 @@
+{
+  "seo": {
+    "title": "Field of View & Sampling Calculator",
+    "description": "Free telescope FOV and sampling calculator. Enter your telescope focal length and camera sensor to calculate field of view, arcsec/pixel sampling, and find the best matching deep sky objects."
+  },
+  "heading": "Field of View & Sampling Calculator",
+  "subheading": "Calculate field of view, sampling in arcseconds per pixel, and check seeing compatibility for your telescope and camera.",
+  "sections": {
+    "configuration": "Configuration",
+    "results": "Results",
+    "preview": "FOV Preview"
+  },
+  "form": {
+    "telescope": "Telescope",
+    "focalLength": "Focal Length (mm)",
+    "barlow": "Barlow / Reducer",
+    "camera": "Camera",
+    "sensorW": "Sensor W (mm)",
+    "sensorH": "Sensor H (mm)",
+    "pixel": "Pixel (µm)",
+    "rotation": "Sensor Rotation",
+    "chooseTelescope": "Choose a telescope...",
+    "searchTelescopes": "Search telescopes...",
+    "chooseCamera": "Choose a camera...",
+    "searchCameras": "Search cameras...",
+    "custom": "Custom"
+  },
+  "results": {
+    "fovWidth": "FOV Width",
+    "fovHeight": "FOV Height",
+    "effectiveFL": "Effective Focal Length",
+    "sampling": "Sampling (arcsec/pixel)",
+    "samplingQuality": "Sampling Quality",
+    "framing": "Framing {{name}}",
+    "ofWidth": "of width",
+    "verySmallHint": "very small, consider using a barlow",
+    "badgeMosaic": "Mosaic needed",
+    "badgeTight": "Tight fit",
+    "quality": {
+      "oversampled": "Oversampled (planetary zone)",
+      "slightlyOver": "Slightly oversampled",
+      "optimal": "Optimal for deep sky",
+      "undersampled": "Undersampled",
+      "veryWide": "Very wide field"
+    },
+    "findTargets": "Find best targets for this setup",
+    "targetsHint": "Objects between {{min}}' and {{max}}' — ideal framing for your {{max}}' wide field"
+  },
+  "preview": {
+    "photo": "Photo",
+    "scientific": "Scientific",
+    "loadingSky": "Loading sky view...",
+    "loadingImage": "Loading image...",
+    "updating": "Updating view...",
+    "errorSky": "Failed to load sky image. Try switching to Scientific view.",
+    "errorRef": "Failed to load reference image.",
+    "noImage": "No sky image available for {{name}}",
+    "empty": "Select equipment and a target to preview framing",
+    "sensorFov": "Sensor FOV",
+    "objectSize": "Object size",
+    "center": "Center",
+    "sensorLabel": "Sensor",
+    "framing": {
+      "overflow": " overflows frame ({{pct}}% — need mosaic)",
+      "good": " good framing ({{pct}}%)",
+      "fits": " fits with room ({{pct}}%)",
+      "small": " very small in frame ({{pct}}%)"
+    },
+    "closeup": "closeup",
+    "enlarged": "enlarged"
+  },
+  "solar": {
+    "technique": "Technique",
+    "filters": "Filters",
+    "capture": "Capture",
+    "recommendedFocal": "Recommended focal",
+    "source": "Source"
+  },
+  "about": {
+    "title": "How Sampling & Field of View Work",
+    "p1Label": "Sampling",
+    "p1": " (ou résolution) — placeholder EN",
+    "samplingParagraph": "<0>Sampling</0> (or resolution) tells you how many arcseconds of sky each pixel covers. Calculate it with the formula: <1>pixel size (µm) / focal length (mm) × 206.265</1>. The result is in arcseconds per pixel (″/px). For deep sky astrophotography, the sweet spot is roughly <2>1–2.5 arcsec/pixel</2>: below 1″/px you risk oversampling (wasting sensor resolution and requiring perfect seeing), while above 3″/px you begin to lose fine detail.",
+    "fovParagraph": "<0>Field of view</0> depends on your sensor dimensions and focal length. A shorter focal length or a larger sensor gives a wider field; a longer focal length or a smaller sensor narrows it. A <1>focal reducer</1> (e.g., 0.8×) shortens the effective focal length, widening the field and improving sampling — useful when a telescope is natively too slow for your camera. A <2>Barlow lens</2> or Powermate does the opposite, increasing focal length for planetary imaging or small galaxies. Use this calculator to preview how these changes affect both sampling and framing before you buy."
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "q1": "How do I calculate sampling in astrophotography?",
+    "a1": "Sampling is the angular size of sky each pixel captures, measured in arcseconds per pixel. Calculate it by dividing your camera's pixel size in microns by your telescope's focal length in millimeters, then multiplying by 206.265. For example, a 3.76µm pixel with a 530mm telescope gives about 1.46 arcsec/pixel — ideal for most deep sky targets."
+  }
+}

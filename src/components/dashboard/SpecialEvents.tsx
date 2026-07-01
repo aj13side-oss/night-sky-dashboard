@@ -133,7 +133,7 @@ const SpecialEvents = () => {
                       </span>
                     )}
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{shower.description}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{pick(shower.description_fr, shower.description)}</p>
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-medium">
                       {t("specialEvents.peakLabel", { range: formatPeakRange(shower) })}
@@ -141,6 +141,11 @@ const SpecialEvents = () => {
                     <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent font-medium">
                       ZHR: {shower.zhr}
                     </span>
+                    {pick(shower.zhr_note_fr, shower.zhr_note) && (
+                      <span className="text-[9px] text-muted-foreground">
+                        {pick(shower.zhr_note_fr, shower.zhr_note)}
+                      </span>
+                    )}
                     <span className="text-[9px] text-muted-foreground">
                       {shower.speed_km_s} km/s
                     </span>
@@ -149,9 +154,9 @@ const SpecialEvents = () => {
                         {shower.parent_body}
                       </span>
                     )}
-                    {shower.best_time && (
+                    {pick(shower.best_time_fr, shower.best_time) && (
                       <span className="text-[9px] text-muted-foreground">
-                        {shower.best_time}
+                        {pick(shower.best_time_fr, shower.best_time)}
                       </span>
                     )}
                     <span className="text-[9px] text-muted-foreground">

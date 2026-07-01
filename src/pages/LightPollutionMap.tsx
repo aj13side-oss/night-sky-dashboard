@@ -82,7 +82,7 @@ function estimateBortleFromClick(map: L.Map, latlng: L.LatLng): number {
 }
 
 const LightPollutionMap = () => {
-  const { t } = useTranslation("lightpollution");
+  const { t, i18n } = useTranslation("lightpollution");
   const [lat, setLat] = useState(45.7347);
   const [lng, setLng] = useState(4.4931);
   const [overlayOpacity, setOverlayOpacity] = useState([0.6]);
@@ -94,6 +94,7 @@ const LightPollutionMap = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const markerRef = useRef<L.Marker | null>(null);
   const overlayRef = useRef<L.TileLayer | null>(null);
+  const legendRef = useRef<L.Control | null>(null);
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
@@ -133,7 +134,24 @@ const LightPollutionMap = () => {
       setSelectedBortle(bortle);
     });
 
-    // Add color legend control
+    mapRef.current = map;
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+      legendRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // (Re)create the legend whenever the language changes so translated text applies
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (legendRef.current) {
+      map.removeControl(legendRef.current);
+      legendRef.current = null;
+    }
     const legend = new L.Control({ position: "bottomleft" });
     legend.onAdd = () => {
       const div = L.DomUtil.create("div", "");
@@ -150,15 +168,9 @@ const LightPollutionMap = () => {
       return div;
     };
     legend.addTo(map);
-
-    mapRef.current = map;
-
-    return () => {
-      map.remove();
-      mapRef.current = null;
-    };
+    legendRef.current = legend;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [i18n.language]);
 
   useEffect(() => {
     if (!mapRef.current || !markerRef.current) return;

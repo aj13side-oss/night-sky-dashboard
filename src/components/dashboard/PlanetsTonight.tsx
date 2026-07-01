@@ -93,7 +93,7 @@ const PlanetRow = ({ name, planet, index, solarObjects }: { name: string; planet
         <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
           {planet.magnitude != null && <span>mag {planet.magnitude.toFixed(1)}</span>}
           {planet.constellation && <span>· {planet.constellation}</span>}
-          {planet.transit && <span>· Transit {planet.transit}</span>}
+          {planet.transit && <span>· {t("planets.transit", { time: planet.transit })}</span>}
         </div>
       </div>
       <div className="text-right shrink-0">

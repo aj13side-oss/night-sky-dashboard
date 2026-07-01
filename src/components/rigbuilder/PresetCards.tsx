@@ -7,17 +7,7 @@ import {
 } from "lucide-react";
 import type { RigPreset, AstroTelescope, AstroCamera, AstroMount } from "@/hooks/useEquipmentCatalog";
 
-const USE_CASE_LABELS: Record<string, string> = {
-  beginner_deepsky: "Beginner Deep Sky",
-  intermediate_deepsky: "Intermediate Deep Sky",
-  advanced_deepsky: "Advanced Deep Sky",
-  widefield: "Wide Field",
-  narrowband: "Narrowband",
-  beginner_planetary: "Planetary",
-  budget: "Budget",
-  portable: "Portable / Travel",
-  premium: "Premium",
-};
+// Use-case labels are translated via i18n (rigbuilder.useCases.*)
 
 const USE_CASE_ICONS: Record<string, React.ElementType> = {
   beginner_deepsky: Telescope,

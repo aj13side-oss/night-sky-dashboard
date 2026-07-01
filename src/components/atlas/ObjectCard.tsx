@@ -232,16 +232,16 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
               {typeEmoji[obj.obj_type] ?? "🔭"} {formatCatalogId(obj)}
               {isTopPick && (
                 <span className="ml-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-yellow-500/90 text-yellow-950 text-[9px] font-bold">
-                  🏆 Top Pick
+                  🏆 {t("cards.topPick")}
                 </span>
               )}
             </p>
-            {obj.common_name && (
-              <p className="text-xs text-primary truncate mt-0.5">{obj.common_name}</p>
+            {displayName && (
+              <p className="text-xs text-primary truncate mt-0.5">{displayName}</p>
             )}
             {obj.parent_id && (
               <p className="text-[10px] text-muted-foreground truncate mt-0.5 flex items-center gap-1">
-                <Link className="w-3 h-3" /> Part of a larger region
+                <Link className="w-3 h-3" /> {t("cards.partOfLargerRegion")}
               </p>
             )}
           </div>

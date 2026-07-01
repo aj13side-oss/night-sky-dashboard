@@ -33,6 +33,7 @@ export function MonRigPanel({
   telescope, camera, mount, filters, accessories,
   onClearTelescope, onClearCamera, onClearMount, onRemoveFilter, onRemoveAccessory,
 }: MonRigPanelProps) {
+  const { t } = useTranslation("rigbuilder");
   const navigate = useLocalizedNavigate();
   const { data: rules } = useCompatibilityRules();
 

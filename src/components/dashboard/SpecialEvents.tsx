@@ -71,18 +71,18 @@ const SpecialEvents = () => {
     <div className="glass-card rounded-2xl p-5 space-y-3">
       <div className="flex items-center gap-2">
         <Zap className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-semibold text-foreground">☄️ Special Events</h3>
+        <h3 className="text-sm font-semibold text-foreground">{t("specialEvents.title")}</h3>
       </div>
 
       {!showersLoading && !hasContent && (
-        <p className="text-xs text-muted-foreground text-center py-4">No special events this week</p>
+        <p className="text-xs text-muted-foreground text-center py-4">{t("specialEvents.emptyWeek")}</p>
       )}
 
       {/* Meteor Showers */}
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5 pt-1">
           <Zap className="w-3 h-3 text-primary" />
-          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Meteor Showers</span>
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t("specialEvents.sections.meteorShowers")}</span>
         </div>
 
         {showersLoading && (

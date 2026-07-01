@@ -210,11 +210,11 @@ const SpecialEvents = () => {
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5 pt-1">
           <Sparkles className="w-3 h-3 text-yellow-400" />
-          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Recent Supernovae & Novae</span>
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t("specialEvents.sections.recentTransients")}</span>
         </div>
 
         {transients.length === 0 && (
-          <p className="text-[10px] text-muted-foreground text-center py-2">No recent transients reported</p>
+          <p className="text-[10px] text-muted-foreground text-center py-2">{t("specialEvents.noRecentTransients")}</p>
         )}
 
         {transients.map((t) => {

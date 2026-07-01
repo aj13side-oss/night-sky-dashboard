@@ -262,7 +262,7 @@ const SpecialEvents = () => {
         })}
 
         {transients.length > 0 && (
-          <p className="text-[9px] text-muted-foreground/50 text-right">Transient Name Server (TNS)</p>
+          <p className="text-[9px] text-muted-foreground/50 text-right">{t("specialEvents.tnsSource")}</p>
         )}
       </div>
 

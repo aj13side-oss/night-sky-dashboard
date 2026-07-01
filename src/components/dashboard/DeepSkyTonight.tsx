@@ -87,15 +87,14 @@ const DeepSkyTonight = () => {
       </div>
 
       <div className="flex gap-1.5">
-        {["all", "galaxy", "nebula", "cluster"].map((t) => (
+        {["all", "galaxy", "nebula", "cluster"].map((f) => (
           <Badge
-            key={t}
-            variant={typeFilter === t ? "default" : "secondary"}
+            key={f}
+            variant={typeFilter === f ? "default" : "secondary"}
             className="cursor-pointer text-[10px] capitalize"
-            onClick={() => setTypeFilter(t)}
+            onClick={() => setTypeFilter(f)}
           >
-            {t(`deepSky.filters.${t}` as any) /* placeholder replaced below */}
-            {/* eslint-disable-next-line */}
+            {t(`deepSky.filters.${f}`)}
           </Badge>
         ))}
       </div>

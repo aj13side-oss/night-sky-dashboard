@@ -10,14 +10,87 @@
     "fullMoon": "🌕 Proche de la pleine Lune — conditions médiocres pour le ciel profond. Préférez les cibles brillantes ou des filtres à bande étroite."
   },
   "moonPhase": {
-    "title": "Phase lunaire"
+    "title": "Phase lunaire",
+    "illuminated": "{{pct}}% éclairée",
+    "moonrise": "Lever de Lune",
+    "moonset": "Coucher de Lune",
+    "culmination": "Culmination",
+    "maxAltitude": "Altitude max",
+    "deepSkyImpact": "Impact ciel profond",
+    "upcomingPhases": "Prochaines phases",
+    "phases": {
+      "New Moon": "Nouvelle Lune",
+      "Waxing Crescent": "Premier croissant",
+      "First Quarter": "Premier quartier",
+      "Waxing Gibbous": "Gibbeuse croissante",
+      "Full Moon": "Pleine Lune",
+      "Waning Gibbous": "Gibbeuse décroissante",
+      "Last Quarter": "Dernier quartier",
+      "Waning Crescent": "Dernier croissant"
+    },
+    "seeing": {
+      "Excellent": "Excellent",
+      "Moderate": "Modéré",
+      "Poor": "Médiocre"
+    },
+    "seeingDesc": {
+      "Excellent": "Ciel sombre, idéal pour le ciel profond",
+      "Moderate": "Interférence partielle",
+      "Poor": "Forte lumière lunaire, évitez les nébuleuses"
+    }
   },
   "sunTimes": {
     "title": "Soleil & crépuscules",
     "sunrise": "Lever du soleil",
     "solarNoon": "Midi solaire",
     "sunset": "Coucher du soleil",
-    "twilightPhases": "Phases du crépuscule"
+    "twilightPhases": "Phases du crépuscule",
+    "begin": "Début",
+    "end": "Fin",
+    "civilDayLength": "Durée du jour civil",
+    "nightLength": "Durée de la nuit",
+    "twilight": {
+      "civil": "Civil",
+      "nautical": "Nautique",
+      "astronomical": "Astronomique"
+    },
+    "twilightDesc": {
+      "civil": "Le Soleil est 0–6° sous l'horizon. Assez de lumière pour des activités extérieures sans éclairage artificiel.",
+      "nautical": "Le Soleil est 6–12° sous l'horizon. Horizon encore visible en mer ; les étoiles brillantes et planètes apparaissent.",
+      "astronomical": "Le Soleil est 12–18° sous l'horizon. Le ciel est assez sombre pour l'astrophoto du ciel profond — la fenêtre idéale."
+    }
+  },
+  "weather": {
+    "observationQuality": "Qualité d'observation",
+    "qualityDesc": "Score combiné à partir des nuages, du seeing, de la transparence, du vent et de l'humidité sur les 5 sources",
+    "title": "Comparaison météo horaire",
+    "live": "En direct",
+    "error": "Erreur",
+    "refresh": "Actualiser",
+    "loading": "Chargement des données météo...",
+    "loadFailed": "Échec du chargement des données météo.",
+    "noNightData": "Aucune donnée nocturne",
+    "verdict": {
+      "Excellent": "Excellent",
+      "Good": "Bon",
+      "Average": "Moyen",
+      "Poor": "Médiocre",
+      "Bad": "Mauvais"
+    },
+    "cols": {
+      "low": "Bas",
+      "mid": "Moyen",
+      "high": "Haut",
+      "dew": "Rosée",
+      "seeing": "Seeing",
+      "transp": "Transp."
+    },
+    "seeingVal": {
+      "Excellent": "Excellent",
+      "Good": "Bon",
+      "Average": "Moyen",
+      "Poor": "Médiocre"
+    }
   },
   "observationToolbar": {
     "searchPlaceholder": "Rechercher un lieu…",

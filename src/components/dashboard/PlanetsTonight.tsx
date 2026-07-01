@@ -6,6 +6,7 @@ import type { SolarSystemObject } from "@/hooks/useSolarSystemObjects";
 import { useTranslation } from "react-i18next";
 
 const PlanetsTonight = () => {
+  const { t } = useTranslation("dashboard");
   const { data, isLoading } = useAstronomyData();
   const { data: solarObjects } = useSolarSystemObjects();
   const planets = data?.planets;

@@ -32,29 +32,22 @@ interface Comet {
   is_visible: boolean | null;
 }
 
-const SKY: Record<string, { label: string; cls: string }> = {
-  favorable: { label: "Favorable", cls: "bg-green-500/20 text-green-400 border-green-500/30" },
-  difficult: { label: "Difficult", cls: "bg-amber-500/20 text-amber-400 border-amber-500/30" },
-  solar_glare: { label: "Solar glare", cls: "bg-red-500/20 text-red-400 border-red-500/30" },
-  unknown: { label: "Unknown", cls: "bg-muted text-muted-foreground border-border" },
+const SKY_CLS: Record<string, string> = {
+  favorable: "bg-green-500/20 text-green-400 border-green-500/30",
+  difficult: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+  solar_glare: "bg-red-500/20 text-red-400 border-red-500/30",
+  unknown: "bg-muted text-muted-foreground border-border",
 };
 
-const CAT: Record<string, { label: string; cls: string }> = {
-  active: { label: "Active", cls: "bg-amber-500/20 text-amber-400 border-amber-500/30" },
-  upcoming: { label: "Upcoming", cls: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-  recently_ended: { label: "Recently ended", cls: "bg-muted text-muted-foreground border-border" },
+const CAT_CLS: Record<string, string> = {
+  active: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+  upcoming: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+  recently_ended: "bg-muted text-muted-foreground border-border",
 };
 
-const SKY_EXPLAIN: Record<string, string> = {
-  favorable: "Comet is well placed in the night sky — observable under good conditions.",
-  difficult: "Low altitude or limited window — observation will be challenging.",
-  solar_glare: "Too close to the Sun — currently lost in solar glare.",
-  unknown: "Sky conditions for this comet are not yet evaluated.",
-};
-
-function fmtDate(d: string | null) {
+function fmtDate(d: string | null, locale: string) {
   if (!d) return "—";
-  return new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  return new Date(d).toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric" });
 }
 
 const CometsCard = () => {

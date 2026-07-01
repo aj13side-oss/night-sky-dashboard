@@ -113,18 +113,18 @@ const DeepSkyTonight = () => {
       </div>
 
       {filtered.length === 0 && (
-        <p className="text-xs text-muted-foreground text-center py-4">No matching objects visible tonight</p>
+        <p className="text-xs text-muted-foreground text-center py-4">{t("deepSky.empty")}</p>
       )}
 
       <div className="flex gap-2 mt-1">
         <Link to={lp("/sky-atlas")} className="flex-1">
           <Button variant="default" size="sm" className="w-full gap-2 text-xs">
-            Browse Sky Atlas <ArrowRight className="w-3 h-3" />
+            {t("deepSky.browseSkyAtlas")} <ArrowRight className="w-3 h-3" />
           </Button>
         </Link>
         <Link to={lp("/sky-atlas")} className="flex-1">
           <Button variant="outline" size="sm" className="w-full gap-2 text-xs">
-            Full Atlas <ArrowRight className="w-3 h-3" />
+            {t("deepSky.fullAtlas")} <ArrowRight className="w-3 h-3" />
           </Button>
         </Link>
       </div>

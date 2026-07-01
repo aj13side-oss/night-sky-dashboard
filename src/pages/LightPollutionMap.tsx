@@ -134,7 +134,24 @@ const LightPollutionMap = () => {
       setSelectedBortle(bortle);
     });
 
-    // Add color legend control
+    mapRef.current = map;
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+      legendRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // (Re)create the legend whenever the language changes so translated text applies
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (legendRef.current) {
+      map.removeControl(legendRef.current);
+      legendRef.current = null;
+    }
     const legend = new L.Control({ position: "bottomleft" });
     legend.onAdd = () => {
       const div = L.DomUtil.create("div", "");
@@ -151,15 +168,9 @@ const LightPollutionMap = () => {
       return div;
     };
     legend.addTo(map);
-
-    mapRef.current = map;
-
-    return () => {
-      map.remove();
-      mapRef.current = null;
-    };
+    legendRef.current = legend;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [i18n.language]);
 
   useEffect(() => {
     if (!mapRef.current || !markerRef.current) return;

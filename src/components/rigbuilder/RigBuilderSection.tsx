@@ -90,6 +90,8 @@ function buildSortOptions(t: (k: string) => string): Record<Category, { value: s
 }
 
 const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProps) => {
+  const { t } = useTranslation("rigbuilder");
+  const sortOptions = useMemo(() => buildSortOptions(t), [t]);
   const { data: cameras, isLoading: loadingCams } = useCameras();
   const { data: telescopes, isLoading: loadingScopes } = useTelescopes();
   const { data: mounts, isLoading: loadingMounts } = useMounts();

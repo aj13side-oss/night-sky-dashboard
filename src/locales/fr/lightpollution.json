@@ -1,6 +1,34 @@
 {
   "heading": "Carte de pollution lumineuse",
   "subheading": "Trouvez des sites au ciel noir près de chez vous, consultez l'échelle de Bortle, les mesures SQM et les niveaux de pollution lumineuse pour de meilleures astrophotos.",
+  "darkSites": {
+    "title": "Sites au ciel noir à proximité",
+    "radius": "Rayon : {{n}} km",
+    "empty": "Aucun site au ciel noir trouvé dans un rayon de {{n}} km. Essayez d'augmenter le rayon.",
+    "directions": "Itinéraire"
+  },
+  "imagingImpact": {
+    "title": "Calculateur d'impact sur l'imagerie",
+    "multiplier": "Multiplicateur",
+    "limitingMag": "Magnitude limite",
+    "equivSubs": "Poses équiv.",
+    "eachSub": "60 s chacune",
+    "tableBortle": "Bortle",
+    "tableLimMag": "Mag. limite",
+    "tableTotal": "Total (60 s)",
+    "min": "min",
+    "note": "Multiplicateur = temps d'intégration supplémentaire par rapport au Bortle 1 pour atteindre un SNR équivalent. Basé sur les rapports de brillance du ciel."
+  },
+  "infoPanel": {
+    "clickedLocation": "Position cliquée",
+    "exposureMultiplier": "Multiplicateur d'exposition",
+    "limitingMagnitude": "Magnitude limite",
+    "mag": "mag"
+  },
+  "citySearch": {
+    "placeholder": "Rechercher une ville…",
+    "noResults": "Aucun résultat. Essayez un nom de ville ou de pays."
+  },
   "toolbar": {
     "myLocation": "Ma position",
     "opacity": "Opacité",

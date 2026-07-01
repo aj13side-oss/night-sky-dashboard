@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin, Loader2 } from "lucide-react";
@@ -14,6 +15,7 @@ interface Props {
 }
 
 const CitySearch = ({ onSelectCity }: Props) => {
+  const { t } = useTranslation("lightpollution");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +80,7 @@ const CitySearch = ({ onSelectCity }: Props) => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Search a city…"
+          placeholder={t("citySearch.placeholder")}
           className="bg-secondary/50 h-9 w-48"
         />
         <Button size="sm" variant="outline" onClick={handleSearch} disabled={isLoading} className="h-9 gap-1.5">
@@ -100,7 +102,7 @@ const CitySearch = ({ onSelectCity }: Props) => {
         </div>
       )}
       {noResults && !isLoading && query.trim() && (
-        <p className="text-xs text-muted-foreground mt-1.5">No results found. Try a city name or country.</p>
+        <p className="text-xs text-muted-foreground mt-1.5">{t("citySearch.noResults")}</p>
       )}
     </div>
   );

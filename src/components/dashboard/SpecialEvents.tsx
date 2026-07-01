@@ -351,14 +351,14 @@ const SpecialEvents = () => {
                         {new Date(pass.rise_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </span>
                       <span className="text-[9px] text-muted-foreground">
-                        Max {pass.max_elevation}°
+                        {t("specialEvents.maxElevation", { el: pass.max_elevation })}
                       </span>
                       <span className="text-[9px] text-muted-foreground">
-                        {pass.duration_minutes} min
+                        {t("specialEvents.minutes", { n: pass.duration_minutes })}
                       </span>
                     </div>
                   ) : (
-                    <p className="text-[10px] text-muted-foreground mt-0.5">No pass in the next 24h</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{t("specialEvents.noPass24h")}</p>
                   )}
                 </div>
               </div>
@@ -367,7 +367,7 @@ const SpecialEvents = () => {
         })}
 
         {!satLoading && !satError && satellites.length > 0 && (
-          <p className="text-[9px] text-muted-foreground/50 text-right">Data from CelesTrak</p>
+          <p className="text-[9px] text-muted-foreground/50 text-right">{t("specialEvents.celestrakSource")}</p>
         )}
       </div>
     </div>

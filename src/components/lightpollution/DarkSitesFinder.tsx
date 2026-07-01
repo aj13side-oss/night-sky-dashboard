@@ -14,6 +14,7 @@ interface Props {
 }
 
 const DarkSitesFinder = ({ userLat, userLng, onSelectSite }: Props) => {
+  const { t } = useTranslation("lightpollution");
   const [maxRadius, setMaxRadius] = useState([150]);
 
   const nearbySites = useMemo(() => {

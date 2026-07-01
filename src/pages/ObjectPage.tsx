@@ -45,6 +45,7 @@ const ObjectPage = () => {
   const lang: "fr" | "en" = isFr ? "fr" : "en";
   const { data: labelMaps } = useLabelMaps();
   const { t } = useTranslation("object");
+  const { t: tAtlas } = useTranslation("atlas");
 
   const { isInList, addObject, removeObject } = useTonightList();
   const [showExposureInfo, setShowExposureInfo] = useState(false);
@@ -194,7 +195,7 @@ const ObjectPage = () => {
             </li>
             <li>/</li>
             <li className="text-foreground font-medium" aria-current="page">
-              {obj.common_name ?? obj.catalog_id}
+              {(isFr ? (obj.common_name_fr ?? obj.common_name) : obj.common_name) ?? obj.catalog_id}
             </li>
           </ol>
         </nav>
@@ -216,7 +217,7 @@ const ObjectPage = () => {
                   className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow"
                   style={{ backgroundColor: getRarityColor(obj.rarity), color: "#0F172A" }}
                 >
-                  {obj.rarity}
+                  {tAtlas(`rarity.${obj.rarity}`, { defaultValue: obj.rarity })}
                 </div>
               </div>
             )}
@@ -569,6 +570,7 @@ const FallbackProse = ({
 
 const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
   const { t } = useTranslation("object");
+  const { t: tAtlas } = useTranslation("atlas");
   const lp = useLocalizedPath();
   const { data: similar } = useQuery({
     queryKey: ["similar-objects", obj.id, obj.obj_type, obj.constellation],
@@ -624,7 +626,7 @@ const SimilarObjects = ({ obj }: { obj: CelestialObject }) => {
                     className="text-[9px] px-1 py-0 border-0"
                     style={{ backgroundColor: getRarityColor(s.rarity), color: "#0F172A" }}
                   >
-                    {s.rarity}
+                    {tAtlas(`rarity.${s.rarity}`, { defaultValue: s.rarity })}
                   </Badge>
                 )}
                 {s.photo_score && (

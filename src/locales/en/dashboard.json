@@ -94,7 +94,11 @@
   },
   "observationToolbar": {
     "searchPlaceholder": "Search a location…",
-    "search": "Search"
+    "search": "Search",
+    "filterPresets": "Filter presets...",
+    "customCoordinates": "Custom coordinates",
+    "set": "Set",
+    "pickDate": "Pick date"
   },
   "hero": {
     "title": "What to Photograph Tonight",

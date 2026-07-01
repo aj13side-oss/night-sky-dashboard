@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getAuroraForecast, getAsteroids } from "@/lib/celestial-data";
 import { useObservation } from "@/contexts/ObservationContext";
 import { motion } from "framer-motion";

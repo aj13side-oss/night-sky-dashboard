@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -12,6 +13,7 @@ interface EquipmentTabProps {
 }
 
 export function EquipmentTab({ loading, filters, searchBar, resultCount, searchQuery, children, compareTable }: EquipmentTabProps) {
+  const { t } = useTranslation("rigbuilder");
   if (loading) return <LoadingSkeleton />;
 
   return (
@@ -19,8 +21,8 @@ export function EquipmentTab({ loading, filters, searchBar, resultCount, searchQ
       {searchBar}
 
       <p className="text-xs text-muted-foreground mt-2">
-        {resultCount} result{resultCount > 1 ? "s" : ""}
-        {searchQuery && ` for "${searchQuery}"`}
+        {t("builder.resultsCount", { count: resultCount })}
+        {searchQuery && t("builder.resultsFor", { query: searchQuery })}
       </p>
 
       <Card className="border-border/50 mt-4 p-4 space-y-4">

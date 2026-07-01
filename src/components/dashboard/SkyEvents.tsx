@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +39,7 @@ const VIS_COLORS: Record<string, string> = {
 };
 
 const SkyEvents = () => {
+  const { t } = useTranslation("dashboard");
   const [events, setEvents] = useState<SkyEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -63,7 +65,7 @@ const SkyEvents = () => {
   if (loading) {
     return (
       <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h2 className="text-xl font-semibold text-foreground mb-4">🔭 Sky Events</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-4">{t("skyEvents.title")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="glass-card border-border/30">
@@ -82,10 +84,10 @@ const SkyEvents = () => {
   if (events.length === 0) {
     return (
       <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="text-xl font-semibold text-foreground mb-4">🔭 Sky Events</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-4">{t("skyEvents.title")}</h2>
         <Card className="glass-card border-border/30">
           <CardContent className="p-6 text-center text-muted-foreground text-sm">
-            No upcoming sky events in the next 30 days
+            {t("skyEvents.empty")}
           </CardContent>
         </Card>
       </motion.section>
@@ -94,7 +96,7 @@ const SkyEvents = () => {
 
   return (
     <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <h2 className="text-xl font-semibold text-foreground mb-4">🔭 Sky Events</h2>
+      <h2 className="text-xl font-semibold text-foreground mb-4">{t("skyEvents.title")}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {events.map((ev) => {
           const icon = TYPE_ICONS[ev.event_type] ?? "🚀";

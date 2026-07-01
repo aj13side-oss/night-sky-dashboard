@@ -194,5 +194,80 @@
     "rises": "Lever {{time}}",
     "transit": "Passage au méridien {{time}}",
     "peakShort": "max"
+  },
+  "specialEvents": {
+    "title": "☄️ Événements spéciaux",
+    "emptyWeek": "Aucun événement spécial cette semaine",
+    "sections": {
+      "meteorShowers": "Pluies d'étoiles filantes",
+      "asteroids": "Astéroïdes",
+      "recentTransients": "Supernovae et novae récentes",
+      "auroraForecast": "Prévision aurores",
+      "satellitePasses": "Passages satellites"
+    },
+    "showersError": "Échec du chargement des essaims",
+    "noMajorShower": "Aucun essaim majeur dans les 30 prochains jours",
+    "active": "Actif",
+    "inDaysShort": "Dans {{n}} j",
+    "peakLabel": "Maximum : {{range}}",
+    "hemispheres": {
+      "both": "Deux hémisphères",
+      "northOnly": "Nord uniquement",
+      "southOnly": "Sud uniquement"
+    },
+    "noRecentTransients": "Aucun objet transitoire récent signalé",
+    "tnsSource": "Transient Name Server (TNS)",
+    "kpProbability": "{{p}} % de chance",
+    "satFailed": "Échec du chargement des passages satellites",
+    "noSatPasses": "Aucun passage satellite disponible",
+    "maxElevation": "Max {{el}}°",
+    "minutes": "{{n}} min",
+    "noPass24h": "Aucun passage dans les 24 prochaines heures",
+    "celestrakSource": "Données CelesTrak"
+  },
+  "skyEvents": {
+    "title": "🔭 Événements célestes",
+    "empty": "Aucun événement céleste à venir dans les 30 prochains jours"
+  },
+  "comets": {
+    "title": "☄️ Comètes",
+    "activeCount": "{{n}} actifs",
+    "empty": "Aucune comète notable visible actuellement",
+    "sky": {
+      "favorable": "Favorable",
+      "difficult": "Difficile",
+      "solar_glare": "Éblouissement solaire",
+      "unknown": "Inconnu"
+    },
+    "category": {
+      "active": "Active",
+      "upcoming": "À venir",
+      "recently_ended": "Récemment terminée"
+    },
+    "skyExplain": {
+      "favorable": "La comète est bien placée dans le ciel nocturne — observable dans de bonnes conditions.",
+      "difficult": "Faible altitude ou fenêtre limitée — l'observation sera difficile.",
+      "solar_glare": "Trop proche du Soleil — actuellement perdue dans l'éblouissement solaire.",
+      "unknown": "Les conditions d'observation de cette comète ne sont pas encore évaluées."
+    },
+    "detail": {
+      "perihelionDate": "Date du périhélie",
+      "earthDistance": "Distance à la Terre",
+      "constellation": "Constellation",
+      "magnitude": "Magnitude",
+      "skyCondition": "Condition d'observation",
+      "viewOnTheSkyLive": "Voir sur TheSkyLive"
+    }
+  },
+  "spaceActivities": {
+    "title": "Activités spatiales humaines",
+    "humansInSpace": "Humains dans l'espace",
+    "issPosition": "Position ISS",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "updatedEvery5s": "Mis à jour toutes les 5 s",
+    "nasaIssPage": "Page ISS de la NASA",
+    "upcomingLaunches": "Lancements à venir",
+    "loadFailed": "Échec du chargement des données"
   }
 }

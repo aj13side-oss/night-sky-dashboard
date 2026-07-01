@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getAuroraForecast, getAsteroids } from "@/lib/celestial-data";
 import { useObservation } from "@/contexts/ObservationContext";
 import { motion } from "framer-motion";
@@ -30,6 +31,7 @@ interface SatelliteData {
 }
 
 const SpecialEvents = () => {
+  const { t } = useTranslation("dashboard");
   const { showers, loading: showersLoading, error: showersError } = useMeteorShowers();
   const aurora = getAuroraForecast();
   const asteroids = getAsteroids(new Date().getMonth());
@@ -69,18 +71,18 @@ const SpecialEvents = () => {
     <div className="glass-card rounded-2xl p-5 space-y-3">
       <div className="flex items-center gap-2">
         <Zap className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-semibold text-foreground">☄️ Special Events</h3>
+        <h3 className="text-sm font-semibold text-foreground">{t("specialEvents.title")}</h3>
       </div>
 
       {!showersLoading && !hasContent && (
-        <p className="text-xs text-muted-foreground text-center py-4">No special events this week</p>
+        <p className="text-xs text-muted-foreground text-center py-4">{t("specialEvents.emptyWeek")}</p>
       )}
 
       {/* Meteor Showers */}
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5 pt-1">
           <Zap className="w-3 h-3 text-primary" />
-          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Meteor Showers</span>
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t("specialEvents.sections.meteorShowers")}</span>
         </div>
 
         {showersLoading && (
@@ -99,11 +101,11 @@ const SpecialEvents = () => {
         )}
 
         {showersError && (
-          <p className="text-[10px] text-muted-foreground text-center py-2">Failed to load showers</p>
+          <p className="text-[10px] text-muted-foreground text-center py-2">{t("specialEvents.showersError")}</p>
         )}
 
         {!showersLoading && !showersError && showers.length === 0 && (
-          <p className="text-[10px] text-muted-foreground text-center py-2">No major shower in the next 30 days</p>
+          <p className="text-[10px] text-muted-foreground text-center py-2">{t("specialEvents.noMajorShower")}</p>
         )}
 
         {showers.map((shower) => {
@@ -122,17 +124,17 @@ const SpecialEvents = () => {
                   <div className="flex items-center gap-1.5">
                     <p className="text-xs font-semibold text-foreground">{shower.name}</p>
                     {shower.status === "active" ? (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-medium">Active</span>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-medium">{t("specialEvents.active")}</span>
                     ) : (
                       <span className="text-[9px] text-muted-foreground">
-                        In {shower.daysUntilStart}d — {formatPeakRange(shower)}
+                        {t("specialEvents.inDaysShort", { n: shower.daysUntilStart })} — {formatPeakRange(shower)}
                       </span>
                     )}
                   </div>
                   <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{shower.description}</p>
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-medium">
-                      Peak: {formatPeakRange(shower)}
+                      {t("specialEvents.peakLabel", { range: formatPeakRange(shower) })}
                     </span>
                     <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent font-medium">
                       ZHR: {shower.zhr}
@@ -152,10 +154,10 @@ const SpecialEvents = () => {
                     )}
                     <span className="text-[9px] text-muted-foreground">
                       🌍 {shower.northern_hemisphere && shower.southern_hemisphere
-                        ? "Both hemispheres"
+                        ? t("specialEvents.hemispheres.both")
                         : shower.northern_hemisphere
-                        ? "North only"
-                        : "South only"}
+                        ? t("specialEvents.hemispheres.northOnly")
+                        : t("specialEvents.hemispheres.southOnly")}
                     </span>
                   </div>
                 </div>
@@ -170,7 +172,7 @@ const SpecialEvents = () => {
         <div className="space-y-1.5">
           <div className="flex items-center gap-1.5 pt-1">
             <CircleDot className="w-3 h-3 text-orange-400" />
-            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Asteroids</span>
+            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t("specialEvents.sections.asteroids")}</span>
           </div>
           {asteroids.slice(0, 3).map((asteroid) => {
             const i = animIndex++;
@@ -208,11 +210,11 @@ const SpecialEvents = () => {
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5 pt-1">
           <Sparkles className="w-3 h-3 text-yellow-400" />
-          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Recent Supernovae & Novae</span>
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t("specialEvents.sections.recentTransients")}</span>
         </div>
 
         {transients.length === 0 && (
-          <p className="text-[10px] text-muted-foreground text-center py-2">No recent transients reported</p>
+          <p className="text-[10px] text-muted-foreground text-center py-2">{t("specialEvents.noRecentTransients")}</p>
         )}
 
         {transients.map((t) => {
@@ -260,7 +262,7 @@ const SpecialEvents = () => {
         })}
 
         {transients.length > 0 && (
-          <p className="text-[9px] text-muted-foreground/50 text-right">Transient Name Server (TNS)</p>
+          <p className="text-[9px] text-muted-foreground/50 text-right">{t("specialEvents.tnsSource")}</p>
         )}
       </div>
 
@@ -269,7 +271,7 @@ const SpecialEvents = () => {
         <div className="space-y-1.5">
           <div className="flex items-center gap-1.5 pt-1">
             <Sun className="w-3 h-3 text-green-400" />
-            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Aurora Forecast</span>
+            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t("specialEvents.sections.auroraForecast")}</span>
           </div>
           {aurora.slice(0, 2).map((a) => {
             const i = animIndex++;
@@ -291,7 +293,7 @@ const SpecialEvents = () => {
                         Kp {a.kpIndex}
                       </span>
                       <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent font-medium">
-                        {a.probability}% chance
+                        {t("specialEvents.kpProbability", { p: a.probability })}
                       </span>
                     </div>
                   </div>
@@ -306,7 +308,7 @@ const SpecialEvents = () => {
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5 pt-1">
           <Satellite className="w-3 h-3 text-blue-400" />
-          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Satellite Passes</span>
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t("specialEvents.sections.satellitePasses")}</span>
         </div>
 
         {satLoading && (
@@ -321,11 +323,11 @@ const SpecialEvents = () => {
         )}
 
         {satError && (
-          <p className="text-[10px] text-muted-foreground text-center py-2">Failed to load satellite passes</p>
+          <p className="text-[10px] text-muted-foreground text-center py-2">{t("specialEvents.satFailed")}</p>
         )}
 
         {!satLoading && !satError && satellites.length === 0 && (
-          <p className="text-[10px] text-muted-foreground text-center py-2">No satellite passes available</p>
+          <p className="text-[10px] text-muted-foreground text-center py-2">{t("specialEvents.noSatPasses")}</p>
         )}
 
         {!satLoading && !satError && satellites.map((sat) => {
@@ -349,14 +351,14 @@ const SpecialEvents = () => {
                         {new Date(pass.rise_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </span>
                       <span className="text-[9px] text-muted-foreground">
-                        Max {pass.max_elevation}°
+                        {t("specialEvents.maxElevation", { el: pass.max_elevation })}
                       </span>
                       <span className="text-[9px] text-muted-foreground">
-                        {pass.duration_minutes} min
+                        {t("specialEvents.minutes", { n: pass.duration_minutes })}
                       </span>
                     </div>
                   ) : (
-                    <p className="text-[10px] text-muted-foreground mt-0.5">No pass in the next 24h</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{t("specialEvents.noPass24h")}</p>
                   )}
                 </div>
               </div>
@@ -365,7 +367,7 @@ const SpecialEvents = () => {
         })}
 
         {!satLoading && !satError && satellites.length > 0 && (
-          <p className="text-[9px] text-muted-foreground/50 text-right">Data from CelesTrak</p>
+          <p className="text-[9px] text-muted-foreground/50 text-right">{t("specialEvents.celestrakSource")}</p>
         )}
       </div>
     </div>

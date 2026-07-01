@@ -40,6 +40,7 @@ interface PresetCardsProps {
 }
 
 export function PresetCards({ presets, onLoad, telescopes, cameras, mounts }: PresetCardsProps) {
+  const { t } = useTranslation("rigbuilder");
   const equipNames = useMemo(() => {
     const map: Record<string, string> = {};
     presets.forEach(p => {

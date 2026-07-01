@@ -27,6 +27,7 @@ const LanguageSwitcher = ({ className }: { className?: string }) => {
     if (lang === current) return;
     try {
       localStorage.setItem(LANG_STORAGE_KEY, lang);
+      localStorage.setItem("cf_lang_choice", lang);
     } catch {
       /* localStorage may be unavailable (private mode); ignore */
     }

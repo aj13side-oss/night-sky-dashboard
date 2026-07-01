@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, Clock, MapPin, Search, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { fr as frLocale } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -27,7 +28,9 @@ interface NominatimResult {
 
 const ObservationToolbar = () => {
   const { date, setDate, time, setTime, location, setLocation } = useObservation();
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const isFr = i18n.language?.startsWith("fr");
+  const dateLocale = isFr ? frLocale : undefined;
   const [locationSearch, setLocationSearch] = useState("");
   const [showLocations, setShowLocations] = useState(false);
   const [latInput, setLatInput] = useState(String(location.lat));
@@ -155,7 +158,7 @@ const ObservationToolbar = () => {
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
                 <Input
-                  placeholder="Filter presets..."
+                  placeholder={t("observationToolbar.filterPresets")}
                   value={locationSearch}
                   onChange={(e) => setLocationSearch(e.target.value)}
                   className="pl-8 h-9 text-sm bg-secondary/50"

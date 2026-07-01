@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useLocalizedNavigate } from "@/lib/localized-nav";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +33,7 @@ export function MonRigPanel({
   telescope, camera, mount, filters, accessories,
   onClearTelescope, onClearCamera, onClearMount, onRemoveFilter, onRemoveAccessory,
 }: MonRigPanelProps) {
+  const { t } = useTranslation("rigbuilder");
   const navigate = useLocalizedNavigate();
   const { data: rules } = useCompatibilityRules();
 
@@ -58,10 +60,10 @@ export function MonRigPanel({
     const ruleUnder = rules?.find(r => r.rule_key === "sampling_undersampled" && r.is_active);
     const minOk = ruleOver?.max_value ?? 0.6;
     const maxOk = ruleUnder?.min_value ?? 2.5;
-    if (sampling < minOk) return { text: "Oversampled", color: "text-amber-400" };
-    if (sampling > maxOk) return { text: "Undersampled", color: "text-amber-400" };
-    return { text: "Ideal", color: "text-emerald-400" };
-  }, [sampling, rules]);
+    if (sampling < minOk) return { text: t("monRig.sampling.oversampled"), color: "text-amber-400" };
+    if (sampling > maxOk) return { text: t("monRig.sampling.undersampled"), color: "text-amber-400" };
+    return { text: t("monRig.sampling.ideal"), color: "text-emerald-400" };
+  }, [sampling, rules, t]);
 
   // M31 FOV preview
   const fovPreview = useMemo(() => {
@@ -136,11 +138,13 @@ export function MonRigPanel({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold" style={{ color: "#FFB347" }}>🔭 My Rig</h2>
+      <h2 className="text-xl font-bold" style={{ color: "#FFB347" }}>🔭 {t("monRig.title")}</h2>
 
       {/* OPTIQUE slot */}
       <SlotCard
-        label="OPTICS"
+        label={t("monRig.slots.optics")}
+        selectLabel={t("monRig.selectFromCatalog")}
+        manualLabel={t("monRig.enterManually")}
         item={telescope ? `${telescope.brand} ${telescope.model}` : null}
         onClear={onClearTelescope}
         showManual={!telescope && showManualScope}
@@ -148,12 +152,12 @@ export function MonRigPanel({
         manualContent={
           <div className="grid grid-cols-2 gap-2 mt-2">
             <div>
-              <Label className="text-[10px] text-muted-foreground">Focal (mm)</Label>
+              <Label className="text-[10px] text-muted-foreground">{t("monRig.manual.focal")}</Label>
               <Input type="number" value={manualTelescope.focalLength || ""} className="h-7 text-xs bg-secondary/30 border-border/50 font-mono"
                 onChange={e => setManualTelescope(p => ({ ...p, focalLength: Number(e.target.value) }))} />
             </div>
             <div>
-              <Label className="text-[10px] text-muted-foreground">Aperture (mm)</Label>
+              <Label className="text-[10px] text-muted-foreground">{t("monRig.manual.aperture")}</Label>
               <Input type="number" value={manualTelescope.aperture || ""} className="h-7 text-xs bg-secondary/30 border-border/50 font-mono"
                 onChange={e => setManualTelescope(p => ({ ...p, aperture: Number(e.target.value) }))} />
             </div>
@@ -163,7 +167,9 @@ export function MonRigPanel({
 
       {/* CAMERA slot */}
       <SlotCard
-        label="CAMERA"
+        label={t("monRig.slots.camera")}
+        selectLabel={t("monRig.selectFromCatalog")}
+        manualLabel={t("monRig.enterManually")}
         item={camera ? `${camera.brand} ${camera.model}` : null}
         onClear={onClearCamera}
         showManual={!camera && showManualCam}
@@ -171,17 +177,17 @@ export function MonRigPanel({
         manualContent={
           <div className="grid grid-cols-3 gap-2 mt-2">
             <div>
-              <Label className="text-[10px] text-muted-foreground">W (mm)</Label>
+              <Label className="text-[10px] text-muted-foreground">{t("monRig.manual.width")}</Label>
               <Input type="number" step="0.1" value={manualCamera.sensorWidth || ""} className="h-7 text-xs bg-secondary/30 border-border/50 font-mono"
                 onChange={e => setManualCamera(p => ({ ...p, sensorWidth: Number(e.target.value) }))} />
             </div>
             <div>
-              <Label className="text-[10px] text-muted-foreground">H (mm)</Label>
+              <Label className="text-[10px] text-muted-foreground">{t("monRig.manual.height")}</Label>
               <Input type="number" step="0.1" value={manualCamera.sensorHeight || ""} className="h-7 text-xs bg-secondary/30 border-border/50 font-mono"
                 onChange={e => setManualCamera(p => ({ ...p, sensorHeight: Number(e.target.value) }))} />
             </div>
             <div>
-              <Label className="text-[10px] text-muted-foreground">Px (µm)</Label>
+              <Label className="text-[10px] text-muted-foreground">{t("monRig.manual.pixel")}</Label>
               <Input type="number" step="0.01" value={manualCamera.pixelSize || ""} className="h-7 text-xs bg-secondary/30 border-border/50 font-mono"
                 onChange={e => setManualCamera(p => ({ ...p, pixelSize: Number(e.target.value) }))} />
             </div>
@@ -190,11 +196,11 @@ export function MonRigPanel({
       />
 
       {/* MOUNT slot */}
-      <SlotCard label="MOUNT" item={mount ? `${mount.brand} ${mount.model}` : null} onClear={onClearMount} />
+      <SlotCard label={t("monRig.slots.mount")} selectLabel={t("monRig.selectFromCatalog")} item={mount ? `${mount.brand} ${mount.model}` : null} onClear={onClearMount} />
 
       {/* FILTERS */}
       <div className="rounded-lg border border-border/50 p-3">
-        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">Filters</span>
+        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">{t("monRig.slots.filters")}</span>
         {filters.length > 0 ? (
           <div className="flex flex-wrap gap-1 mt-1">
             {filters.map(f => (
@@ -204,12 +210,12 @@ export function MonRigPanel({
               </Badge>
             ))}
           </div>
-        ) : <p className="text-[10px] text-muted-foreground italic mt-1">None</p>}
+        ) : <p className="text-[10px] text-muted-foreground italic mt-1">{t("monRig.none")}</p>}
       </div>
 
       {/* ACCESSORIES */}
       <div className="rounded-lg border border-border/50 p-3">
-        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">Accessories</span>
+        <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">{t("monRig.slots.accessories")}</span>
         {accessories.length > 0 ? (
           <div className="flex flex-wrap gap-1 mt-1">
             {accessories.map(a => (
@@ -219,7 +225,7 @@ export function MonRigPanel({
               </Badge>
             ))}
           </div>
-        ) : <p className="text-[10px] text-muted-foreground italic mt-1">None</p>}
+        ) : <p className="text-[10px] text-muted-foreground italic mt-1">{t("monRig.none")}</p>}
       </div>
 
       {/* CALCULATED SETUP */}
@@ -227,16 +233,16 @@ export function MonRigPanel({
         <CardContent className="p-3">
           <div className="grid grid-cols-3 gap-3 text-center">
             <div>
-              <span className="text-[10px] text-muted-foreground block">Sampling</span>
+              <span className="text-[10px] text-muted-foreground block">{t("monRig.calc.sampling")}</span>
               <p className="text-sm font-bold font-mono text-foreground">{sampling > 0 ? `${sampling.toFixed(2)}″/px` : "—"}</p>
               {samplingLabel && <span className={`text-[9px] ${samplingLabel.color}`}>{samplingLabel.text}</span>}
             </div>
             <div>
-              <span className="text-[10px] text-muted-foreground block">FOV</span>
+              <span className="text-[10px] text-muted-foreground block">{t("monRig.calc.fov")}</span>
               <p className="text-sm font-bold font-mono text-foreground">{fovW > 0 ? `${fovW.toFixed(0)}'×${fovH.toFixed(0)}'` : "—"}</p>
             </div>
             <div>
-              <span className="text-[10px] text-muted-foreground block">Focal Length</span>
+              <span className="text-[10px] text-muted-foreground block">{t("monRig.calc.focalLength")}</span>
               <p className="text-sm font-bold font-mono text-foreground">{fl > 0 ? `${fl}mm` : "—"}</p>
             </div>
           </div>
@@ -261,18 +267,18 @@ export function MonRigPanel({
         ) : (
           <div className="h-[160px] flex items-center justify-center bg-secondary/10">
             <p className="text-[10px] text-muted-foreground italic text-center px-4">
-              Configure your rig to see the framing preview
+              {t("monRig.previewEmpty")}
             </p>
           </div>
         )}
-        <p className="text-[9px] text-muted-foreground text-center py-1">M31 — Andromeda Galaxy (190'×60')</p>
+        <p className="text-[9px] text-muted-foreground text-center py-1">{t("monRig.previewCaption")}</p>
       </div>
 
       {/* COMPATIBILITY ALERTS */}
       {hasRig && (
         <div className="space-y-1">
           {alerts.length === 0 && (telescope || camera) && (
-            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px]">✓ Rig compatible</Badge>
+            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px]">{t("monRig.compatible")}</Badge>
           )}
           {alerts.map((a, i) => (
             <Badge
@@ -301,15 +307,17 @@ export function MonRigPanel({
         }}
       >
         <Rocket className="w-4 h-4" />
-        Find targets for this rig →
+        {t("monRig.findTargets")}
       </Button>
     </div>
   );
 }
 
 // Slot card sub-component
-function SlotCard({ label, item, onClear, showManual, onToggleManual, manualContent }: {
+function SlotCard({ label, selectLabel, manualLabel, item, onClear, showManual, onToggleManual, manualContent }: {
   label: string;
+  selectLabel: string;
+  manualLabel?: string;
   item: string | null;
   onClear: () => void;
   showManual?: boolean;
@@ -328,12 +336,12 @@ function SlotCard({ label, item, onClear, showManual, onToggleManual, manualCont
         </div>
       ) : (
         <div className="mt-1">
-          <p className="text-[10px] text-muted-foreground italic">Select from catalog</p>
-          {onToggleManual && (
+          <p className="text-[10px] text-muted-foreground italic">{selectLabel}</p>
+          {onToggleManual && manualLabel && (
             <>
               <button onClick={onToggleManual} className="text-[10px] text-primary hover:underline flex items-center gap-0.5 mt-1">
                 <ChevronDown className={`w-3 h-3 transition-transform ${showManual ? "rotate-180" : ""}`} />
-                Enter manually
+                {manualLabel}
               </button>
               {showManual && manualContent}
             </>

@@ -1,0 +1,90 @@
+{
+  "monRig": {
+    "title": "My Rig",
+    "slots": {
+      "optics": "OPTICS",
+      "camera": "CAMERA",
+      "mount": "MOUNT",
+      "filters": "Filters",
+      "accessories": "Accessories"
+    },
+    "none": "None",
+    "selectFromCatalog": "Select from catalog",
+    "enterManually": "Enter manually",
+    "manual": {
+      "focal": "Focal (mm)",
+      "aperture": "Aperture (mm)",
+      "width": "W (mm)",
+      "height": "H (mm)",
+      "pixel": "Px (µm)"
+    },
+    "calc": {
+      "sampling": "Sampling",
+      "fov": "FOV",
+      "focalLength": "Focal Length"
+    },
+    "sampling": {
+      "oversampled": "Oversampled",
+      "undersampled": "Undersampled",
+      "ideal": "Ideal"
+    },
+    "previewEmpty": "Configure your rig to see the framing preview",
+    "previewCaption": "M31 — Andromeda Galaxy (190'×60')",
+    "compatible": "✓ Rig compatible",
+    "findTargets": "Find targets for this rig →"
+  },
+  "builder": {
+    "recommended": "Recommended Configurations",
+    "selected": "{{count}} selected",
+    "clear": "Clear",
+    "tabs": {
+      "optics": "Optics",
+      "cameras": "Cameras",
+      "mounts": "Mounts",
+      "filters": "Filters",
+      "accessories": "Acc."
+    },
+    "headings": {
+      "telescopes": "Telescopes for Astrophotography",
+      "cameras": "Astrophotography Cameras",
+      "mounts": "Equatorial Mounts",
+      "filters": "Filters",
+      "accessories": "Accessories"
+    },
+    "filters": {
+      "focalLength": "Focal Length",
+      "aperture": "Aperture",
+      "type": "Type",
+      "brand": "Brand",
+      "sensorWidth": "Sensor Width",
+      "pixelSize": "Pixel Size",
+      "sensor": "Sensor",
+      "color": "Color",
+      "mono": "Mono",
+      "cooling": "Cooling",
+      "cooled": "Cooled",
+      "uncooled": "Uncooled",
+      "payload": "Payload",
+      "mountWeight": "Mount Weight",
+      "goto": "GoTo",
+      "size": "Size",
+      "category": "Category"
+    },
+    "sort": {
+      "brand": "Brand A→Z",
+      "name": "Name A→Z",
+      "priceAsc": "Price ↑",
+      "priceDesc": "Price ↓",
+      "focalAsc": "Focal ↑",
+      "focalDesc": "Focal ↓",
+      "apertureAsc": "Aperture ↑",
+      "weightAsc": "Weight ↑",
+      "pixelAsc": "Pixel ↑",
+      "sensorAsc": "Sensor ↑",
+      "qeDesc": "QE ↓",
+      "payloadAsc": "Payload ↑",
+      "payloadDesc": "Payload ↓"
+    },
+    "presetLoaded": "Configuration \"{{name}}\" loaded"
+  }
+}

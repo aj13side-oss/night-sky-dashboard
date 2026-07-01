@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -57,36 +58,40 @@ function sortItems<T extends { brand: string; model: string; _raw?: Record<strin
   });
 }
 
-const sortOptions: Record<Category, { value: string; label: string }[]> = {
-  telescopes: [
-    { value: "brand", label: "Brand A→Z" }, { value: "name", label: "Name A→Z" },
-    { value: "price_asc", label: "Price ↑" }, { value: "price_desc", label: "Price ↓" },
-    { value: "focal_asc", label: "Focal ↑" }, { value: "focal_desc", label: "Focal ↓" },
-    { value: "aperture_asc", label: "Aperture ↑" }, { value: "weight_asc", label: "Weight ↑" },
-  ],
-  cameras: [
-    { value: "brand", label: "Brand A→Z" }, { value: "name", label: "Name A→Z" },
-    { value: "price_asc", label: "Price ↑" }, { value: "price_desc", label: "Price ↓" },
-    { value: "pixel_asc", label: "Pixel ↑" }, { value: "sensor_asc", label: "Sensor ↑" },
-    { value: "qe_desc", label: "QE ↓" }, { value: "weight_asc", label: "Weight ↑" },
-  ],
-  mounts: [
-    { value: "brand", label: "Brand A→Z" }, { value: "name", label: "Name A→Z" },
-    { value: "price_asc", label: "Price ↑" }, { value: "price_desc", label: "Price ↓" },
-    { value: "payload_asc", label: "Payload ↑" }, { value: "payload_desc", label: "Payload ↓" },
-    { value: "weight_asc", label: "Weight ↑" },
-  ],
-  filters: [
-    { value: "brand", label: "Brand A→Z" }, { value: "name", label: "Name A→Z" },
-    { value: "price_asc", label: "Price ↑" }, { value: "price_desc", label: "Price ↓" },
-  ],
-  accessories: [
-    { value: "brand", label: "Brand A→Z" }, { value: "name", label: "Name A→Z" },
-    { value: "price_asc", label: "Price ↑" }, { value: "price_desc", label: "Price ↓" },
-  ],
-};
+function buildSortOptions(t: (k: string) => string): Record<Category, { value: string; label: string }[]> {
+  return {
+    telescopes: [
+      { value: "brand", label: t("builder.sort.brand") }, { value: "name", label: t("builder.sort.name") },
+      { value: "price_asc", label: t("builder.sort.priceAsc") }, { value: "price_desc", label: t("builder.sort.priceDesc") },
+      { value: "focal_asc", label: t("builder.sort.focalAsc") }, { value: "focal_desc", label: t("builder.sort.focalDesc") },
+      { value: "aperture_asc", label: t("builder.sort.apertureAsc") }, { value: "weight_asc", label: t("builder.sort.weightAsc") },
+    ],
+    cameras: [
+      { value: "brand", label: t("builder.sort.brand") }, { value: "name", label: t("builder.sort.name") },
+      { value: "price_asc", label: t("builder.sort.priceAsc") }, { value: "price_desc", label: t("builder.sort.priceDesc") },
+      { value: "pixel_asc", label: t("builder.sort.pixelAsc") }, { value: "sensor_asc", label: t("builder.sort.sensorAsc") },
+      { value: "qe_desc", label: t("builder.sort.qeDesc") }, { value: "weight_asc", label: t("builder.sort.weightAsc") },
+    ],
+    mounts: [
+      { value: "brand", label: t("builder.sort.brand") }, { value: "name", label: t("builder.sort.name") },
+      { value: "price_asc", label: t("builder.sort.priceAsc") }, { value: "price_desc", label: t("builder.sort.priceDesc") },
+      { value: "payload_asc", label: t("builder.sort.payloadAsc") }, { value: "payload_desc", label: t("builder.sort.payloadDesc") },
+      { value: "weight_asc", label: t("builder.sort.weightAsc") },
+    ],
+    filters: [
+      { value: "brand", label: t("builder.sort.brand") }, { value: "name", label: t("builder.sort.name") },
+      { value: "price_asc", label: t("builder.sort.priceAsc") }, { value: "price_desc", label: t("builder.sort.priceDesc") },
+    ],
+    accessories: [
+      { value: "brand", label: t("builder.sort.brand") }, { value: "name", label: t("builder.sort.name") },
+      { value: "price_asc", label: t("builder.sort.priceAsc") }, { value: "price_desc", label: t("builder.sort.priceDesc") },
+    ],
+  };
+}
 
 const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProps) => {
+  const { t } = useTranslation("rigbuilder");
+  const sortOptions = useMemo(() => buildSortOptions(t), [t]);
   const { data: cameras, isLoading: loadingCams } = useCameras();
   const { data: telescopes, isLoading: loadingScopes } = useTelescopes();
   const { data: mounts, isLoading: loadingMounts } = useMounts();
@@ -271,7 +276,7 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
       filterIds: [],
       accessories: preset.accessory_ids ?? [],
     });
-    toast.success(`Configuration "${preset.name}" loaded`);
+    toast.success(t("builder.presetLoaded", { name: preset.name }));
   };
 
   const clearCompare = (cat: Category) => setCompareIds(prev => ({ ...prev, [cat]: [] }));
@@ -307,7 +312,7 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
             className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors mb-2"
           >
             <Sparkles className="w-4 h-4 text-primary" />
-            Recommended Configurations ({presets.length})
+            {t("builder.recommended")} ({presets.length})
             <span className={`text-xs transition-transform ${presetsOpen ? "rotate-180" : ""}`}>▼</span>
           </button>
           {presetsOpen && <PresetCards presets={presets} onLoad={loadPreset} telescopes={telescopes ?? []} cameras={cameras ?? []} mounts={mounts ?? []} />}
@@ -326,44 +331,44 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
       }}>
         <TabsList className="grid grid-cols-5 w-full max-w-2xl">
           <TabsTrigger value="telescopes" className="gap-1.5">
-            <Telescope className="w-3.5 h-3.5" /> Optics
+            <Telescope className="w-3.5 h-3.5" /> {t("builder.tabs.optics")}
           </TabsTrigger>
           <TabsTrigger value="cameras" className="gap-1.5">
-            <Camera className="w-3.5 h-3.5" /> Cameras
+            <Camera className="w-3.5 h-3.5" /> {t("builder.tabs.cameras")}
           </TabsTrigger>
           <TabsTrigger value="mounts" className="gap-1.5">
-            <Anchor className="w-3.5 h-3.5" /> Mounts
+            <Anchor className="w-3.5 h-3.5" /> {t("builder.tabs.mounts")}
           </TabsTrigger>
           <TabsTrigger value="filters" className="gap-1.5">
-            <Filter className="w-3.5 h-3.5" /> Filters
+            <Filter className="w-3.5 h-3.5" /> {t("builder.tabs.filters")}
           </TabsTrigger>
           <TabsTrigger value="accessories" className="gap-1.5">
-            <Wrench className="w-3.5 h-3.5" /> Acc.
+            <Wrench className="w-3.5 h-3.5" /> {t("builder.tabs.accessories")}
           </TabsTrigger>
         </TabsList>
 
         {compareCount > 0 && (
           <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-3 mt-4 p-3 rounded-lg border border-primary/30 bg-primary/5">
-            <span className="text-sm font-medium text-foreground">{compareCount} selected</span>
+            <span className="text-sm font-medium text-foreground">{t("builder.selected", { count: compareCount })}</span>
             <Button size="sm" variant="outline" onClick={() => clearCompare(tab)} className="gap-1">
-              <X className="w-3 h-3" /> Clear
+              <X className="w-3 h-3" /> {t("builder.clear")}
             </Button>
           </motion.div>
         )}
 
         {/* TELESCOPES */}
         <TabsContent value="telescopes">
-          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Telescopes for Astrophotography</h2>
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">{t("builder.headings.telescopes")}</h2>
           <EquipmentTab loading={loadingScopes} searchBar={searchBar} resultCount={filteredScopes.length} searchQuery={searchQuery}
             filters={<>
               <div className="grid sm:grid-cols-2 gap-4">
-                <RangeFilter label="Focal Length" unit="mm" min={scopeBoundsFL[0]} max={scopeBoundsFL[1]} value={scopeFL ?? scopeBoundsFL} onChange={setScopeFL} step={10} />
-                <RangeFilter label="Aperture" unit="mm" min={scopeBoundsAp[0]} max={scopeBoundsAp[1]} value={scopeAp ?? scopeBoundsAp} onChange={setScopeAp} step={5} />
+                <RangeFilter label={t("builder.filters.focalLength")} unit="mm" min={scopeBoundsFL[0]} max={scopeBoundsFL[1]} value={scopeFL ?? scopeBoundsFL} onChange={setScopeFL} step={10} />
+                <RangeFilter label={t("builder.filters.aperture")} unit="mm" min={scopeBoundsAp[0]} max={scopeBoundsAp[1]} value={scopeAp ?? scopeBoundsAp} onChange={setScopeAp} step={5} />
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
-                <ChipFilter label="Type" options={scopeTypes} selected={scopeType} onChange={setScopeType} />
-                <ChipFilter label="Brand" options={scopeBrands} selected={scopeBrand} onChange={setScopeBrand} />
+                <ChipFilter label={t("builder.filters.type")} options={scopeTypes} selected={scopeType} onChange={setScopeType} />
+                <ChipFilter label={t("builder.filters.brand")} options={scopeBrands} selected={scopeBrand} onChange={setScopeBrand} />
               </div>
             </>}
             compareTable={compareIds.telescopes.length >= 2 ? (
@@ -398,17 +403,17 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* CAMERAS */}
         <TabsContent value="cameras">
-          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Astrophotography Cameras</h2>
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">{t("builder.headings.cameras")}</h2>
           <EquipmentTab loading={loadingCams} searchBar={searchBar} resultCount={filteredCams.length} searchQuery={searchQuery}
             filters={<>
               <div className="grid sm:grid-cols-2 gap-4">
-                <RangeFilter label="Sensor Width" unit="mm" min={camBoundsSW[0]} max={camBoundsSW[1]} value={camSW ?? camBoundsSW} onChange={setCamSW} step={0.5} />
-                <RangeFilter label="Pixel Size" unit="µm" min={camBoundsPx[0]} max={camBoundsPx[1]} value={camPx ?? camBoundsPx} onChange={setCamPx} step={0.1} />
+                <RangeFilter label={t("builder.filters.sensorWidth")} unit="mm" min={camBoundsSW[0]} max={camBoundsSW[1]} value={camSW ?? camBoundsSW} onChange={setCamSW} step={0.5} />
+                <RangeFilter label={t("builder.filters.pixelSize")} unit="µm" min={camBoundsPx[0]} max={camBoundsPx[1]} value={camPx ?? camBoundsPx} onChange={setCamPx} step={0.1} />
               </div>
               <div className="grid sm:grid-cols-3 gap-4">
-                <ChipFilter label="Sensor" options={camSensors} selected={camSensor ? camSensors.find(s => s.startsWith(camSensor)) ?? null : null} onChange={(v) => setCamSensor(v ? v.replace(/ \(\d+\)$/, "") : null)} />
-                <ToggleFilter label="Type" value={camColor} onChange={setCamColor} labelYes="Color" labelNo="Mono" />
-                <ToggleFilter label="Cooling" value={camCooling} onChange={setCamCooling} labelYes="Cooled" labelNo="Uncooled" />
+                <ChipFilter label={t("builder.filters.sensor")} options={camSensors} selected={camSensor ? camSensors.find(s => s.startsWith(camSensor)) ?? null : null} onChange={(v) => setCamSensor(v ? v.replace(/ \(\d+\)$/, "") : null)} />
+                <ToggleFilter label={t("builder.filters.type")} value={camColor} onChange={setCamColor} labelYes={t("builder.filters.color")} labelNo={t("builder.filters.mono")} />
+                <ToggleFilter label={t("builder.filters.cooling")} value={camCooling} onChange={setCamCooling} labelYes={t("builder.filters.cooled")} labelNo={t("builder.filters.uncooled")} />
               </div>
             </>}
             compareTable={compareIds.cameras.length >= 2 ? (
@@ -449,17 +454,17 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* MOUNTS */}
         <TabsContent value="mounts">
-          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Equatorial Mounts</h2>
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">{t("builder.headings.mounts")}</h2>
           <EquipmentTab loading={loadingMounts} searchBar={searchBar} resultCount={filteredMounts.length} searchQuery={searchQuery}
             filters={<>
               <div className="grid sm:grid-cols-2 gap-4">
-                <RangeFilter label="Payload" unit="kg" min={mntBoundsPayload[0]} max={mntBoundsPayload[1]} value={mntPayload ?? mntBoundsPayload} onChange={setMntPayload} step={1} />
-                <RangeFilter label="Mount Weight" unit="kg" min={mntBoundsWeight[0]} max={mntBoundsWeight[1]} value={mntWeight ?? mntBoundsWeight} onChange={setMntWeight} step={0.5} />
+                <RangeFilter label={t("builder.filters.payload")} unit="kg" min={mntBoundsPayload[0]} max={mntBoundsPayload[1]} value={mntPayload ?? mntBoundsPayload} onChange={setMntPayload} step={1} />
+                <RangeFilter label={t("builder.filters.mountWeight")} unit="kg" min={mntBoundsWeight[0]} max={mntBoundsWeight[1]} value={mntWeight ?? mntBoundsWeight} onChange={setMntWeight} step={0.5} />
               </div>
               <div className="grid sm:grid-cols-3 gap-4">
-                <ChipFilter label="Type" options={mntTypes} selected={mntType} onChange={setMntType} />
-                <ToggleFilter label="GoTo" value={mntGoto} onChange={setMntGoto} />
-                <ChipFilter label="Brand" options={mntBrands} selected={mntBrand} onChange={setMntBrand} />
+                <ChipFilter label={t("builder.filters.type")} options={mntTypes} selected={mntType} onChange={setMntType} />
+                <ToggleFilter label={t("builder.filters.goto")} value={mntGoto} onChange={setMntGoto} />
+                <ChipFilter label={t("builder.filters.brand")} options={mntBrands} selected={mntBrand} onChange={setMntBrand} />
               </div>
             </>}
             compareTable={compareIds.mounts.length >= 2 ? (
@@ -494,12 +499,12 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* FILTERS */}
         <TabsContent value="filters">
-          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Filters</h2>
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">{t("builder.headings.filters")}</h2>
           <EquipmentTab loading={loadingFilters} searchBar={searchBar} resultCount={filteredFilts.length} searchQuery={searchQuery}
             filters={
               <div className="grid sm:grid-cols-2 gap-4">
-                <ChipFilter label="Type" options={filterTypes} selected={filterType} onChange={setFilterType} />
-                <ChipFilter label="Size" options={filterSizes} selected={filterSize} onChange={setFilterSize} />
+                <ChipFilter label={t("builder.filters.type")} options={filterTypes} selected={filterType} onChange={setFilterType} />
+                <ChipFilter label={t("builder.filters.size")} options={filterSizes} selected={filterSize} onChange={setFilterSize} />
               </div>
             }
             compareTable={compareIds.filters.length >= 2 ? (
@@ -530,9 +535,9 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* ACCESSORIES */}
         <TabsContent value="accessories">
-          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Accessories</h2>
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">{t("builder.headings.accessories")}</h2>
           <EquipmentTab loading={loadingAccessories} searchBar={searchBar} resultCount={filteredAccessories.length} searchQuery={searchQuery}
-            filters={<ChipFilter label="Category" options={accTypes} selected={accType} onChange={setAccType} />}
+            filters={<ChipFilter label={t("builder.filters.category")} options={accTypes} selected={accType} onChange={setAccType} />}
             compareTable={compareIds.accessories.length >= 2 ? (
               <CompareTable items={accessories?.filter(a => compareIds.accessories.includes(a.id)) ?? []} getImage={a => a.image_url}
                 columns={[

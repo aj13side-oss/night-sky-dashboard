@@ -1,0 +1,90 @@
+{
+  "monRig": {
+    "title": "Mon Rig",
+    "slots": {
+      "optics": "OPTIQUE",
+      "camera": "CAMÉRA",
+      "mount": "MONTURE",
+      "filters": "Filtres",
+      "accessories": "Accessoires"
+    },
+    "none": "Aucun",
+    "selectFromCatalog": "Choisir dans le catalogue",
+    "enterManually": "Saisir manuellement",
+    "manual": {
+      "focal": "Focale (mm)",
+      "aperture": "Ouverture (mm)",
+      "width": "L (mm)",
+      "height": "H (mm)",
+      "pixel": "Px (µm)"
+    },
+    "calc": {
+      "sampling": "Échantillonnage",
+      "fov": "FOV",
+      "focalLength": "Focale"
+    },
+    "sampling": {
+      "oversampled": "Suréchantillonné",
+      "undersampled": "Sous-échantillonné",
+      "ideal": "Idéal"
+    },
+    "previewEmpty": "Configurez votre rig pour voir l'aperçu du cadrage",
+    "previewCaption": "M31 — Andromeda Galaxy (190'×60')",
+    "compatible": "✓ Rig compatible",
+    "findTargets": "Trouver des cibles pour ce rig →"
+  },
+  "builder": {
+    "recommended": "Configurations recommandées",
+    "selected": "{{count}} sélectionné(s)",
+    "clear": "Effacer",
+    "tabs": {
+      "optics": "Optiques",
+      "cameras": "Caméras",
+      "mounts": "Montures",
+      "filters": "Filtres",
+      "accessories": "Acc."
+    },
+    "headings": {
+      "telescopes": "Télescopes pour l'astrophotographie",
+      "cameras": "Caméras d'astrophotographie",
+      "mounts": "Montures équatoriales",
+      "filters": "Filtres",
+      "accessories": "Accessoires"
+    },
+    "filters": {
+      "focalLength": "Focale",
+      "aperture": "Ouverture",
+      "type": "Type",
+      "brand": "Marque",
+      "sensorWidth": "Largeur capteur",
+      "pixelSize": "Taille pixel",
+      "sensor": "Capteur",
+      "color": "Couleur",
+      "mono": "Mono",
+      "cooling": "Refroidissement",
+      "cooled": "Refroidie",
+      "uncooled": "Non refroidie",
+      "payload": "Charge utile",
+      "mountWeight": "Poids monture",
+      "goto": "GoTo",
+      "size": "Taille",
+      "category": "Catégorie"
+    },
+    "sort": {
+      "brand": "Marque A→Z",
+      "name": "Nom A→Z",
+      "priceAsc": "Prix ↑",
+      "priceDesc": "Prix ↓",
+      "focalAsc": "Focale ↑",
+      "focalDesc": "Focale ↓",
+      "apertureAsc": "Ouverture ↑",
+      "weightAsc": "Poids ↑",
+      "pixelAsc": "Pixel ↑",
+      "sensorAsc": "Capteur ↑",
+      "qeDesc": "QE ↓",
+      "payloadAsc": "Charge ↑",
+      "payloadDesc": "Charge ↓"
+    },
+    "presetLoaded": "Configuration « {{name}} » chargée"
+  }
+}

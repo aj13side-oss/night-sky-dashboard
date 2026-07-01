@@ -100,7 +100,7 @@ const PlanetRow = ({ name, planet, index, solarObjects }: { name: string; planet
         {isVisible ? (
           <>
             <p className="text-xs font-mono text-foreground">
-              {planet.transitAlt?.toFixed(0)}° max
+              {planet.transitAlt?.toFixed(0)}° {t("planets.peakShort")}
             </p>
             <div className="text-[10px] text-muted-foreground">
               {planet.rise && <span>↑{planet.rise}</span>}

@@ -293,7 +293,7 @@ const SpecialEvents = () => {
                         Kp {a.kpIndex}
                       </span>
                       <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent font-medium">
-                        {a.probability}% chance
+                        {t("specialEvents.kpProbability", { p: a.probability })}
                       </span>
                     </div>
                   </div>

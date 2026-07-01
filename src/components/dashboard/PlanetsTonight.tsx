@@ -27,11 +27,11 @@ const PlanetsTonight = () => {
     <div className="glass-card rounded-2xl p-5 space-y-3">
       <div className="flex items-center gap-2">
         <Globe className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-semibold text-foreground">🪐 Planets Tonight</h3>
+        <h3 className="text-sm font-semibold text-foreground">{t("planets.title")}</h3>
       </div>
 
       {entries.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No planet data available</p>
+        <p className="text-xs text-muted-foreground">{t("planets.empty")}</p>
       ) : (
         <div className="space-y-1.5">
           {entries.map(([name, planet], i) => (

@@ -3,6 +3,7 @@ import { useSolarSystemObjects } from "@/hooks/useSolarSystemObjects";
 import { motion } from "framer-motion";
 import { Globe, Loader2 } from "lucide-react";
 import type { SolarSystemObject } from "@/hooks/useSolarSystemObjects";
+import { useTranslation } from "react-i18next";
 
 const PlanetsTonight = () => {
   const { data, isLoading } = useAstronomyData();

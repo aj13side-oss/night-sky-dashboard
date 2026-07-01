@@ -51,7 +51,8 @@ function colorForTime(
 }
 
 const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
-  const { t: tr } = useTranslation("atlas");
+  const { t: tr, i18n } = useTranslation("atlas");
+  const isFr = i18n.language?.startsWith("fr");
   const { topPicks, isLoading } = useTonightTopPicks(lat, lng, 3);
 
   if (isLoading) {

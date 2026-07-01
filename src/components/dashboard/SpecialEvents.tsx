@@ -31,7 +31,9 @@ interface SatelliteData {
 }
 
 const SpecialEvents = () => {
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const isFr = i18n.language?.startsWith("fr");
+  const pick = <T,>(fr: T | null | undefined, en: T): T => (isFr && fr ? fr : en);
   const { showers, loading: showersLoading, error: showersError } = useMeteorShowers();
   const aurora = getAuroraForecast();
   const asteroids = getAsteroids(new Date().getMonth());

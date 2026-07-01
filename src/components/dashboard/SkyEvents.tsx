@@ -96,7 +96,7 @@ const SkyEvents = () => {
 
   return (
     <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <h2 className="text-xl font-semibold text-foreground mb-4">🔭 Sky Events</h2>
+      <h2 className="text-xl font-semibold text-foreground mb-4">{t("skyEvents.title")}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {events.map((ev) => {
           const icon = TYPE_ICONS[ev.event_type] ?? "🚀";

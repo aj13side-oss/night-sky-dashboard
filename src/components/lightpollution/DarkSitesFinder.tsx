@@ -35,17 +35,17 @@ const DarkSitesFinder = ({ userLat, userLng, onSelectSite }: Props) => {
     <div className="glass-card rounded-2xl p-4 space-y-3">
       <div className="flex items-center gap-2">
         <Star className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-semibold text-foreground">Nearby Dark Sky Sites</h3>
+        <h3 className="text-sm font-semibold text-foreground">{t("darkSites.title")}</h3>
       </div>
 
       <div className="flex items-center gap-3">
-        <Label className="text-xs text-muted-foreground whitespace-nowrap">Radius: {maxRadius[0]} km</Label>
+        <Label className="text-xs text-muted-foreground whitespace-nowrap">{t("darkSites.radius", { n: maxRadius[0] })}</Label>
         <Slider value={maxRadius} onValueChange={setMaxRadius} min={50} max={500} step={50} className="flex-1" />
       </div>
 
       {nearbySites.length === 0 ? (
         <p className="text-xs text-muted-foreground text-center py-4">
-          No dark sites found within {maxRadius[0]} km. Try increasing the radius.
+          {t("darkSites.empty", { n: maxRadius[0] })}
         </p>
       ) : (
         <div className="space-y-2 max-h-64 overflow-y-auto">

@@ -15,6 +15,7 @@ interface Props {
 }
 
 const CitySearch = ({ onSelectCity }: Props) => {
+  const { t } = useTranslation("lightpollution");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);

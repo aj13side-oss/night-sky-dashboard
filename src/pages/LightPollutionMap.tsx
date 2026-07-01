@@ -82,6 +82,7 @@ function estimateBortleFromClick(map: L.Map, latlng: L.LatLng): number {
 }
 
 const LightPollutionMap = () => {
+  const { t } = useTranslation("lightpollution");
   const [lat, setLat] = useState(45.7347);
   const [lng, setLng] = useState(4.4931);
   const [overlayOpacity, setOverlayOpacity] = useState([0.6]);

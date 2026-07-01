@@ -499,12 +499,12 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* FILTERS */}
         <TabsContent value="filters">
-          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Filters</h2>
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">{t("builder.headings.filters")}</h2>
           <EquipmentTab loading={loadingFilters} searchBar={searchBar} resultCount={filteredFilts.length} searchQuery={searchQuery}
             filters={
               <div className="grid sm:grid-cols-2 gap-4">
-                <ChipFilter label="Type" options={filterTypes} selected={filterType} onChange={setFilterType} />
-                <ChipFilter label="Size" options={filterSizes} selected={filterSize} onChange={setFilterSize} />
+                <ChipFilter label={t("builder.filters.type")} options={filterTypes} selected={filterType} onChange={setFilterType} />
+                <ChipFilter label={t("builder.filters.size")} options={filterSizes} selected={filterSize} onChange={setFilterSize} />
               </div>
             }
             compareTable={compareIds.filters.length >= 2 ? (

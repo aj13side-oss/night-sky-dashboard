@@ -31,7 +31,9 @@ interface SatelliteData {
 }
 
 const SpecialEvents = () => {
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const isFr = i18n.language?.startsWith("fr");
+  const pick = <T,>(fr: T | null | undefined, en: T): T => (isFr && fr ? fr : en);
   const { showers, loading: showersLoading, error: showersError } = useMeteorShowers();
   const aurora = getAuroraForecast();
   const asteroids = getAsteroids(new Date().getMonth());
@@ -122,7 +124,7 @@ const SpecialEvents = () => {
                 <Zap className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <p className="text-xs font-semibold text-foreground">{shower.name}</p>
+                    <p className="text-xs font-semibold text-foreground">{pick(shower.name_fr, shower.name)}</p>
                     {shower.status === "active" ? (
                       <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-medium">{t("specialEvents.active")}</span>
                     ) : (
@@ -131,7 +133,7 @@ const SpecialEvents = () => {
                       </span>
                     )}
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{shower.description}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{pick(shower.description_fr, shower.description)}</p>
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-medium">
                       {t("specialEvents.peakLabel", { range: formatPeakRange(shower) })}
@@ -139,6 +141,11 @@ const SpecialEvents = () => {
                     <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent font-medium">
                       ZHR: {shower.zhr}
                     </span>
+                    {pick(shower.zhr_note_fr, shower.zhr_note) && (
+                      <span className="text-[9px] text-muted-foreground">
+                        {pick(shower.zhr_note_fr, shower.zhr_note)}
+                      </span>
+                    )}
                     <span className="text-[9px] text-muted-foreground">
                       {shower.speed_km_s} km/s
                     </span>
@@ -147,9 +154,9 @@ const SpecialEvents = () => {
                         {shower.parent_body}
                       </span>
                     )}
-                    {shower.best_time && (
+                    {pick(shower.best_time_fr, shower.best_time) && (
                       <span className="text-[9px] text-muted-foreground">
-                        {shower.best_time}
+                        {pick(shower.best_time_fr, shower.best_time)}
                       </span>
                     )}
                     <span className="text-[9px] text-muted-foreground">

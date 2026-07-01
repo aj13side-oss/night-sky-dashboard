@@ -4,17 +4,21 @@ import { supabase } from "@/integrations/supabase/client";
 export interface MeteorShowerRow {
   id: string;
   name: string;
+  name_fr: string | null;
   description: string;
+  description_fr: string | null;
   peak_month: number;
   peak_day_start: number;
   peak_day_end: number;
   active_window_days: number;
   zhr: number;
   zhr_note: string | null;
+  zhr_note_fr: string | null;
   speed_km_s: number;
   parent_body: string | null;
   radiant_constellation: string | null;
   best_time: string | null;
+  best_time_fr: string | null;
   northern_hemisphere: boolean;
   southern_hemisphere: boolean;
 }

@@ -7,17 +7,7 @@ import {
 } from "lucide-react";
 import type { RigPreset, AstroTelescope, AstroCamera, AstroMount } from "@/hooks/useEquipmentCatalog";
 
-const USE_CASE_LABELS: Record<string, string> = {
-  beginner_deepsky: "Beginner Deep Sky",
-  intermediate_deepsky: "Intermediate Deep Sky",
-  advanced_deepsky: "Advanced Deep Sky",
-  widefield: "Wide Field",
-  narrowband: "Narrowband",
-  beginner_planetary: "Planetary",
-  budget: "Budget",
-  portable: "Portable / Travel",
-  premium: "Premium",
-};
+// Use-case labels are translated via i18n (rigbuilder.useCases.*)
 
 const USE_CASE_ICONS: Record<string, React.ElementType> = {
   beginner_deepsky: Telescope,
@@ -88,7 +78,7 @@ export function PresetCards({ presets, onLoad, telescopes, cameras, mounts }: Pr
             </div>
 
             <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-              <span>{USE_CASE_LABELS[p.use_case] ?? p.use_case}</span>
+              <span>{t(`builder.useCases.${p.use_case}`, { defaultValue: p.use_case })}</span>
               <span className="text-primary">
                 {"★".repeat(p.difficulty_level ?? 1)}
               </span>
@@ -114,7 +104,7 @@ export function PresetCards({ presets, onLoad, telescopes, cameras, mounts }: Pr
               className="w-full h-7 text-xs border-primary/30 hover:bg-primary/10"
               onClick={() => onLoad(p)}
             >
-              Load this setup
+              {t("builder.loadSetup")}
             </Button>
           </div>
         );

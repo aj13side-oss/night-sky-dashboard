@@ -79,8 +79,20 @@ function colorForTime(
 }
 
 const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false, maxAltInWindow, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
+  const { t, i18n } = useTranslation("atlas");
   const navigate = useLocalizedNavigate();
   const { isInList, addObject, removeObject } = useTonightList();
+  const isFr = i18n.language?.startsWith("fr");
+  const displayName = isFr ? (obj.common_name_fr ?? obj.common_name) : obj.common_name;
+  const typeLabel = t(`types.${obj.obj_type}`, { defaultValue: obj.obj_type });
+  const rarityLabel = obj.rarity ? t(`rarity.${obj.rarity}`, { defaultValue: obj.rarity }) : null;
+  const seasonBadge = season => {
+    if (!season.label) return null;
+    if (season.isCircumpolar) return t("cards.yearRound");
+    if (season.isInvisible) return t("cards.notVisible");
+    if (season.isSeason) return `${getSeasonEmoji(season.label)} ${t(`seasons.${season.label}`, { defaultValue: season.label })}`;
+    return season.label;
+  };
 
   const rs = useMemo(() => {
     if (obj.ra_deg == null || obj.dec_deg == null) return null;

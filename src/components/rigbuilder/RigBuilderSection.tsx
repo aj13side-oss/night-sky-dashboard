@@ -312,7 +312,7 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
             className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors mb-2"
           >
             <Sparkles className="w-4 h-4 text-primary" />
-            Recommended Configurations ({presets.length})
+            {t("builder.recommended")} ({presets.length})
             <span className={`text-xs transition-transform ${presetsOpen ? "rotate-180" : ""}`}>▼</span>
           </button>
           {presetsOpen && <PresetCards presets={presets} onLoad={loadPreset} telescopes={telescopes ?? []} cameras={cameras ?? []} mounts={mounts ?? []} />}

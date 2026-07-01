@@ -102,7 +102,7 @@ const CitySearch = ({ onSelectCity }: Props) => {
         </div>
       )}
       {noResults && !isLoading && query.trim() && (
-        <p className="text-xs text-muted-foreground mt-1.5">No results found. Try a city name or country.</p>
+        <p className="text-xs text-muted-foreground mt-1.5">{t("citySearch.noResults")}</p>
       )}
     </div>
   );

@@ -43,6 +43,7 @@ const BARLOW_OPTIONS = [
 ];
 
 const FovCalculator = () => {
+  const { t } = useTranslation("fov");
   const [searchParams] = useSearchParams();
   const navigate = useLocalizedNavigate();
   const { data: dbTelescopes } = useTelescopes();

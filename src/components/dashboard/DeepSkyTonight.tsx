@@ -145,6 +145,7 @@ const DeepSkyRow = ({
   index: number;
   onClick: () => void;
 }) => {
+  const { t } = useTranslation("dashboard");
   const { data: img } = useObjectImage(
     obj.catalog_id,
     obj.common_name,

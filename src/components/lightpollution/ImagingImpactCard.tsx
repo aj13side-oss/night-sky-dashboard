@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { BORTLE_MULTIPLIERS } from "@/lib/dark-sites";
 import { Camera, Telescope } from "lucide-react";
 
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const ImagingImpactCard = ({ selectedBortle }: Props) => {
+  const { t } = useTranslation("lightpollution");
   const [bortle, setBortle] = useState(selectedBortle ?? 5);
 
   const current = BORTLE_MULTIPLIERS[bortle];
@@ -22,7 +24,7 @@ const ImagingImpactCard = ({ selectedBortle }: Props) => {
     <div className="glass-card rounded-2xl p-4 space-y-3">
       <div className="flex items-center gap-2">
         <Camera className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-semibold text-foreground">Imaging Impact Calculator</h3>
+        <h3 className="text-sm font-semibold text-foreground">{t("imagingImpact.title")}</h3>
       </div>
 
       {/* Bortle Selector */}
@@ -49,17 +51,17 @@ const ImagingImpactCard = ({ selectedBortle }: Props) => {
       {/* Results */}
       <div className="grid grid-cols-3 gap-2">
         <div className="p-3 rounded-xl bg-secondary/30 text-center">
-          <p className="text-[10px] text-muted-foreground mb-1">Multiplier</p>
+          <p className="text-[10px] text-muted-foreground mb-1">{t("imagingImpact.multiplier")}</p>
           <p className="text-lg font-bold font-mono text-foreground">×{current.multiplier}</p>
         </div>
         <div className="p-3 rounded-xl bg-secondary/30 text-center">
-          <p className="text-[10px] text-muted-foreground mb-1">Limiting Mag</p>
+          <p className="text-[10px] text-muted-foreground mb-1">{t("imagingImpact.limitingMag")}</p>
           <p className="text-lg font-bold font-mono text-foreground">{current.limitingMag}</p>
         </div>
         <div className="p-3 rounded-xl bg-secondary/30 text-center">
-          <p className="text-[10px] text-muted-foreground mb-1">Equiv. Subs</p>
+          <p className="text-[10px] text-muted-foreground mb-1">{t("imagingImpact.equivSubs")}</p>
           <p className="text-lg font-bold font-mono text-foreground">{adjustedSubs}×</p>
-          <p className="text-[9px] text-muted-foreground">60s each</p>
+          <p className="text-[9px] text-muted-foreground">{t("imagingImpact.eachSub")}</p>
         </div>
       </div>
 
@@ -68,10 +70,10 @@ const ImagingImpactCard = ({ selectedBortle }: Props) => {
         <table className="w-full text-xs">
           <thead>
             <tr className="bg-secondary/20">
-              <th className="text-left p-2 text-muted-foreground font-medium">Bortle</th>
+              <th className="text-left p-2 text-muted-foreground font-medium">{t("imagingImpact.tableBortle")}</th>
               <th className="text-center p-2 text-muted-foreground font-medium">×</th>
-              <th className="text-center p-2 text-muted-foreground font-medium">Lim. Mag</th>
-              <th className="text-right p-2 text-muted-foreground font-medium">Total (60s)</th>
+              <th className="text-center p-2 text-muted-foreground font-medium">{t("imagingImpact.tableLimMag")}</th>
+              <th className="text-right p-2 text-muted-foreground font-medium">{t("imagingImpact.tableTotal")}</th>
             </tr>
           </thead>
           <tbody>
@@ -92,7 +94,7 @@ const ImagingImpactCard = ({ selectedBortle }: Props) => {
                 </td>
                 <td className="p-2 text-center font-mono text-foreground">×{data.multiplier}</td>
                 <td className="p-2 text-center font-mono text-foreground">{data.limitingMag}</td>
-                <td className="p-2 text-right font-mono text-foreground">{Math.round(60 * data.multiplier)} min</td>
+                <td className="p-2 text-right font-mono text-foreground">{Math.round(60 * data.multiplier)} {t("imagingImpact.min")}</td>
               </tr>
             ))}
           </tbody>
@@ -100,7 +102,7 @@ const ImagingImpactCard = ({ selectedBortle }: Props) => {
       </div>
 
       <p className="text-[10px] text-muted-foreground">
-        Multiplier = extra integration time vs Bortle 1 to reach equivalent SNR. Based on sky brightness ratios.
+        {t("imagingImpact.note")}
       </p>
     </div>
   );

@@ -172,7 +172,7 @@ const SpecialEvents = () => {
         <div className="space-y-1.5">
           <div className="flex items-center gap-1.5 pt-1">
             <CircleDot className="w-3 h-3 text-orange-400" />
-            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Asteroids</span>
+            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t("specialEvents.sections.asteroids")}</span>
           </div>
           {asteroids.slice(0, 3).map((asteroid) => {
             const i = animIndex++;

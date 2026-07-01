@@ -85,7 +85,7 @@ const SpaceActivities = () => {
       transition={{ delay: 0.2 }}
       className="space-y-4"
     >
-      <h2 className="text-xl font-semibold text-foreground">Human Space Activities</h2>
+      <h2 className="text-xl font-semibold text-foreground">{t("spaceActivities.title")}</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Astronauts */}
@@ -93,7 +93,7 @@ const SpaceActivities = () => {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Users className="w-4 h-4 text-primary" />
-              Humans in Space
+              {t("spaceActivities.humansInSpace")}
               {astronauts && (
                 <Badge variant="secondary" className="ml-auto text-xs">
                   {astronauts.length}
@@ -103,7 +103,7 @@ const SpaceActivities = () => {
           </CardHeader>
           <CardContent>
             {astroError ? (
-              <ErrorMsg />
+              <ErrorMsg label={t("spaceActivities.loadFailed")} />
             ) : !astronauts ? (
               <ListSkeleton count={4} />
             ) : (
@@ -129,34 +129,34 @@ const SpaceActivities = () => {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Globe className="w-4 h-4 text-primary" />
-              ISS Position
+              {t("spaceActivities.issPosition")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {issError ? (
-              <ErrorMsg />
+              <ErrorMsg label={t("spaceActivities.loadFailed")} />
             ) : !issPos ? (
               <ListSkeleton count={2} />
             ) : (
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-xs text-muted-foreground">Latitude</p>
+                    <p className="text-xs text-muted-foreground">{t("spaceActivities.latitude")}</p>
                     <p className="text-lg font-mono text-foreground">{parseFloat(issPos.latitude).toFixed(4)}°</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">Longitude</p>
+                    <p className="text-xs text-muted-foreground">{t("spaceActivities.longitude")}</p>
                     <p className="text-lg font-mono text-foreground">{parseFloat(issPos.longitude).toFixed(4)}°</p>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground">Updated every 5s</p>
+                <p className="text-xs text-muted-foreground">{t("spaceActivities.updatedEvery5s")}</p>
                 <a
                   href="https://www.nasa.gov/international-space-station/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
                 >
-                  NASA ISS Page <ExternalLink className="w-3 h-3" />
+                  {t("spaceActivities.nasaIssPage")} <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
             )}
@@ -168,12 +168,12 @@ const SpaceActivities = () => {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Rocket className="w-4 h-4 text-primary" />
-              Upcoming Launches
+              {t("spaceActivities.upcomingLaunches")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {launchError ? (
-              <ErrorMsg />
+              <ErrorMsg label={t("spaceActivities.loadFailed")} />
             ) : !launches ? (
               <ListSkeleton count={5} />
             ) : (
@@ -182,7 +182,7 @@ const SpaceActivities = () => {
                   <li key={l.id} className="space-y-0.5">
                     <p className="text-sm font-medium text-foreground/90 leading-tight">{l.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {l.rocket?.configuration?.name} · {new Date(l.net).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      {l.rocket?.configuration?.name} · {new Date(l.net).toLocaleDateString(dateLocale, { month: "short", day: "numeric", year: "numeric" })}
                     </p>
                     <Badge variant="outline" className="text-[10px] px-1.5 py-0">
                       {l.status?.abbrev ?? l.status?.name}
@@ -198,10 +198,10 @@ const SpaceActivities = () => {
   );
 };
 
-const ErrorMsg = () => (
+const ErrorMsg = ({ label }: { label: string }) => (
   <div className="flex items-center gap-2 text-xs text-destructive">
     <AlertCircle className="w-3.5 h-3.5" />
-    <span>Failed to load data</span>
+    <span>{label}</span>
   </div>
 );
 
@@ -212,5 +212,6 @@ const ListSkeleton = ({ count }: { count: number }) => (
     ))}
   </div>
 );
+
 
 export default SpaceActivities;

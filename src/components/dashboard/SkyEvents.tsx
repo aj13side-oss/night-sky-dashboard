@@ -39,6 +39,7 @@ const VIS_COLORS: Record<string, string> = {
 };
 
 const SkyEvents = () => {
+  const { t } = useTranslation("dashboard");
   const [events, setEvents] = useState<SkyEvent[]>([]);
   const [loading, setLoading] = useState(true);
 

@@ -33,7 +33,9 @@ export function MonRigPanel({
   telescope, camera, mount, filters, accessories,
   onClearTelescope, onClearCamera, onClearMount, onRemoveFilter, onRemoveAccessory,
 }: MonRigPanelProps) {
-  const { t } = useTranslation("rigbuilder");
+  const { t, i18n } = useTranslation("rigbuilder");
+  const isFr = i18n.language?.startsWith("fr");
+  const msg = (r: { message_fr?: string | null; message_en: string }) => (isFr && r.message_fr ? r.message_fr : r.message_en);
   const navigate = useLocalizedNavigate();
   const { data: rules } = useCompatibilityRules();
 

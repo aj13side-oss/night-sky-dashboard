@@ -566,7 +566,7 @@ const FovCalculator = () => {
                             />
                             <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-[8px] text-accent text-center py-0.5 font-mono">
                               🔍 {obj.name} — {obj.sizeArcmin >= 1 ? `${obj.sizeArcmin.toFixed(1)}'` : `${(obj.sizeArcmin * 60).toFixed(1)}"`}
-                              {trueSizePercent < 2 && " (enlarged)"}
+                              {trueSizePercent < 2 && ` (${t("preview.enlarged")})`}
                             </div>
                           </div>
                         )}
@@ -586,7 +586,7 @@ const FovCalculator = () => {
                         {isTransitioning && (
                           <div className="absolute inset-0 flex items-center justify-center z-10 bg-black/30">
                             <div className="h-5 w-5 border-2 border-primary/40 border-t-primary rounded-full animate-spin" />
-                            <span className="text-xs text-muted-foreground ml-2">Updating view...</span>
+                            <span className="text-xs text-muted-foreground ml-2">{t("preview.updating")}</span>
                           </div>
                         )}
 
@@ -687,7 +687,7 @@ const FovCalculator = () => {
                           <div className="rounded-full border border-accent/50" style={{ width: '20%', height: '20%' }} />
                         </div>
                         <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-[9px] text-accent text-center py-0.5 font-mono">
-                          🔍 {obj.name} — {obj.sizeArcmin}' closeup
+                          🔍 {obj.name} — {obj.sizeArcmin}' {t("preview.closeup")}
                         </div>
                         <div className="absolute -top-1 -left-1 w-2 h-2 border-l-2 border-t-2 border-accent/50" />
                       </div>
@@ -700,7 +700,7 @@ const FovCalculator = () => {
                           {obj?.name}: {obj?.sizeArcmin != null && obj.sizeArcmin >= 1 ? `${obj.sizeArcmin.toFixed(1)}'` : `${((obj?.sizeArcmin ?? 0) * 60).toFixed(1)}"`}
                         </div>
                         <div className="absolute bottom-2 left-2 bg-black/70 text-[10px] text-muted-foreground font-mono px-2 py-1 rounded z-10">
-                          {fov.wArcmin.toFixed(0)}' × {fov.hArcmin.toFixed(0)}' sensor
+                          {fov.wArcmin.toFixed(0)}' × {fov.hArcmin.toFixed(0)}' {t("preview.sensorLabel").toLowerCase()}
                         </div>
                       </>
                     )}
@@ -708,7 +708,7 @@ const FovCalculator = () => {
                 ) : (
                   <div className="flex items-center justify-center" style={{ minHeight: 400 }}>
                     <span className="text-muted-foreground text-sm">
-                      {obj ? `No sky image available for ${obj.name}` : "Select equipment and a target to preview framing"}
+                      {obj ? t("preview.noImage", { name: obj.name }) : t("preview.empty")}
                     </span>
                   </div>
                 )}
@@ -719,17 +719,17 @@ const FovCalculator = () => {
                 <div className="flex items-center gap-4 mt-2 px-1 text-[10px] text-muted-foreground">
                   <span className="flex items-center gap-1.5">
                     <span className="inline-block w-4 h-3 border border-primary/60 rounded-sm" />
-                    Sensor FOV
+                    {t("preview.sensorFov")}
                   </span>
                   {!isSolar && objFractionW > 0 && (
                     <span className="flex items-center gap-1.5">
                       <span className="inline-block w-3 h-3 rounded-full border border-accent/70" />
-                      Object size
+                      {t("preview.objectSize")}
                     </span>
                   )}
                   <span className="flex items-center gap-1.5">
                     <span className="inline-block w-3 h-0 border-t border-primary/30" />
-                    Center
+                    {t("preview.center")}
                   </span>
                 </div>
               )}
@@ -739,7 +739,7 @@ const FovCalculator = () => {
                 <div className="text-[9px] text-muted-foreground/60 mt-1 px-1">
                   📷 {solarObj.image_credit} · {solarObj.image_license}
                   {solarObj.image_source_url && (
-                    <> · <a href={solarObj.image_source_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-muted-foreground">Source</a></>
+                    <> · <a href={solarObj.image_source_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-muted-foreground">{t("solar.source")}</a></>
                   )}
                 </div>
               )}
@@ -755,36 +755,36 @@ const FovCalculator = () => {
               {isSolar && solarObj && imgLoaded && (
                 <div className="space-y-2 bg-secondary/30 rounded-lg p-3 text-xs">
                   {solarObj.recommended_technique && (
-                    <p className="text-muted-foreground"><span className="text-foreground font-medium">Technique:</span> {solarObj.recommended_technique}</p>
+                    <p className="text-muted-foreground"><span className="text-foreground font-medium">{t("solar.technique")}:</span> {solarObj.recommended_technique}</p>
                   )}
                   {solarObj.recommended_filters && (
-                    <p className="text-muted-foreground"><span className="text-foreground font-medium">Filters:</span> {solarObj.recommended_filters}</p>
+                    <p className="text-muted-foreground"><span className="text-foreground font-medium">{t("solar.filters")}:</span> {solarObj.recommended_filters}</p>
                   )}
                   {solarObj.capture_gain_note && (
-                    <p className="text-muted-foreground"><span className="text-foreground font-medium">Capture:</span> {solarObj.capture_gain_note}</p>
+                    <p className="text-muted-foreground"><span className="text-foreground font-medium">{t("solar.capture")}:</span> {solarObj.capture_gain_note}</p>
                   )}
                   {solarObj.recommended_focal_mm && (
-                    <p className="text-muted-foreground"><span className="text-foreground font-medium">Recommended focal:</span> {solarObj.recommended_focal_mm}mm</p>
+                    <p className="text-muted-foreground"><span className="text-foreground font-medium">{t("solar.recommendedFocal")}:</span> {solarObj.recommended_focal_mm}mm</p>
                   )}
                 </div>
               )}
 
               <div className="flex items-center justify-between text-xs text-muted-foreground mt-2 px-1">
                 <span className="font-mono">
-                  Sensor: {fov.wArcmin.toFixed(0)}' × {fov.hArcmin.toFixed(0)}'
+                  {t("preview.sensorLabel")}: {fov.wArcmin.toFixed(0)}' × {fov.hArcmin.toFixed(0)}'
                 </span>
                 {obj && (
                   <span className="font-mono">
                     {obj.name}: {obj.sizeArcmin >= 1 ? `${obj.sizeArcmin.toFixed(1)}'` : `${(obj.sizeArcmin * 60).toFixed(1)}"`} →
                     {objFractionW > 1
-                      ? ` overflows frame (${(objFractionW * 100).toFixed(0)}% — need mosaic)`
+                      ? t("preview.framing.overflow", { pct: (objFractionW * 100).toFixed(0) })
                       : objFractionW > 0.5
-                      ? ` good framing (${(objFractionW * 100).toFixed(0)}%)`
+                      ? t("preview.framing.good", { pct: (objFractionW * 100).toFixed(0) })
                       : objFractionW > 0.15
-                      ? ` fits with room (${(objFractionW * 100).toFixed(0)}%)`
+                      ? t("preview.framing.fits", { pct: (objFractionW * 100).toFixed(0) })
                       : objFractionW >= 0.01
-                      ? ` very small in frame (${(objFractionW * 100).toFixed(0)}%)`
-                      : ` very small in frame (${(objFractionW * 100).toFixed(1)}%)`}
+                      ? t("preview.framing.small", { pct: (objFractionW * 100).toFixed(0) })
+                      : t("preview.framing.small", { pct: (objFractionW * 100).toFixed(1) })}
                   </span>
                 )}
               </div>

@@ -535,9 +535,9 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* ACCESSORIES */}
         <TabsContent value="accessories">
-          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Accessories</h2>
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">{t("builder.headings.accessories")}</h2>
           <EquipmentTab loading={loadingAccessories} searchBar={searchBar} resultCount={filteredAccessories.length} searchQuery={searchQuery}
-            filters={<ChipFilter label="Category" options={accTypes} selected={accType} onChange={setAccType} />}
+            filters={<ChipFilter label={t("builder.filters.category")} options={accTypes} selected={accType} onChange={setAccType} />}
             compareTable={compareIds.accessories.length >= 2 ? (
               <CompareTable items={accessories?.filter(a => compareIds.accessories.includes(a.id)) ?? []} getImage={a => a.image_url}
                 columns={[

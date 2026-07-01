@@ -16,6 +16,7 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 const DeepSkyTonight = () => {
+  const { t } = useTranslation("dashboard");
   const { location, date } = useObservation();
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const navigate = useLocalizedNavigate();

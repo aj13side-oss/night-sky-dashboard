@@ -311,7 +311,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
             className="flex-1 text-[10px] h-7 gap-1 text-muted-foreground hover:text-foreground"
             onClick={(e) => { e.stopPropagation(); navigate(`/object/${encodeURIComponent(obj.catalog_id)}`); }}
           >
-            <BookOpen className="w-3 h-3" /> More
+            <BookOpen className="w-3 h-3" /> {t("cards.more")}
           </Button>
           <Button
             variant="ghost"
@@ -322,7 +322,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
               navigate(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`);
             }}
           >
-            <Crosshair className="w-3 h-3" /> Frame
+            <Crosshair className="w-3 h-3" /> {t("cards.frame")}
           </Button>
           <Button
             variant="ghost"
@@ -332,10 +332,10 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
               e.stopPropagation();
               if (isInList(obj.catalog_id)) {
                 removeObject(obj.catalog_id);
-                toast("Removed from tonight's list");
+                toast(t("cards.removedFromList"));
               } else {
                 addObject(obj.catalog_id);
-                toast.success("Added to tonight's list!");
+                toast.success(t("cards.addedToList"));
               }
             }}
           >

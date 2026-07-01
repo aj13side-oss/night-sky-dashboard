@@ -1,6 +1,34 @@
 {
   "heading": "Light Pollution Map",
   "subheading": "Find dark sky sites near you — check Bortle scale, SQM readings and light pollution levels for better astrophotography.",
+  "darkSites": {
+    "title": "Nearby Dark Sky Sites",
+    "radius": "Radius: {{n}} km",
+    "empty": "No dark sites found within {{n}} km. Try increasing the radius.",
+    "directions": "Directions"
+  },
+  "imagingImpact": {
+    "title": "Imaging Impact Calculator",
+    "multiplier": "Multiplier",
+    "limitingMag": "Limiting Mag",
+    "equivSubs": "Equiv. Subs",
+    "eachSub": "60s each",
+    "tableBortle": "Bortle",
+    "tableLimMag": "Lim. Mag",
+    "tableTotal": "Total (60s)",
+    "min": "min",
+    "note": "Multiplier = extra integration time vs Bortle 1 to reach equivalent SNR. Based on sky brightness ratios."
+  },
+  "infoPanel": {
+    "clickedLocation": "Clicked Location",
+    "exposureMultiplier": "Exposure multiplier",
+    "limitingMagnitude": "Limiting magnitude",
+    "mag": "mag"
+  },
+  "citySearch": {
+    "placeholder": "Search a city…",
+    "noResults": "No results found. Try a city name or country."
+  },
   "toolbar": {
     "myLocation": "My Location",
     "opacity": "Opacity",

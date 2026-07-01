@@ -229,7 +229,7 @@ function scoreColor(score: number): string {
   return "hsl(0, 60%, 40%)";
 }
 
-function scoreLabel(score: number): string {
+function scoreLabelKey(score: number): "Excellent" | "Good" | "Average" | "Poor" | "Bad" {
   if (score >= 80) return "Excellent";
   if (score >= 65) return "Good";
   if (score >= 45) return "Average";

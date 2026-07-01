@@ -51,7 +51,8 @@ function colorForTime(
 }
 
 const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
-  const { t: tr } = useTranslation("atlas");
+  const { t: tr, i18n } = useTranslation("atlas");
+  const isFr = i18n.language?.startsWith("fr");
   const { topPicks, isLoading } = useTonightTopPicks(lat, lng, 3);
 
   if (isLoading) {
@@ -134,7 +135,7 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
                   className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg"
                   style={{ backgroundColor: getRarityColor(obj.rarity), color: "#0F172A" }}
                 >
-                  {obj.rarity}
+                  {tr(`rarity.${obj.rarity}`, { defaultValue: obj.rarity })}
                 </div>
               )}
 
@@ -143,8 +144,10 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
                 <p className="text-sm font-bold text-foreground truncate">
                   {formatCatalogId(obj)}
                 </p>
-                {obj.common_name && (
-                  <p className="text-xs text-primary truncate">{obj.common_name}</p>
+                {(isFr ? (obj.common_name_fr ?? obj.common_name) : obj.common_name) && (
+                  <p className="text-xs text-primary truncate">
+                    {isFr ? (obj.common_name_fr ?? obj.common_name) : obj.common_name}
+                  </p>
                 )}
 
                 {/* Dynamic score breakdown */}
@@ -154,7 +157,7 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
                   }`}>
                     {score.total}
                   </span>
-                  <span className="text-[10px] text-muted-foreground">pts</span>
+                  <span className="text-[10px] text-muted-foreground">{tr("cards.pts")}</span>
 
                   {score.altitudeBonus > 0 && (
                     <span className="flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-medium">
@@ -167,14 +170,20 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
                 <div className="flex items-center justify-between text-[10px] gap-2">
                   {season.label && (
                     <span className="text-muted-foreground truncate">
-                      {season.isSeason ? `${getSeasonEmoji(season.label)} Best in ${season.label}` : season.label}
+                      {season.isCircumpolar
+                        ? tr("cards.yearRound")
+                        : season.isInvisible
+                        ? tr("cards.notVisible")
+                        : season.isSeason
+                        ? `${getSeasonEmoji(season.label)} ${tr("cards.bestInSeason", { season: tr(`seasons.${season.label}`, { defaultValue: season.label }) })}`
+                        : season.label}
                     </span>
                   )}
                   {rs && (
                     rs.isCircumpolar ? (
-                      <span className="font-medium text-emerald-400">Always visible</span>
+                      <span className="font-medium text-emerald-400">{tr("cards.alwaysVisible")}</span>
                     ) : rs.neverRises ? (
-                      <span className="font-medium text-red-400/80">Not visible</span>
+                      <span className="font-medium text-red-400/80">{tr("cards.notVisible")}</span>
                     ) : (
                       <span className="font-mono whitespace-nowrap">
                         <span className={colorForTime(rs.riseTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>

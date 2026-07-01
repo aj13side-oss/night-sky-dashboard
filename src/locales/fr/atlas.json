@@ -79,6 +79,32 @@
     "heading": "A photographier ce soir",
     "dynamicRanking": "Classement dynamique"
   },
+  "cards": {
+    "yearRound": "Toute l'année",
+    "notVisible": "Non visible",
+    "notVisibleLong": "Non visible depuis votre position",
+    "bestInSeason": "Idéal en {{season}}",
+    "prime": "Prime",
+    "topPick": "Coup de cœur",
+    "accessibilityScore": "Score d'accessibilité",
+    "partOfLargerRegion": "Fait partie d'une région plus vaste",
+    "alwaysVisible": "Toujours visible",
+    "notVisibleTonight": "Non visible cette nuit",
+    "peak": "max",
+    "lowBestAbove30": "Faible — idéal au-dessus de 30°",
+    "more": "Détails",
+    "frame": "Cadrer",
+    "pts": "pts",
+    "addedToList": "Ajouté à la liste de ce soir !",
+    "removedFromList": "Retiré de la liste de ce soir"
+  },
+  "rarity": {
+    "Legendary": "Légendaire",
+    "Epic": "Épique",
+    "Rare": "Rare",
+    "Uncommon": "Peu commun",
+    "Common": "Commun"
+  },
   "seasons": {
     "Winter": "Hiver",
     "Spring": "Printemps",

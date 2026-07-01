@@ -12,6 +12,7 @@ import { formatCatalogId } from "@/lib/format-catalog";
 import { Button } from "@/components/ui/button";
 import { useTonightList } from "@/hooks/useTonightList";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   obj: CelestialObject;
@@ -78,8 +79,13 @@ function colorForTime(
 }
 
 const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false, maxAltInWindow, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
+  const { t, i18n } = useTranslation("atlas");
   const navigate = useLocalizedNavigate();
   const { isInList, addObject, removeObject } = useTonightList();
+  const isFr = i18n.language?.startsWith("fr");
+  const displayName = isFr ? (obj.common_name_fr ?? obj.common_name) : obj.common_name;
+  const typeLabel = t(`types.${obj.obj_type}`, { defaultValue: obj.obj_type });
+  const rarityLabel = obj.rarity ? t(`rarity.${obj.rarity}`, { defaultValue: obj.rarity }) : null;
 
   const rs = useMemo(() => {
     if (obj.ra_deg == null || obj.dec_deg == null) return null;
@@ -171,19 +177,25 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
                 className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg"
                 style={{ backgroundColor: getRarityColor(obj.rarity), color: "#0F172A" }}
               >
-                {obj.rarity}
+                {rarityLabel}
               </div>
             )}
             {isPrime && (
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-300/90 text-slate-900 text-[10px] font-bold uppercase tracking-wider shadow-lg">
-                <Award className="w-3 h-3" /> Prime
+                <Award className="w-3 h-3" /> {t("cards.prime")}
               </div>
             )}
           </div>
 
           {season.label && (
             <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-background/70 backdrop-blur-sm text-[10px] text-foreground font-medium">
-              {season.isSeason ? `${getSeasonEmoji(season.label)} ${season.label}` : season.label}
+              {season.isCircumpolar
+                ? t("cards.yearRound")
+                : season.isInvisible
+                ? t("cards.notVisible")
+                : season.isSeason
+                ? `${getSeasonEmoji(season.label)} ${t(`seasons.${season.label}`, { defaultValue: season.label })}`
+                : season.label}
             </div>
           )}
         </div>
@@ -194,7 +206,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
         {obj.photo_score != null && (
           <div className="mb-3 space-y-1.5">
             <div className="flex items-end justify-between">
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Accessibility Score</span>
+              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{t("cards.accessibilityScore")}</span>
               <span className={`font-mono font-bold text-xl leading-none ${scoreColor}`}>{obj.photo_score}</span>
             </div>
 
@@ -220,16 +232,16 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
               {typeEmoji[obj.obj_type] ?? "🔭"} {formatCatalogId(obj)}
               {isTopPick && (
                 <span className="ml-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-yellow-500/90 text-yellow-950 text-[9px] font-bold">
-                  🏆 Top Pick
+                  🏆 {t("cards.topPick")}
                 </span>
               )}
             </p>
-            {obj.common_name && (
-              <p className="text-xs text-primary truncate mt-0.5">{obj.common_name}</p>
+            {displayName && (
+              <p className="text-xs text-primary truncate mt-0.5">{displayName}</p>
             )}
             {obj.parent_id && (
               <p className="text-[10px] text-muted-foreground truncate mt-0.5 flex items-center gap-1">
-                <Link className="w-3 h-3" /> Part of a larger region
+                <Link className="w-3 h-3" /> {t("cards.partOfLargerRegion")}
               </p>
             )}
           </div>
@@ -245,7 +257,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
         )}
 
         <div className="grid grid-cols-2 gap-y-1.5 text-xs text-muted-foreground">
-          <span className="truncate">{obj.obj_type}</span>
+          <span className="truncate">{typeLabel}</span>
           <span className="text-right truncate">{obj.constellation ?? "—"}</span>
 
           {obj.magnitude != null && (
@@ -265,9 +277,9 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
         {rs && (
           <div className="mt-2 pt-2 border-t border-border/30 flex items-center justify-between text-xs">
             {rs.isCircumpolar ? (
-              <span className="font-medium text-emerald-400">Always visible</span>
+              <span className="font-medium text-emerald-400">{t("cards.alwaysVisible")}</span>
             ) : rs.neverRises ? (
-              <span className="font-medium text-red-400/80">Not visible tonight</span>
+              <span className="font-medium text-red-400/80">{t("cards.notVisibleTonight")}</span>
             ) : (
               <span className="font-mono">
                 <span className={colorForTime(rs.riseTime, sunset, astroDuskEnd, astroDawnBegin, sunrise)}>
@@ -280,14 +292,14 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
               </span>
             )}
             {!rs.neverRises && (
-              <span className="text-muted-foreground font-mono">peak {Math.round(rs.transitAlt)}°</span>
+              <span className="text-muted-foreground font-mono">{t("cards.peak")} {Math.round(rs.transitAlt)}°</span>
             )}
           </div>
         )}
 
         {maxAltInWindow != null && maxAltInWindow < 30 && (
           <div className="mt-1.5 text-[10px] text-muted-foreground/80 italic">
-            Low — best above 30°
+            {t("cards.lowBestAbove30")}
           </div>
         )}
 
@@ -299,7 +311,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
             className="flex-1 text-[10px] h-7 gap-1 text-muted-foreground hover:text-foreground"
             onClick={(e) => { e.stopPropagation(); navigate(`/object/${encodeURIComponent(obj.catalog_id)}`); }}
           >
-            <BookOpen className="w-3 h-3" /> More
+            <BookOpen className="w-3 h-3" /> {t("cards.more")}
           </Button>
           <Button
             variant="ghost"
@@ -310,7 +322,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
               navigate(`/fov-calculator?target=${encodeURIComponent(obj.catalog_id)}`);
             }}
           >
-            <Crosshair className="w-3 h-3" /> Frame
+            <Crosshair className="w-3 h-3" /> {t("cards.frame")}
           </Button>
           <Button
             variant="ghost"
@@ -320,10 +332,10 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
               e.stopPropagation();
               if (isInList(obj.catalog_id)) {
                 removeObject(obj.catalog_id);
-                toast("Removed from tonight's list");
+                toast(t("cards.removedFromList"));
               } else {
                 addObject(obj.catalog_id);
-                toast.success("Added to tonight's list!");
+                toast.success(t("cards.addedToList"));
               }
             }}
           >

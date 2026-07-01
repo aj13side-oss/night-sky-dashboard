@@ -403,17 +403,17 @@ const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProp
 
         {/* CAMERAS */}
         <TabsContent value="cameras">
-          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">Astrophotography Cameras</h2>
+          <h2 className="text-lg font-semibold text-foreground mt-2 mb-1">{t("builder.headings.cameras")}</h2>
           <EquipmentTab loading={loadingCams} searchBar={searchBar} resultCount={filteredCams.length} searchQuery={searchQuery}
             filters={<>
               <div className="grid sm:grid-cols-2 gap-4">
-                <RangeFilter label="Sensor Width" unit="mm" min={camBoundsSW[0]} max={camBoundsSW[1]} value={camSW ?? camBoundsSW} onChange={setCamSW} step={0.5} />
-                <RangeFilter label="Pixel Size" unit="µm" min={camBoundsPx[0]} max={camBoundsPx[1]} value={camPx ?? camBoundsPx} onChange={setCamPx} step={0.1} />
+                <RangeFilter label={t("builder.filters.sensorWidth")} unit="mm" min={camBoundsSW[0]} max={camBoundsSW[1]} value={camSW ?? camBoundsSW} onChange={setCamSW} step={0.5} />
+                <RangeFilter label={t("builder.filters.pixelSize")} unit="µm" min={camBoundsPx[0]} max={camBoundsPx[1]} value={camPx ?? camBoundsPx} onChange={setCamPx} step={0.1} />
               </div>
               <div className="grid sm:grid-cols-3 gap-4">
-                <ChipFilter label="Sensor" options={camSensors} selected={camSensor ? camSensors.find(s => s.startsWith(camSensor)) ?? null : null} onChange={(v) => setCamSensor(v ? v.replace(/ \(\d+\)$/, "") : null)} />
-                <ToggleFilter label="Type" value={camColor} onChange={setCamColor} labelYes="Color" labelNo="Mono" />
-                <ToggleFilter label="Cooling" value={camCooling} onChange={setCamCooling} labelYes="Cooled" labelNo="Uncooled" />
+                <ChipFilter label={t("builder.filters.sensor")} options={camSensors} selected={camSensor ? camSensors.find(s => s.startsWith(camSensor)) ?? null : null} onChange={(v) => setCamSensor(v ? v.replace(/ \(\d+\)$/, "") : null)} />
+                <ToggleFilter label={t("builder.filters.type")} value={camColor} onChange={setCamColor} labelYes={t("builder.filters.color")} labelNo={t("builder.filters.mono")} />
+                <ToggleFilter label={t("builder.filters.cooling")} value={camCooling} onChange={setCamCooling} labelYes={t("builder.filters.cooled")} labelNo={t("builder.filters.uncooled")} />
               </div>
             </>}
             compareTable={compareIds.cameras.length >= 2 ? (

@@ -124,17 +124,17 @@ const SpecialEvents = () => {
                   <div className="flex items-center gap-1.5">
                     <p className="text-xs font-semibold text-foreground">{shower.name}</p>
                     {shower.status === "active" ? (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-medium">Active</span>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-medium">{t("specialEvents.active")}</span>
                     ) : (
                       <span className="text-[9px] text-muted-foreground">
-                        In {shower.daysUntilStart}d — {formatPeakRange(shower)}
+                        {t("specialEvents.inDaysShort", { n: shower.daysUntilStart })} — {formatPeakRange(shower)}
                       </span>
                     )}
                   </div>
                   <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{shower.description}</p>
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-medium">
-                      Peak: {formatPeakRange(shower)}
+                      {t("specialEvents.peakLabel", { range: formatPeakRange(shower) })}
                     </span>
                     <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent font-medium">
                       ZHR: {shower.zhr}
@@ -154,10 +154,10 @@ const SpecialEvents = () => {
                     )}
                     <span className="text-[9px] text-muted-foreground">
                       🌍 {shower.northern_hemisphere && shower.southern_hemisphere
-                        ? "Both hemispheres"
+                        ? t("specialEvents.hemispheres.both")
                         : shower.northern_hemisphere
-                        ? "North only"
-                        : "South only"}
+                        ? t("specialEvents.hemispheres.northOnly")
+                        : t("specialEvents.hemispheres.southOnly")}
                     </span>
                   </div>
                 </div>

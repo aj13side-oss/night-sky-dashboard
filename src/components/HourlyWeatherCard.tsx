@@ -355,13 +355,13 @@ const HourlyWeatherCard = () => {
             columns={[
               { key: "hour", label: "⏰", width: "w-12" },
               { key: "clouds", label: "☁️" },
-              { key: "cloudsLow", label: "Low" },
-              { key: "cloudsMid", label: "Mid" },
-              { key: "cloudsHigh", label: "High" },
+              { key: "cloudsLow", label: t("weather.cols.low") },
+              { key: "cloudsMid", label: t("weather.cols.mid") },
+              { key: "cloudsHigh", label: t("weather.cols.high") },
               { key: "temp", label: "°C" },
               { key: "humidity", label: "💧" },
               { key: "wind", label: "💨" },
-              { key: "dewPoint", label: "Dew" },
+              { key: "dewPoint", label: t("weather.cols.dew") },
             ]}
             rows={openMeteoNight.map((h) => ({
               hour: { value: formatHour(h.time), style: "" },

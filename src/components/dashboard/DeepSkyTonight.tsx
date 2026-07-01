@@ -82,7 +82,7 @@ const DeepSkyTonight = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-semibold text-foreground">✨ Deep Sky — Tonight's Best</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t("deepSky.title")}</h3>
         </div>
       </div>
 

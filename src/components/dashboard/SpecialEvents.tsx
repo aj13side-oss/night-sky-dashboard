@@ -124,7 +124,7 @@ const SpecialEvents = () => {
                 <Zap className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <p className="text-xs font-semibold text-foreground">{shower.name}</p>
+                    <p className="text-xs font-semibold text-foreground">{pick(shower.name_fr, shower.name)}</p>
                     {shower.status === "active" ? (
                       <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-medium">{t("specialEvents.active")}</span>
                     ) : (

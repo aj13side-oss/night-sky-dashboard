@@ -327,26 +327,26 @@ const FovCalculator = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             className="glass-card rounded-2xl p-6 space-y-5">
-            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Configuration</h3>
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t("sections.configuration")}</h3>
 
             <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Telescope</Label>
+              <Label className="text-xs text-muted-foreground">{t("form.telescope")}</Label>
               <Select value={telescopeId} onValueChange={handleTelescopeChange}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Choose a telescope..." /></SelectTrigger>
+                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={t("form.chooseTelescope")} /></SelectTrigger>
                 <SelectContent>
                   <div className="p-2 sticky top-0 bg-popover">
                     <Input
-                      placeholder="Search telescopes..."
+                      placeholder={t("form.searchTelescopes")}
                       value={telescopeSearch}
                       onChange={(e) => setTelescopeSearch(e.target.value)}
                       className="h-8 text-xs bg-secondary/50"
                       onClick={(e) => e.stopPropagation()}
                     />
                   </div>
-                  <SelectItem value="custom">✏️ Custom</SelectItem>
-                  {filteredTelescopes.map(t => (
-                    <SelectItem key={t.id} value={t.id}>
-                      {t.brand} {t.model} ({t.focal_length_mm}mm{t.f_ratio ? ` f/${t.f_ratio}` : ""})
+                  <SelectItem value="custom">✏️ {t("form.custom")}</SelectItem>
+                  {filteredTelescopes.map(t2 => (
+                    <SelectItem key={t2.id} value={t2.id}>
+                      {t2.brand} {t2.model} ({t2.focal_length_mm}mm{t2.f_ratio ? ` f/${t2.f_ratio}` : ""})
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -12,6 +12,7 @@ import { formatCatalogId } from "@/lib/format-catalog";
 import { Button } from "@/components/ui/button";
 import { useTonightList } from "@/hooks/useTonightList";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   obj: CelestialObject;

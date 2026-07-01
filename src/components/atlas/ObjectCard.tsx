@@ -206,7 +206,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
         {obj.photo_score != null && (
           <div className="mb-3 space-y-1.5">
             <div className="flex items-end justify-between">
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Accessibility Score</span>
+              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{t("cards.accessibilityScore")}</span>
               <span className={`font-mono font-bold text-xl leading-none ${scoreColor}`}>{obj.photo_score}</span>
             </div>
 

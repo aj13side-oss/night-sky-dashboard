@@ -89,7 +89,7 @@ const TonightListRow = ({ obj, lat, lng, onRemove }: { obj: CelestialObject; lat
         <p className="text-[10px] text-muted-foreground font-mono">
           {alt != null ? `${alt.toFixed(0)}° alt` : ""}
           {rs && !rs.neverRises && !rs.isCircumpolar && rs.setTime ? ` · ↓${formatTimeShort(rs.setTime)}` : ""}
-          {rs?.isCircumpolar ? " · All night" : ""}
+          {rs?.isCircumpolar ? ` · ${t("tonightList.allNight")}` : ""}
         </p>
       </div>
       <button onClick={onRemove} className="text-muted-foreground hover:text-destructive transition-colors p-1">

@@ -536,7 +536,8 @@ const HeatmapTable = ({ title, color, error, columns, rows }: HeatmapTableProps)
       </div>
     )}
   </div>
-);
+  );
+};
 
 function cssStringToObject(css: string): React.CSSProperties {
   const obj: Record<string, string> = {};

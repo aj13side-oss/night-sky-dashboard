@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -39,6 +40,7 @@ interface PresetCardsProps {
 }
 
 export function PresetCards({ presets, onLoad, telescopes, cameras, mounts }: PresetCardsProps) {
+  const { t } = useTranslation("rigbuilder");
   const equipNames = useMemo(() => {
     const map: Record<string, string> = {};
     presets.forEach(p => {
@@ -80,7 +82,7 @@ export function PresetCards({ presets, onLoad, telescopes, cameras, mounts }: Pr
               </div>
               {isFeatured && (
                 <Badge variant="secondary" className="text-[9px] px-1.5 py-0 shrink-0">
-                  Popular
+                  {t("builder.popular")}
                 </Badge>
               )}
             </div>

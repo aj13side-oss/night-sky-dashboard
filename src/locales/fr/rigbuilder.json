@@ -35,6 +35,10 @@
   },
   "builder": {
     "recommended": "Configurations recommandées",
+    "popular": "Populaire",
+    "resultsCount_one": "{{count}} résultat",
+    "resultsCount_other": "{{count}} résultats",
+    "resultsFor": " pour « {{query}} »",
     "selected": "{{count}} sélectionné(s)",
     "clear": "Effacer",
     "tabs": {

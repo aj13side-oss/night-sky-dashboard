@@ -19,10 +19,10 @@ const PHASE_EMOJIS: Record<string, string> = {
   "New Moon": "🌑", "First Quarter": "🌓", "Full Moon": "🌕", "Last Quarter": "🌗",
 };
 
-function getSeeingImpact(illum: number) {
-  if (illum <= 25) return { label: "Excellent", color: "text-green-400", desc: "Dark skies, ideal for deep-sky" };
-  if (illum <= 65) return { label: "Moderate", color: "text-amber-400", desc: "Partial interference" };
-  return { label: "Poor", color: "text-red-400", desc: "Strong moonlight, avoid nebulae" };
+function getSeeingImpact(illum: number): { key: "Excellent" | "Moderate" | "Poor"; color: string } {
+  if (illum <= 25) return { key: "Excellent", color: "text-green-400" };
+  if (illum <= 65) return { key: "Moderate", color: "text-amber-400" };
+  return { key: "Poor", color: "text-red-400" };
 }
 
 function useEnhancedMoon(date: Date, lat: number, lng: number) {

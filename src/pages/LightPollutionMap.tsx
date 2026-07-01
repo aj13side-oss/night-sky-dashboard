@@ -123,7 +123,7 @@ const LightPollutionMap = () => {
     overlayRef.current = overlay;
 
     const marker = L.marker([lat, lng]).addTo(map);
-    marker.bindPopup(`<b>Your position</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
+    marker.bindPopup(`<b>${t("map.yourPosition")}</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
     markerRef.current = marker;
 
     map.on("click", (e: L.LeafletMouseEvent) => {
@@ -139,7 +139,7 @@ const LightPollutionMap = () => {
       const div = L.DomUtil.create("div", "");
       div.innerHTML = `
         <div style="background:rgba(0,0,0,0.75);border-radius:8px;padding:6px 8px;font-size:10px;color:#ccc;max-width:140px;line-height:1.6;">
-          <div style="font-weight:600;margin-bottom:3px;color:#fff;">Bortle Scale</div>
+          <div style="font-weight:600;margin-bottom:3px;color:#fff;">${t("map.legendTitle")}</div>
           <div style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#333;border:1px solid #555;"></span> B1–B2</div>
           <div style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#2d6a4f;"></span> B3–B4</div>
           <div style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#e9c46a;"></span> B5</div>
@@ -164,7 +164,7 @@ const LightPollutionMap = () => {
     if (!mapRef.current || !markerRef.current) return;
     mapRef.current.setView([lat, lng], mapRef.current.getZoom());
     markerRef.current.setLatLng([lat, lng]);
-    markerRef.current.setPopupContent(`<b>Your position</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
+    markerRef.current.setPopupContent(`<b>${t("map.yourPosition")}</b><br/>${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
   }, [lat, lng]);
 
   useEffect(() => {
@@ -185,7 +185,7 @@ const LightPollutionMap = () => {
           setLng(pos.coords.longitude);
           mapRef.current?.setView([pos.coords.latitude, pos.coords.longitude], 10);
         },
-        () => toast.error("Location access denied — use the search bar instead.")
+        () => toast.error(t("map.locationDenied"))
       );
     }
   };
@@ -240,9 +240,9 @@ const LightPollutionMap = () => {
         {!isFullscreen && (
           <>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <h1 className="text-3xl font-bold text-foreground">Light Pollution Map</h1>
+              <h1 className="text-3xl font-bold text-foreground">{t("heading")}</h1>
               <p className="text-muted-foreground mt-2 max-w-3xl">
-                Find dark sky sites near you — check Bortle scale, SQM readings and light pollution levels for better astrophotography.
+                {t("subheading")}
               </p>
             </motion.div>
 
@@ -254,10 +254,10 @@ const LightPollutionMap = () => {
             >
               <CitySearch onSelectCity={handleSelectCity} />
               <Button size="sm" variant="outline" onClick={handleGeolocate} className="h-9 gap-1.5">
-                <Locate className="w-3.5 h-3.5" /> My Location
+                <Locate className="w-3.5 h-3.5" /> {t("toolbar.myLocation")}
               </Button>
               <div className="flex items-center gap-2 ml-auto">
-                <Label className="text-xs text-muted-foreground whitespace-nowrap">Opacity</Label>
+                <Label className="text-xs text-muted-foreground whitespace-nowrap">{t("toolbar.opacity")}</Label>
                 <Slider value={overlayOpacity} onValueChange={setOverlayOpacity} min={0} max={1} step={0.05} className="w-24" />
               </div>
               <Button size="sm" variant="ghost" onClick={() => setIsFullscreen(true)} className="h-9 gap-1.5">
@@ -274,7 +274,7 @@ const LightPollutionMap = () => {
           {isFullscreen && (
             <div className="absolute top-4 right-4 z-[1000] flex gap-2">
               <Button size="sm" variant="secondary" onClick={() => setIsFullscreen(false)} className="h-8 gap-1.5 shadow-lg">
-                <Minimize2 className="w-3.5 h-3.5" /> Exit Fullscreen
+                <Minimize2 className="w-3.5 h-3.5" /> {t("toolbar.exitFullscreen")}
               </Button>
             </div>
           )}
@@ -309,14 +309,14 @@ const LightPollutionMap = () => {
               transition={{ delay: 0.2 }}
               className="glass-card rounded-2xl p-6 space-y-3"
             >
-              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Bortle Scale</h3>
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t("bortle.sectionTitle")}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {BORTLE_SCALE.map((b) => (
                   <div key={b.level} className="flex items-center gap-3 py-1">
                     <div className="w-5 h-5 rounded-sm shrink-0 border border-border" style={{ backgroundColor: b.color }} />
                     <div className="min-w-0">
-                      <p className="text-xs font-medium text-foreground">Bortle {b.level} — {b.label}</p>
-                      <p className="text-[10px] text-muted-foreground font-mono">SQM {b.sqm}</p>
+                      <p className="text-xs font-medium text-foreground">{t("bortle.prefix")} {b.level} — {t(`bortle.labels.${b.level}`)}</p>
+                      <p className="text-[10px] text-muted-foreground font-mono">{t("bortle.sqmPrefix")} {b.sqm}</p>
                     </div>
                   </div>
                 ))}
@@ -325,46 +325,49 @@ const LightPollutionMap = () => {
 
             <details className="space-y-4 pt-6 border-t border-border/20" itemScope itemType="https://schema.org/FAQPage">
               <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
-                Frequently Asked Questions
+                {t("faq.title")}
               </summary>
               <div className="space-y-4 pt-4">
                 <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
                   <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
-                    What is the Bortle scale?
+                    {t("faq.items.bortle.q")}
                   </h3>
                   <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
                     <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
-                      The Bortle scale is a nine-level numeric classification of sky darkness, from class 1 (pristine, star-filled skies) to class 9 (inner-city glow). It measures how much artificial light brightens the night sky, directly affecting how many stars you can see and how well cameras capture faint nebulae and galaxies.
+                      {t("faq.items.bortle.a")}
                     </p>
                   </div>
                 </div>
                 <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
                   <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
-                    How do I find dark skies near me?
+                    {t("faq.items.findDark.q")}
                   </h3>
                   <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
                     <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
-                      Use our interactive light pollution map to scout Bortle 1–4 dark sky sites near your location. Click anywhere on the map to sample the light pollution level, or search for parks, reserves and certified dark sky locations in the Nearby Dark Sky Sites panel. Driving even 30–60 minutes from a city can dramatically improve your imaging quality.
+                      {t("faq.items.findDark.a")}
                     </p>
                   </div>
                 </div>
+              </div>
               </div>
             </details>
 
             <details className="space-y-4 pt-6 border-t border-border/20">
               <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
-                Understanding Light Pollution & Dark Skies
+                {t("about.title")}
               </summary>
               <div className="space-y-4 pt-4">
                 <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-                  Light pollution is artificial light that brightens the night sky and washes out faint celestial objects. The
-                  <span className="text-foreground/80 font-medium"> Bortle scale</span> ranks sky darkness from class 1 (pristine, star-filled skies) to class 9 (inner-city glow where only the brightest stars are visible). Class 1–3 locations are considered true dark sky sites and are ideal for deep sky astrophotography.
+                  {t("about.p1_before")}
+                  <span className="text-foreground/80 font-medium">{t("about.p1_bortle")}</span>
+                  {t("about.p1_after")}
                 </p>
                 <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-                  <span className="text-foreground/80 font-medium">SQM (Sky Quality Meter)</span> gives a precise brightness reading in magnitudes per square arcsecond — higher values mean darker skies. A reading above 21.7 is excellent; below 18.5, imaging faint nebulae and galaxies becomes very difficult without narrowband filters.
+                  <span className="text-foreground/80 font-medium">{t("about.p2_sqm")}</span>
+                  {t("about.p2_after")}
                 </p>
                 <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-                  Light pollution directly affects astrophotography by reducing contrast, increasing noise, and requiring longer total integration times. Shooting from a Bortle 1–3 dark sky site can cut your required exposure time by half or more compared to a suburban Bortle 5 location. Use the map overlay above to scout dark sky sites near you, then check the Nearby Dark Sky Sites panel for parks, reserves and certified locations within driving distance.
+                  {t("about.p3")}
                 </p>
               </div>
             </details>

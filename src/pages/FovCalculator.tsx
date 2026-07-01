@@ -430,27 +430,27 @@ const FovCalculator = () => {
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="space-y-6">
             <div className="glass-card rounded-2xl p-6 space-y-4">
-              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Results</h3>
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t("sections.results")}</h3>
               <div className="grid grid-cols-2 gap-4">
-                <ResultItem label="FOV Width" value={`${fov.w.toFixed(2)}° (${fov.wArcmin.toFixed(1)}')`} />
-                <ResultItem label="FOV Height" value={`${fov.h.toFixed(2)}° (${fov.hArcmin.toFixed(1)}')`} />
-                <ResultItem label="Effective Focal Length" value={`${effectiveFL} mm`} />
-                <ResultItem label="Sampling (arcsec/pixel)" value={`${fov.resolution.toFixed(2)} "/px`} />
-                <ResultItem label="Sampling Quality"
+                <ResultItem label={t("results.fovWidth")} value={`${fov.w.toFixed(2)}° (${fov.wArcmin.toFixed(1)}')`} />
+                <ResultItem label={t("results.fovHeight")} value={`${fov.h.toFixed(2)}° (${fov.hArcmin.toFixed(1)}')`} />
+                <ResultItem label={t("results.effectiveFL")} value={`${effectiveFL} mm`} />
+                <ResultItem label={t("results.sampling")} value={`${fov.resolution.toFixed(2)} "/px`} />
+                <ResultItem label={t("results.samplingQuality")}
                   value={samplingLabel.text}
                   highlight={samplingLabel.ok} />
                 {obj && (() => {
                   const pct = objFractionW * 100;
                   const framingColor = pct > 100 ? "text-red-400" : pct >= 80 ? "text-orange-400" : "";
-                  const framingBadge = pct > 100 ? "Mosaic needed" : pct >= 80 ? "Tight fit" : "";
+                  const framingBadge = pct > 100 ? t("results.badgeMosaic") : pct >= 80 ? t("results.badgeTight") : "";
                   return (
                     <div>
                       <ResultItem
-                        label={`Framing ${obj.name}`}
+                        label={t("results.framing", { name: obj.name })}
                         value={
                           objFractionW >= 0.01
-                            ? `${pct.toFixed(0)}% of width`
-                            : `${pct.toFixed(1)}% of width — very small, consider using a barlow`
+                            ? `${pct.toFixed(0)}% ${t("results.ofWidth")}`
+                            : `${pct.toFixed(1)}% ${t("results.ofWidth")} — ${t("results.verySmallHint")}`
                         }
                         highlight={pct < 80}
                         className={framingColor}
@@ -477,10 +477,10 @@ const FovCalculator = () => {
                     }}
                   >
                     <Telescope className="w-4 h-4" />
-                    Find best targets for this setup
+                    {t("results.findTargets")}
                   </Button>
                   <p className="text-[10px] text-muted-foreground text-center">
-                    Objects between {Math.round(fov.wArcmin * 0.15)}' and {Math.round(fov.wArcmin)}' — ideal framing for your {Math.round(fov.wArcmin)}' wide field
+                    {t("results.targetsHint", { min: Math.round(fov.wArcmin * 0.15), max: Math.round(fov.wArcmin) })}
                   </p>
                 </div>
               )}

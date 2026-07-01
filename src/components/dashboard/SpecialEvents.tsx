@@ -101,11 +101,11 @@ const SpecialEvents = () => {
         )}
 
         {showersError && (
-          <p className="text-[10px] text-muted-foreground text-center py-2">Failed to load showers</p>
+          <p className="text-[10px] text-muted-foreground text-center py-2">{t("specialEvents.showersError")}</p>
         )}
 
         {!showersLoading && !showersError && showers.length === 0 && (
-          <p className="text-[10px] text-muted-foreground text-center py-2">No major shower in the next 30 days</p>
+          <p className="text-[10px] text-muted-foreground text-center py-2">{t("specialEvents.noMajorShower")}</p>
         )}
 
         {showers.map((shower) => {

@@ -308,7 +308,7 @@ const SpecialEvents = () => {
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5 pt-1">
           <Satellite className="w-3 h-3 text-blue-400" />
-          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Satellite Passes</span>
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t("specialEvents.sections.satellitePasses")}</span>
         </div>
 
         {satLoading && (
@@ -323,11 +323,11 @@ const SpecialEvents = () => {
         )}
 
         {satError && (
-          <p className="text-[10px] text-muted-foreground text-center py-2">Failed to load satellite passes</p>
+          <p className="text-[10px] text-muted-foreground text-center py-2">{t("specialEvents.satFailed")}</p>
         )}
 
         {!satLoading && !satError && satellites.length === 0 && (
-          <p className="text-[10px] text-muted-foreground text-center py-2">No satellite passes available</p>
+          <p className="text-[10px] text-muted-foreground text-center py-2">{t("specialEvents.noSatPasses")}</p>
         )}
 
         {!satLoading && !satError && satellites.map((sat) => {

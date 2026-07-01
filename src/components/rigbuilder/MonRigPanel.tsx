@@ -138,11 +138,13 @@ export function MonRigPanel({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold" style={{ color: "#FFB347" }}>🔭 My Rig</h2>
+      <h2 className="text-xl font-bold" style={{ color: "#FFB347" }}>🔭 {t("monRig.title")}</h2>
 
       {/* OPTIQUE slot */}
       <SlotCard
-        label="OPTICS"
+        label={t("monRig.slots.optics")}
+        selectLabel={t("monRig.selectFromCatalog")}
+        manualLabel={t("monRig.enterManually")}
         item={telescope ? `${telescope.brand} ${telescope.model}` : null}
         onClear={onClearTelescope}
         showManual={!telescope && showManualScope}
@@ -150,12 +152,12 @@ export function MonRigPanel({
         manualContent={
           <div className="grid grid-cols-2 gap-2 mt-2">
             <div>
-              <Label className="text-[10px] text-muted-foreground">Focal (mm)</Label>
+              <Label className="text-[10px] text-muted-foreground">{t("monRig.manual.focal")}</Label>
               <Input type="number" value={manualTelescope.focalLength || ""} className="h-7 text-xs bg-secondary/30 border-border/50 font-mono"
                 onChange={e => setManualTelescope(p => ({ ...p, focalLength: Number(e.target.value) }))} />
             </div>
             <div>
-              <Label className="text-[10px] text-muted-foreground">Aperture (mm)</Label>
+              <Label className="text-[10px] text-muted-foreground">{t("monRig.manual.aperture")}</Label>
               <Input type="number" value={manualTelescope.aperture || ""} className="h-7 text-xs bg-secondary/30 border-border/50 font-mono"
                 onChange={e => setManualTelescope(p => ({ ...p, aperture: Number(e.target.value) }))} />
             </div>
@@ -165,7 +167,9 @@ export function MonRigPanel({
 
       {/* CAMERA slot */}
       <SlotCard
-        label="CAMERA"
+        label={t("monRig.slots.camera")}
+        selectLabel={t("monRig.selectFromCatalog")}
+        manualLabel={t("monRig.enterManually")}
         item={camera ? `${camera.brand} ${camera.model}` : null}
         onClear={onClearCamera}
         showManual={!camera && showManualCam}
@@ -173,17 +177,17 @@ export function MonRigPanel({
         manualContent={
           <div className="grid grid-cols-3 gap-2 mt-2">
             <div>
-              <Label className="text-[10px] text-muted-foreground">W (mm)</Label>
+              <Label className="text-[10px] text-muted-foreground">{t("monRig.manual.width")}</Label>
               <Input type="number" step="0.1" value={manualCamera.sensorWidth || ""} className="h-7 text-xs bg-secondary/30 border-border/50 font-mono"
                 onChange={e => setManualCamera(p => ({ ...p, sensorWidth: Number(e.target.value) }))} />
             </div>
             <div>
-              <Label className="text-[10px] text-muted-foreground">H (mm)</Label>
+              <Label className="text-[10px] text-muted-foreground">{t("monRig.manual.height")}</Label>
               <Input type="number" step="0.1" value={manualCamera.sensorHeight || ""} className="h-7 text-xs bg-secondary/30 border-border/50 font-mono"
                 onChange={e => setManualCamera(p => ({ ...p, sensorHeight: Number(e.target.value) }))} />
             </div>
             <div>
-              <Label className="text-[10px] text-muted-foreground">Px (µm)</Label>
+              <Label className="text-[10px] text-muted-foreground">{t("monRig.manual.pixel")}</Label>
               <Input type="number" step="0.01" value={manualCamera.pixelSize || ""} className="h-7 text-xs bg-secondary/30 border-border/50 font-mono"
                 onChange={e => setManualCamera(p => ({ ...p, pixelSize: Number(e.target.value) }))} />
             </div>
@@ -192,7 +196,7 @@ export function MonRigPanel({
       />
 
       {/* MOUNT slot */}
-      <SlotCard label="MOUNT" item={mount ? `${mount.brand} ${mount.model}` : null} onClear={onClearMount} />
+      <SlotCard label={t("monRig.slots.mount")} selectLabel={t("monRig.selectFromCatalog")} item={mount ? `${mount.brand} ${mount.model}` : null} onClear={onClearMount} />
 
       {/* FILTERS */}
       <div className="rounded-lg border border-border/50 p-3">

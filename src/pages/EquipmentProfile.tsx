@@ -11,6 +11,7 @@ import { MonRigPanel } from "@/components/rigbuilder/MonRigPanel";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const EquipmentProfile = () => {
+  const { t } = useTranslation("equipment");
   const isMobile = useIsMobile();
   const { data: telescopes } = useTelescopes();
   const { data: cameras } = useCameras();

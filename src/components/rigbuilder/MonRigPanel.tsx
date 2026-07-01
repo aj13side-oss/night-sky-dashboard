@@ -314,8 +314,10 @@ export function MonRigPanel({
 }
 
 // Slot card sub-component
-function SlotCard({ label, item, onClear, showManual, onToggleManual, manualContent }: {
+function SlotCard({ label, selectLabel, manualLabel, item, onClear, showManual, onToggleManual, manualContent }: {
   label: string;
+  selectLabel: string;
+  manualLabel?: string;
   item: string | null;
   onClear: () => void;
   showManual?: boolean;
@@ -334,12 +336,12 @@ function SlotCard({ label, item, onClear, showManual, onToggleManual, manualCont
         </div>
       ) : (
         <div className="mt-1">
-          <p className="text-[10px] text-muted-foreground italic">Select from catalog</p>
-          {onToggleManual && (
+          <p className="text-[10px] text-muted-foreground italic">{selectLabel}</p>
+          {onToggleManual && manualLabel && (
             <>
               <button onClick={onToggleManual} className="text-[10px] text-primary hover:underline flex items-center gap-0.5 mt-1">
                 <ChevronDown className={`w-3 h-3 transition-transform ${showManual ? "rotate-180" : ""}`} />
-                Enter manually
+                {manualLabel}
               </button>
               {showManual && manualContent}
             </>

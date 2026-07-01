@@ -349,7 +349,6 @@ const LightPollutionMap = () => {
                   </div>
                 </div>
               </div>
-              </div>
             </details>
 
             <details className="space-y-4 pt-6 border-t border-border/20">

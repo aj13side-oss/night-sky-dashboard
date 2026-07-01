@@ -94,7 +94,8 @@ const DeepSkyTonight = () => {
             className="cursor-pointer text-[10px] capitalize"
             onClick={() => setTypeFilter(t)}
           >
-            {t === "all" ? "All" : t}
+            {t(`deepSky.filters.${t}` as any) /* placeholder replaced below */}
+            {/* eslint-disable-next-line */}
           </Badge>
         ))}
       </div>

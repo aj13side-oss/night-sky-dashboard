@@ -44,6 +44,7 @@ const PlanetsTonight = () => {
 };
 
 const PlanetRow = ({ name, planet, index, solarObjects }: { name: string; planet: PlanetData; index: number; solarObjects?: SolarSystemObject[] }) => {
+  const { t } = useTranslation("dashboard");
   const isVisible = planet.transitAlt != null && planet.transitAlt > 0;
   const hasRise = !!planet.rise;
   const displayName = name.charAt(0).toUpperCase() + name.slice(1);
@@ -54,13 +55,13 @@ const PlanetRow = ({ name, planet, index, solarObjects }: { name: string; planet
 
   if (isVisible) {
     statusDot = "bg-green-400";
-    statusText = "Visible";
+    statusText = t("planets.visible");
   } else if (hasRise) {
     statusDot = "bg-yellow-400";
-    statusText = `Rises ${planet.rise}`;
+    statusText = t("planets.rises", { time: planet.rise });
   } else {
     statusDot = "bg-muted-foreground/40";
-    statusText = "Not visible";
+    statusText = t("planets.notVisible");
   }
 
   return (

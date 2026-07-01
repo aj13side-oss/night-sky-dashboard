@@ -94,7 +94,11 @@
   },
   "observationToolbar": {
     "searchPlaceholder": "Rechercher un lieu…",
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "filterPresets": "Filtrer les lieux...",
+    "customCoordinates": "Coordonnées personnalisées",
+    "set": "Définir",
+    "pickDate": "Choisir une date"
   },
   "hero": {
     "title": "Que photographier ce soir",

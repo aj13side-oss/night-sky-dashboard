@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, Clock, MapPin, Search, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { fr as frLocale } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -27,7 +28,9 @@ interface NominatimResult {
 
 const ObservationToolbar = () => {
   const { date, setDate, time, setTime, location, setLocation } = useObservation();
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const isFr = i18n.language?.startsWith("fr");
+  const dateLocale = isFr ? frLocale : undefined;
   const [locationSearch, setLocationSearch] = useState("");
   const [showLocations, setShowLocations] = useState(false);
   const [latInput, setLatInput] = useState(String(location.lat));
@@ -155,7 +158,7 @@ const ObservationToolbar = () => {
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
                 <Input
-                  placeholder="Filter presets..."
+                  placeholder={t("observationToolbar.filterPresets")}
                   value={locationSearch}
                   onChange={(e) => setLocationSearch(e.target.value)}
                   className="pl-8 h-9 text-sm bg-secondary/50"
@@ -187,11 +190,11 @@ const ObservationToolbar = () => {
                 ))}
               </div>
               <div className="border-t border-border pt-2">
-                <p className="text-xs text-muted-foreground mb-2">Custom coordinates</p>
+                <p className="text-xs text-muted-foreground mb-2">{t("observationToolbar.customCoordinates")}</p>
                 <div className="flex gap-2">
                   <Input placeholder="Lat" value={latInput} onChange={(e) => setLatInput(e.target.value)} className="h-8 text-xs bg-secondary/50 font-mono" />
                   <Input placeholder="Lng" value={lngInput} onChange={(e) => setLngInput(e.target.value)} className="h-8 text-xs bg-secondary/50 font-mono" />
-                  <Button size="sm" onClick={handleCustomCoords} className="h-8 px-3 text-xs">Set</Button>
+                  <Button size="sm" onClick={handleCustomCoords} className="h-8 px-3 text-xs">{t("observationToolbar.set")}</Button>
                 </div>
               </div>
             </PopoverContent>
@@ -227,7 +230,7 @@ const ObservationToolbar = () => {
               )}
             >
               <CalendarIcon className="w-4 h-4 text-primary" />
-              {date ? format(date, "MMM d, yyyy") : "Pick date"}
+              {date ? format(date, isFr ? "d MMM yyyy" : "MMM d, yyyy", { locale: dateLocale }) : t("observationToolbar.pickDate")}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">

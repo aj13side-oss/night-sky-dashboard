@@ -175,7 +175,7 @@ const SunTimesCard = () => {
       {/* Civil day length */}
       <div className="pt-3 border-t border-border">
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Civil day length</span>
+          <span>{t("sunTimes.civilDayLength")}</span>
           <span className="font-mono">{civilDayLength}</span>
         </div>
       </div>
@@ -183,12 +183,12 @@ const SunTimesCard = () => {
       {/* Night lengths */}
       <div className="pt-3 border-t border-border space-y-1">
         <div className="flex justify-between">
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Night length</span>
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("sunTimes.nightLength")}</span>
         </div>
         {[
-          { label: "Civil", value: civilNightLength, color: "bg-amber-400/80" },
-          { label: "Nautical", value: nauticalNightLength, color: "bg-blue-400/70" },
-          { label: "Astronomical", value: astroNightLength, color: "bg-indigo-500/70" },
+          { label: t("sunTimes.twilight.civil"), value: civilNightLength, color: "bg-amber-400/80" },
+          { label: t("sunTimes.twilight.nautical"), value: nauticalNightLength, color: "bg-blue-400/70" },
+          { label: t("sunTimes.twilight.astronomical"), value: astroNightLength, color: "bg-indigo-500/70" },
         ].map((n) => (
           <div key={n.label} className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">

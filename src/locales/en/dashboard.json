@@ -166,5 +166,33 @@
       "q": "What equipment do I need for deep sky astrophotography?",
       "a": "At minimum you need a telescope or telephoto lens, a tracking mount (equatorial or alt-az with field derotator), an astro camera or DSLR, and a laptop or ASIAIR for control. Use our gear catalog and FOV calculator to find compatible setups for your budget and targets."
     }
+  },
+  "deepSky": {
+    "title": "✨ Deep Sky — Tonight's Best",
+    "filters": {
+      "all": "All",
+      "galaxy": "Galaxy",
+      "nebula": "Nebula",
+      "cluster": "Cluster"
+    },
+    "empty": "No matching objects visible tonight",
+    "browseSkyAtlas": "Browse Sky Atlas",
+    "fullAtlas": "Full Atlas",
+    "allNight": "All night"
+  },
+  "tonightList": {
+    "title": "📋 My Tonight List",
+    "clear": "Clear",
+    "loading": "Loading objects...",
+    "allNight": "All night"
+  },
+  "planets": {
+    "title": "🪐 Planets Tonight",
+    "empty": "No planet data available",
+    "visible": "Visible",
+    "notVisible": "Not visible tonight",
+    "rises": "Rises {{time}}",
+    "transit": "Transit {{time}}",
+    "peakShort": "peak"
   }
 }

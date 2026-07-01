@@ -166,5 +166,33 @@
       "q": "Quel matériel pour l'astrophotographie du ciel profond ?",
       "a": "Au minimum, il vous faut un télescope ou un téléobjectif, une monture à suivi (équatoriale ou alt-az avec dérotateur de champ), une caméra astro ou un reflex, et un ordinateur portable ou un ASIAIR pour le contrôle. Utilisez notre catalogue de matériel et le calculateur FOV pour trouver des configurations compatibles avec votre budget et vos cibles."
     }
+  },
+  "deepSky": {
+    "title": "✨ Ciel profond — meilleures cibles ce soir",
+    "filters": {
+      "all": "Tous",
+      "galaxy": "Galaxie",
+      "nebula": "Nébuleuse",
+      "cluster": "Amas"
+    },
+    "empty": "Aucun objet correspondant visible cette nuit",
+    "browseSkyAtlas": "Parcourir l'Atlas",
+    "fullAtlas": "Atlas complet",
+    "allNight": "Toute la nuit"
+  },
+  "tonightList": {
+    "title": "📋 Ma liste de ce soir",
+    "clear": "Vider",
+    "loading": "Chargement des objets...",
+    "allNight": "Toute la nuit"
+  },
+  "planets": {
+    "title": "🪐 Planètes ce soir",
+    "empty": "Aucune donnée planétaire disponible",
+    "visible": "Visible",
+    "notVisible": "Non visible cette nuit",
+    "rises": "Lever {{time}}",
+    "transit": "Passage au méridien {{time}}",
+    "peakShort": "max"
   }
 }

@@ -3,8 +3,10 @@ import { useSolarSystemObjects } from "@/hooks/useSolarSystemObjects";
 import { motion } from "framer-motion";
 import { Globe, Loader2 } from "lucide-react";
 import type { SolarSystemObject } from "@/hooks/useSolarSystemObjects";
+import { useTranslation } from "react-i18next";
 
 const PlanetsTonight = () => {
+  const { t } = useTranslation("dashboard");
   const { data, isLoading } = useAstronomyData();
   const { data: solarObjects } = useSolarSystemObjects();
   const planets = data?.planets;
@@ -25,11 +27,11 @@ const PlanetsTonight = () => {
     <div className="glass-card rounded-2xl p-5 space-y-3">
       <div className="flex items-center gap-2">
         <Globe className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-semibold text-foreground">🪐 Planets Tonight</h3>
+        <h3 className="text-sm font-semibold text-foreground">{t("planets.title")}</h3>
       </div>
 
       {entries.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No planet data available</p>
+        <p className="text-xs text-muted-foreground">{t("planets.empty")}</p>
       ) : (
         <div className="space-y-1.5">
           {entries.map(([name, planet], i) => (
@@ -42,6 +44,7 @@ const PlanetsTonight = () => {
 };
 
 const PlanetRow = ({ name, planet, index, solarObjects }: { name: string; planet: PlanetData; index: number; solarObjects?: SolarSystemObject[] }) => {
+  const { t } = useTranslation("dashboard");
   const isVisible = planet.transitAlt != null && planet.transitAlt > 0;
   const hasRise = !!planet.rise;
   const displayName = name.charAt(0).toUpperCase() + name.slice(1);
@@ -52,13 +55,13 @@ const PlanetRow = ({ name, planet, index, solarObjects }: { name: string; planet
 
   if (isVisible) {
     statusDot = "bg-green-400";
-    statusText = "Visible";
+    statusText = t("planets.visible");
   } else if (hasRise) {
     statusDot = "bg-yellow-400";
-    statusText = `Rises ${planet.rise}`;
+    statusText = t("planets.rises", { time: planet.rise });
   } else {
     statusDot = "bg-muted-foreground/40";
-    statusText = "Not visible";
+    statusText = t("planets.notVisible");
   }
 
   return (
@@ -90,14 +93,14 @@ const PlanetRow = ({ name, planet, index, solarObjects }: { name: string; planet
         <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
           {planet.magnitude != null && <span>mag {planet.magnitude.toFixed(1)}</span>}
           {planet.constellation && <span>· {planet.constellation}</span>}
-          {planet.transit && <span>· Transit {planet.transit}</span>}
+          {planet.transit && <span>· {t("planets.transit", { time: planet.transit })}</span>}
         </div>
       </div>
       <div className="text-right shrink-0">
         {isVisible ? (
           <>
             <p className="text-xs font-mono text-foreground">
-              {planet.transitAlt?.toFixed(0)}° max
+              {planet.transitAlt?.toFixed(0)}° {t("planets.peakShort")}
             </p>
             <div className="text-[10px] text-muted-foreground">
               {planet.rise && <span>↑{planet.rise}</span>}

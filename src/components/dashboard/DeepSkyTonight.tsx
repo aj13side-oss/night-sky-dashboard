@@ -13,8 +13,10 @@ import { useLocalizedPath, useLocalizedNavigate } from "@/lib/localized-nav";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 const DeepSkyTonight = () => {
+  const { t } = useTranslation("dashboard");
   const { location, date } = useObservation();
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const navigate = useLocalizedNavigate();
@@ -80,19 +82,19 @@ const DeepSkyTonight = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-semibold text-foreground">✨ Deep Sky — Tonight's Best</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t("deepSky.title")}</h3>
         </div>
       </div>
 
       <div className="flex gap-1.5">
-        {["all", "galaxy", "nebula", "cluster"].map((t) => (
+        {["all", "galaxy", "nebula", "cluster"].map((f) => (
           <Badge
-            key={t}
-            variant={typeFilter === t ? "default" : "secondary"}
+            key={f}
+            variant={typeFilter === f ? "default" : "secondary"}
             className="cursor-pointer text-[10px] capitalize"
-            onClick={() => setTypeFilter(t)}
+            onClick={() => setTypeFilter(f)}
           >
-            {t === "all" ? "All" : t}
+            {t(`deepSky.filters.${f}`)}
           </Badge>
         ))}
       </div>
@@ -111,18 +113,18 @@ const DeepSkyTonight = () => {
       </div>
 
       {filtered.length === 0 && (
-        <p className="text-xs text-muted-foreground text-center py-4">No matching objects visible tonight</p>
+        <p className="text-xs text-muted-foreground text-center py-4">{t("deepSky.empty")}</p>
       )}
 
       <div className="flex gap-2 mt-1">
         <Link to={lp("/sky-atlas")} className="flex-1">
           <Button variant="default" size="sm" className="w-full gap-2 text-xs">
-            Browse Sky Atlas <ArrowRight className="w-3 h-3" />
+            {t("deepSky.browseSkyAtlas")} <ArrowRight className="w-3 h-3" />
           </Button>
         </Link>
         <Link to={lp("/sky-atlas")} className="flex-1">
           <Button variant="outline" size="sm" className="w-full gap-2 text-xs">
-            Full Atlas <ArrowRight className="w-3 h-3" />
+            {t("deepSky.fullAtlas")} <ArrowRight className="w-3 h-3" />
           </Button>
         </Link>
       </div>
@@ -143,6 +145,7 @@ const DeepSkyRow = ({
   index: number;
   onClick: () => void;
 }) => {
+  const { t } = useTranslation("dashboard");
   const { data: img } = useObjectImage(
     obj.catalog_id,
     obj.common_name,
@@ -204,7 +207,7 @@ const DeepSkyRow = ({
           {isUp ? `${alt.toFixed(0)}° alt` : `↑${formatTimeShort(rs.riseTime)}`}
         </p>
         <p className="text-[10px] text-muted-foreground font-mono">
-          {rs.isCircumpolar ? "All night" : rs.setTime ? `↓${formatTimeShort(rs.setTime)}` : ""}
+          {rs.isCircumpolar ? t("deepSky.allNight") : rs.setTime ? `↓${formatTimeShort(rs.setTime)}` : ""}
         </p>
       </div>
     </motion.div>

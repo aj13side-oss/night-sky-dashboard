@@ -12,8 +12,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const TonightList = () => {
+  const { t } = useTranslation("dashboard");
   const { list, removeObject, clearList } = useTonightList();
   const { location } = useObservation();
   const [collapsed, setCollapsed] = useState(false);
@@ -39,12 +41,12 @@ const TonightList = () => {
       <div className="flex items-center justify-between">
         <button onClick={() => setCollapsed(!collapsed)} className="flex items-center gap-2">
           <ClipboardList className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-semibold text-foreground">📋 Tonight's Observation List</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t("tonightList.title")}</h3>
           <Badge variant="secondary" className="text-[10px]">{list.length}</Badge>
         </button>
         <div className="flex gap-1.5">
           <Button variant="ghost" size="sm" className="h-7 text-[10px] gap-1 text-muted-foreground" onClick={clearList}>
-            <Trash2 className="w-3 h-3" /> Clear
+            <Trash2 className="w-3 h-3" /> {t("tonightList.clear")}
           </Button>
         </div>
       </div>
@@ -55,7 +57,7 @@ const TonightList = () => {
             <TonightListRow key={obj.id} obj={obj} lat={location.lat} lng={location.lng} onRemove={() => removeObject(obj.catalog_id)} />
           ))}
           {list.length > 0 && (!objects || objects.length < list.length) && (
-            <p className="text-[10px] text-muted-foreground">Loading objects...</p>
+            <p className="text-[10px] text-muted-foreground">{t("tonightList.loading")}</p>
           )}
         </div>
       )}
@@ -64,6 +66,7 @@ const TonightList = () => {
 };
 
 const TonightListRow = ({ obj, lat, lng, onRemove }: { obj: CelestialObject; lat: number; lng: number; onRemove: () => void }) => {
+  const { t } = useTranslation("dashboard");
   const alt = obj.ra_deg != null && obj.dec_deg != null ? calculateAltitude(obj.ra_deg, obj.dec_deg, lat, lng) : null;
   const rs = obj.ra_deg != null && obj.dec_deg != null ? getObjectRiseSetTransit(obj.ra_deg, obj.dec_deg, lat, lng, new Date()) : null;
   const { data: img } = useObjectImage(obj.catalog_id, obj.common_name, obj.ra_deg, obj.dec_deg, obj.size_max, obj.image_search_query, obj.forced_image_url, obj.obj_type);
@@ -86,7 +89,7 @@ const TonightListRow = ({ obj, lat, lng, onRemove }: { obj: CelestialObject; lat
         <p className="text-[10px] text-muted-foreground font-mono">
           {alt != null ? `${alt.toFixed(0)}° alt` : ""}
           {rs && !rs.neverRises && !rs.isCircumpolar && rs.setTime ? ` · ↓${formatTimeShort(rs.setTime)}` : ""}
-          {rs?.isCircumpolar ? " · All night" : ""}
+          {rs?.isCircumpolar ? ` · ${t("tonightList.allNight")}` : ""}
         </p>
       </div>
       <button onClick={onRemove} className="text-muted-foreground hover:text-destructive transition-colors p-1">

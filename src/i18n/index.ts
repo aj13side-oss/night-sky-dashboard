@@ -29,7 +29,7 @@ i18n
     lng: "en",
     fallbackLng: "en",
     defaultNS,
-    ns: ["common", "atlas", "object", "dashboard", "footer"],
+    ns: ["common", "atlas", "object", "dashboard", "footer", "fov"],
     interpolation: { escapeValue: false },
     detection: {
       order: ["localStorage"],

@@ -25,6 +25,8 @@ interface Launch {
 }
 
 const SpaceActivities = () => {
+  const { t, i18n } = useTranslation("dashboard");
+  const dateLocale = i18n.language?.startsWith("fr") ? "fr-FR" : "en-US";
   const [astronauts, setAstronauts] = useState<Astronaut[] | null>(null);
   const [astroError, setAstroError] = useState(false);
 

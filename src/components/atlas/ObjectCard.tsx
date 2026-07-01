@@ -257,7 +257,7 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
         )}
 
         <div className="grid grid-cols-2 gap-y-1.5 text-xs text-muted-foreground">
-          <span className="truncate">{obj.obj_type}</span>
+          <span className="truncate">{typeLabel}</span>
           <span className="text-right truncate">{obj.constellation ?? "—"}</span>
 
           {obj.magnitude != null && (

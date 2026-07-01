@@ -84,10 +84,10 @@ const SkyEvents = () => {
   if (events.length === 0) {
     return (
       <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="text-xl font-semibold text-foreground mb-4">🔭 Sky Events</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-4">{t("skyEvents.title")}</h2>
         <Card className="glass-card border-border/30">
           <CardContent className="p-6 text-center text-muted-foreground text-sm">
-            No upcoming sky events in the next 30 days
+            {t("skyEvents.empty")}
           </CardContent>
         </Card>
       </motion.section>

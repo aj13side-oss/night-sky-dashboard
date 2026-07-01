@@ -795,22 +795,30 @@ const FovCalculator = () => {
         {/* About Sampling & FOV */}
         <details className="space-y-4 pt-8 border-t border-border/20 mt-10">
           <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
-            How Sampling & Field of View Work
+            {t("about.title")}
           </summary>
           <div className="space-y-4 pt-4">
             <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-              <span className="text-foreground/80 font-medium">Sampling</span> (or resolution) tells you how many arcseconds of sky each pixel covers.
-              Calculate it with the formula: <span className="font-mono text-foreground/70">pixel size (µm) / focal length (mm) × 206.265</span>.
-              The result is in arcseconds per pixel (″/px). For deep sky astrophotography, the sweet spot is roughly
-              <span className="text-foreground/80 font-medium"> 1–2.5 arcsec/pixel</span>:
-              below 1″/px you risk oversampling (wasting sensor resolution and requiring perfect seeing), while above 3″/px you begin to lose fine detail.
+              <Trans
+                i18nKey="about.samplingParagraph"
+                ns="fov"
+                components={[
+                  <span key="0" className="text-foreground/80 font-medium" />,
+                  <span key="1" className="font-mono text-foreground/70" />,
+                  <span key="2" className="text-foreground/80 font-medium" />,
+                ]}
+              />
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-              <span className="text-foreground/80 font-medium">Field of view</span> depends on your sensor dimensions and focal length.
-              A shorter focal length or a larger sensor gives a wider field; a longer focal length or a smaller sensor narrows it.
-              A <span className="text-foreground/80 font-medium">focal reducer</span> (e.g., 0.8×) shortens the effective focal length, widening the field and improving sampling —
-              useful when a telescope is natively too slow for your camera. A <span className="text-foreground/80 font-medium">Barlow lens</span> or Powermate does the opposite,
-              increasing focal length for planetary imaging or small galaxies. Use this calculator to preview how these changes affect both sampling and framing before you buy.
+              <Trans
+                i18nKey="about.fovParagraph"
+                ns="fov"
+                components={[
+                  <span key="0" className="text-foreground/80 font-medium" />,
+                  <span key="1" className="text-foreground/80 font-medium" />,
+                  <span key="2" className="text-foreground/80 font-medium" />,
+                ]}
+              />
             </p>
           </div>
         </details>
@@ -818,16 +826,16 @@ const FovCalculator = () => {
         {/* FAQ Section */}
         <details className="space-y-4 pt-8 border-t border-border/20 mt-10" itemScope itemType="https://schema.org/FAQPage">
           <summary className="text-sm font-medium text-foreground/60 cursor-pointer hover:text-foreground/80 transition-colors">
-            Frequently Asked Questions
+            {t("faq.title")}
           </summary>
           <div className="space-y-4 pt-4">
             <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
               <h3 itemProp="name" className="text-sm font-medium text-foreground/80">
-                How do I calculate sampling in astrophotography?
+                {t("faq.q1")}
               </h3>
               <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
                 <p itemProp="text" className="text-sm text-muted-foreground mt-1 leading-relaxed max-w-3xl">
-                  Sampling is the angular size of sky each pixel captures, measured in arcseconds per pixel. Calculate it by dividing your camera's pixel size in microns by your telescope's focal length in millimeters, then multiplying by 206.265. For example, a 3.76µm pixel with a 530mm telescope gives about 1.46 arcsec/pixel — ideal for most deep sky targets.
+                  {t("faq.a1")}
                 </p>
               </div>
             </div>

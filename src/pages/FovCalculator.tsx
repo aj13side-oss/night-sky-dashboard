@@ -4,6 +4,7 @@ import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect, useRef } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useLocalizedNavigate } from "@/lib/localized-nav";
 import { Input } from "@/components/ui/input";

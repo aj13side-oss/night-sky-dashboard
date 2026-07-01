@@ -58,34 +58,36 @@ function sortItems<T extends { brand: string; model: string; _raw?: Record<strin
   });
 }
 
-const sortOptions: Record<Category, { value: string; label: string }[]> = {
-  telescopes: [
-    { value: "brand", label: "Brand A→Z" }, { value: "name", label: "Name A→Z" },
-    { value: "price_asc", label: "Price ↑" }, { value: "price_desc", label: "Price ↓" },
-    { value: "focal_asc", label: "Focal ↑" }, { value: "focal_desc", label: "Focal ↓" },
-    { value: "aperture_asc", label: "Aperture ↑" }, { value: "weight_asc", label: "Weight ↑" },
-  ],
-  cameras: [
-    { value: "brand", label: "Brand A→Z" }, { value: "name", label: "Name A→Z" },
-    { value: "price_asc", label: "Price ↑" }, { value: "price_desc", label: "Price ↓" },
-    { value: "pixel_asc", label: "Pixel ↑" }, { value: "sensor_asc", label: "Sensor ↑" },
-    { value: "qe_desc", label: "QE ↓" }, { value: "weight_asc", label: "Weight ↑" },
-  ],
-  mounts: [
-    { value: "brand", label: "Brand A→Z" }, { value: "name", label: "Name A→Z" },
-    { value: "price_asc", label: "Price ↑" }, { value: "price_desc", label: "Price ↓" },
-    { value: "payload_asc", label: "Payload ↑" }, { value: "payload_desc", label: "Payload ↓" },
-    { value: "weight_asc", label: "Weight ↑" },
-  ],
-  filters: [
-    { value: "brand", label: "Brand A→Z" }, { value: "name", label: "Name A→Z" },
-    { value: "price_asc", label: "Price ↑" }, { value: "price_desc", label: "Price ↓" },
-  ],
-  accessories: [
-    { value: "brand", label: "Brand A→Z" }, { value: "name", label: "Name A→Z" },
-    { value: "price_asc", label: "Price ↑" }, { value: "price_desc", label: "Price ↓" },
-  ],
-};
+function buildSortOptions(t: (k: string) => string): Record<Category, { value: string; label: string }[]> {
+  return {
+    telescopes: [
+      { value: "brand", label: t("builder.sort.brand") }, { value: "name", label: t("builder.sort.name") },
+      { value: "price_asc", label: t("builder.sort.priceAsc") }, { value: "price_desc", label: t("builder.sort.priceDesc") },
+      { value: "focal_asc", label: t("builder.sort.focalAsc") }, { value: "focal_desc", label: t("builder.sort.focalDesc") },
+      { value: "aperture_asc", label: t("builder.sort.apertureAsc") }, { value: "weight_asc", label: t("builder.sort.weightAsc") },
+    ],
+    cameras: [
+      { value: "brand", label: t("builder.sort.brand") }, { value: "name", label: t("builder.sort.name") },
+      { value: "price_asc", label: t("builder.sort.priceAsc") }, { value: "price_desc", label: t("builder.sort.priceDesc") },
+      { value: "pixel_asc", label: t("builder.sort.pixelAsc") }, { value: "sensor_asc", label: t("builder.sort.sensorAsc") },
+      { value: "qe_desc", label: t("builder.sort.qeDesc") }, { value: "weight_asc", label: t("builder.sort.weightAsc") },
+    ],
+    mounts: [
+      { value: "brand", label: t("builder.sort.brand") }, { value: "name", label: t("builder.sort.name") },
+      { value: "price_asc", label: t("builder.sort.priceAsc") }, { value: "price_desc", label: t("builder.sort.priceDesc") },
+      { value: "payload_asc", label: t("builder.sort.payloadAsc") }, { value: "payload_desc", label: t("builder.sort.payloadDesc") },
+      { value: "weight_asc", label: t("builder.sort.weightAsc") },
+    ],
+    filters: [
+      { value: "brand", label: t("builder.sort.brand") }, { value: "name", label: t("builder.sort.name") },
+      { value: "price_asc", label: t("builder.sort.priceAsc") }, { value: "price_desc", label: t("builder.sort.priceDesc") },
+    ],
+    accessories: [
+      { value: "brand", label: t("builder.sort.brand") }, { value: "name", label: t("builder.sort.name") },
+      { value: "price_asc", label: t("builder.sort.priceAsc") }, { value: "price_desc", label: t("builder.sort.priceDesc") },
+    ],
+  };
+}
 
 const RigBuilderSection = ({ rigPicks, onRigPicksChange }: RigBuilderSectionProps) => {
   const { data: cameras, isLoading: loadingCams } = useCameras();

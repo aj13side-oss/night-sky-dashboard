@@ -223,12 +223,12 @@ const FovCalculator = () => {
 
   const samplingLabel = useMemo(() => {
     const r = fov.resolution;
-    if (r < 0.5) return { text: "Oversampled (planetary zone)", ok: false };
-    if (r < 1.0) return { text: "Slightly oversampled", ok: false };
-    if (r < 2.5) return { text: "Optimal for deep sky", ok: true };
-    if (r < 3.5) return { text: "Undersampled", ok: false };
-    return { text: "Very wide field", ok: false };
-  }, [fov.resolution]);
+    if (r < 0.5) return { text: t("results.quality.oversampled"), ok: false };
+    if (r < 1.0) return { text: t("results.quality.slightlyOver"), ok: false };
+    if (r < 2.5) return { text: t("results.quality.optimal"), ok: true };
+    if (r < 3.5) return { text: t("results.quality.undersampled"), ok: false };
+    return { text: t("results.quality.veryWide"), ok: false };
+  }, [fov.resolution, t]);
 
   const imageAspect = fov.h / Math.max(fov.w, 0.001);
 
@@ -295,8 +295,8 @@ const FovCalculator = () => {
   return (
     <div className="min-h-screen bg-background star-field">
       <SEOHead
-        title="Field of View & Sampling Calculator"
-        description="Free telescope FOV and sampling calculator. Enter your telescope focal length and camera sensor to calculate field of view, arcsec/pixel sampling, and find the best matching deep sky objects."
+        title={t("seo.title")}
+        description={t("seo.description")}
         keywords="field of view calculator, FOV calculator, astrophoto sampling, arcsec pixel, nebula framing, astrophotography simulator"
         canonical="https://cosmicframe.app/fov-calculator"
         jsonLd={{
@@ -318,9 +318,9 @@ const FovCalculator = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl font-bold text-foreground">Field of View &amp; Sampling Calculator</h1>
+          <h1 className="text-3xl font-bold text-foreground">{t("heading")}</h1>
           <p className="text-muted-foreground mt-2 max-w-3xl">
-            Calculate field of view, sampling in arcseconds per pixel, and check seeing compatibility for your telescope and camera.
+            {t("subheading")}
           </p>
         </motion.div>
 

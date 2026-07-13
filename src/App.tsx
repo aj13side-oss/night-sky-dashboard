@@ -50,8 +50,15 @@ const App = () => (
           <Routes>
             <Route path="/">{localizedRoutes}</Route>
             <Route path="/fr">{localizedRoutes}</Route>
+            <Route path="/en/legal-notice" element={<LegalNoticeEN />} />
+            <Route path="/en/privacy-policy" element={<PrivacyPolicyEN />} />
+            <Route path="/en/cookie-policy" element={<CookiePolicyEN />} />
+            <Route path="/fr/mentions-legales" element={<LegalNoticeFR />} />
+            <Route path="/fr/politique-confidentialite" element={<PrivacyPolicyFR />} />
+            <Route path="/fr/politique-cookies" element={<CookiePolicyFR />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
+          </Routes>
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

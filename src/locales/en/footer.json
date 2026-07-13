@@ -2,7 +2,8 @@
   "columns": {
     "tools": "Tools",
     "popularObjects": "Popular Objects",
-    "equipment": "Equipment"
+    "equipment": "Equipment",
+    "legal": "Legal"
   },
   "tools": {
     "dashboard": "Astro Weather & Dashboard",
@@ -13,5 +14,22 @@
   },
   "equipmentText": "Newton Telescopes, APO Refractors, Schmidt-Cassegrain. ZWO, QHY, Player One Cameras. Sky-Watcher, ZWO, iOptron Mounts. Optolong, Baader, Astronomik Filters.",
   "disclaimer": "Links to third-party stores are provided for convenience. We are not affiliated with any retailer.",
-  "privacy": "Privacy Policy"
+  "privacy": "Privacy Policy",
+  "legal": {
+    "notice": "Legal Notice",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookie Policy",
+    "feedback": "Feedback"
+  },
+  "feedback": {
+    "title": "Share your feedback",
+    "intro": "Help us improve Cosmic Frame. Your feedback is anonymous, no email or personal data is stored.",
+    "placeholder": "What could we improve?",
+    "minHint": "At least {{min}} characters.",
+    "submit": "Submit",
+    "sending": "Sending…",
+    "cancel": "Cancel",
+    "success": "Thanks for your feedback!",
+    "error": "Something went wrong. Please try again."
+  }
 }

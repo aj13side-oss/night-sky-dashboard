@@ -15,6 +15,12 @@ import AdminLogin from "./pages/AdminLogin";
 import PrivacyPage from "./pages/PrivacyPage";
 import NotFound from "./pages/NotFound";
 import LanguageRouteSync from "./components/LanguageRouteSync";
+import LegalNoticeEN from "./pages/legal/LegalNoticeEN";
+import LegalNoticeFR from "./pages/legal/LegalNoticeFR";
+import PrivacyPolicyEN from "./pages/legal/PrivacyPolicyEN";
+import PrivacyPolicyFR from "./pages/legal/PrivacyPolicyFR";
+import CookiePolicyEN from "./pages/legal/CookiePolicyEN";
+import CookiePolicyFR from "./pages/legal/CookiePolicyFR";
 
 const queryClient = new QueryClient();
 

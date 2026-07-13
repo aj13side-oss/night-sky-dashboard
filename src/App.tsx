@@ -15,6 +15,12 @@ import AdminLogin from "./pages/AdminLogin";
 import PrivacyPage from "./pages/PrivacyPage";
 import NotFound from "./pages/NotFound";
 import LanguageRouteSync from "./components/LanguageRouteSync";
+import LegalNoticeEN from "./pages/legal/LegalNoticeEN";
+import LegalNoticeFR from "./pages/legal/LegalNoticeFR";
+import PrivacyPolicyEN from "./pages/legal/PrivacyPolicyEN";
+import PrivacyPolicyFR from "./pages/legal/PrivacyPolicyFR";
+import CookiePolicyEN from "./pages/legal/CookiePolicyEN";
+import CookiePolicyFR from "./pages/legal/CookiePolicyFR";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +50,12 @@ const App = () => (
           <Routes>
             <Route path="/">{localizedRoutes}</Route>
             <Route path="/fr">{localizedRoutes}</Route>
+            <Route path="/en/legal-notice" element={<LegalNoticeEN />} />
+            <Route path="/en/privacy-policy" element={<PrivacyPolicyEN />} />
+            <Route path="/en/cookie-policy" element={<CookiePolicyEN />} />
+            <Route path="/fr/mentions-legales" element={<LegalNoticeFR />} />
+            <Route path="/fr/politique-confidentialite" element={<PrivacyPolicyFR />} />
+            <Route path="/fr/politique-cookies" element={<CookiePolicyFR />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

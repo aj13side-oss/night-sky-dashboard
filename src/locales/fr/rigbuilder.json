@@ -108,6 +108,17 @@
       "payloadAsc": "Charge ↑",
       "payloadDesc": "Charge ↓"
     },
-    "presetLoaded": "Configuration « {{name}} » chargée"
+    "presetLoaded": "Configuration « {{name}} » chargée",
+    "specs": {
+      "color": "Couleur",
+      "mono": "Mono",
+      "goto": "GoTo",
+      "payload": "Charge",
+      "weight": "Poids",
+      "thick": "épais",
+      "in": "Entrée",
+      "out": "Sortie",
+      "noImage": "Sans image"
+    }
   }
 }

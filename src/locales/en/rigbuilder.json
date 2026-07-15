@@ -108,6 +108,17 @@
       "payloadAsc": "Payload ↑",
       "payloadDesc": "Payload ↓"
     },
-    "presetLoaded": "Configuration \"{{name}}\" loaded"
+    "presetLoaded": "Configuration \"{{name}}\" loaded",
+    "specs": {
+      "color": "Color",
+      "mono": "Mono",
+      "goto": "GoTo",
+      "payload": "Payload",
+      "weight": "Weight",
+      "thick": "thick",
+      "in": "In",
+      "out": "Out",
+      "noImage": "No image"
+    }
   }
 }

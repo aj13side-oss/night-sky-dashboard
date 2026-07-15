@@ -1,10 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { readCustomLocation, saveCustomLocation, clearCustomLocation, type CustomLocation } from "@/lib/custom-location";
 
 export interface ObservationLocation {
   name: string;
   lat: number;
   lng: number;
   timezone: string;
+  /** True when the active location was set via the "custom spot" flow. */
+  isCustom?: boolean;
 }
 
 interface ObservationContextType {
@@ -14,6 +17,10 @@ interface ObservationContextType {
   setTime: (time: string) => void;
   location: ObservationLocation;
   setLocation: (location: ObservationLocation) => void;
+  /** Save a custom user-defined spot (map/coords + label). */
+  setCustomLocation: (loc: CustomLocation) => void;
+  /** Drop the custom spot and revert to the default location. */
+  clearCustom: () => void;
   isDetectingLocation: boolean;
 }
 
@@ -31,9 +38,7 @@ const loadStoredLocation = (): ObservationLocation | null => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as ObservationLocation;
-    // Migration: normalise legacy Brullioles labels ("Brullioles, Lyon", etc.)
-    // to the canonical "Brullioles, FR" (village, country) format.
-    if (parsed?.name && /brullioles/i.test(parsed.name) && parsed.name !== "Brullioles, FR") {
+    if (parsed?.name && /brullioles/i.test(parsed.name) && parsed.name !== "Brullioles, FR" && !parsed.isCustom) {
       parsed.name = "Brullioles, FR";
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed)); } catch {}
     }
@@ -42,6 +47,14 @@ const loadStoredLocation = (): ObservationLocation | null => {
   return null;
 };
 
+const customToLocation = (c: CustomLocation): ObservationLocation => ({
+  name: c.label,
+  lat: c.lat,
+  lng: c.lng,
+  timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  isCustom: true,
+});
+
 const ObservationContext = createContext<ObservationContextType>({
   date: new Date(),
   setDate: () => {},
@@ -49,6 +62,8 @@ const ObservationContext = createContext<ObservationContextType>({
   setTime: () => {},
   location: defaultLocation,
   setLocation: () => {},
+  setCustomLocation: () => {},
+  clearCustom: () => {},
   isDetectingLocation: false,
 });
 
@@ -57,19 +72,38 @@ export const useObservation = () => useContext(ObservationContext);
 export const ObservationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState("22:00");
-  const [location, setLocationState] = useState<ObservationLocation>(
-    loadStoredLocation() ?? defaultLocation
-  );
+  const [location, setLocationState] = useState<ObservationLocation>(() => {
+    // Custom location wins over the last regular location on boot.
+    const custom = readCustomLocation();
+    if (custom) return customToLocation(custom);
+    return loadStoredLocation() ?? defaultLocation;
+  });
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
 
   const setLocation = (loc: ObservationLocation) => {
     setLocationState(loc);
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(loc)); } catch {}
+    // Any regular selection clears the one-slot custom spot.
+    if (!loc.isCustom) clearCustomLocation();
   };
 
-  // Auto-detect on first visit (no stored location)
+  const setCustomLocation = (loc: CustomLocation) => {
+    saveCustomLocation(loc);
+    const next = customToLocation(loc);
+    setLocationState(next);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
+  };
+
+  const clearCustom = () => {
+    clearCustomLocation();
+    setLocationState(defaultLocation);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultLocation)); } catch {}
+  };
+
+  // Auto-detect on first visit (no stored location and no custom spot)
   useEffect(() => {
-    if (loadStoredLocation()) return; // already have a saved location
+    if (readCustomLocation()) return;
+    if (loadStoredLocation()) return;
     if (!navigator.geolocation) return;
     setIsDetectingLocation(true);
     navigator.geolocation.getCurrentPosition(
@@ -98,7 +132,7 @@ export const ObservationProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   return (
     <ObservationContext.Provider value={{
-      date, setDate, time, setTime, location, setLocation, isDetectingLocation
+      date, setDate, time, setTime, location, setLocation, setCustomLocation, clearCustom, isDetectingLocation
     }}>
       {children}
     </ObservationContext.Provider>

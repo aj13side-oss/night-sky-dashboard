@@ -30,7 +30,8 @@ interface PresetCardsProps {
 }
 
 export function PresetCards({ presets, onLoad, telescopes, cameras, mounts }: PresetCardsProps) {
-  const { t } = useTranslation("rigbuilder");
+  const { t, i18n } = useTranslation("rigbuilder");
+  const isFr = i18n.language?.startsWith("fr");
   const equipNames = useMemo(() => {
     const map: Record<string, string> = {};
     presets.forEach(p => {
@@ -95,7 +96,7 @@ export function PresetCards({ presets, onLoad, telescopes, cameras, mounts }: Pr
             )}
 
             <p className="text-[11px] text-muted-foreground line-clamp-2 flex-1 leading-tight">
-              {(p as any).description_en || p.description_fr}
+              {isFr ? (p.description_fr || (p as any).description_en) : ((p as any).description_en || p.description_fr)}
             </p>
 
             <Button

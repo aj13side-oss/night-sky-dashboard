@@ -19,7 +19,7 @@ export default function PrivacyPolicyEN() {
       title="Privacy Policy"
       description="Cosmic Frame privacy policy: no accounts, anonymous analytics, anonymous feedback, no personal identifiers stored."
       canonical="https://cosmicframe.app/en/privacy-policy"
-      updated="July 2026"
+      updated="July 15, 2026"
       lang="en"
     >
       <Section title="Data controller">
@@ -47,6 +47,7 @@ export default function PrivacyPolicyEN() {
           "Google Analytics (Google LLC) — see the Google privacy policy.",
           "Cloudflare (hosting) — see the Cloudflare privacy policy.",
           "Supabase (feedback storage) — see the Supabase privacy policy.",
+          <>Cloudflare Turnstile (Cloudflare, Inc.) — invisible bot protection on the feedback form. Collects browser signals to distinguish humans from bots. See the <a className="underline hover:text-foreground" href="https://www.cloudflare.com/turnstile-privacy-policy/" target="_blank" rel="noopener noreferrer">Cloudflare Turnstile privacy policy</a>.</>,
         ]} />
       </Section>
 

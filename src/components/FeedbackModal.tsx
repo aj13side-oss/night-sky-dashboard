@@ -14,9 +14,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 
-// Cloudflare Turnstile — swap for your production site key.
-// `1x00000000000000000000AA` is Cloudflare's official "always passes" test key.
-const TURNSTILE_SITE_KEY = "1x00000000000000000000AA";
+// Cloudflare Turnstile production site key for cosmicframe.app.
+const TURNSTILE_SITE_KEY = "0x4AAAAAAD03ATgC1c7tao-z";
 const TURNSTILE_SCRIPT_ID = "cf-turnstile-script";
 
 const MIN = 10;

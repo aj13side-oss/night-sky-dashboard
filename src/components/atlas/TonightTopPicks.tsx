@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { Sparkles, Sun, Mountain } from "lucide-react";
 import { formatCatalogId } from "@/lib/format-catalog";
 import { useTranslation } from "react-i18next";
+import { useLocalizedPath } from "@/lib/localized-nav";
 
 interface Props {
   lat: number;
@@ -53,6 +54,7 @@ function colorForTime(
 const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
   const { t: tr, i18n } = useTranslation("atlas");
   const isFr = i18n.language?.startsWith("fr");
+  const lp = useLocalizedPath();
   const { topPicks, isLoading } = useTonightTopPicks(lat, lng, 3);
 
   if (isLoading) {
@@ -105,9 +107,19 @@ const TonightTopPicks = ({ lat, lng, onSelect, sunset, astroDuskEnd, astroDawnBe
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.1 }}
-              onClick={() => onSelect(obj)}
               className="relative glass-card rounded-2xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-primary/40 transition-all group"
             >
+              {/* Native link overlay — supports right-click / ctrl+click / middle-click. */}
+              <a
+                href={lp(`/object/${encodeURIComponent(obj.catalog_id)}`)}
+                aria-label={obj.catalog_id}
+                onClick={(e) => {
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+                  e.preventDefault();
+                  onSelect(obj);
+                }}
+                className="absolute inset-0 z-10"
+              />
               {/* Background image */}
               {thumbUrl && (
                 <div className="absolute inset-0">

@@ -10,6 +10,38 @@
   "actions": {
     "useMyLocation": "Utiliser ma position"
   },
+  "location": {
+    "setYourLocation": "Définir votre position",
+    "searchPlaceholder": "Rechercher un lieu…",
+    "storageNote": "Votre position sert aux calculs de visibilité et est stockée localement dans votre navigateur.",
+    "pickCustom": "📍 Choisir un spot custom",
+    "customSuffix": "custom",
+    "clearCustom": "Supprimer le spot custom",
+    "replaceCustomTitle": "Remplacer votre spot custom ?",
+    "replaceCustomBody": "Remplacer votre spot custom « {{current}} » par {{next}} ?",
+    "replaceConfirm": "Remplacer",
+    "custom": {
+      "title": "Choisir un spot custom",
+      "description": "Cliquez sur la carte ou saisissez des coordonnées GPS pour votre site d'observation exact.",
+      "tabMap": "Carte",
+      "tabCoords": "Coordonnées GPS",
+      "mapAria": "Carte interactive",
+      "mapHint": "Cliquez sur la carte pour placer le repère — glissez-le pour l'ajuster.",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "applyCoords": "Appliquer les coordonnées",
+      "dmsToggle": "Convertir depuis DMS",
+      "dmsConvert": "Convertir en décimal",
+      "labelField": "Nom de ce spot",
+      "labelPlaceholder": "ex. Champ derrière la maison",
+      "save": "Enregistrer le spot",
+      "cancel": "Annuler",
+      "remove": "Supprimer le spot custom",
+      "errorInvalidCoords": "Coordonnées invalides. La latitude doit être entre -90 et 90, la longitude entre -180 et 180.",
+      "errorInvalidDms": "Impossible de lire les coordonnées DMS. Utilisez par ex. 45°45'42\"N.",
+      "errorLabelRequired": "Donnez un nom à ce spot."
+    }
+  },
   "nightVision": {
     "normalMode": "Mode normal",
     "nightVision": "Vision nocturne",

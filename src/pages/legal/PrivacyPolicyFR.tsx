@@ -19,7 +19,7 @@ export default function PrivacyPolicyFR() {
       title="Politique de confidentialité"
       description="Politique de confidentialité de Cosmic Frame : aucun compte, analytics anonymes, retours anonymes, aucun identifiant personnel stocké."
       canonical="https://cosmicframe.app/fr/politique-confidentialite"
-      updated="Juillet 2026"
+      updated="15 juillet 2026"
       lang="fr"
     >
       <Section title="Responsable du traitement">
@@ -47,6 +47,7 @@ export default function PrivacyPolicyFR() {
           "Google Analytics (Google LLC) — voir la politique de confidentialité de Google.",
           "Cloudflare (hébergement) — voir la politique de confidentialité de Cloudflare.",
           "Supabase (stockage des retours) — voir la politique de confidentialité de Supabase.",
+          <>Cloudflare Turnstile (Cloudflare, Inc.) — protection anti-bot invisible sur le formulaire de retour. Collecte des signaux du navigateur pour distinguer humains et bots. Voir la <a className="underline hover:text-foreground" href="https://www.cloudflare.com/fr-fr/turnstile-privacy-policy/" target="_blank" rel="noopener noreferrer">politique de confidentialité Cloudflare Turnstile</a>.</>,
         ]} />
       </Section>
 

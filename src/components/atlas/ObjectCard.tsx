@@ -7,7 +7,7 @@ import { getSearchContext } from "@/lib/search-context";
 import { motion } from "framer-motion";
 import { Ruler, Eye, Award, Link, Lightbulb, Crosshair, BookOpen, ClipboardList } from "lucide-react";
 import { useState, useMemo } from "react";
-import { useLocalizedNavigate } from "@/lib/localized-nav";
+import { useLocalizedNavigate, useLocalizedPath } from "@/lib/localized-nav";
 import { formatCatalogId } from "@/lib/format-catalog";
 import { Button } from "@/components/ui/button";
 import { useTonightList } from "@/hooks/useTonightList";
@@ -81,11 +81,20 @@ function colorForTime(
 const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick = false, maxAltInWindow, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
   const { t, i18n } = useTranslation("atlas");
   const navigate = useLocalizedNavigate();
+  const lp = useLocalizedPath();
+  const objectHref = lp(`/object/${encodeURIComponent(obj.catalog_id)}`);
   const { isInList, addObject, removeObject } = useTonightList();
   const isFr = i18n.language?.startsWith("fr");
   const displayName = isFr ? (obj.common_name_fr ?? obj.common_name) : obj.common_name;
   const typeLabel = t(`types.${obj.obj_type}`, { defaultValue: obj.obj_type });
   const rarityLabel = obj.rarity ? t(`rarity.${obj.rarity}`, { defaultValue: obj.rarity }) : null;
+
+  const handleOverlayClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Let the browser handle modifier/middle clicks natively (open in new tab).
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    onClick();
+  };
 
   const rs = useMemo(() => {
     if (obj.ra_deg == null || obj.dec_deg == null) return null;
@@ -130,11 +139,17 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.02, duration: 0.3 }}
-      onClick={onClick}
-      className={`glass-card rounded-2xl overflow-hidden cursor-pointer transition-all group ${
+      className={`relative glass-card rounded-2xl overflow-hidden cursor-pointer transition-all group ${
         isPrime ? "ring-1 ring-slate-300/20 hover:ring-slate-300/40" : "hover:border-primary/30"
       }`}
     >
+      {/* Native link overlay: enables right-click, ctrl/cmd/middle-click new-tab. */}
+      <a
+        href={objectHref}
+        onClick={handleOverlayClick}
+        aria-label={displayName ? `${obj.catalog_id} — ${displayName}` : obj.catalog_id}
+        className="absolute inset-0 z-10"
+      />
       {/* Thumbnail — object-cover to fill frame */}
       {(!imgError && (wikiLoading || displayUrl)) && (
         <div className="relative w-full h-28 bg-muted/30 overflow-hidden">
@@ -303,8 +318,8 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
           </div>
         )}
 
-        {/* Action buttons */}
-        <div className="mt-2 pt-2 border-t border-border/30 flex gap-1.5">
+        {/* Action buttons — kept above the link overlay so they receive clicks. */}
+        <div className="relative z-20 mt-2 pt-2 border-t border-border/30 flex gap-1.5">
           <Button
             variant="ghost"
             size="sm"

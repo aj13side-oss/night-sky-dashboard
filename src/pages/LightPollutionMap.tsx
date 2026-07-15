@@ -16,6 +16,7 @@ import DarkSitesFinder from "@/components/lightpollution/DarkSitesFinder";
 import CitySearch from "@/components/lightpollution/CitySearch";
 import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
 import { DarkSite } from "@/lib/dark-sites";
+import { useObservation } from "@/contexts/ObservationContext";
 
 // Fix default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -83,8 +84,17 @@ function estimateBortleFromClick(map: L.Map, latlng: L.LatLng): number {
 
 const LightPollutionMap = () => {
   const { t, i18n } = useTranslation("lightpollution");
-  const [lat, setLat] = useState(45.7347);
-  const [lng, setLng] = useState(4.4931);
+  const { location } = useObservation();
+  const [lat, setLat] = useState(location.lat);
+  const [lng, setLng] = useState(location.lng);
+
+  // Sync from the global observation location (custom spot, city search from
+  // the header, geolocation) so this page always mirrors the active spot.
+  useEffect(() => {
+    setLat(location.lat);
+    setLng(location.lng);
+    mapRef.current?.setView([location.lat, location.lng], mapRef.current.getZoom());
+  }, [location.lat, location.lng]);
   const [overlayOpacity, setOverlayOpacity] = useState([0.6]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [clickedPoint, setClickedPoint] = useState<{ lat: number; lng: number; bortle: number } | null>(null);

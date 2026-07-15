@@ -10,6 +10,38 @@
   "actions": {
     "useMyLocation": "Use my location"
   },
+  "location": {
+    "setYourLocation": "Set your location",
+    "searchPlaceholder": "Search city or place...",
+    "storageNote": "Your location is used for visibility calculations and is stored locally in your browser.",
+    "pickCustom": "📍 Pick a custom spot",
+    "customSuffix": "custom",
+    "clearCustom": "Clear custom spot",
+    "replaceCustomTitle": "Replace your custom spot?",
+    "replaceCustomBody": "Replace your custom spot \"{{current}}\" with {{next}}?",
+    "replaceConfirm": "Replace",
+    "custom": {
+      "title": "Pick a custom spot",
+      "description": "Click on the map or enter GPS coordinates for your exact observation site.",
+      "tabMap": "Map",
+      "tabCoords": "GPS coordinates",
+      "mapAria": "Interactive map",
+      "mapHint": "Click on the map to place your pin — drag it to fine-tune.",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "applyCoords": "Apply coordinates",
+      "dmsToggle": "Convert from DMS",
+      "dmsConvert": "Convert to decimal",
+      "labelField": "Name this spot",
+      "labelPlaceholder": "e.g. Field behind the house",
+      "save": "Save custom spot",
+      "cancel": "Cancel",
+      "remove": "Delete custom spot",
+      "errorInvalidCoords": "Invalid coordinates. Latitude must be between -90 and 90, longitude between -180 and 180.",
+      "errorInvalidDms": "Could not parse DMS coordinates. Use e.g. 45°45'42\"N.",
+      "errorLabelRequired": "Please give this spot a name."
+    }
+  },
   "nightVision": {
     "normalMode": "Normal Mode",
     "nightVision": "Night Vision",

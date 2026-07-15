@@ -76,6 +76,14 @@ const Footer = () => {
                 {t("legal.feedback")}
               </button>
             </li>
+            <li>
+              <a
+                href="mailto:contact@cosmicframe.app"
+                className="hover:text-foreground transition-colors"
+              >
+                {t("legal.contact")}
+              </a>
+            </li>
           </ul>
         </div>
 

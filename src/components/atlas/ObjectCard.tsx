@@ -318,8 +318,8 @@ const ObjectCard = ({ obj, index, lat, lng, searchQuery = "", onClick, isTopPick
           </div>
         )}
 
-        {/* Action buttons */}
-        <div className="mt-2 pt-2 border-t border-border/30 flex gap-1.5">
+        {/* Action buttons — kept above the link overlay so they receive clicks. */}
+        <div className="relative z-20 mt-2 pt-2 border-t border-border/30 flex gap-1.5">
           <Button
             variant="ghost"
             size="sm"

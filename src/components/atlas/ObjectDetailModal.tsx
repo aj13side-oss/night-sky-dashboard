@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
@@ -75,6 +76,7 @@ function colorForTime(
 
 const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength = 0, sensorWidth = 0, sensorHeight = 0, sunset, astroDuskEnd, astroDawnBegin, sunrise }: Props) => {
   const navigate = useLocalizedNavigate();
+  const { t } = useTranslation("object");
   const [showExposureInfo, setShowExposureInfo] = useState(false);
   const [showCredits, setShowCredits] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
@@ -442,7 +444,7 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Camera className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-semibold text-foreground">Capture Guide</span>
+                  <span className="text-sm font-semibold text-foreground">{t("modal.captureGuide")}</span>
                 </div>
                 <button
                   onClick={() => setShowExposureInfo(true)}
@@ -455,29 +457,30 @@ const ObjectDetailModal = ({ obj, open, onClose, onSelect, lat, lng, focalLength
                 {(obj.exposure_guide_fast ?? 0) > 0 && (
                   <div className="p-3 rounded-lg bg-accent/10 border border-accent/20">
                     <div className="flex items-center gap-1.5 text-xs text-accent font-medium mb-1">
-                      <Clock className="w-3 h-3" /> Fast Capture
+                      <Clock className="w-3 h-3" /> {t("modal.fastCapture")}
                     </div>
                     <p className="text-lg font-bold font-mono text-foreground">
                       {formatExposure(obj.exposure_guide_fast)}
                     </p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">Quick Look</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{t("modal.quickLook")}</p>
                   </div>
                 )}
                 {(obj.exposure_guide_deep ?? 0) > 0 && (
                   <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
                     <div className="flex items-center gap-1.5 text-xs text-primary font-medium mb-1">
-                      <Clock className="w-3 h-3" /> Deep Imaging
+                      <Clock className="w-3 h-3" /> {t("modal.deepImaging")}
                     </div>
                     <p className="text-lg font-bold font-mono text-foreground">
                       {formatExposure(obj.exposure_guide_deep)}
                     </p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">High Quality</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{t("modal.highQuality")}</p>
                   </div>
                 )}
               </div>
               <p className="text-[10px] text-muted-foreground">
-                Bortle 1 estimate · Tap <HelpCircle className="w-3 h-3 inline" /> for details
+                {t("modal.bortleHint")} <HelpCircle className="w-3 h-3 inline" /> {t("modal.bortleHintSuffix")}
               </p>
+
             </div>
           )}
           {/* Night Planner */}

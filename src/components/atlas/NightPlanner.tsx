@@ -1,5 +1,6 @@
 import { getMoonPhase } from "@/lib/astronomy";
 import { Moon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   targetRa: number | null;
@@ -49,6 +50,7 @@ function angularDistance(ra1: number, dec1: number, ra2: number, dec2: number): 
 }
 
 const NightPlanner = ({ targetRa, targetDec }: Props) => {
+  const { t } = useTranslation("object");
   const moon = getMoonPhase();
   const moonPos = getMoonRaDec(new Date());
 
@@ -57,35 +59,37 @@ const NightPlanner = ({ targetRa, targetDec }: Props) => {
     : null;
 
   const moonImpact = moonDist != null
-    ? moonDist < 20 ? { label: "Too close — strong interference", color: "text-destructive" }
-    : moonDist < 45 ? { label: "Moderate — expect some glow", color: "text-orange-400" }
-    : moonDist < 90 ? { label: "Acceptable distance", color: "text-primary" }
-    : { label: "Great separation ✓", color: "text-accent" }
+    ? moonDist < 20 ? { label: t("modal.moon.tooClose"), color: "text-destructive" }
+    : moonDist < 45 ? { label: t("modal.moon.moderate"), color: "text-orange-400" }
+    : moonDist < 90 ? { label: t("modal.moon.acceptable"), color: "text-primary" }
+    : { label: t("modal.moon.greatSeparation"), color: "text-accent" }
     : null;
+
+  const phaseName = t(`modal.moonPhases.${moon.name}`, { defaultValue: moon.name });
 
   return (
     <div className="p-3 rounded-xl bg-secondary/30 space-y-2">
       <div className="flex items-center gap-2 text-xs font-medium text-foreground">
         <Moon className="w-4 h-4 text-primary" />
-        Night Planner
+        {t("modal.nightPlanner")}
       </div>
       <div className="grid grid-cols-2 gap-3 text-xs">
         <div>
-          <span className="text-muted-foreground">Moon Phase</span>
-          <p className="font-medium text-foreground">{moon.emoji} {moon.name}</p>
+          <span className="text-muted-foreground">{t("modal.moonPhase")}</span>
+          <p className="font-medium text-foreground">{moon.emoji} {phaseName}</p>
         </div>
         <div>
-          <span className="text-muted-foreground">Illumination</span>
+          <span className="text-muted-foreground">{t("modal.illumination")}</span>
           <p className="font-medium text-foreground">{moon.illumination}%</p>
         </div>
         {moonDist != null && (
           <>
             <div>
-              <span className="text-muted-foreground">Moon Distance</span>
+              <span className="text-muted-foreground">{t("modal.moonDistance")}</span>
               <p className="font-medium font-mono text-foreground">{moonDist.toFixed(1)}°</p>
             </div>
             <div>
-              <span className="text-muted-foreground">Impact</span>
+              <span className="text-muted-foreground">{t("modal.impact")}</span>
               <p className={`font-medium ${moonImpact?.color}`}>{moonImpact?.label}</p>
             </div>
           </>

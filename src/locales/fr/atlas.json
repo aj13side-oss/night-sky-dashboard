@@ -3,7 +3,7 @@
   "subtitle": "Parcourez plus de 4 800 objets du ciel profond — filtrez les catalogues Messier, NGC et IC par type, constellation, magnitude et meilleure saison.",
   "objectsCount": "{{count}} objets",
   "location": {
-    "useMyLocation": "Position par défaut Lyon — Utiliser ma position",
+    "useMyLocation": "Position par défaut Brullioles, FR — Utiliser ma position",
     "yourLocation": "Votre position",
     "requesting": "Demande de localisation…"
   },

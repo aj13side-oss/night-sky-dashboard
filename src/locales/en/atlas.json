@@ -3,7 +3,7 @@
   "subtitle": "Browse 4,800+ deep sky objects — filter Messier, NGC and IC catalogs by type, constellation, magnitude and best season.",
   "objectsCount": "{{count}} objects",
   "location": {
-    "useMyLocation": "Using default location Lyon — Use my location",
+    "useMyLocation": "Using default location Brullioles, FR — Use my location",
     "yourLocation": "Your location",
     "requesting": "Requesting location..."
   },

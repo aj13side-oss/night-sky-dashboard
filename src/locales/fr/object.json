@@ -89,5 +89,68 @@
     "matchEquipmentMiddle": " à cette cible, puis vérifiez la focale et l'échantillonnage dans le ",
     "matchEquipmentFovLink": "calculateur de champ et d'arcsec/pixel",
     "matchEquipmentSuffix": "."
+  },
+  "modal": {
+    "captureGuide": "Guide de capture",
+    "fastCapture": "Capture rapide",
+    "deepImaging": "Imagerie longue pose",
+    "quickLook": "Aperçu rapide",
+    "highQuality": "Haute qualité",
+    "bortleHint": "Estimation Bortle 1 · Touchez",
+    "bortleHintSuffix": "pour les détails",
+    "nightPlanner": "Planificateur de nuit",
+    "moonPhase": "Phase lunaire",
+    "illumination": "Illumination",
+    "moonDistance": "Distance à la Lune",
+    "impact": "Impact",
+    "moon": {
+      "tooClose": "Trop proche — forte interférence",
+      "moderate": "Modéré — halo lunaire possible",
+      "acceptable": "Distance acceptable",
+      "greatSeparation": "Excellente séparation ✓"
+    },
+    "moonPhases": {
+      "New Moon": "Nouvelle Lune",
+      "Waxing Crescent": "Premier croissant",
+      "First Quarter": "Premier quartier",
+      "Waxing Gibbous": "Gibbeuse croissante",
+      "Full Moon": "Pleine Lune",
+      "Waning Gibbous": "Gibbeuse décroissante",
+      "Last Quarter": "Dernier quartier",
+      "Waning Crescent": "Dernier croissant"
+    },
+    "setupAssistant": "Assistant de configuration",
+    "recommendations": "Recommandations",
+    "gearFilters": "Matériel et filtres",
+    "suggestedFilter": "Filtre suggéré",
+    "suggestedFocalLength": "Focale suggérée",
+    "filterTooltip": "Les filtres améliorent le contraste, mais les résultats varient selon votre caméra (mono ou couleur).",
+    "focalTooltip": "Basé sur la taille angulaire de l'objet pour garantir un bon cadrage.",
+    "moonImpactAssessment": "Évaluation de l'impact lunaire",
+    "impactLow": "Impact faible",
+    "impactMedium": "Impact modéré",
+    "impactHigh": "Impact élevé",
+    "illuminated": "éclairée",
+    "tolerance": "Tolérance",
+    "moonLow": "La lumière lunaire ne devrait pas affecter cette cible. Idéal pour l'imagerie en bande étroite.",
+    "moonMedium": "À capturer avec un filtre ou après le coucher de la Lune. Privilégiez la bande étroite si disponible.",
+    "moonHigh": "Cible large bande : très sensible à la lumière lunaire. Recommandé pendant la Nouvelle Lune.",
+    "setupCompatibility": "Compatibilité du matériel",
+    "yourSetup": "Votre matériel : {{fl}}mm",
+    "compatGreat": "Excellente correspondance avec votre focale ! Votre matériel devrait bien cadrer cette cible.",
+    "compatShort": "Cette cible est relativement petite ; une Barlow ou une focale plus longue pourrait apporter plus de détails.",
+    "compatLong": "Votre focale peut ne cadrer qu'une partie de l'objet. Envisagez un réducteur de focale pour un champ plus large.",
+    "assistantDisclaimer": "Les suggestions matériel s'appuient sur des bases astronomiques standard. Vos conditions locales et votre capteur peuvent donner des résultats différents.",
+    "resolution": {
+      "wide": "Grand champ (200-400mm)",
+      "medium": "Focale moyenne (500-1200mm)",
+      "long": "Longue focale (1200mm+)"
+    },
+    "filter": {
+      "broadband": "Large bande (UV/IR Cut)",
+      "narrowband": "Bande étroite (Ha/OIII/SII)",
+      "dualBand": "Dual-band (Ha + OIII)",
+      "lpro": "Anti-pollution lumineuse (L-Pro)"
+    }
   }
 }

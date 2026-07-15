@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ShoppingCart, ExternalLink, Globe } from "lucide-react";
 import { thumb400 } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface RetailerLink {
   label: string;
@@ -33,6 +34,7 @@ export function EquipmentCard({
   manufacturerUrl,
   extraRetailers = [],
 }: EquipmentCardProps) {
+  const { t } = useTranslation("rigbuilder");
   const filteredSpecs = specs.filter(Boolean) as string[];
   const frLinks = extraRetailers.filter(r => r.url);
   const hasLinks = affiliateAmazon || affiliateAstro || manufacturerUrl || frLinks.length > 0;
@@ -54,7 +56,7 @@ export function EquipmentCard({
           </div>
         ) : (
           <div className="rounded-md bg-secondary/10 flex items-center justify-center aspect-square">
-            <span className="text-muted-foreground text-[10px]">No image</span>
+            <span className="text-muted-foreground text-[10px]">{t("builder.specs.noImage")}</span>
           </div>
         )}
 

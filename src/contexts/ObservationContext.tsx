@@ -29,7 +29,15 @@ const defaultLocation: ObservationLocation = {
 const loadStoredLocation = (): ObservationLocation | null => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as ObservationLocation;
+    // Migration: normalise legacy Brullioles labels ("Brullioles, Lyon", etc.)
+    // to the canonical "Brullioles, FR" (village, country) format.
+    if (parsed?.name && /brullioles/i.test(parsed.name) && parsed.name !== "Brullioles, FR") {
+      parsed.name = "Brullioles, FR";
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed)); } catch {}
+    }
+    return parsed;
   } catch {}
   return null;
 };

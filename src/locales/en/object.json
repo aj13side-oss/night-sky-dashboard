@@ -89,5 +89,68 @@
     "matchEquipmentMiddle": " to this target, then check focal length and sampling in the ",
     "matchEquipmentFovLink": "field of view & arcsec/pixel calculator",
     "matchEquipmentSuffix": "."
+  },
+  "modal": {
+    "captureGuide": "Capture Guide",
+    "fastCapture": "Fast Capture",
+    "deepImaging": "Deep Imaging",
+    "quickLook": "Quick Look",
+    "highQuality": "High Quality",
+    "bortleHint": "Bortle 1 estimate · Tap",
+    "bortleHintSuffix": "for details",
+    "nightPlanner": "Night Planner",
+    "moonPhase": "Moon Phase",
+    "illumination": "Illumination",
+    "moonDistance": "Moon Distance",
+    "impact": "Impact",
+    "moon": {
+      "tooClose": "Too close — strong interference",
+      "moderate": "Moderate — expect some glow",
+      "acceptable": "Acceptable distance",
+      "greatSeparation": "Great separation ✓"
+    },
+    "moonPhases": {
+      "New Moon": "New Moon",
+      "Waxing Crescent": "Waxing Crescent",
+      "First Quarter": "First Quarter",
+      "Waxing Gibbous": "Waxing Gibbous",
+      "Full Moon": "Full Moon",
+      "Waning Gibbous": "Waning Gibbous",
+      "Last Quarter": "Last Quarter",
+      "Waning Crescent": "Waning Crescent"
+    },
+    "setupAssistant": "Setup Assistant",
+    "recommendations": "Recommendations",
+    "gearFilters": "Gear & Filters",
+    "suggestedFilter": "Suggested Filter",
+    "suggestedFocalLength": "Suggested Focal Length",
+    "filterTooltip": "Filters help contrast, but results vary based on your camera type (Mono vs Color).",
+    "focalTooltip": "Based on the object's angular size to ensure good framing.",
+    "moonImpactAssessment": "Moon Impact Assessment",
+    "impactLow": "Low Impact",
+    "impactMedium": "Medium Impact",
+    "impactHigh": "High Impact",
+    "illuminated": "illuminated",
+    "tolerance": "Tolerance",
+    "moonLow": "Moonlight shouldn't affect this target much. Ideal for narrowband imaging.",
+    "moonMedium": "Best captured with a filter or during moonset. Consider narrowband if available.",
+    "moonHigh": "Broadband target: Very sensitive to moonlight. Recommended during New Moon.",
+    "setupCompatibility": "Setup Compatibility",
+    "yourSetup": "Your setup: {{fl}}mm",
+    "compatGreat": "Great match for your focal length! Your setup should frame this target well.",
+    "compatShort": "This target is relatively small; you might benefit from a Barlow lens or a longer focal length for finer details.",
+    "compatLong": "Your focal length may frame only part of this object. Consider a focal reducer for a wider field of view.",
+    "assistantDisclaimer": "Equipment suggestions are based on standard astronomical baselines. Your specific local conditions and camera sensor may yield different results.",
+    "resolution": {
+      "wide": "Wide Field (200-400mm)",
+      "medium": "Medium Focal (500-1200mm)",
+      "long": "Long Focal (1200mm+)"
+    },
+    "filter": {
+      "broadband": "Broadband (UV/IR Cut)",
+      "narrowband": "Narrowband (Ha/OIII/SII)",
+      "dualBand": "Dual-band (Ha + OIII)",
+      "lpro": "Light Pollution (L-Pro)"
+    }
   }
 }

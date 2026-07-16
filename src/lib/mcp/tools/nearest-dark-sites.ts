@@ -1,6 +1,6 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-import { DARK_SITES, distanceKm } from "@/lib/dark-sites";
+import { DARK_SITES, distanceKm } from "../../dark-sites";
 
 export default defineTool({
   name: "nearest_dark_sites",

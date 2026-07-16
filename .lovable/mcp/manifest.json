@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "sdk_version": "0.22.2",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "cosmic-frame-mcp",
+      "version": "0.1.0",
+      "title": "Cosmic Frame"
+    },
+    "tools": [
+      {
+        "name": "search_celestial_objects",
+        "title": "Search celestial objects",
+        "description": "Search the Cosmic Frame deep-sky catalog by name, common name, catalog id (e.g. 'M31', 'NGC 7000'), or constellation. Returns basic identity, position, magnitude, size, and type.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Text to search: catalog id, common name, or constellation."
+            },
+            "limit": {
+              "default": 10,
+              "description": "Max results (1-50).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [
+            "query"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_celestial_object",
+        "title": "Get celestial object",
+        "description": "Fetch full details for one deep-sky object by its catalog id (e.g. 'M31', 'NGC 7000', 'IC 1396'). Includes photo score, moon tolerance, recommended filter, exposure guides, and best months.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "catalog_id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Catalog id such as 'M31', 'NGC 7000', 'IC 1396'."
+            }
+          },
+          "required": [
+            "catalog_id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "nearest_dark_sites",
+        "title": "Nearest dark sites",
+        "description": "Return the closest low-light-pollution observing sites (IDA Dark Sky Parks/Reserves and other curated sites) to a given latitude/longitude, sorted by distance.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "lat": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90,
+              "description": "Observer latitude in decimal degrees."
+            },
+            "lng": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180,
+              "description": "Observer longitude in decimal degrees."
+            },
+            "limit": {
+              "default": 5,
+              "description": "Max sites to return (1-20).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            }
+          },
+          "required": [
+            "lat",
+            "lng"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "astro_weather_forecast",
+        "title": "Astronomy weather forecast",
+        "description": "Astrophotography-oriented weather forecast for a location: hourly cloud cover (low/mid/high), temperature, humidity, dew point, and wind for the next ~48 hours. Powered by Open-Meteo (public data, no key).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": false,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "lat": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90,
+              "description": "Latitude in decimal degrees."
+            },
+            "lng": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180,
+              "description": "Longitude in decimal degrees."
+            }
+          },
+          "required": [
+            "lat",
+            "lng"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

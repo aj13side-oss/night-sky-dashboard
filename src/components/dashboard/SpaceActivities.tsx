@@ -40,18 +40,27 @@ const SpaceActivities = () => {
 
   useEffect(() => {
     fetch("https://ytitrmdlmjpyhwkbpjvf.supabase.co/functions/v1/iss-proxy?endpoint=astros")
-      .then((r) => r.json())
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
       .then((d) => {
-        if (d?.fallback) setAstroError(true);
-        else setAstronauts(d.people ?? []);
+        if (!d || d.error || !Array.isArray(d.people)) {
+          setAstroError(true);
+          return;
+        }
+        setAstronauts(d.people);
       })
       .catch(() => setAstroError(true));
 
     const fetchISS = () =>
       fetch("https://ytitrmdlmjpyhwkbpjvf.supabase.co/functions/v1/iss-proxy?endpoint=iss_now")
-        .then((r) => r.ok ? r.json() : Promise.reject(r.status))
+        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
         .then((d) => {
-          if (d?.fallback || !d?.iss_position) return; // keep last known, skip
+          if (!d || d.error || !d.iss_position) {
+            setIssPos((prev) => {
+              if (!prev) setIssError(true);
+              return prev;
+            });
+            return;
+          }
           setIssPos(d.iss_position);
           setIssError(false);
         })

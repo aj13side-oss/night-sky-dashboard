@@ -1,4 +1,4 @@
-// ISS proxy with graceful fallback
+// ISS proxy — uses wheretheiss.at (reliable). open-notify.org is deprecated.
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -11,7 +11,13 @@ const json = (body: unknown, status = 200) =>
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 
-async function fetchWithTimeout(url: string, ms = 4000): Promise<Response> {
+const unavailable = () =>
+  json(
+    { error: "iss_unavailable", detail: "Upstream ISS API is temporarily unavailable" },
+    503,
+  );
+
+async function fetchWithTimeout(url: string, ms = 5000): Promise<Response> {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), ms);
   try {
@@ -21,61 +27,55 @@ async function fetchWithTimeout(url: string, ms = 4000): Promise<Response> {
   }
 }
 
-async function getIssNow() {
-  // Primary: wheretheiss.at (HTTPS, reliable)
+async function getIssNow(): Promise<Response> {
   try {
-    const r = await fetchWithTimeout("https://api.wheretheiss.at/v1/satellites/25544", 4000);
-    if (r.ok) {
-      const d = await r.json();
-      return {
-        message: "success",
-        iss_position: {
-          latitude: String(d.latitude),
-          longitude: String(d.longitude),
-        },
-        timestamp: d.timestamp,
-      };
+    const r = await fetchWithTimeout("https://api.wheretheiss.at/v1/satellites/25544", 5000);
+    if (!r.ok) {
+      console.error("wheretheiss non-200:", r.status);
+      return unavailable();
     }
+    const d = await r.json();
+    return json({
+      message: "success",
+      iss_position: {
+        latitude: String(d.latitude),
+        longitude: String(d.longitude),
+      },
+      altitude: d.altitude,
+      velocity: d.velocity,
+      timestamp: d.timestamp,
+    });
   } catch (e) {
     console.error("wheretheiss failed:", e);
+    return unavailable();
   }
-  // Fallback: open-notify
-  try {
-    const r = await fetchWithTimeout("http://api.open-notify.org/iss-now.json", 4000);
-    if (r.ok) return await r.json();
-  } catch (e) {
-    console.error("open-notify failed:", e);
-  }
-  return null;
 }
 
-async function getAstros() {
+async function getAstros(): Promise<Response> {
+  // open-notify (only known free source) is unreliable; try with short timeout, else 503.
   try {
-    const r = await fetchWithTimeout("http://api.open-notify.org/astros.json", 5000);
-    if (r.ok) return await r.json();
+    const r = await fetchWithTimeout("http://api.open-notify.org/astros.json", 3000);
+    if (!r.ok) return unavailable();
+    return json(await r.json());
   } catch (e) {
     console.error("astros failed:", e);
+    return unavailable();
   }
-  return null;
 }
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const url = new URL(req.url);
-  const endpoint = url.searchParams.get("endpoint");
+  try {
+    const url = new URL(req.url);
+    const endpoint = url.searchParams.get("endpoint");
 
-  if (endpoint === "iss_now") {
-    const data = await getIssNow();
-    if (data) return json(data);
-    return json({ error: "ISS_NOW_UNAVAILABLE", fallback: true });
+    if (endpoint === "iss_now") return await getIssNow();
+    if (endpoint === "astros") return await getAstros();
+
+    return json({ error: "unknown endpoint" }, 400);
+  } catch (e) {
+    console.error("iss-proxy unhandled:", e);
+    return unavailable();
   }
-
-  if (endpoint === "astros") {
-    const data = await getAstros();
-    if (data) return json(data);
-    return json({ error: "ASTROS_UNAVAILABLE", fallback: true, people: [] });
-  }
-
-  return json({ error: "unknown endpoint" }, 400);
 });

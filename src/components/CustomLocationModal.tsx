@@ -1,7 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
@@ -28,33 +35,52 @@ interface Props {
   onOpenChange: (v: boolean) => void;
 }
 
+/** Recompute tile positions once the dialog animation settles + when tab switches. */
+const InvalidateOnMount = ({ trigger }: { trigger: unknown }) => {
+  const map = useMap();
+  useEffect(() => {
+    const timers = [50, 150, 350].map((ms) =>
+      setTimeout(() => map.invalidateSize(), ms),
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [map, trigger]);
+  return null;
+};
+
+const ClickHandler = ({ onPick }: { onPick: (lat: number, lng: number) => void }) => {
+  useMapEvents({
+    click(e) { onPick(e.latlng.lat, e.latlng.lng); },
+  });
+  return null;
+};
+
+/** Keep the map centered on the current coords when they change from outside (GPS tab edits). */
+const RecenterOnChange = ({ lat, lng }: { lat: number; lng: number }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.setView([lat, lng], map.getZoom(), { animate: false });
+  }, [lat, lng, map]);
+  return null;
+};
+
 const CustomLocationModal = ({ open, onOpenChange }: Props) => {
   const { t } = useTranslation("common");
   const { location, setCustomLocation, clearCustom } = useObservation();
-  const existing = readCustomLocation();
+  const existing = useMemo(() => readCustomLocation(), [open]);
 
-  const initial = existing ?? {
-    label: location.isCustom ? location.name : "",
-    lat: location.lat,
-    lng: location.lng,
-  };
-
-  const [label, setLabel] = useState(initial.label);
-  const [lat, setLat] = useState<number>(initial.lat);
-  const [lng, setLng] = useState<number>(initial.lng);
-  const [latInput, setLatInput] = useState(String(initial.lat));
-  const [lngInput, setLngInput] = useState(String(initial.lng));
+  const [label, setLabel] = useState("");
+  const [lat, setLat] = useState<number>(location.lat);
+  const [lng, setLng] = useState<number>(location.lng);
+  const [latInput, setLatInput] = useState(String(location.lat));
+  const [lngInput, setLngInput] = useState(String(location.lng));
   const [dmsLat, setDmsLat] = useState("");
   const [dmsLng, setDmsLng] = useState("");
   const [showDms, setShowDms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<"map" | "coords">("map");
-
-  const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
 
-  // Reset state when opening
+  // Reset state on every open
   useEffect(() => {
     if (!open) return;
     const cur = readCustomLocation() ?? {
@@ -67,47 +93,14 @@ const CustomLocationModal = ({ open, onOpenChange }: Props) => {
     setLng(cur.lng);
     setLatInput(String(cur.lat));
     setLngInput(String(cur.lng));
+    setDmsLat("");
+    setDmsLng("");
+    setShowDms(false);
     setError(null);
     setTab("map");
   }, [open]);
 
-  // Initialise Leaflet after the map tab is visible.
-  useEffect(() => {
-    if (!open || tab !== "map") return;
-    const el = mapContainerRef.current;
-    if (!el || mapRef.current) return;
-
-    const map = L.map(el, { zoomControl: true, attributionControl: true }).setView([lat, lng], 6);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 18,
-      attribution: "&copy; OpenStreetMap contributors",
-    }).addTo(map);
-
-    const marker = L.marker([lat, lng], { draggable: true }).addTo(map);
-    marker.on("dragend", () => {
-      const { lat: la, lng: ln } = marker.getLatLng();
-      updateFromMap(la, ln);
-    });
-    map.on("click", (e: L.LeafletMouseEvent) => {
-      marker.setLatLng(e.latlng);
-      updateFromMap(e.latlng.lat, e.latlng.lng);
-    });
-
-    mapRef.current = map;
-    markerRef.current = marker;
-
-    // Invalidate size once the dialog animation settles so tiles render fully.
-    setTimeout(() => map.invalidateSize(), 200);
-
-    return () => {
-      map.remove();
-      mapRef.current = null;
-      markerRef.current = null;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, tab]);
-
-  const updateFromMap = (la: number, ln: number) => {
+  const pickOnMap = (la: number, ln: number) => {
     setLat(la);
     setLng(ln);
     setLatInput(la.toFixed(5));
@@ -115,20 +108,18 @@ const CustomLocationModal = ({ open, onOpenChange }: Props) => {
     setError(null);
   };
 
+  const parsedLat = parseFloat(latInput);
+  const parsedLng = parseFloat(lngInput);
+  const coordsValid = isValidLat(parsedLat) && isValidLng(parsedLng);
+
   const applyCoords = () => {
-    const la = parseFloat(latInput);
-    const ln = parseFloat(lngInput);
-    if (!isValidLat(la) || !isValidLng(ln)) {
+    if (!coordsValid) {
       setError(t("location.custom.errorInvalidCoords"));
       return false;
     }
-    setLat(la);
-    setLng(ln);
+    setLat(parsedLat);
+    setLng(parsedLng);
     setError(null);
-    if (markerRef.current && mapRef.current) {
-      markerRef.current.setLatLng([la, ln]);
-      mapRef.current.setView([la, ln], mapRef.current.getZoom());
-    }
     return true;
   };
 
@@ -144,24 +135,22 @@ const CustomLocationModal = ({ open, onOpenChange }: Props) => {
     setLat(la);
     setLng(ln);
     setError(null);
-    if (markerRef.current && mapRef.current) {
-      markerRef.current.setLatLng([la, ln]);
-      mapRef.current.setView([la, ln], mapRef.current.getZoom());
-    }
   };
 
   const onSave = () => {
-    if (tab === "coords" && !applyCoords()) return;
+    if (!coordsValid) {
+      setError(t("location.custom.errorInvalidCoords"));
+      return;
+    }
+    // Sync from GPS inputs if user typed but didn't apply
+    const finalLat = parsedLat;
+    const finalLng = parsedLng;
     const trimmed = label.trim();
     if (!trimmed) {
       setError(t("location.custom.errorLabelRequired"));
       return;
     }
-    if (!isValidLat(lat) || !isValidLng(lng)) {
-      setError(t("location.custom.errorInvalidCoords"));
-      return;
-    }
-    setCustomLocation({ label: trimmed.slice(0, 60), lat, lng });
+    setCustomLocation({ label: trimmed.slice(0, 60), lat: finalLat, lng: finalLng });
     onOpenChange(false);
   };
 
@@ -169,6 +158,8 @@ const CustomLocationModal = ({ open, onOpenChange }: Props) => {
     clearCustom();
     onOpenChange(false);
   };
+
+  const saveDisabled = !coordsValid || !label.trim();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -187,12 +178,41 @@ const CustomLocationModal = ({ open, onOpenChange }: Props) => {
             <TabsTrigger value="coords">{t("location.custom.tabCoords")}</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="map" className="mt-3 space-y-2">
+          <TabsContent value="map" forceMount className="mt-3 space-y-2 data-[state=inactive]:hidden">
             <div
-              ref={mapContainerRef}
               className="w-full h-64 rounded-lg overflow-hidden border border-border/50 bg-secondary/20"
               aria-label={t("location.custom.mapAria")}
-            />
+            >
+              {open && (
+                <MapContainer
+                  center={[lat, lng]}
+                  zoom={10}
+                  scrollWheelZoom
+                  style={{ width: "100%", height: "100%" }}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    maxZoom={19}
+                  />
+                  <Marker
+                    position={[lat, lng]}
+                    draggable
+                    ref={(r) => { markerRef.current = r; }}
+                    eventHandlers={{
+                      dragend: (e) => {
+                        const m = e.target as L.Marker;
+                        const { lat: la, lng: ln } = m.getLatLng();
+                        pickOnMap(la, ln);
+                      },
+                    }}
+                  />
+                  <ClickHandler onPick={pickOnMap} />
+                  <RecenterOnChange lat={lat} lng={lng} />
+                  <InvalidateOnMount trigger={tab} />
+                </MapContainer>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground">
               {t("location.custom.mapHint")} · <span className="font-mono">{lat.toFixed(5)}, {lng.toFixed(5)}</span>
             </p>
@@ -204,24 +224,37 @@ const CustomLocationModal = ({ open, onOpenChange }: Props) => {
                 <Label htmlFor="cf-lat" className="text-xs">{t("location.custom.latitude")}</Label>
                 <Input
                   id="cf-lat"
+                  type="number"
                   inputMode="decimal"
+                  step="0.00001"
+                  min={-90}
+                  max={90}
                   value={latInput}
                   onChange={(e) => setLatInput(e.target.value)}
                   placeholder="45.7618"
+                  aria-invalid={!isValidLat(parsedLat)}
                 />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="cf-lng" className="text-xs">{t("location.custom.longitude")}</Label>
                 <Input
                   id="cf-lng"
+                  type="number"
                   inputMode="decimal"
+                  step="0.00001"
+                  min={-180}
+                  max={180}
                   value={lngInput}
                   onChange={(e) => setLngInput(e.target.value)}
                   placeholder="4.4993"
+                  aria-invalid={!isValidLng(parsedLng)}
                 />
               </div>
             </div>
-            <Button size="sm" variant="secondary" onClick={applyCoords}>
+            {!coordsValid && (latInput || lngInput) && (
+              <p className="text-xs text-destructive">{t("location.custom.errorInvalidCoords")}</p>
+            )}
+            <Button size="sm" variant="secondary" onClick={applyCoords} disabled={!coordsValid}>
               {t("location.custom.applyCoords")}
             </Button>
 
@@ -286,7 +319,7 @@ const CustomLocationModal = ({ open, onOpenChange }: Props) => {
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t("location.custom.cancel")}
           </Button>
-          <Button onClick={onSave} className="gap-2">
+          <Button onClick={onSave} disabled={saveDisabled} className="gap-2">
             <Save className="w-4 h-4" /> {t("location.custom.save")}
           </Button>
         </DialogFooter>

@@ -385,7 +385,13 @@ const LightPollutionMap = () => {
         {!isFullscreen && (
           <>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-              <DarkSitesFinder userLat={lat} userLng={lng} onSelectSite={handleSelectDarkSite} />
+              <DarkSitesFinder
+                sites={nearbyDarkSites}
+                isLoading={darkSitesLoading}
+                radius={darkSiteRadius}
+                onRadiusChange={setDarkSiteRadius}
+                onSelectSite={handleSelectDarkSite}
+              />
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>

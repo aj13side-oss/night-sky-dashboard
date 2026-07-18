@@ -4,6 +4,7 @@ import { useObservation } from "@/contexts/ObservationContext";
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { calculateAltitude } from "@/lib/visibility";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
+import { getAstroTwilightWindow } from "@/lib/astronomy";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { formatCatalogId } from "@/lib/format-catalog";
 import { motion } from "framer-motion";

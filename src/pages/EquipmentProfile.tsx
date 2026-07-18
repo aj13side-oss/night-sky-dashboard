@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";

@@ -224,6 +224,7 @@ const LightPollutionMap = () => {
           setLat(pos.coords.latitude);
           setLng(pos.coords.longitude);
           mapRef.current?.setView([pos.coords.latitude, pos.coords.longitude], 10);
+          sampleBortleAt(pos.coords.latitude, pos.coords.longitude);
         },
         () => toast.error(t("map.locationDenied"))
       );
@@ -234,7 +235,8 @@ const LightPollutionMap = () => {
     setLat(cityLat);
     setLng(cityLng);
     mapRef.current?.setView([cityLat, cityLng], 10);
-  }, []);
+    sampleBortleAt(cityLat, cityLng);
+  }, [sampleBortleAt]);
 
   const handleSelectDarkSite = useCallback((site: DarkSite) => {
     setLat(site.lat);

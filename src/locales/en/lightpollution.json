@@ -5,7 +5,10 @@
     "title": "Nearby Dark Sky Sites",
     "radius": "Radius: {{n}} km",
     "empty": "No dark sites found within {{n}} km. Try increasing the radius.",
-    "directions": "Directions"
+    "directions": "Directions",
+    "rice": "RICE",
+    "website": "Official website",
+    "loading": "Loading sites…"
   },
   "imagingImpact": {
     "title": "Imaging Impact Calculator",

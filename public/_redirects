@@ -1,0 +1,3 @@
+# Legacy /en/* URLs are redirected to unprefixed URLs (EN is the default locale)
+/en/*      /:splat      301
+/en        /            301

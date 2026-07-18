@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import AppNav from "@/components/AppNav";
 import SEOHead from "@/components/SEOHead";
@@ -20,9 +20,32 @@ const EquipmentProfile = () => {
   const { data: accessories } = useAccessories();
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  const [rigPicks, setRigPicks] = useState<RigPicks>({
-    telescope: null, camera: null, mount: null, filterIds: [], accessories: [],
+  const RIG_STORAGE_KEY = "cosmicframe_active_rig";
+  const [rigPicks, setRigPicks] = useState<RigPicks>(() => {
+    if (typeof window === "undefined") {
+      return { telescope: null, camera: null, mount: null, filterIds: [], accessories: [] };
+    }
+    try {
+      const raw = window.localStorage.getItem(RIG_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return {
+          telescope: parsed.telescope ?? null,
+          camera: parsed.camera ?? null,
+          mount: parsed.mount ?? null,
+          filterIds: Array.isArray(parsed.filterIds) ? parsed.filterIds : [],
+          accessories: Array.isArray(parsed.accessories) ? parsed.accessories : [],
+        };
+      }
+    } catch {}
+    return { telescope: null, camera: null, mount: null, filterIds: [], accessories: [] };
   });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(RIG_STORAGE_KEY, JSON.stringify(rigPicks));
+    } catch {}
+  }, [rigPicks]);
 
   const handleRigPicksChange = (picks: RigPicks) => {
     setRigPicks(picks);

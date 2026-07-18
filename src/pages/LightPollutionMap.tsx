@@ -88,23 +88,41 @@ const LightPollutionMap = () => {
   const [lat, setLat] = useState(location.lat);
   const [lng, setLng] = useState(location.lng);
 
+  const mapRef = useRef<L.Map | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const markerRef = useRef<L.Marker | null>(null);
+  const overlayRef = useRef<L.TileLayer | null>(null);
+  const legendRef = useRef<L.Control | null>(null);
+
+  const [overlayOpacity, setOverlayOpacity] = useState([0.6]);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [clickedPoint, setClickedPoint] = useState<{ lat: number; lng: number; bortle: number } | null>(null);
+  const [selectedBortle, setSelectedBortle] = useState<number | undefined>(undefined);
+
+  /** Sample Bortle at a lat/lng after tiles have had a chance to load, then show info panel. */
+  const sampleBortleAt = useCallback((sampleLat: number, sampleLng: number) => {
+    const map = mapRef.current;
+    if (!map) return;
+    // Two-pass sample: quick then after tile load, so we still show a value
+    // even if tiles are already cached, and refine once they're painted.
+    const doSample = () => {
+      if (!mapRef.current) return;
+      const b = estimateBortleFromClick(mapRef.current, L.latLng(sampleLat, sampleLng));
+      setClickedPoint({ lat: sampleLat, lng: sampleLng, bortle: b });
+      setSelectedBortle(b);
+    };
+    setTimeout(doSample, 400);
+    setTimeout(doSample, 1200);
+  }, []);
+
   // Sync from the global observation location (custom spot, city search from
   // the header, geolocation) so this page always mirrors the active spot.
   useEffect(() => {
     setLat(location.lat);
     setLng(location.lng);
     mapRef.current?.setView([location.lat, location.lng], mapRef.current.getZoom());
-  }, [location.lat, location.lng]);
-  const [overlayOpacity, setOverlayOpacity] = useState([0.6]);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [clickedPoint, setClickedPoint] = useState<{ lat: number; lng: number; bortle: number } | null>(null);
-  const [selectedBortle, setSelectedBortle] = useState<number | undefined>(undefined);
-
-  const mapRef = useRef<L.Map | null>(null);
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const markerRef = useRef<L.Marker | null>(null);
-  const overlayRef = useRef<L.TileLayer | null>(null);
-  const legendRef = useRef<L.Control | null>(null);
+    sampleBortleAt(location.lat, location.lng);
+  }, [location.lat, location.lng, sampleBortleAt]);
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
@@ -206,6 +224,7 @@ const LightPollutionMap = () => {
           setLat(pos.coords.latitude);
           setLng(pos.coords.longitude);
           mapRef.current?.setView([pos.coords.latitude, pos.coords.longitude], 10);
+          sampleBortleAt(pos.coords.latitude, pos.coords.longitude);
         },
         () => toast.error(t("map.locationDenied"))
       );
@@ -216,7 +235,8 @@ const LightPollutionMap = () => {
     setLat(cityLat);
     setLng(cityLng);
     mapRef.current?.setView([cityLat, cityLng], 10);
-  }, []);
+    sampleBortleAt(cityLat, cityLng);
+  }, [sampleBortleAt]);
 
   const handleSelectDarkSite = useCallback((site: DarkSite) => {
     setLat(site.lat);

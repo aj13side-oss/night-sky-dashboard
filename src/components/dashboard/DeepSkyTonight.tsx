@@ -4,6 +4,7 @@ import { useObservation } from "@/contexts/ObservationContext";
 import { CelestialObject } from "@/hooks/useCelestialObjects";
 import { calculateAltitude } from "@/lib/visibility";
 import { getObjectRiseSetTransit, formatTimeShort } from "@/lib/rise-set";
+import { getAstroTwilightWindow } from "@/lib/astronomy";
 import { useObjectImage } from "@/hooks/useObjectImage";
 import { formatCatalogId } from "@/lib/format-catalog";
 import { motion } from "framer-motion";
@@ -38,27 +39,47 @@ const DeepSkyTonight = () => {
     staleTime: 60_000,
   });
 
+  const nightWindow = useMemo(() => {
+    const astro = getAstroTwilightWindow(date, location.lat, location.lng);
+    if (astro.hasTrueNight && astro.start && astro.end) {
+      return { start: astro.start, end: astro.end };
+    }
+    // Fallback: rough civil-dusk to civil-dawn window (~20:00 → 05:00 local)
+    const s = new Date(date); s.setHours(20, 0, 0, 0);
+    const e = new Date(s); e.setDate(e.getDate() + 1); e.setHours(5, 0, 0, 0);
+    return { start: s, end: e };
+  }, [date, location.lat, location.lng]);
+
   const ranked = useMemo(() => {
     if (!objects) return [];
     const now = date;
+    const startMs = nightWindow.start.getTime();
+    const endMs = nightWindow.end.getTime();
+    const STEP_MS = 20 * 60 * 1000;
+    const MIN_ALT = 20;
     return objects
       .map((obj) => {
         const alt = calculateAltitude(obj.ra_deg!, obj.dec_deg!, location.lat, location.lng, now);
         const rs = getObjectRiseSetTransit(obj.ra_deg!, obj.dec_deg!, location.lat, location.lng, now);
-        return { obj, alt, rs };
+        // Sample max altitude across tonight's dark window
+        let maxAltNight = -90;
+        for (let t = startMs; t <= endMs; t += STEP_MS) {
+          const a = calculateAltitude(obj.ra_deg!, obj.dec_deg!, location.lat, location.lng, new Date(t));
+          if (a > maxAltNight) maxAltNight = a;
+        }
+        return { obj, alt, rs, maxAltNight };
       })
-      .filter((item) => !item.rs.neverRises)
+      .filter((item) => !item.rs.neverRises && item.maxAltNight >= MIN_ALT)
       .sort((a, b) => {
-        // Prefer objects currently above horizon, then by altitude + photo_score
         const aUp = a.alt > 0 ? 1 : 0;
         const bUp = b.alt > 0 ? 1 : 0;
         if (aUp !== bUp) return bUp - aUp;
-        const aScore = (a.obj.photo_score ?? 0) + Math.max(0, a.rs.transitAlt) * 0.3;
-        const bScore = (b.obj.photo_score ?? 0) + Math.max(0, b.rs.transitAlt) * 0.3;
+        const aScore = (a.obj.photo_score ?? 0) + Math.max(0, a.maxAltNight) * 0.3;
+        const bScore = (b.obj.photo_score ?? 0) + Math.max(0, b.maxAltNight) * 0.3;
         return bScore - aScore;
       })
       .slice(0, 10);
-  }, [objects, location.lat, location.lng, date]);
+  }, [objects, location.lat, location.lng, date, nightWindow]);
 
   const filtered = typeFilter === "all"
     ? ranked

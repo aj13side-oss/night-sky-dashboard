@@ -3,7 +3,7 @@ import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -12,10 +12,12 @@ import { Locate, Maximize2, Minimize2 } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import BortleInfoPanel from "@/components/lightpollution/BortleInfoPanel";
-import DarkSitesFinder from "@/components/lightpollution/DarkSitesFinder";
+import DarkSitesFinder, { type DarkSiteWithDistance } from "@/components/lightpollution/DarkSitesFinder";
 import CitySearch from "@/components/lightpollution/CitySearch";
 import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
-import { DarkSite } from "@/lib/dark-sites";
+import { distanceKm } from "@/lib/dark-sites";
+import { useDarkSites } from "@/hooks/useDarkSites";
+import { bortleHex } from "@/lib/bortle-colors";
 import { useObservation } from "@/contexts/ObservationContext";
 
 // Fix default marker icons
@@ -98,6 +100,17 @@ const LightPollutionMap = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [clickedPoint, setClickedPoint] = useState<{ lat: number; lng: number; bortle: number } | null>(null);
   const [selectedBortle, setSelectedBortle] = useState<number | undefined>(undefined);
+  const [darkSiteRadius, setDarkSiteRadius] = useState(150);
+  const darkSitesLayerRef = useRef<L.LayerGroup | null>(null);
+
+  const { data: allDarkSites = [], isLoading: darkSitesLoading } = useDarkSites();
+
+  const nearbyDarkSites = useMemo<DarkSiteWithDistance[]>(() => {
+    return allDarkSites
+      .map((s) => ({ ...s, distance: distanceKm(lat, lng, s.latitude, s.longitude) }))
+      .filter((s) => s.distance <= darkSiteRadius)
+      .sort((a, b) => a.distance - b.distance);
+  }, [allDarkSites, lat, lng, darkSiteRadius]);
 
   /** Sample Bortle at a lat/lng after tiles have had a chance to load, then show info panel. */
   const sampleBortleAt = useCallback((sampleLat: number, sampleLng: number) => {
@@ -238,13 +251,47 @@ const LightPollutionMap = () => {
     sampleBortleAt(cityLat, cityLng);
   }, [sampleBortleAt]);
 
-  const handleSelectDarkSite = useCallback((site: DarkSite) => {
-    setLat(site.lat);
-    setLng(site.lng);
-    mapRef.current?.setView([site.lat, site.lng], 10);
-    setClickedPoint({ lat: site.lat, lng: site.lng, bortle: site.bortle });
+  const handleSelectDarkSite = useCallback((site: DarkSiteWithDistance) => {
+    setLat(site.latitude);
+    setLng(site.longitude);
+    mapRef.current?.setView([site.latitude, site.longitude], 10);
+    setClickedPoint({ lat: site.latitude, lng: site.longitude, bortle: site.bortle });
     setSelectedBortle(site.bortle);
   }, []);
+
+  // Render dark-site markers on the map. Recompute whenever the filtered list changes.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (darkSitesLayerRef.current) {
+      map.removeLayer(darkSitesLayerRef.current);
+      darkSitesLayerRef.current = null;
+    }
+    if (nearbyDarkSites.length === 0) return;
+    const group = L.layerGroup();
+    for (const site of nearbyDarkSites) {
+      const marker = L.circleMarker([site.latitude, site.longitude], {
+        radius: 6,
+        color: "#ffffff",
+        weight: 1.5,
+        fillColor: bortleHex(site.bortle),
+        fillOpacity: 0.9,
+      });
+      const rice = site.is_official_rice ? " · RICE" : "";
+      marker.bindTooltip(`<b>${site.name}</b><br/>B${site.bortle}${rice}`, {
+        direction: "top",
+        offset: [0, -6],
+      });
+      marker.on("click", () => {
+        map.setView([site.latitude, site.longitude], Math.max(map.getZoom(), 9));
+        setClickedPoint({ lat: site.latitude, lng: site.longitude, bortle: site.bortle });
+        setSelectedBortle(site.bortle);
+      });
+      group.addLayer(marker);
+    }
+    group.addTo(map);
+    darkSitesLayerRef.current = group;
+  }, [nearbyDarkSites]);
 
   return (
     <div className={`min-h-screen bg-background star-field ${isFullscreen ? "overflow-hidden" : ""}`}>
@@ -338,7 +385,13 @@ const LightPollutionMap = () => {
         {!isFullscreen && (
           <>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-              <DarkSitesFinder userLat={lat} userLng={lng} onSelectSite={handleSelectDarkSite} />
+              <DarkSitesFinder
+                sites={nearbyDarkSites}
+                isLoading={darkSitesLoading}
+                radius={darkSiteRadius}
+                onRadiusChange={setDarkSiteRadius}
+                onSelectSite={handleSelectDarkSite}
+              />
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>

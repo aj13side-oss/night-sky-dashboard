@@ -3,7 +3,7 @@ import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -12,10 +12,12 @@ import { Locate, Maximize2, Minimize2 } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import BortleInfoPanel from "@/components/lightpollution/BortleInfoPanel";
-import DarkSitesFinder from "@/components/lightpollution/DarkSitesFinder";
+import DarkSitesFinder, { type DarkSiteWithDistance } from "@/components/lightpollution/DarkSitesFinder";
 import CitySearch from "@/components/lightpollution/CitySearch";
 import ImagingImpactCard from "@/components/lightpollution/ImagingImpactCard";
-import { DarkSite } from "@/lib/dark-sites";
+import { distanceKm } from "@/lib/dark-sites";
+import { useDarkSites } from "@/hooks/useDarkSites";
+import { bortleHex } from "@/lib/bortle-colors";
 import { useObservation } from "@/contexts/ObservationContext";
 
 // Fix default marker icons

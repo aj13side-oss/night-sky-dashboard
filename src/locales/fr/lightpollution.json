@@ -5,7 +5,10 @@
     "title": "Sites au ciel noir à proximité",
     "radius": "Rayon : {{n}} km",
     "empty": "Aucun site au ciel noir trouvé dans un rayon de {{n}} km. Essayez d'augmenter le rayon.",
-    "directions": "Itinéraire"
+    "directions": "Itinéraire",
+    "rice": "RICE",
+    "website": "Site officiel",
+    "loading": "Chargement des sites…"
   },
   "imagingImpact": {
     "title": "Calculateur d'impact sur l'imagerie",

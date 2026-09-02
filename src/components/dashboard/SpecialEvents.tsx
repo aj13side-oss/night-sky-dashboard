@@ -45,12 +45,28 @@ const SpecialEvents = () => {
   const [transients, setTransients] = useState<TransientObject[]>([]);
 
   useEffect(() => {
+    let cancelled = false;
     fetch(`https://ytitrmdlmjpyhwkbpjvf.supabase.co/functions/v1/satellite-passes?lat=${location.lat}&lon=${location.lng}&min_el=10`)
-      .then((r) => r.json())
-      .then((d) => setSatellites(Array.isArray(d) ? d : d.satellites ?? []))
-      .catch(() => setSatError(true))
-      .finally(() => setSatLoading(false));
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then((d) => {
+        if (cancelled) return;
+        const list = Array.isArray(d) ? d : Array.isArray(d?.satellites) ? d.satellites : [];
+        setSatellites(list);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSatellites([]);
+          setSatError(true);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setSatLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [location.lat, location.lng]);
+
 
   useEffect(() => {
     const thirtyDaysAgo = new Date();

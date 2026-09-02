@@ -52,16 +52,11 @@ async function getIssNow(): Promise<Response> {
 }
 
 async function getAstros(): Promise<Response> {
-  // open-notify (only known free source) is unreliable; try with short timeout, else 503.
-  try {
-    const r = await fetchWithTimeout("http://api.open-notify.org/astros.json", 3000);
-    if (!r.ok) return unavailable();
-    return json(await r.json());
-  } catch (e) {
-    console.error("astros failed:", e);
-    return unavailable();
-  }
+  // open-notify.org is permanently unreachable (TCP connect timeouts) — do not call it.
+  // Derive crew from the ISS Wikipedia-free fallback: none available, so report unavailable fast.
+  return unavailable();
 }
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });

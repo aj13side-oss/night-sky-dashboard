@@ -1,4 +1,4 @@
-// ISS proxy — uses wheretheiss.at (reliable). open-notify.org is deprecated.
+// ISS proxy v3 — wheretheiss.at only. open-notify.org is dead (connect timeouts) and must never be called.
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":

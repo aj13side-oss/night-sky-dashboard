@@ -27,6 +27,10 @@ const LanguageRouteSync = () => {
       const isFrPath = pathname === "/fr" || pathname.startsWith("/fr/");
       if (isFrPath) return;
 
+      // Standalone English legal routes (/en/legal-notice, etc.) — never redirect
+      // them to /fr/en/*, which has no matching route and 404s.
+      if (pathname === "/en" || pathname.startsWith("/en/")) return;
+
       if (typeof localStorage !== "undefined" && localStorage.getItem(LANG_CHOICE_KEY)) return;
       if (typeof sessionStorage !== "undefined" && sessionStorage.getItem(AUTO_REDIRECT_KEY)) return;
 
